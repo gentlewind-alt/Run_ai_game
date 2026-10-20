@@ -79,4 +79,8 @@ export default class BattleScene extends Phaser.Scene {
   snapshot(): ReturnType<typeof snapshot> {
     return snapshot(this.b);
   }
+
+  getBattle(): BattleState {
+    return this.b;
+  }
 }

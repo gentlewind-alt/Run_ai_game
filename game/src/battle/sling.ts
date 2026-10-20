@@ -8,6 +8,7 @@ import { weaponDef } from '../data/lookup';
 import { clampCx, homeCx, homeZoom, pointerWorld, screenDist, setView, zoomBy } from './camera';
 import { MatterLib } from './matter';
 import { setGravity } from './projectiles';
+import { groundAt } from './terrain';
 import type { BattleState } from './state';
 
 export function setWeapon(b: BattleState, id: string): void {
@@ -22,7 +23,7 @@ const slotX = (b: BattleState, i: number): number => Math.max(4, b.slingX - 22 -
 /** Puts the waiting weapons beside the sling. */
 export function buildQueue(b: BattleState): void {
   b.loadout.forEach((id, i) => {
-    const q = b.scene.add.image(slotX(b, i), b.groundY - 7, weaponImpl(weaponDef(id)).texture).setDepth(3).setScale(0.85);
+    const q = b.scene.add.image(slotX(b, i), groundAt(b, slotX(b, i)) - 7, weaponImpl(weaponDef(id)).texture).setDepth(3).setScale(0.85);
     q.setData('phase', i * 1.3);
     b.queue.push(q);
   });
@@ -55,7 +56,7 @@ export function loadNext(b: BattleState): void {
   b.ui.setAbilityLabel(b.wdef.ability.label);
   const first = b.queue.shift()!;
   first.setDepth(7).setScale(0.85);
-  b.queue.forEach((q, i) => hop(b, q, slotX(b, i), b.groundY - 7, 260, 5));
+  b.queue.forEach((q, i) => hop(b, q, slotX(b, i), groundAt(b, slotX(b, i)) - 7, 260, 5));
   sfx.click();
   hop(b, first, b.slingX, b.slingY, 420, 26, () => {
     first.destroy();
@@ -70,6 +71,7 @@ export function loadNext(b: BattleState): void {
 /** Test hook: finish the intro/hop instantly (tweens run on wall-clock time, scripted tests don't). */
 export function skipToReady(b: BattleState): void {
   b.scene.tweens.killAll();
+  b.scene.children.list.filter((o: any) => o.depth === 100000).forEach((o) => o.destroy()); // the iris cover (see core/flow.ts)
   setView(b, homeZoom(b), homeCx(b));
   b.queue.forEach((q) => q.destroy());
   b.queue = [];
@@ -137,7 +139,7 @@ export function onMove(b: BattleState, p: Phaser.Input.Pointer): void {
     const w = pointerWorld(b, p);
     const vec = new Phaser.Math.Vector2(w.x - b.slingX, w.y - b.slingY);
     if (vec.length() > b.tune.maxPull) vec.setLength(b.tune.maxPull);
-    b.pouch.set(b.slingX + vec.x, Math.min(b.slingY + vec.y, b.groundY - 6));
+    b.pouch.set(b.slingX + vec.x, Math.min(b.slingY + vec.y, groundAt(b, b.slingX + vec.x) - 6));
     const now = b.scene.time.now;
     if (now - b.lastStretch > b.tune.stretchSoundMs) {
       b.lastStretch = now;
@@ -171,6 +173,14 @@ export function onUp(b: BattleState): void {
     return;
   }
   launch(b, pull.scale(b.tune.launchK));
+}
+
+/** Fires without touch input: angle in degrees above horizontal toward the right, power 0..1 of a full pull. */
+export function launchFrom(b: BattleState, angleDeg: number, power: number): void {
+  const a = Phaser.Math.DegToRad(angleDeg);
+  const pull = Phaser.Math.Clamp(power, 0, 1) * b.tune.maxPull;
+  b.pouch.set(b.slingX - Math.cos(a) * pull, b.slingY + Math.sin(a) * pull);
+  launch(b, new Phaser.Math.Vector2(Math.cos(a) * pull * b.tune.launchK, -Math.sin(a) * pull * b.tune.launchK));
 }
 
 function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
@@ -228,7 +238,7 @@ export function drawOverlay(b: BattleState): void {
         x += v.x;
         vy += gr;
         y += vy;
-        if (y > b.groundY - 2) break;
+        if (y > groundAt(b, x) - 2) break;
         if (i % 3 === 0 && i <= 24) g.fillRect(Math.round(x) - 1, Math.round(y) - 1, 2, 2);
       }
     }

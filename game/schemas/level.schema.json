@@ -31,6 +31,11 @@
       "properties": { "x": { "type": "number" }, "y": { "type": "number" } },
       "description": "Door runners head for."
     },
+    "terrain": {
+      "type": "array", "minItems": 2,
+      "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } },
+      "description": "Ground profile: [x, y] points left to right (y grows downward). Omit for flat ground at config.world.groundY. Flat beyond the first and last point."
+    },
     "overrides": {
       "type": "object",
       "description": "Per-level overrides merged over content.json (e.g. {\"tuning\": {\"launchK\": 0.3}}).",

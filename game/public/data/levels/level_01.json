@@ -9,6 +9,32 @@
     "Drag back from the sling, then let go."
   ],
   "scoreTarget": 1200,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      110,
+      320
+    ],
+    [
+      140,
+      308
+    ],
+    [
+      190,
+      308
+    ],
+    [
+      216,
+      320
+    ],
+    [
+      432,
+      320
+    ]
+  ],
   "blocks": [
     {
       "m": "stone",

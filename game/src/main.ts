@@ -10,7 +10,7 @@ import './style.css';
 import { sfx } from './audio/sfx';
 import { H, W } from './config/constants';
 import { getSettings, initSettings } from './config/settings';
-import { applyDebug, wireProfile } from './core/profile';
+import { DEBUG, applyDebug, wireProfile } from './core/profile';
 import { loadSave, wireSave } from './core/save';
 import { data, loadData } from './data/load';
 import { platform } from './platform';
@@ -65,6 +65,7 @@ async function bootstrap(): Promise<void> {
 
     const game = new Phaser.Game(config);
     if ((import.meta as any).env?.DEV) (window as any).__game = game;
+    if ((import.meta as any).env?.DEV || DEBUG) void import('./debug/testHook').then((m) => m.installTestHook(game));
     platform.track('game_loaded');
     if (!bootStep1Fired) {
       bootStep1Fired = true;

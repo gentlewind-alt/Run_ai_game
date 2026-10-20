@@ -1,6 +1,7 @@
 // Win and lose: all monsters dead, out of shots, too many runners escaped. Only this module moves the battle to won/lost.
 import { sfx } from '../audio/sfx';
 import { atHome } from './camera';
+import { groundAt } from './terrain';
 import { discard } from './damage';
 import { popWord } from './fx';
 import { finalize } from './score';
@@ -13,7 +14,7 @@ export function escape(b: BattleState, e: Ent): void {
   discard(b, e);
   b.escaped++;
   sfx.lose();
-  popWord(b, b.level.exit!.x - 10, b.groundY - 30, 'it got away!');
+  popWord(b, b.level.exit!.x - 10, groundAt(b, b.level.exit!.x) - 30, 'it got away!');
   const limit = b.level.escapeLimit ?? 0;
   b.ui.setEscaped(b.escaped, limit);
   b.events.emit('runner:escaped', { count: b.escaped, limit });

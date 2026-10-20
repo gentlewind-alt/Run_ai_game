@@ -6,6 +6,7 @@ import { MatterLib } from './matter';
 import { endProj, setGravity, spawnPellet } from './projectiles';
 import { escape } from './rules';
 import { inflict } from './status';
+import { groundAt } from './terrain';
 import type { BattleCtx, Ent } from './BattleCtx';
 import type { BattleState } from './state';
 
@@ -14,12 +15,14 @@ export function makeCtx(b: BattleState): BattleCtx {
   const dist = (x: number, y: number, e: Ent): number => Phaser.Math.Distance.Between(x, y, e.body.position.x, e.body.position.y);
   return {
     get step() { return b.steps; },
+    stepHz: b.settings.physics.stepHz,
     rng: b.rng,
     tune: b.tune,
     rules: b.rules,
     events: b.events,
     sling: { x: b.slingX, y: b.slingY },
     groundY: b.groundY,
+    groundAt: (x) => groundAt(b, x),
     worldW: b.worldW,
     level: b.level,
     get phase() { return b.state; },

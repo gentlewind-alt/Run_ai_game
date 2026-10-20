@@ -45,6 +45,8 @@ export interface Ent {
   dir: number;
   speed: number;
   fireT: number;
+  delay: number; // seconds a runner waits before it starts (level data)
+  runFrom?: number; // step a runner starts running, set once the battle is live
   params: Params; // from the monster's data row
   behavior?: MonsterBehavior;
   def?: MonsterDef;
@@ -87,12 +89,14 @@ export interface PelletOpts {
 
 export interface BattleCtx {
   readonly step: number; // fixed steps since the level started
+  readonly stepHz: number; // fixed steps per second
   readonly rng: Rng;
   readonly tune: Tuning;
   readonly rules: DamageRules;
   readonly events: EventBus;
   readonly sling: { x: number; y: number };
   readonly groundY: number;
+  groundAt(x: number): number; // ground height at world x (see battle/terrain.ts)
   readonly worldW: number;
   readonly level: Level;
   readonly phase: BattlePhase;

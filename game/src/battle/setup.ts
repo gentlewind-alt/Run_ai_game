@@ -8,6 +8,7 @@ import { data } from '../data/load';
 import { levelDef } from '../data/lookup';
 import { homeCx, homeZoom, introPan, setupCameras, setView, zoomBy } from './camera';
 import { makeCtx } from './ctxImpl';
+import { groundAtPoints, normalizeTerrain } from './terrain';
 import { onCollide } from './damage';
 import { onDown, onMove, onUp, activateAbility, buildQueue, loadNext, setWeapon } from './sling';
 import { buildWorld, populate } from './world';
@@ -23,7 +24,7 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
     scene, ui: noUi, events, rng: createRng(level.id), content: data.content, level, levelId,
     loadout: level.loadout ?? loadout, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
-    worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK,
+    worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
     ents: [], actors: [], proj: null, state: 'intro', shotIdx: 0, coins: 0, score: 0, chain: 0, chainT: 999, escaped: 0,
     steps: 0, acc: 0, hitStop: 0, settleSteps: 0, endTimer: 0, lastPop: 0, lastStretch: 0,
     pouch: new Phaser.Math.Vector2(settings.world.slingX, settings.world.slingY), queue: [], parts: [],
@@ -37,6 +38,10 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
       }
     },
   } as unknown as BattleState;
+  b.terrain = normalizeTerrain(level, b.worldW, b.groundY);
+  // the sling stands on the ground wherever the level puts it (level.sling overrides)
+  if (level.sling?.x !== undefined) b.slingX = level.sling.x;
+  b.slingY = level.sling?.y ?? groundAtPoints(b.terrain, b.slingX) - (settings.world.groundY - settings.world.slingY);
   b.ctx = makeCtx(b);
   setWeapon(b, b.loadout[0]);
   b.view.z = homeZoom(b);

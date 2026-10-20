@@ -2,6 +2,8 @@
 import { buildBackground } from '../art/backgrounds';
 import { MONSTER_ART, blockKey, makeBattleTextures } from '../art/textures';
 import { behaviorFor } from '../content/monsters';
+import { buildTerrain, groundAt } from './terrain';
+import { data } from '../data/load';
 import { materialDef, monsterDef } from '../data/lookup';
 import type { LevelMonster, Params } from '../data/types';
 import type Phaser from 'phaser';
@@ -15,9 +17,9 @@ const BLOCK_FRICTION = 0.7;
 export function buildWorld(b: BattleState): void {
   const s = b.scene;
   makeBattleTextures(s, b.level.blocks);
-  buildBackground(s, b.worldW, b.groundY);
-  s.matter.add.rectangle(b.worldW / 2, b.groundY + 40, b.worldW + 400, 80, { isStatic: true, friction: 1, label: 'ground' });
-  s.matter.add.rectangle(b.worldW + 10, 200, 20, 600, { isStatic: true, label: 'wall' });
+  const realm = data.content.realms.find((r) => r.id === b.level.realm)?.background ?? 'hills';
+  buildBackground(s, b.worldW, b.groundY, realm, false);
+  buildTerrain(b);
 }
 
 /** Sling, blocks, monsters and the exit door. Call after the view is set up. */
@@ -27,7 +29,7 @@ export function populate(b: BattleState): void {
   for (const blk of b.level.blocks) addBlock(b, blk.m, blk.x, blk.y, blk.w, blk.h);
   for (const m of b.level.monsters) addMonster(b, m);
   for (const e of b.ents) if (e.kind === 'monster') e.behavior?.onSpawn?.(b.ctx, e);
-  if (b.level.exit) s.add.image(b.level.exit.x, b.groundY - 13, 'door').setDepth(1);
+  if (b.level.exit) s.add.image(b.level.exit.x, b.level.exit.y ?? groundAt(b, b.level.exit.x) - 13, 'door').setDepth(1);
 }
 
 function addBlock(b: BattleState, mat: string, x: number, y: number, w: number, h: number): void {
@@ -50,6 +52,7 @@ function addMonster(b: BattleState, m: LevelMonster): void {
   const sprite = b.scene.add.image(m.x, m.y, m.t).setDepth(3);
   const e = makeEnt(b, 'monster', m.t, body, sprite, def.hp, def.weak, def.resist, art.w, art.h, art.size, def.params ?? {});
   e.dir = m.dir ?? 1;
+  e.delay = m.delay ?? 0;
   e.speed = m.speed ?? def.params?.speed ?? 0;
   e.def = def;
   e.behavior = behaviorFor(def);
@@ -63,7 +66,7 @@ function makeEnt(
   const e: Ent = {
     kind, type, body, sprite, hp, maxHp: hp, weak, resist, w, h, size, cool: 0, hurt: 0, flash: 0, dead: false,
     phase: b.rng.next() * 6, shield: 0, status: { burn: 0, slow: 0, curse: 0 }, ox: body.position.x, oy: body.position.y,
-    dir: 1, speed: 0, fireT: 0, params,
+    dir: 1, speed: 0, fireT: 0, delay: 0, params,
   };
   body.ent = e;
   return e;

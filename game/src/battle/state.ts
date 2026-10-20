@@ -43,6 +43,7 @@ export interface BattleState {
   slingY: number;
   worldW: number;
   maxSpeed: number; // launch speed at full pull
+  terrain: [number, number][]; // ground profile, see battle/terrain.ts
 
   ents: Ent[];
   actors: Actor[];

@@ -9,6 +9,32 @@
     "Press the ability button mid-flight."
   ],
   "scoreTarget": 1800,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      120,
+      320
+    ],
+    [
+      150,
+      302
+    ],
+    [
+      195,
+      302
+    ],
+    [
+      225,
+      320
+    ],
+    [
+      432,
+      320
+    ]
+  ],
   "blocks": [
     {
       "m": "stone",

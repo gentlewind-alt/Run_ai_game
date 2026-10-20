@@ -123,6 +123,8 @@ export interface Level {
   escapeLimit?: number;
   hints?: string[];
   exit?: { x: number; y: number };
+  terrain?: number[][];
+  sling?: { x?: number; y?: number };
   overrides?: Record<string, Record<string, unknown>>;
   blocks: LevelBlock[];
   monsters: LevelMonster[];

@@ -1,12 +1,165 @@
-// Read-only view of a battle for scripted tests (the fuller window.__mm API arrives with card S2-04).
+// window.__mm: a scripted-test API (dev and ?debug=1 only). It advances the fixed step synchronously, without rendering,
+// so a whole level plays in milliseconds. Tweens run on wall-clock time, so the hook skips the intro and the weapon hops.
+import type Phaser from 'phaser';
+import { activateAbility, launchFrom, skipToReady } from '../battle/sling';
 import type { BattleState } from '../battle/state';
+import { addCoins, applyDebug, profile } from '../core/profile';
+import { data } from '../data/load';
 
-export function snapshot(b: BattleState): {
-  state: string; score: number; coins: number; chain: number; escaped: number; shotIdx: number; projSteps: number;
-  ents: { type: string; kind: string; dead: boolean; hp: number; x: number; y: number }[];
-} {
+const DT = 1000 / 60;
+
+export interface Shot { angleDeg: number; power: number; abilityAfterSteps?: number }
+
+export interface BattleView {
+  state: string; shotsLeft: number; monsters: number; blocks: number; score: number; coins: number; chain: number; escaped: number;
+  steps: number; won: boolean; lost: boolean; projSteps: number;
+  ents?: { type: string; kind: string; dead: boolean; hp: number; x: number; y: number }[];
+}
+
+export function snapshot(b: BattleState): BattleView {
+  const alive = b.ents.filter((e) => !e.dead);
   return {
-    state: b.state, score: b.score, coins: b.coins, chain: b.chain, escaped: b.escaped, shotIdx: b.shotIdx, projSteps: b.proj ? b.proj.steps : -1,
+    state: b.state, shotsLeft: b.loadout.length - b.shotIdx, monsters: alive.filter((e) => e.kind === 'monster').length,
+    blocks: alive.filter((e) => e.kind === 'block').length, score: b.score, coins: b.coins, chain: b.chain, escaped: b.escaped, steps: b.steps,
+    won: b.state === 'won', lost: b.state === 'lost', projSteps: b.proj ? b.proj.steps : -1,
     ents: b.ents.map((e) => ({ type: e.type, kind: e.kind, dead: e.dead, hp: e.hp, x: e.body.position.x, y: e.body.position.y })),
+  };
+}
+
+export function installTestHook(game: Phaser.Game): void {
+  let T = 5e6;
+  const tick = (n: number): void => {
+    for (let i = 0; i < n; i++) {
+      T += DT;
+      game.scene.update(T, DT);
+    }
+  };
+  const battleScene = (): any => game.scene.getScene('game');
+  const battle = (): BattleState => battleScene().getBattle();
+
+  /** Starts a level with a fixed loadout and skips straight to the first shot. Equipped artifacts come from the profile. */
+  const load = (levelId: number, loadout?: string[]): BattleView => {
+    for (const s of game.scene.getScenes(true)) if (s.scene.key !== 'boot') game.scene.stop(s.scene.key);
+    game.scene.start('game', { level: levelId, loadout: loadout ?? Array.from({ length: 4 }, () => 'w_militia_blade') });
+    tick(4);
+    battleScene().skipToReady();
+    tick(20);
+    return snapshot(battle());
+  };
+
+  const fire = (o: Shot): BattleView => {
+    const b = battle();
+    if (b.state !== 'ready') return snapshot(b);
+    launchFrom(b, o.angleDeg, o.power);
+    if (o.abilityAfterSteps !== undefined) {
+      tick(o.abilityAfterSteps);
+      activateAbility(b);
+    }
+    return snapshot(b);
+  };
+
+  /** Runs until the shot is over (ready for the next, won or lost). */
+  const settle = (maxSteps = 1500): BattleView => {
+    const b = battle();
+    for (let i = 0; i < maxSteps; i++) {
+      tick(1);
+      if (b.state === 'won' || b.state === 'lost') break;
+      if (b.state === 'loading') {
+        skipToReady(b);
+        break;
+      }
+      if (b.state === 'ready') break;
+    }
+    return snapshot(b);
+  };
+
+  const set = (path: string, value: unknown): void => {
+    const b = battle();
+    const parts = path.split('.');
+    let o: any = parts[0] === 'tune' ? b.tune : parts[0] === 'rules' ? b.rules : b;
+    for (const p of parts.slice(1, -1)) o = o[p];
+    o[parts[parts.length - 1]] = value;
+  };
+
+  const give = (o: { coins?: number; unlockAll?: boolean }): void => {
+    if (o.coins) addCoins(o.coins);
+    if (o.unlockAll) {
+      profile.owned.weapons = data.content.weapons.map((w) => w.id);
+      profile.owned.artifacts = data.content.artifacts.map((a) => a.id);
+      for (const c of data.content.consumables) profile.owned.consumables[c.id] = 3;
+      applyDebug();
+    }
+  };
+
+  // ------------------------------------------------------------------ sweeps and a deterministic solver
+
+  const ANGLES = [15, 25, 35, 45, 55, 65, 75];
+  const POWERS = [0.55, 0.7, 0.85, 1];
+  const ABILITY = [undefined, 18, 32, 48];
+
+  /** Plays a list of shots from scratch and returns the final view. Deterministic: same input, same result. */
+  const play = (levelId: number, loadout: string[], shots: Shot[]): BattleView => {
+    load(levelId, loadout);
+    let v = snapshot(battle());
+    for (const s of shots) {
+      fire(s);
+      v = settle();
+      if (v.won || v.lost) break;
+    }
+    return v;
+  };
+
+  /** Every aim on a grid, one shot, from a fresh level. Returns the best by monsters killed. */
+  const sweep = (levelId: number, loadout: string[]): { best: Shot & { kills: number; score: number }; oneShotWins: number; tried: number; unreachable: string[] } => {
+    let best: Shot & { kills: number; score: number } = { angleDeg: 0, power: 0, kills: -1, score: 0 };
+    let oneShotWins = 0;
+    let tried = 0;
+    load(levelId, loadout);
+    const names = battle().ents.filter((e) => e.kind === 'monster').map((e, i) => `${e.type}#${i}@${Math.round(e.body.position.x)}`);
+    const total = names.length;
+    const everDead = new Set<number>();
+    for (const a of ANGLES) for (const p of POWERS) for (const ab of ABILITY) {
+      const v = play(levelId, loadout, [{ angleDeg: a, power: p, abilityAfterSteps: ab }]);
+      battle().ents.filter((e) => e.kind === 'monster').forEach((e, i) => { if (e.dead) everDead.add(i); });
+      const kills = total - v.monsters;
+      tried++;
+      if (v.won) oneShotWins++;
+      if (kills > best.kills || (kills === best.kills && v.score > best.score)) best = { angleDeg: a, power: p, abilityAfterSteps: ab, kills, score: v.score };
+    }
+    return { best, oneShotWins, tried, unreachable: names.filter((_, i) => !everDead.has(i)) };
+  };
+
+  /** Greedy solver: for each shot, replay the prefix plus every candidate aim and keep the one that leaves the fewest monsters. */
+  let solverState: { levelId: number; loadout: string[]; shots: Shot[]; result?: BattleView } | null = null;
+  const solveStep = (levelId: number, loadout: string[], budgetMs = 30000): { done: boolean; shots: Shot[]; view?: BattleView } => {
+    if (!solverState || solverState.levelId !== levelId) solverState = { levelId, loadout, shots: [] };
+    const st = solverState;
+    const t0 = performance.now();
+    while (st.shots.length < loadout.length && performance.now() - t0 < budgetMs) {
+      let best: { shot: Shot; monsters: number; score: number; won: boolean } | null = null;
+      for (const a of ANGLES) for (const p of POWERS) for (const ab of ABILITY) {
+        const shot: Shot = { angleDeg: a, power: p, abilityAfterSteps: ab };
+        const v = play(levelId, loadout, [...st.shots, shot]);
+        // an escaped runner is not a kill: count it against the shot so the solver does not trade the limit for monsters
+        // runners that are still alive are urgent: they are on a clock, everything else waits
+        const runnersAlive = (v.ents ?? []).filter((e) => !e.dead && e.type === 'skeleton_runner').length;
+        const left = v.monsters + 1.5 * runnersAlive + 0.75 * v.escaped;
+        const better = !best || (v.won && !best.won) || (v.won === best.won && (left < best.monsters || (left === best.monsters && v.score > best.score)));
+        if (better && !v.lost) best = { shot, monsters: left, score: v.score, won: v.won };
+      }
+      if (!best) break;
+      st.shots.push(best.shot);
+      st.result = play(levelId, loadout, st.shots);
+      if (st.result.won || st.result.lost) break;
+    }
+    const done = !!st.result && (st.result.won || st.result.lost || st.shots.length >= loadout.length);
+    if (done) solverState = null;
+    return { done, shots: st.shots.slice(), view: st.result };
+  };
+
+  (window as any).__mm = {
+    load, fire, run: tick, settle, set, give, play, sweep, solveStep,
+    state: () => snapshot(battle()),
+    profile: () => profile,
   };
 }
