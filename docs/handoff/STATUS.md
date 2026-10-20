@@ -8,9 +8,9 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
 | S1 | Proof of fun + follow-ups + 1.5 | | done | local | 10-21 | queue, zoom, ability button |
-| S2-01 | Split GameScene into target layout | | todo | | | do first; no behaviour change |
-| S2-02 | config.json, data migration, settings merge | S2-01 | todo | | | |
-| S2-03 | Event bus, BattleCtx, RNG, platform adapter | S2-01 | todo | | | |
+| S2-01 | Split GameScene into target layout | | doing | claude | 10-21 | do first; no behaviour change |
+| S2-02 | config.json, data migration, settings merge | S2-01 | doing | claude | 10-21 | |
+| S2-03 | Event bus, BattleCtx, RNG, platform adapter | S2-01 | doing | claude | 10-21 | |
 | S2-04 | Test hook + shot sweep | S2-03 | todo | | | cloud session can do this |
 | S2-05 | Cleaver, Staff, Pike | S2-03 | todo | | | |
 | S2-06 | Scattergun, Boomerang, Blast Tube, Scepter | S2-03 | todo | | | |
