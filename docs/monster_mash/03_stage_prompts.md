@@ -4,7 +4,7 @@ Send the next stage only when the previous build runs and is published. Each one
 
 ---
 
-## Stage 1: Proof of fun (target: Oct 21) **DONE, see 06_cloud_review.md for the follow-ups**
+## Stage 1: Proof of fun (target: Oct 21) **DONE (v1.0.0, follow-ups and Stage 1.5 in v1.1.0, see 07_local_reply.md)**
 
 Do Step 0 from the brief if you haven't. Then build the smallest version that is fun to play:
 
@@ -21,11 +21,13 @@ Don't build menus yet. Publish to RUN and tell me the URL. I want to feel the sh
 
 ---
 
-## Stage 2: All weapons and monsters (target: Oct 23)
+## Stage 2: All weapons and monsters (target: Oct 23) **BUILT (v1.2.0), needs phone playtest; boss deferred to Stage 4, see 07_local_reply.md**
 
 Before anything else, do the **Stage 1 follow-ups in `06_cloud_review.md`** (scrolling world, weapon registry, tuning moved to data, audio throttle).
 
 Load `content.json` as data (copy the newest one from `docs/monster_mash/content.json` into `game/public/data/`). Build the other 7 core weapons with distinct launch feel and tap moves, the damage formula with elements, and all 9 monster types, including skeleton runners (path and exit door), goblin bomber chain explosions, the dark elf hexer shield, the imp sine flight and the troll regeneration. Add the combo system and the MASH! banner. Add the loadout picker (4 weapons, order matters). Make 4 levels in Goblin Hills, each with a `worldW` and the camera pan. Level 1 must teach drag and release, level 2 the tap in flight. Run `rundot predeploy` before every deploy.
+
+**Design pass (see `08_design_direction.md`, "Stage 2 art checklist"):** build the beat clock, Mash Sans font, button kit and impact kit first. Redraw the goblin in 3 tones with an Ink outline, then draw the other monsters and the 7 weapons. Add the 3-layer Goblin Hills parallax and the MASH banner that lands on the beat. Judge it by a mid-combo screenshot.
 
 *(End of stage: run it, fix what's broken, publish to RUN, reply with the URL and a 3-line status.)*
 
@@ -35,6 +37,8 @@ Load `content.json` as data (copy the newest one from `docs/monster_mash/content
 
 Title screen with the dancing conga line, map screen with 3 realms, star counts, shop and forge (weapons, artifacts, consumables, upgrades), the 6 artifacts as data-driven modifiers, the 4 consumables, cloud save through `RundotGameAPI.appStorage` (install and read the `rundot-feature-save` skill first; mute state goes there too), and levels 5-8 in Dark Elf Wood. Add the pause menu. Pause audio and physics from `RundotGameAPI.lifecycles.onPause`, not only the browser's visibility event.
 
+**Design pass:** title conga line on the beat, map lit by realm (day, dusk, fire), shop and forge as bevelled sticker panels with before/after numbers, a star-shaped iris transition, Dark Elf Wood dusk palette with cyan sparks. Reuse the Stage 2 button kit; do not invent a second one.
+
 *(End of stage: run it, fix what's broken, publish to RUN, reply with the URL and a 3-line status.)*
 
 ---
@@ -42,6 +46,8 @@ Title screen with the dancing conga line, map screen with 3 realms, star counts,
 ## Stage 4: Boss, finale, Daily (target: Oct 27)
 
 Levels 9-12 in Iron Keep, including the Iron Warlord boss fight with the visor weak point. Then the Daily Mash: a seeded fort generated from the UTC date of `requestTimeAsync()` (never the device clock) with a streak counter and a reward on day 7, a countdown to the next daily, the `leaderboard` (period `daily`, with `rundot/leaderboard.config.json`) and `social.shareLinkAsync` as in section 6 of the brief. Install and read `rundot-feature-daily-rewards` first.
+
+**Design pass:** Iron Keep fire glow (additive sprites under the walls), boss entrance (shake, vignette, name card), and the Daily Mash as a poster card (date, streak, share button). Remove one decoration from each screen before finishing.
 
 *(End of stage: run it, fix what's broken, publish to RUN, reply with the URL and a 3-line status.)*
 
@@ -51,6 +57,8 @@ Levels 9-12 in Iron Keep, including the Iron Warlord boss fight with the visor w
 
 First-time experience hints, victory dance, screen transitions, the second chiptune loop, the Gold Quiver and cosmetic skins as RUN Bits items (`rundot/shop.config.json`, config upload; fall back to disabled UI if it fights us), the rewarded-ad hook (`rundot-feature-ads`, hidden on desktop), the tutorial hints (`rundot-feature-tutorial`), a feel pass (`rundot-polish-feel`), the `?debug=1` mode, performance pass on a phone-sized viewport, CREDITS and README. Playtest every one of the 12 levels start to finish and fix any that can't be won or are trivial. **No new features after this stage.**
 
+**Design pass:** victory dance of ghosts, first-time hints as speech bubbles from a monster, skins that change the sling silhouette, contrast and tap-size audit on a real phone. Sentence-case copy everywhere, same word for the same action.
+
 *(End of stage: run it, fix what's broken, publish to RUN, reply with the URL and a 3-line status.)*
 
 ---
@@ -58,6 +66,8 @@ First-time experience hints, victory dance, screen transitions, the second chipt
 ## Stage 6: Release (target: Oct 30 to Nov 1)
 
 Bug-fix only. Check: first load time, mute persistence, save and reload, resize, tab-away, and a fresh-player run from the title. Write a store-page description (2 sentences, mention monsters on the run and the MASH combo), a list of 4 screenshots to capture, and a short changelog. Deploy the final build, then ask me before running `rundot game set-public` (it submits the game for review). Send me the URL. Then I submit the "Enter the jam" form.
+
+**Design pass:** redraw the 512x512 thumbnail with the block title (the Stage 1 one is a placeholder with an unreadable "MONSTER"), capture 4 screenshots (a combo, a runner level, the boss, the shop), final remove-one-decoration check per screen.
 
 *(End of stage: run it, fix what's broken, publish to RUN, reply with the URL and a 3-line status.)*
 
