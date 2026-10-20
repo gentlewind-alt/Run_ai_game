@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import GameScene, { W, H } from './scenes/GameScene';
+import GameScene, { W, H } from './scenes/BattleScene';
 import BootScene from './scenes/BootScene';
 import LoadoutScene from './scenes/LoadoutScene';
 import './style.css';
 import RundotGameAPI from "@series-inc/rundot-game-sdk/api";
-import { sfx } from './audio';
+import { sfx } from './audio/sfx';
 
 let bootStep1Fired = false;
 

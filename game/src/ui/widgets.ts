@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import { C } from './palette';
-import { text, setText } from './font5x7';
+import { C } from '../art/palette';
+import { text, setText } from '../art/font5x7';
 
 export type BtnKind = 'go' | 'plain' | 'ability' | 'danger';
 

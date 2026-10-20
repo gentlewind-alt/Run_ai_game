@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import type GameScene from './scenes/GameScene';
-import { sfx } from './audio';
-import { C } from './palette';
-import { weaponTexture } from './art';
+import type GameScene from './scenes/BattleScene';
+import { sfx } from './audio/sfx';
+import { C } from './art/palette';
+import { weaponTexture } from './art/textures';
 
 const MatterLib: any = (Phaser.Physics.Matter as any).Matter;
 

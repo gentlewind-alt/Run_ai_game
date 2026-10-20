@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
-import { C } from '../palette';
-import { text, setText, textBlock } from '../font5x7';
-import { pixText } from '../pix';
-import { makeButton } from '../ui';
-import { weaponTexture } from '../art';
+import { C } from '../art/palette';
+import { text, setText, textBlock } from '../art/font5x7';
+import { pixText } from '../art/pix';
+import { makeButton } from '../ui/widgets';
+import { weaponTexture } from '../art/textures';
 import { WEAPONS } from '../weapons';
-import { LOADOUT_SIZE, isUnlocked, progress } from '../progress';
-import { W, H } from './GameScene';
-import { sfx } from '../audio';
+import { LOADOUT_SIZE, isUnlocked, progress } from '../core/profile';
+import { W, H } from './BattleScene';
+import { sfx } from '../audio/sfx';
 
 const SHORT: Record<string, string> = {
   w_militia_blade: 'Blade', w_iron_cleaver: 'Cleaver', w_ashwood_staff: 'Staff', w_scrapheap_scattergun: 'Scatter',

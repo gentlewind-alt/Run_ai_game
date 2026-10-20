@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
 import RundotGameAPI from '@series-inc/rundot-game-sdk/api';
-import { C, css } from '../palette';
-import { pixText } from '../pix';
-import { text, setText, textBlock } from '../font5x7';
-import { makeButton, type Btn } from '../ui';
-import { sfx } from '../audio';
+import { C, css } from '../art/palette';
+import { pixText } from '../art/pix';
+import { text, setText, textBlock } from '../art/font5x7';
+import { makeButton, type Btn } from '../ui/widgets';
+import { sfx } from '../audio/sfx';
 import { WEAPONS, type Actor, type Proj, type WeaponImpl } from '../weapons';
-import { MONSTER_ART } from '../art';
-import { beatBob, beatPulse, msToNextBeat } from '../beat';
-import { MAX_LEVEL, progress } from '../progress';
+import { MONSTER_ART } from '../art/textures';
+import { beatBob, beatPulse, msToNextBeat } from '../audio/beat';
+import { MAX_LEVEL, progress } from '../core/profile';
 
 export const W = 216;
 export const H = 384;

@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import { registerArt } from '../art';
-import { gridTexture } from '../pix';
-import { SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../sprites';
-import { debugLevel, progress } from '../progress';
+import { registerArt } from '../art/textures';
+import { gridTexture } from '../art/pix';
+import { SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../art/sprites';
+import { debugLevel, progress } from '../core/profile';
 
 /** Loads data once, creates every shared texture, then hands over to the loadout picker. */
 export default class BootScene extends Phaser.Scene {
