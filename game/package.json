@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "_build": "tsc && vite build",
+    "_build": "node scripts/check-data.mjs && tsc && vite build",
     "build": "npm run _build",
     "build:bundled": "cross-env RUNDOT_GAME_DISABLE_EMBEDDED_LIBS=true npm run _build",
     "preview": "vite preview",
-    "deploy": "npm run build && rundot deploy"
+    "deploy": "npm run build && rundot deploy",
+    "check:data": "node scripts/check-data.mjs",
+    "check": "node scripts/check-data.mjs && tsc --noEmit"
   },
   "keywords": [
     "phaser",

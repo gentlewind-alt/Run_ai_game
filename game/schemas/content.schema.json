@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "content.schema.json",
+  "title": "Monster Mash content (balance and entities)",
+  "description": "Numbers live here, behaviour lives in code registries keyed by id. Keys starting with _ are comments. Add a new field here before using it in data. See architecture/DATA.md.",
+  "type": "object",
+  "required": ["tuning", "damageRules", "weapons", "monsters", "materials", "realms"],
+  "patternProperties": { "^_": {} },
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "tuning": { "$ref": "#/$defs/tuning" },
+    "damageRules": { "$ref": "#/$defs/damageRules" },
+    "economy": { "$ref": "#/$defs/economy" },
+    "weapons": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/weapon" } },
+    "stretchWeapons": { "type": "array", "items": { "$ref": "#/$defs/weaponStub" } },
+    "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "stretchArtifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "consumables": { "type": "array", "items": { "$ref": "#/$defs/consumable" } },
+    "monsters": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/monster" } },
+    "materials": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/material" } },
+    "realms": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/realm" } },
+    "cosmetics": { "type": "array", "items": { "$ref": "#/$defs/cosmetic" } }
+  },
+  "$defs": {
+    "element": { "enum": ["physical", "hellfire", "radiant", "void"] },
+    "elementOrNull": { "enum": ["physical", "hellfire", "radiant", "void", null] },
+    "rarity": { "enum": ["common", "uncommon", "rare", "epic", "legendary", "mythic"] },
+    "params": {
+      "description": "Per-item numbers read by the item's behaviour code (durations in steps at 60 Hz, distances in world px).",
+      "type": "object",
+      "additionalProperties": { "type": ["number", "string", "boolean"] }
+    },
+    "tuning": {
+      "type": "object",
+      "required": ["launchK", "maxPull", "debrisK", "hitStopFrames", "coins"],
+      "patternProperties": { "^_": {} },
+      "additionalProperties": { "type": ["number", "object"] },
+      "properties": {
+        "launchK": { "type": "number", "exclusiveMinimum": 0, "maximum": 2, "description": "Pull px to launch px/step." },
+        "maxPull": { "type": "number", "minimum": 5, "maximum": 120 },
+        "debrisK": { "type": "number", "minimum": 0 },
+        "hitStopFrames": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "sawSteps": { "type": "integer", "minimum": 0, "description": "Deprecated: move to w_militia_blade.params.sawSteps." },
+        "stretchSoundMs": { "type": "number", "minimum": 0 },
+        "coins": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0 },
+          "description": "Coins per kill, keyed by monster or material id, or 'monster' as the fallback for monsters."
+        }
+      }
+    },
+    "damageRules": {
+      "type": "object",
+      "required": ["globalScale", "elementWeak", "elementResist", "upgradeDamagePerStep", "upgradeCostMultiplier", "maxUpgradeLevel", "comboWindowSeconds", "comboMultipliers"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "globalScale": { "type": "number", "exclusiveMinimum": 0 },
+        "elementWeak": { "type": "number", "minimum": 1 },
+        "elementResist": { "type": "number", "minimum": 0, "maximum": 1 },
+        "upgradeDamagePerStep": { "type": "number", "minimum": 0 },
+        "upgradeCostMultiplier": { "type": "number", "minimum": 1 },
+        "upgradeBaseCost": { "type": "number", "minimum": 0 },
+        "maxUpgradeLevel": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "impactFactorMin": { "type": "number", "minimum": 0 },
+        "impactFactorMax": { "type": "number", "minimum": 0 },
+        "comboWindowSeconds": { "type": "number", "exclusiveMinimum": 0 },
+        "comboMultipliers": { "type": "array", "minItems": 1, "items": { "type": "number", "minimum": 0 } }
+      }
+    },
+    "economy": {
+      "type": "object",
+      "patternProperties": { "^_": {} },
+      "additionalProperties": { "type": ["number", "object", "array"] },
+      "properties": {
+        "leftoverShotCoins": { "type": "number", "minimum": 0 },
+        "starScoreFactor": { "type": "number", "minimum": 0 },
+        "dailyStreakRewardDay": { "type": "integer", "minimum": 1 },
+        "dailyStreakRewardCoins": { "type": "number", "minimum": 0 }
+      }
+    },
+    "weapon": {
+      "type": "object",
+      "required": ["id", "name", "archetype", "element", "baseDamage"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "id": { "type": "string", "pattern": "^w_[a-z0-9_]+$" },
+        "name": { "type": "string", "minLength": 1 },
+        "archetype": { "type": "string" },
+        "element": { "$ref": "#/$defs/element" },
+        "rarity": { "$ref": "#/$defs/rarity" },
+        "baseDamage": { "type": "number", "exclusiveMinimum": 0 },
+        "unlock": { "type": "string", "description": "'start' or 'level N'." , "pattern": "^(start|level [0-9]+)$" },
+        "price": { "type": "number", "minimum": 0 },
+        "launch": { "type": "string" },
+        "tap": { "type": "string" },
+        "enabled": { "type": "boolean", "description": "false hides it from shop and loadout without deleting it." },
+        "physics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "radius": { "type": "number", "exclusiveMinimum": 0 },
+            "density": { "type": "number", "exclusiveMinimum": 0 },
+            "spin": { "type": "number" },
+            "restitution": { "type": "number", "minimum": 0, "maximum": 1 },
+            "frictionAir": { "type": "number", "minimum": 0 }
+          }
+        },
+        "ability": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": { "enum": ["button", "impact", "both", "none"] },
+            "label": { "type": "string", "maxLength": 6 }
+          }
+        },
+        "params": { "$ref": "#/$defs/params" }
+      }
+    },
+    "weaponStub": {
+      "type": "object",
+      "required": ["id", "name"],
+      "additionalProperties": true,
+      "properties": { "id": { "type": "string", "pattern": "^w_[a-z0-9_]+$" } }
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "name", "effect"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "id": { "type": "string", "pattern": "^r_[a-z0-9_]+$" },
+        "name": { "type": "string" },
+        "rarity": { "$ref": "#/$defs/rarity" },
+        "price": { "type": "number", "minimum": 0 },
+        "effect": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "params": { "$ref": "#/$defs/params" }
+      }
+    },
+    "consumable": {
+      "type": "object",
+      "required": ["id", "name", "effect"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "id": { "type": "string", "pattern": "^c_[a-z0-9_]+$" },
+        "name": { "type": "string" },
+        "price": { "type": "number", "minimum": 0 },
+        "effect": { "type": "string" },
+        "targeted": { "type": "boolean", "description": "true if the player taps a spot or monster to use it." },
+        "enabled": { "type": "boolean" },
+        "params": { "$ref": "#/$defs/params" }
+      }
+    },
+    "monster": {
+      "type": "object",
+      "required": ["id", "name", "hp", "weak", "resist"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "name": { "type": "string" },
+        "hp": { "type": "number", "exclusiveMinimum": 0 },
+        "weak": { "$ref": "#/$defs/elementOrNull" },
+        "resist": { "$ref": "#/$defs/elementOrNull" },
+        "behavior": { "type": "string", "description": "Behaviour registry key; defaults to the monster id, then 'basic'." },
+        "size": {
+          "type": "object", "additionalProperties": false, "required": ["w", "h"],
+          "properties": { "w": { "type": "number", "exclusiveMinimum": 0 }, "h": { "type": "number", "exclusiveMinimum": 0 } }
+        },
+        "density": { "type": "number", "exclusiveMinimum": 0 },
+        "coins": { "type": "number", "minimum": 0 },
+        "score": { "type": "number", "minimum": 0 },
+        "boss": { "type": "boolean" },
+        "note": { "type": "string" },
+        "params": { "$ref": "#/$defs/params" }
+      }
+    },
+    "material": {
+      "type": "object",
+      "required": ["id", "hp", "weak"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "hp": { "type": "number", "exclusiveMinimum": 0 },
+        "weak": { "$ref": "#/$defs/elementOrNull" },
+        "density": { "type": "number", "exclusiveMinimum": 0 },
+        "friction": { "type": "number", "minimum": 0 },
+        "coins": { "type": "number", "minimum": 0 },
+        "score": { "type": "number", "minimum": 0 },
+        "note": { "type": "string" }
+      }
+    },
+    "realm": {
+      "type": "object",
+      "required": ["id", "levels", "monsters"],
+      "additionalProperties": false,
+      "patternProperties": { "^_": {} },
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "name": { "type": "string" },
+        "levels": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 1 } },
+        "monsters": { "type": "array", "items": { "type": "string" } },
+        "palette": { "type": "string" },
+        "background": { "type": "string", "description": "Background generator key in src/art." },
+        "music": { "type": "string" }
+      }
+    },
+    "cosmetic": {
+      "type": "object",
+      "required": ["id", "name", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^s_[a-z0-9_]+$" },
+        "name": { "type": "string" },
+        "kind": { "enum": ["sling_skin", "trail", "banner"] },
+        "priceCoins": { "type": "number", "minimum": 0 },
+        "priceBits": { "type": "number", "minimum": 0, "description": "RUN Bits price; needs the iap feature and a shop.config.json entry." },
+        "reward": { "type": "string", "description": "e.g. 'daily_streak_7'." }
+      }
+    }
+  }
+}

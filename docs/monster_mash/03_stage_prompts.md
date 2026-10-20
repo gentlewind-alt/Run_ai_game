@@ -1,5 +1,7 @@
 # Stage prompts: send these one at a time, after the master brief
 
+> **Superseded by `architecture/STAGES.md`** (task cards with acceptance checks). This file is kept for history. Agents should work from the blueprint and `docs/handoff/STATUS.md`.
+
 Send the next stage only when the previous build runs and is published. Each one ends with the same instruction, which is already written at the bottom of each prompt.
 
 ---
@@ -25,7 +27,7 @@ Don't build menus yet. Publish to RUN and tell me the URL. I want to feel the sh
 
 Before anything else, do the **Stage 1 follow-ups in `06_cloud_review.md`** (scrolling world, weapon registry, tuning moved to data, audio throttle).
 
-Load `content.json` as data (copy the newest one from `docs/monster_mash/content.json` into `game/public/data/`). Build the other 7 core weapons with distinct launch feel and tap moves, the damage formula with elements, and all 9 monster types, including skeleton runners (path and exit door), goblin bomber chain explosions, the dark elf hexer shield, the imp sine flight and the troll regeneration. Add the combo system and the MASH! banner. Add the loadout picker (4 weapons, order matters). Make 4 levels in Goblin Hills, each with a `worldW` and the camera pan. Level 1 must teach drag and release, level 2 the tap in flight. Run `rundot predeploy` before every deploy.
+Load `content.json` as data (`game/public/data/content.json` is the only copy). Build the other 7 core weapons with distinct launch feel and tap moves, the damage formula with elements, and all 9 monster types, including skeleton runners (path and exit door), goblin bomber chain explosions, the dark elf hexer shield, the imp sine flight and the troll regeneration. Add the combo system and the MASH! banner. Add the loadout picker (4 weapons, order matters). Make 4 levels in Goblin Hills, each with a `worldW` and the camera pan. Level 1 must teach drag and release, level 2 the tap in flight. Run `rundot predeploy` before every deploy.
 
 **Design pass (see `08_design_direction.md`, "Stage 2 art checklist"):** build the beat clock, Mash Sans font, button kit and impact kit first. Redraw the goblin in 3 tones with an Ink outline, then draw the other monsters and the 7 weapons. Add the 3-layer Goblin Hills parallax and the MASH banner that lands on the beat. Judge it by a mid-combo screenshot.
 

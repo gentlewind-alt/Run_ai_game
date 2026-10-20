@@ -62,7 +62,7 @@ Name on screen: **MONSTER MASH: Slingshot Siege**.
 
 ## 5. Content
 
-All numbers are in the attached `content.json`. Treat it as the source of truth, and load it as data. **Don't hard-code the numbers in the game code.**
+All numbers are in `game/public/data/content.json` (the only copy; the docs copy was removed). Treat it as the source of truth, and load it as data. **Don't hard-code the numbers in the game code.**
 
 - **8 core weapons**, each with a distinct launch feel and tap move: Militia Blade, Iron Cleaver, Ashwood Staff, Scrapheap Scattergun, Hunters Pike, Hunters Boomerang, Blast Tube, Horned Scepter. Build these first. The 4 stretch weapons come only if everything else is done.
 - **6 artifacts**: pick 1 to equip (2 after level 8). Gale Eye, Echo Stone, Lodestone Bracer, Analyst Lens, Stormcaller Torc, Gamblers Charm. They change how shots behave. **Echo Stone** is the signature artifact: a ghost copy of your shot follows 0.3 s behind.
