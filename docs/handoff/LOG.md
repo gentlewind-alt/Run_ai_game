@@ -5,6 +5,7 @@ Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit ol
 ## 2026-10-21 · local · Stage 3 built (S3-01..S3-07), ready for review
 - **What:** Title/Map/Results/Loadout/Shop scenes with star iris flow; versioned save with corrupt-save recovery; shop + forge; six artifacts and four consumables (tray, targeting taps, stock taken from the save); pause menu (button, Esc, host pause); terrain polylines; Dark Elf Wood levels 5-8; test hook `window.__mm` with sweep/solver.
 - **Checks:** `npm run check` (0 errors) and `npm run build` pass. Pause freezes steps; mindflash and bomb targeting verified in the browser. Level difficulty re-sweep and each artifact effect still to be measured.
+- **Deployed:** v1.5.0 private, same share URL as v1.4.0 (`https://w.run/u/83DTzRcGtCh99lCAuhBn/private?k=cebc9f99a0b809b71bddcc00d5907563`).
 - **Notes:** all six artifacts live in `src/content/artifacts/index.ts` (blueprint wanted one file each). Level difficulty on L5-8 was eased once; re-run the solver before tuning scoreTargets.
 
 ## 2026-10-21 02:40 · local · Deployed the S2-01..03 refactor as v1.4.0
