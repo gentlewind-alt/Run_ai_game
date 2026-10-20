@@ -10,6 +10,7 @@
   "properties": {
     "$schema": { "type": "string" },
     "version": { "type": "integer", "minimum": 1 },
+    "levels": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "description": "Ids of the level files in data/levels/ that the game loads. check-data keeps it in step with the folder." },
     "display": {
       "type": "object", "additionalProperties": false,
       "properties": {
@@ -47,7 +48,14 @@
         "followShot": { "type": "boolean" },
         "minZoom": { "type": "number", "exclusiveMinimum": 0 },
         "maxZoom": { "type": "number", "exclusiveMinimum": 0 },
-        "panMs": { "type": "integer", "minimum": 0 }
+        "panMs": { "type": "integer", "minimum": 0 },
+        "introMs": { "type": "integer", "minimum": 0, "description": "Intro pan out to the fort, ms." },
+        "introHoldMs": { "type": "integer", "minimum": 0 },
+        "toggleMs": { "type": "integer", "minimum": 0, "description": "View-all button tween." },
+        "followLead": { "type": "number", "description": "Camera leads the shot by this fraction of the screen width." },
+        "followEase": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "groundFrac": { "type": "number", "description": "Ground height on screen when zoomed in (0..1 of the height)." },
+        "zoomOutRise": { "type": "number", "description": "How far the ground rises when zoomed out." }
       }
     },
     "features": {

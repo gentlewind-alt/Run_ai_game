@@ -41,7 +41,6 @@
         "maxPull": { "type": "number", "minimum": 5, "maximum": 120 },
         "debrisK": { "type": "number", "minimum": 0 },
         "hitStopFrames": { "type": "integer", "minimum": 0, "maximum": 20 },
-        "sawSteps": { "type": "integer", "minimum": 0, "description": "Deprecated: move to w_militia_blade.params.sawSteps." },
         "stretchSoundMs": { "type": "number", "minimum": 0 },
         "coins": {
           "type": "object",
@@ -104,6 +103,9 @@
             "radius": { "type": "number", "exclusiveMinimum": 0 },
             "density": { "type": "number", "exclusiveMinimum": 0 },
             "spin": { "type": "number" },
+            "gravity": { "type": "number", "minimum": 0, "description": "1 = normal, below 1 floaty, above 1 drops fast, 0 none." },
+            "align": { "type": "boolean", "description": "Rotate to face the direction of travel." },
+            "friction": { "type": "number", "minimum": 0 },
             "restitution": { "type": "number", "minimum": 0, "maximum": 1 },
             "frictionAir": { "type": "number", "minimum": 0 }
           }

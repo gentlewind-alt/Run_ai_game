@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/config.schema.json",
+  "version": 1,
+  "_note": "Engine and product settings. Balance numbers live in content.json. The viewport is the constant W x H (216 x 384) in src/config/constants.ts.",
+  "levels": [1, 2, 3, 4, 99],
+  "display": { "pixelArt": true, "maxParticles": 90 },
+  "world": { "groundY": 320, "slingX": 56, "slingY": 262 },
+  "physics": { "stepHz": 60, "gravityY": 1, "positionIterations": 8, "velocityIterations": 6, "enableSleeping": true, "maxStepsPerFrame": 3 },
+  "camera": {
+    "introPan": true, "followShot": true, "maxZoom": 1.8,
+    "introMs": 900, "introHoldMs": 450, "toggleMs": 260,
+    "followLead": 0.15, "followEase": 0.1, "groundFrac": 0.83, "zoomOutRise": 0.4
+  },
+  "features": {
+    "map": false, "shop": false, "forge": false, "artifacts": false, "consumables": false,
+    "combo": true, "daily": false, "leaderboard": false, "share": false,
+    "ads": false, "iap": false, "tutorial": false, "music": false, "zoom": true
+  },
+  "debug": { "urlOverrides": true, "testHook": true }
+}

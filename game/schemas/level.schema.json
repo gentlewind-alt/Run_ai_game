@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "level.schema.json",
   "title": "Monster Mash level",
-  "description": "One file per level: public/data/levels/level_NN.json (legacy: public/data/level_NN.json). World units are px in the 216x384 viewport space; y grows downward; ground top is config.world.groundY (320).",
+  "description": "One file per level: public/data/levels/level_NN.json. World units are px in the 216x384 viewport space; y grows downward; ground top is config.world.groundY (320).",
   "type": "object",
   "required": ["id", "name", "worldW", "blocks", "monsters"],
   "additionalProperties": false,
@@ -15,7 +15,6 @@
     "kind": { "enum": ["siege", "runner", "boss", "daily", "tutorial"] },
     "worldW": { "type": "integer", "minimum": 216, "maximum": 1296 },
     "shots": { "type": "integer", "minimum": 1, "maximum": 8, "description": "Number of shots when the player brings their own loadout." },
-    "weapon": { "type": "string", "pattern": "^w_", "description": "Deprecated (Stage 1). Use loadout." },
     "loadout": {
       "description": "Fixed weapon queue for this level (tutorials, boss). Omit to use the player's loadout.",
       "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^w_" }

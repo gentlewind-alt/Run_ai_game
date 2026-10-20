@@ -8,121 +8,615 @@
     "maxPull": 30,
     "debrisK": 9,
     "blockDebrisFactor": 0.5,
-    "fallThreshold": 2.0,
+    "fallThreshold": 2,
     "fallK": 6,
     "hitStopFrames": 3,
-    "sawSteps": 36,
     "stretchSoundMs": 80,
-    "coins": { "monster": 10, "wood": 2, "stone": 4 },
-    "points": { "goblin_grunt": 100, "goblin_bomber": 150, "skeleton_runner": 120, "dark_elf_archer": 150, "dark_elf_hexer": 180, "imp": 120, "orc_brute": 300, "troll": 400, "wood": 10, "stone": 20 },
+    "coins": {
+      "monster": 10,
+      "wood": 2,
+      "stone": 4
+    },
+    "points": {
+      "goblin_grunt": 100,
+      "goblin_bomber": 150,
+      "skeleton_runner": 120,
+      "dark_elf_archer": 150,
+      "dark_elf_hexer": 180,
+      "imp": 120,
+      "orc_brute": 300,
+      "troll": 400,
+      "wood": 10,
+      "stone": 20
+    },
     "shotBonusPoints": 300,
-    "shotBonusCoins": 25
+    "shotBonusCoins": 25,
+    "aimGrabRadius": 44,
+    "minPull": 8,
+    "debrisMinSpeed": 1.5,
+    "projMinSpeed": 1.2,
+    "hitCooldownSteps": 5,
+    "minImpactDamage": 2,
+    "impactBase": 0.5,
+    "explosionFalloff": 0.65,
+    "explosionPush": 3.2,
+    "explosionHitStop": 4,
+    "mashHitStop": 6,
+    "status": {
+      "burnDamage": 2,
+      "burnTickSteps": 12,
+      "curseMult": 1.15,
+      "slowSpeedMult": 0.5
+    },
+    "flow": {
+      "projectileSlowSteps": 40,
+      "projectileMaxSteps": 360,
+      "settleCalmSpeed": 0.35,
+      "settleMinSteps": 25,
+      "settleMaxSteps": 180,
+      "winDelaySteps": 45,
+      "homeSettleSteps": 45
+    },
+    "mashAt": 3
   },
   "damageRules": {
-    "globalScale": 2.0,
+    "globalScale": 2,
     "elementWeak": 1.5,
     "elementResist": 0.6,
     "upgradeDamagePerStep": 0.08,
     "upgradeCostMultiplier": 1.6,
     "maxUpgradeLevel": 5,
-    "comboWindowSeconds": 2.0,
-    "comboMultipliers": [1, 1, 1.5, 2, 2.5, 3]
+    "comboWindowSeconds": 2,
+    "comboMultipliers": [
+      1,
+      1,
+      1.5,
+      2,
+      2.5,
+      3
+    ],
+    "impactFactorMin": 0.5,
+    "impactFactorMax": 1.5
   },
   "weapons": [
     {
-      "id": "w_militia_blade", "name": "Militia Blade", "archetype": "sword", "element": "physical",
-      "rarity": "common", "baseDamage": 14.0, "unlock": "start", "price": 0,
+      "id": "w_militia_blade",
+      "name": "Militia Blade",
+      "archetype": "sword",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 14,
+      "unlock": "start",
+      "price": 0,
       "launch": "Spins end over end. Light and fast.",
-      "tap": "Spin-saw: hits everything touching it for 0.6 s."
+      "tap": "Spin-saw: hits everything touching it for 0.6 s.",
+      "physics": {
+        "radius": 4,
+        "density": 0.03,
+        "spin": 0.28,
+        "gravity": 1
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Saw"
+      },
+      "params": {
+        "sawSteps": 36,
+        "sawSpin": 0.7,
+        "sawSpeed": 5.5,
+        "tickSteps": 6,
+        "tickRadius": 11,
+        "tickMult": 0.22
+      }
     },
     {
-      "id": "w_iron_cleaver", "name": "Iron Cleaver", "archetype": "greatsword", "element": "physical",
-      "rarity": "common", "baseDamage": 26.0, "unlock": "level 2", "price": 100,
+      "id": "w_iron_cleaver",
+      "name": "Iron Cleaver",
+      "archetype": "greatsword",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 26,
+      "unlock": "level 2",
+      "price": 100,
       "launch": "Heavy, short flat arc. Drops fast.",
-      "tap": "Dive-slam straight down with a shockwave; knocks down Minions."
+      "tap": "Dive-slam straight down with a shockwave; knocks down Minions.",
+      "physics": {
+        "radius": 5,
+        "density": 0.05,
+        "spin": 0.12,
+        "gravity": 1.35
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Slam"
+      },
+      "params": {
+        "slamSpeed": 9,
+        "slamHold": 7,
+        "slamDrag": 0.9,
+        "shockRingRadius": 30,
+        "shockRadius": 24,
+        "shockMult": 0.8,
+        "shockPushRadius": 38,
+        "shockPush": 2.4
+      }
     },
     {
-      "id": "w_ashwood_staff", "name": "Ashwood Staff", "archetype": "staff", "element": "radiant",
-      "rarity": "common", "baseDamage": 11.0, "unlock": "level 3", "price": 150,
+      "id": "w_ashwood_staff",
+      "name": "Ashwood Staff",
+      "archetype": "staff",
+      "element": "radiant",
+      "rarity": "common",
+      "baseDamage": 11,
+      "unlock": "level 3",
+      "price": 150,
       "launch": "Light, floaty.",
-      "tap": "Fires a homing bolt at the nearest monster; every 5th bolt you ever fire splits in two."
+      "tap": "Fires a homing bolt at the nearest monster; every 5th bolt you ever fire splits in two.",
+      "physics": {
+        "radius": 4,
+        "density": 0.008,
+        "spin": 0.1,
+        "gravity": 0.55
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Bolt"
+      },
+      "params": {
+        "boltMult": 1.4,
+        "boltSpeed": 5.5,
+        "boltTurn": 0.18,
+        "boltHitRadius": 8,
+        "boltSteps": 240,
+        "splitEvery": 5,
+        "boltLaunchVy": -2
+      }
     },
     {
-      "id": "w_scrapheap_scattergun", "name": "Scrapheap Scattergun", "archetype": "shotgun", "element": "physical",
-      "rarity": "common", "baseDamage": 30.0, "unlock": "level 4", "price": 200,
+      "id": "w_scrapheap_scattergun",
+      "name": "Scrapheap Scattergun",
+      "archetype": "shotgun",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 30,
+      "unlock": "level 4",
+      "price": 200,
       "launch": "Medium weight, clean arc.",
-      "tap": "Bursts into 5 pellets in a cone; each pellet rolls burn, slow or knockback."
+      "tap": "Bursts into 5 pellets in a cone; each pellet rolls burn, slow or knockback.",
+      "physics": {
+        "radius": 4,
+        "density": 0.02,
+        "spin": 0.2,
+        "gravity": 1
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Blast"
+      },
+      "params": {
+        "pellets": 5,
+        "coneStep": 0.16,
+        "pelletSpeedMult": 1.15,
+        "minSpeed": 4,
+        "pelletRadius": 2,
+        "pelletDensity": 0.01,
+        "pelletMult": 0.35,
+        "statusSteps": 180,
+        "knockMult": 0.8,
+        "knockLift": 1
+      }
     },
     {
-      "id": "w_hunters_pike", "name": "Hunters Pike", "archetype": "spear", "element": "physical",
-      "rarity": "uncommon", "baseDamage": 19.1, "unlock": "level 5", "price": 250,
+      "id": "w_hunters_pike",
+      "name": "Hunters Pike",
+      "archetype": "spear",
+      "element": "physical",
+      "rarity": "uncommon",
+      "baseDamage": 19.1,
+      "unlock": "level 5",
+      "price": 250,
       "launch": "Flies point-first, flat and fast.",
-      "tap": "Speeds up and pierces through up to 3 wood blocks or monsters."
+      "tap": "Speeds up and pierces through up to 3 wood blocks or monsters.",
+      "physics": {
+        "radius": 3,
+        "density": 0.02,
+        "spin": 0,
+        "gravity": 0.8,
+        "align": true
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Pierce"
+      },
+      "params": {
+        "boost": 1.6,
+        "pierce": 3
+      }
     },
     {
-      "id": "w_hunters_boomerang", "name": "Hunters Boomerang", "archetype": "chakram", "element": "physical",
-      "rarity": "common", "baseDamage": 15.0, "unlock": "level 6", "price": 300,
+      "id": "w_hunters_boomerang",
+      "name": "Hunters Boomerang",
+      "archetype": "chakram",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 15,
+      "unlock": "level 6",
+      "price": 300,
       "launch": "Flies out, then curves back on its own.",
-      "tap": "Recall early. The return pass deals double damage. Hitting a Hexer interrupts its shield."
+      "tap": "Recall early. The return pass deals double damage. Hitting a Hexer interrupts its shield.",
+      "physics": {
+        "radius": 4,
+        "density": 0.02,
+        "spin": 0.5,
+        "gravity": 0.5
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Recall"
+      },
+      "params": {
+        "returnAfter": 36,
+        "returnMult": 2,
+        "returnSpeed": 6,
+        "returnTurn": 0.08,
+        "catchRadius": 10
+      }
     },
     {
-      "id": "w_blast_tube", "name": "Blast Tube", "archetype": "launcher", "element": "physical",
-      "rarity": "common", "baseDamage": 35.0, "unlock": "level 7", "price": 350,
+      "id": "w_blast_tube",
+      "name": "Blast Tube",
+      "archetype": "launcher",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 35,
+      "unlock": "level 7",
+      "price": 350,
       "launch": "A heavy shell on a high lob.",
-      "tap": "Detonate in the air: wide blast, damage falls off with distance."
+      "tap": "Detonate in the air: wide blast, damage falls off with distance.",
+      "physics": {
+        "radius": 5,
+        "density": 0.04,
+        "spin": 0.05,
+        "gravity": 1
+      },
+      "ability": {
+        "mode": "both",
+        "label": "Boom"
+      },
+      "params": {
+        "radius": 36,
+        "mult": 1
+      }
     },
     {
-      "id": "w_horned_scepter", "name": "Horned Scepter", "archetype": "staff", "element": "hellfire",
-      "rarity": "uncommon", "baseDamage": 11.7, "unlock": "level 8", "price": 400,
+      "id": "w_horned_scepter",
+      "name": "Horned Scepter",
+      "archetype": "staff",
+      "element": "hellfire",
+      "rarity": "uncommon",
+      "baseDamage": 11.7,
+      "unlock": "level 8",
+      "price": 400,
       "launch": "Light, trails ember particles.",
-      "tap": "Curse burst: monsters in a small radius take +15% damage from everything for 4 s."
+      "tap": "Curse burst: monsters in a small radius take +15% damage from everything for 4 s.",
+      "physics": {
+        "radius": 4,
+        "density": 0.006,
+        "spin": 0.2,
+        "gravity": 0.6
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Curse"
+      },
+      "params": {
+        "radius": 34,
+        "curseSteps": 240
+      }
     }
   ],
   "stretchWeapons": [
-    {"id": "w_spore_mortar", "name": "Spore Mortar", "element": "void", "baseDamage": 12.0, "tap": "Pops into a poison cloud lasting 3 s."},
-    {"id": "w_frost_discs", "name": "Frost Discs", "element": "physical", "baseDamage": 15.9, "tap": "Shatters into frost; slows monsters 30%."},
-    {"id": "w_reapers_hook", "name": "Reapers Hook", "element": "hellfire", "baseDamage": 18.0, "tap": "360 sweep; each kill refunds half a shot."},
-    {"id": "w_gatebreaker_ram", "name": "Gatebreaker Ram", "element": "physical", "baseDamage": 29.1, "tap": "Breaks stone and iron blocks in one hit. Boss reward for the Iron Warlord."}
+    {
+      "id": "w_spore_mortar",
+      "name": "Spore Mortar",
+      "element": "void",
+      "baseDamage": 12,
+      "tap": "Pops into a poison cloud lasting 3 s."
+    },
+    {
+      "id": "w_frost_discs",
+      "name": "Frost Discs",
+      "element": "physical",
+      "baseDamage": 15.9,
+      "tap": "Shatters into frost; slows monsters 30%."
+    },
+    {
+      "id": "w_reapers_hook",
+      "name": "Reapers Hook",
+      "element": "hellfire",
+      "baseDamage": 18,
+      "tap": "360 sweep; each kill refunds half a shot."
+    },
+    {
+      "id": "w_gatebreaker_ram",
+      "name": "Gatebreaker Ram",
+      "element": "physical",
+      "baseDamage": 29.1,
+      "tap": "Breaks stone and iron blocks in one hit. Boss reward for the Iron Warlord."
+    }
   ],
   "artifacts": [
-    {"id": "r_gale_eye", "name": "Gale Eye", "rarity": "rare", "price": 300, "effect": "Tap also releases a wind burst that knocks monsters and light blocks back."},
-    {"id": "r_echo_stone", "name": "Echo Stone", "rarity": "rare", "price": 350, "effect": "A ghost copy of your shot follows 0.3 s behind and deals 50% damage. This is the game's Echo."},
-    {"id": "r_lodestone_bracer", "name": "Lodestone Bracer", "rarity": "rare", "price": 250, "effect": "Coins and pickups near your shot's path are pulled to it."},
-    {"id": "r_analyst_lens", "name": "Analyst Lens", "rarity": "rare", "price": 250, "effect": "Longer aim preview; shows each monster's HP and weak element."},
-    {"id": "r_stormcaller_torc", "name": "Stormcaller Torc", "rarity": "epic", "price": 500, "effect": "Every 5th hit calls a radiant lightning bolt on the target."},
-    {"id": "r_gamblers_charm", "name": "Gamblers Charm", "rarity": "rare", "price": 300, "effect": "+20% coins; crits drop extra coins."}
+    {
+      "id": "r_gale_eye",
+      "name": "Gale Eye",
+      "rarity": "rare",
+      "price": 300,
+      "effect": "Tap also releases a wind burst that knocks monsters and light blocks back."
+    },
+    {
+      "id": "r_echo_stone",
+      "name": "Echo Stone",
+      "rarity": "rare",
+      "price": 350,
+      "effect": "A ghost copy of your shot follows 0.3 s behind and deals 50% damage. This is the game's Echo."
+    },
+    {
+      "id": "r_lodestone_bracer",
+      "name": "Lodestone Bracer",
+      "rarity": "rare",
+      "price": 250,
+      "effect": "Coins and pickups near your shot's path are pulled to it."
+    },
+    {
+      "id": "r_analyst_lens",
+      "name": "Analyst Lens",
+      "rarity": "rare",
+      "price": 250,
+      "effect": "Longer aim preview; shows each monster's HP and weak element."
+    },
+    {
+      "id": "r_stormcaller_torc",
+      "name": "Stormcaller Torc",
+      "rarity": "epic",
+      "price": 500,
+      "effect": "Every 5th hit calls a radiant lightning bolt on the target."
+    },
+    {
+      "id": "r_gamblers_charm",
+      "name": "Gamblers Charm",
+      "rarity": "rare",
+      "price": 300,
+      "effect": "+20% coins; crits drop extra coins."
+    }
   ],
   "stretchArtifacts": [
-    {"id": "r_echoing_charm", "name": "Echoing Charm", "effect": "15% chance a shot fires twice."},
-    {"id": "r_rimecrown", "name": "Rimecrown", "effect": "All hits chill (15% slow)."},
-    {"id": "r_twinring", "name": "Twinring", "effect": "Tap again within 5 s to teleport back to the rift left at launch."}
+    {
+      "id": "r_echoing_charm",
+      "name": "Echoing Charm",
+      "effect": "15% chance a shot fires twice."
+    },
+    {
+      "id": "r_rimecrown",
+      "name": "Rimecrown",
+      "effect": "All hits chill (15% slow)."
+    },
+    {
+      "id": "r_twinring",
+      "name": "Twinring",
+      "effect": "Tap again within 5 s to teleport back to the rift left at launch."
+    }
   ],
   "consumables": [
-    {"id": "c_jury_rigged_bomb", "name": "Jury-Rigged Bomb", "price": 60, "effect": "Drop a huge blast on a tapped spot. 1 in 5 fizzle (funny, keep it)."},
-    {"id": "c_prime_serum", "name": "Prime Serum", "price": 150, "effect": "Next 2 shots: +20% damage."},
-    {"id": "c_mindflash", "name": "Mindflash", "price": 150, "effect": "Stuns every monster for 1 s. Stops runners mid-sprint."},
-    {"id": "c_chainward_talisman", "name": "Chainward Talisman", "price": 150, "effect": "Chains one monster in place for 3 s (1 s on bosses)."}
+    {
+      "id": "c_jury_rigged_bomb",
+      "name": "Jury-Rigged Bomb",
+      "price": 60,
+      "effect": "Drop a huge blast on a tapped spot. 1 in 5 fizzle (funny, keep it)."
+    },
+    {
+      "id": "c_prime_serum",
+      "name": "Prime Serum",
+      "price": 150,
+      "effect": "Next 2 shots: +20% damage."
+    },
+    {
+      "id": "c_mindflash",
+      "name": "Mindflash",
+      "price": 150,
+      "effect": "Stuns every monster for 1 s. Stops runners mid-sprint."
+    },
+    {
+      "id": "c_chainward_talisman",
+      "name": "Chainward Talisman",
+      "price": 150,
+      "effect": "Chains one monster in place for 3 s (1 s on bosses)."
+    }
   ],
   "monsters": [
-    {"id": "goblin_grunt", "name": "Goblin Grunt", "hp": 30, "weak": "hellfire", "resist": null, "note": "Basic. Idle dance."},
-    {"id": "goblin_bomber", "name": "Goblin Bomber", "hp": 25, "weak": "hellfire", "resist": null, "note": "Explodes on death and damages nearby blocks and monsters."},
-    {"id": "dark_elf_archer", "name": "Dark Elf Archer", "hp": 35, "weak": "radiant", "resist": "void", "note": "Stands on towers. Fires arrows at your launcher pad (visual only, no player damage)."},
-    {"id": "dark_elf_hexer", "name": "Dark Elf Hexer", "hp": 40, "weak": "radiant", "resist": "void", "note": "Raises a shield on neighbours that absorbs 50 damage."},
-    {"id": "orc_brute", "name": "Orc Brute", "hp": 120, "weak": "void", "resist": "physical", "note": "Heavy. Needs blast or a heavy weapon."},
-    {"id": "skeleton_runner", "name": "Skeleton Runner", "hp": 20, "weak": "radiant", "resist": "physical", "note": "RUNS across the level toward an exit door. Counts as an escape if it gets there."},
-    {"id": "imp", "name": "Imp", "hp": 15, "weak": "radiant", "resist": "hellfire", "note": "Flies in a sine path. Hard to hit."},
-    {"id": "troll", "name": "Troll", "hp": 160, "weak": "hellfire", "resist": null, "note": "Regenerates 5 HP/s unless burning."},
-    {"id": "iron_warlord", "name": "Iron Warlord", "hp": 600, "weak": "void", "resist": "physical", "note": "Boss. Visor weak point takes 2x. Throws boulders at your side of the map, which only adds visual shake."}
+    {
+      "id": "goblin_grunt",
+      "name": "Goblin Grunt",
+      "hp": 30,
+      "weak": "hellfire",
+      "resist": null,
+      "note": "Basic. Idle dance."
+    },
+    {
+      "id": "goblin_bomber",
+      "name": "Goblin Bomber",
+      "hp": 25,
+      "weak": "hellfire",
+      "resist": null,
+      "note": "Explodes on death and damages nearby blocks and monsters.",
+      "behavior": "bomber",
+      "params": {
+        "blastRadius": 32,
+        "blastDamage": 45
+      }
+    },
+    {
+      "id": "dark_elf_archer",
+      "name": "Dark Elf Archer",
+      "hp": 35,
+      "weak": "radiant",
+      "resist": "void",
+      "note": "Stands on towers. Fires arrows at your launcher pad (visual only, no player damage).",
+      "behavior": "archer",
+      "params": {
+        "fireMin": 120,
+        "fireSpread": 120,
+        "fireEvery": 220,
+        "arrowSteps": 55
+      }
+    },
+    {
+      "id": "dark_elf_hexer",
+      "name": "Dark Elf Hexer",
+      "hp": 40,
+      "weak": "radiant",
+      "resist": "void",
+      "note": "Raises a shield on neighbours that absorbs 50 damage.",
+      "behavior": "hexer",
+      "params": {
+        "shield": 50,
+        "radius": 48
+      }
+    },
+    {
+      "id": "orc_brute",
+      "name": "Orc Brute",
+      "hp": 120,
+      "weak": "void",
+      "resist": "physical",
+      "note": "Heavy. Needs blast or a heavy weapon.",
+      "density": 0.003
+    },
+    {
+      "id": "skeleton_runner",
+      "name": "Skeleton Runner",
+      "hp": 20,
+      "weak": "radiant",
+      "resist": "physical",
+      "note": "RUNS across the level toward an exit door. Counts as an escape if it gets there.",
+      "behavior": "runner",
+      "params": {
+        "speed": 0.8,
+        "selfMoving": 1
+      }
+    },
+    {
+      "id": "imp",
+      "name": "Imp",
+      "hp": 15,
+      "weak": "radiant",
+      "resist": "hellfire",
+      "note": "Flies in a sine path. Hard to hit.",
+      "behavior": "imp",
+      "density": 0.0008,
+      "params": {
+        "ampX": 22,
+        "ampY": 10,
+        "freqX": 1.5,
+        "freqY": 3,
+        "selfMoving": 1
+      }
+    },
+    {
+      "id": "troll",
+      "name": "Troll",
+      "hp": 160,
+      "weak": "hellfire",
+      "resist": null,
+      "note": "Regenerates 5 HP/s unless burning.",
+      "behavior": "troll",
+      "density": 0.003,
+      "params": {
+        "regenPerSec": 5
+      }
+    },
+    {
+      "id": "iron_warlord",
+      "name": "Iron Warlord",
+      "hp": 600,
+      "weak": "void",
+      "resist": "physical",
+      "note": "Boss. Visor weak point takes 2x. Throws boulders at your side of the map, which only adds visual shake."
+    }
   ],
   "materials": [
-    {"id": "wood", "hp": 40, "weak": "hellfire"},
-    {"id": "stone", "hp": 120, "weak": "physical", "note": "heavy weapons only"},
-    {"id": "iron", "hp": 250, "weak": "void"},
-    {"id": "crystal", "hp": 30, "weak": "radiant", "note": "shatters and drops coins"}
+    {
+      "id": "wood",
+      "hp": 40,
+      "weak": "hellfire",
+      "density": 0.001
+    },
+    {
+      "id": "stone",
+      "hp": 120,
+      "weak": "physical",
+      "note": "heavy weapons only",
+      "density": 0.0022
+    },
+    {
+      "id": "iron",
+      "hp": 250,
+      "weak": "void"
+    },
+    {
+      "id": "crystal",
+      "hp": 30,
+      "weak": "radiant",
+      "note": "shatters and drops coins"
+    }
   ],
   "realms": [
-    {"id": "goblin_hills", "levels": [1, 2, 3, 4], "monsters": ["goblin_grunt", "goblin_bomber", "skeleton_runner"], "palette": "green and warm brown"},
-    {"id": "dark_elf_wood", "levels": [5, 6, 7, 8], "monsters": ["dark_elf_archer", "dark_elf_hexer", "imp", "goblin_grunt"], "palette": "purple, teal, deep blue"},
-    {"id": "iron_keep", "levels": [9, 10, 11, 12], "monsters": ["orc_brute", "troll", "skeleton_runner", "dark_elf_hexer", "iron_warlord"], "palette": "grey, red, orange glow"}
+    {
+      "id": "goblin_hills",
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "monsters": [
+        "goblin_grunt",
+        "goblin_bomber",
+        "skeleton_runner"
+      ],
+      "palette": "green and warm brown"
+    },
+    {
+      "id": "dark_elf_wood",
+      "levels": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "monsters": [
+        "dark_elf_archer",
+        "dark_elf_hexer",
+        "imp",
+        "goblin_grunt"
+      ],
+      "palette": "purple, teal, deep blue"
+    },
+    {
+      "id": "iron_keep",
+      "levels": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "monsters": [
+        "orc_brute",
+        "troll",
+        "skeleton_runner",
+        "dark_elf_hexer",
+        "iron_warlord"
+      ],
+      "palette": "grey, red, orange glow"
+    }
   ]
 }

@@ -93,7 +93,7 @@ if (existsSync(configPath)) {
   const config = readJson(configPath);
   if (config && configSchema) validate(configSchema, config, '$', configSchema, 'config.json');
 } else {
-  warn('config.json', 'not present yet (created in card S2-02)');
+  err('config.json', 'missing');
 }
 
 const levelFiles = [];
@@ -140,12 +140,11 @@ if (content) {
     levelIds.set(lv.id, file);
     const num = Number(/level_(\d+)/.exec(path)[1]);
     if (lv.id !== num) err(file, `id ${lv.id} does not match file number ${num}`);
-    if (lv.id > 0 && !realmLevels.includes(lv.id)) warn(file, `level ${lv.id} is not listed in any realm`);
-    if (lv.weapon !== undefined) warn(file, '"weapon" is deprecated, use "loadout": ["w_..."]');
-    for (const wid of [lv.weapon, ...(lv.loadout ?? [])].filter(Boolean)) {
+    if (lv.id > 0 && lv.id < 90 && !realmLevels.includes(lv.id)) warn(file, `level ${lv.id} is not listed in any realm`);
+    for (const wid of lv.loadout ?? []) {
       if (!weaponIds.has(wid)) err(file, `unknown weapon "${wid}"`);
     }
-    if (!lv.loadout && !lv.weapon && !lv.shots) err(file, 'needs "loadout" or "shots"');
+    if (!lv.loadout && !lv.shots) err(file, 'needs "loadout" or "shots"');
     (lv.blocks ?? []).forEach((b, i) => {
       if (!materialIds.has(b.m)) err(file, `blocks[${i}]: unknown material "${b.m}"`);
       if (b.x - b.w / 2 < 0 || b.x + b.w / 2 > lv.worldW) err(file, `blocks[${i}] is outside worldW ${lv.worldW}`);
@@ -158,6 +157,9 @@ if (content) {
     if (runners && !lv.exit) err(file, 'has skeleton_runner monsters but no "exit"');
     if (lv.escapeLimit !== undefined && lv.escapeLimit >= runners && runners) warn(file, 'escapeLimit >= number of runners, so runners can never lose the level');
   }
+  const listed = new Set(readJson(configPath)?.levels ?? []);
+  for (const id of levelIds.keys()) if (!listed.has(id)) err('config.json', `levels[] does not list level ${id}, which has a file in data/levels/`);
+  for (const id of listed) if (!levelIds.has(id)) err('config.json', `levels[] lists level ${id}, which has no file in data/levels/`);
   for (const n of realmLevels) {
     if (!levelIds.has(n)) warn('content.json', `realm level ${n} has no level_${String(n).padStart(2, '0')}.json yet`);
   }
