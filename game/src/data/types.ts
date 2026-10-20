@@ -9,6 +9,10 @@ export interface WeaponDef {
   element: Element;
   baseDamage: number;
   unlock: string;
+  price?: number;
+  enabled?: boolean;
+  launch?: string;
+  tap?: string;
   physics: { radius: number; density: number; spin: number; gravity?: number; align?: boolean; friction?: number; restitution?: number; frictionAir?: number };
   ability: { mode: AbilityMode; label: string };
   params: Params;
@@ -74,15 +78,35 @@ export interface DamageRules {
   impactFactorMax: number;
   comboWindowSeconds: number;
   comboMultipliers: number[];
+  upgradeDamagePerStep: number;
+  upgradeCostMultiplier: number;
+  upgradeBaseCost: number;
+  maxUpgradeLevel: number;
 }
+
+export interface Economy {
+  startCoins: number;
+  replayCoinFactor: number;
+  lossCoinFactor: number;
+  maxConsumableStack: number;
+  loadoutSize: number;
+  artifactSlots: number;
+  secondArtifactAfterLevel: number;
+}
+
+export interface ArtifactDef { id: string; name: string; rarity?: string; price: number; effect: string; params?: Record<string, number | string | boolean> }
+export interface ConsumableDef { id: string; name: string; price: number; effect: string; targeted?: boolean; params?: Record<string, number | string | boolean> }
 
 export interface Content {
   tuning: Tuning;
   damageRules: DamageRules;
+  economy: Economy;
+  artifacts: ArtifactDef[];
+  consumables: ConsumableDef[];
   weapons: WeaponDef[];
   monsters: MonsterDef[];
   materials: MaterialDef[];
-  realms: { id: string; levels: number[] }[];
+  realms: { id: string; name?: string; levels: number[]; monsters: string[]; background?: string }[];
 }
 
 export interface LevelMonster { t: string; x: number; y: number; dir?: number; speed?: number; delay?: number; path?: number[][] }

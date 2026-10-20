@@ -5,6 +5,7 @@ import { setText, text, textBlock } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { msToNextBeat } from '../audio/beat';
 import { H, W } from '../config/constants';
+import { setMuted, profile } from '../core/profile';
 import { platform } from '../platform';
 import { makeButton, type Btn } from './widgets';
 import type { BattleUi } from '../battle/state';
@@ -16,23 +17,11 @@ export interface HudHost {
   inUi<T>(fn: () => T): T;
 }
 
-export interface Results {
-  won: boolean;
-  why: 'shots' | 'escaped';
-  stars: number;
-  score: number;
-  coins: number;
-  target: number;
-  primary: { label: string; action: () => void };
-  secondary: { label: string; action: () => void };
-}
-
 export interface Hud {
   ui: BattleUi;
   setCoins(n: number): void;
   setScore(n: number): void;
   mash(mult: number): void;
-  results(r: Results): void;
 }
 
 export function createHud(
@@ -58,10 +47,10 @@ export function createHud(
     muteBtn.setInteractive(new Phaser.Geom.Rectangle(-6, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
     muteBtn.on('pointerdown', () => {
       sfx.unlock();
-      sfx.setMuted(!sfx.muted);
+      setMuted(!profile.settings.muted);
+      sfx.setMuted(profile.settings.muted);
       muteBtn.setTexture(sfx.muted ? 'spk_off' : 'spk_on');
       sfx.click();
-      void platform.storage.set('muted', sfx.muted ? '1' : '0');
     });
     if (o.showZoom) {
       const zoomBtn = scene.add.image(W - 30, top + 4, 'zoom_icon').setDepth(10);
@@ -77,11 +66,6 @@ export function createHud(
       hint.forEach((h) => h.setDepth(10));
       scene.tweens.add({ targets: hint, alpha: 0, delay: 5200, duration: 700, onComplete: () => hint.forEach((h) => h.destroy()) });
     }
-  });
-
-  void platform.storage.get('muted').then((v) => {
-    sfx.setMuted(v === '1');
-    muteBtn?.setTexture(sfx.muted ? 'spk_off' : 'spk_on');
   });
 
   const ui: BattleUi = {
@@ -122,21 +106,5 @@ export function createHud(
       });
     },
 
-    results(r) {
-      host.inUi(() => {
-        scene.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.68).setDepth(20);
-        text(scene, W / 2, 96, r.won ? 'Level cleared!' : r.why === 'escaped' ? 'Too many got away' : 'Out of shots', r.won ? C('4') : C('3'), 2, C('0')).setDepth(21);
-        if (r.won) {
-          for (let i = 0; i < 3; i++) scene.add.image(W / 2 - 22 + i * 22, 140, i < r.stars ? 'star_on' : 'star_off').setScale(2).setDepth(21);
-          text(scene, W / 2, 168, `Score ${r.score}`, C('c')).setDepth(21);
-          if (r.target > 0) text(scene, W / 2, 182, r.stars === 3 ? 'Score target beaten' : `Beat ${r.target} for the third star`, C('d')).setDepth(21);
-          text(scene, W / 2, 198, `Coins ${r.coins}`, C('4')).setDepth(21);
-        } else {
-          text(scene, W / 2, 138, r.why === 'escaped' ? 'Stop the runners early.' : 'Try a different order.', C('c')).setDepth(21);
-        }
-        makeButton(scene, W / 2, 238, 120, 30, r.primary.label, 'go', () => { sfx.click(); r.primary.action(); }, 22);
-        makeButton(scene, W / 2, 276, 120, 26, r.secondary.label, 'plain', () => { sfx.click(); r.secondary.action(); }, 22);
-      });
-    },
   };
 }

@@ -76,7 +76,8 @@
       3
     ],
     "impactFactorMin": 0.5,
-    "impactFactorMax": 1.5
+    "impactFactorMax": 1.5,
+    "upgradeBaseCost": 50
   },
   "weapons": [
     {
@@ -583,7 +584,9 @@
         "goblin_bomber",
         "skeleton_runner"
       ],
-      "palette": "green and warm brown"
+      "palette": "green and warm brown",
+      "name": "Goblin Hills",
+      "background": "hills"
     },
     {
       "id": "dark_elf_wood",
@@ -599,7 +602,9 @@
         "imp",
         "goblin_grunt"
       ],
-      "palette": "purple, teal, deep blue"
+      "palette": "purple, teal, deep blue",
+      "name": "Dark Elf Wood",
+      "background": "wood"
     },
     {
       "id": "iron_keep",
@@ -616,7 +621,19 @@
         "dark_elf_hexer",
         "iron_warlord"
       ],
-      "palette": "grey, red, orange glow"
+      "palette": "grey, red, orange glow",
+      "name": "Iron Keep",
+      "background": "keep"
     }
-  ]
+  ],
+  "economy": {
+    "_note": "Coins and slots. Replays pay less so grinding level 1 is not the plan.",
+    "startCoins": 0,
+    "replayCoinFactor": 0.4,
+    "lossCoinFactor": 0.25,
+    "maxConsumableStack": 5,
+    "loadoutSize": 4,
+    "artifactSlots": 1,
+    "secondArtifactAfterLevel": 8
+  }
 }

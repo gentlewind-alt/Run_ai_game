@@ -13,7 +13,7 @@ export interface GameEvents {
   'coins:gained': { amount: number; total: number };
   'score:changed': { score: number; delta: number };
   'level:won': { levelId: number; stars: number; score: number; coins: number; shotsLeft: number };
-  'level:lost': { levelId: number; reason: 'shots' | 'escaped' };
+  'level:lost': { levelId: number; reason: 'shots' | 'escaped'; score: number; coins: number };
   'profile:changed': { field: string };
 }
 

@@ -4,8 +4,8 @@ import { createBattle, buildBattle, startBattle } from '../battle/setup';
 import { update } from '../battle/loop';
 import { activateAbility, skipToReady } from '../battle/sling';
 import type { BattleState } from '../battle/state';
-import { MAX_LEVEL } from '../core/profile';
 import { events } from '../core/events';
+import { irisOpen } from '../core/flow';
 import { snapshot } from '../debug/testHook';
 import { createHud, type Hud } from '../ui/hud';
 
@@ -44,6 +44,7 @@ export default class BattleScene extends Phaser.Scene {
     b.ui = this.hud.ui;
     this.wireHud(b);
     startBattle(b);
+    irisOpen(this, (fn) => b.inUi(fn));
 
     if ((import.meta as any).env?.DEV) (window as any).__scene = this;
   }
@@ -52,20 +53,9 @@ export default class BattleScene extends Phaser.Scene {
     events.on('coins:gained', (e) => this.hud.setCoins(e.total));
     events.on('score:changed', (e) => this.hud.setScore(e.score));
     events.on('combo', (e) => this.hud.mash(e.mult));
-    const restart = (): void => { this.scene.restart({ level: this.levelId, loadout: b.loadout }); };
     const results = (won: boolean, why: 'shots' | 'escaped', stars: number): void => {
-      const next = won && this.levelId < MAX_LEVEL;
-      this.hud.results({
-        won, why, stars, score: b.score, coins: b.coins, target: b.level.scoreTarget ?? 0,
-        primary: {
-          label: won ? (next ? 'Next level' : 'Play again') : 'Try again',
-          action: won ? () => this.scene.start('loadout', { level: next ? this.levelId + 1 : 1 }) : restart,
-        },
-        secondary: {
-          label: won ? 'Replay' : 'Change loadout',
-          action: won ? restart : () => this.scene.start('loadout', { level: this.levelId }),
-        },
-      });
+      this.scene.pause();
+      this.scene.launch('results', { levelId: this.levelId, won, why, stars, score: b.score, target: b.level.scoreTarget ?? 0, loadout: b.loadout });
     };
     events.on('level:won', (e) => results(true, 'shots', e.stars));
     events.on('level:lost', (e) => results(false, e.reason, 0));

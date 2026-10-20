@@ -1,104 +1,147 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { text, setText, textBlock } from '../art/font5x7';
+import { text, textBlock } from '../art/font5x7';
+import { iconKey } from '../art/icons';
 import { pixText } from '../art/pix';
-import { makeButton } from '../ui/widgets';
 import { weaponTexture } from '../art/textures';
-import { data } from '../data/load';
-import { levelDef } from '../data/lookup';
-import { LOADOUT_SIZE, isUnlocked, progress } from '../core/profile';
-import { W, H } from '../config/constants';
 import { sfx } from '../audio/sfx';
+import { W, H } from '../config/constants';
+import { goTo, irisOpen } from '../core/flow';
+import { artifactSlots, consumableCount, loadoutSize, owns, profile, setArtifacts, setLoadout, upgradeMult } from '../core/profile';
+import { data } from '../data/load';
+import { levelDef, shortWeaponName } from '../data/lookup';
+import { makeButton, panel } from '../ui/widgets';
 
-const SHORT: Record<string, string> = {
-  w_militia_blade: 'Blade', w_iron_cleaver: 'Cleaver', w_ashwood_staff: 'Staff', w_scrapheap_scattergun: 'Scatter',
-  w_hunters_pike: 'Pike', w_hunters_boomerang: 'Boomerang', w_blast_tube: 'Blast tube', w_horned_scepter: 'Scepter',
-};
-
-/** Pick 4 weapons, in order, before each level. Tap a card to add it to the next free slot; tap a slot to clear it. */
+/** Before each level: pick weapons in firing order, one artifact (two after level 8), and see your items. */
 export default class LoadoutScene extends Phaser.Scene {
   private level = 1;
   private slots: (string | null)[] = [];
   private slotImgs: Phaser.GameObjects.Image[] = [];
-  private slotBoxes: Phaser.GameObjects.Rectangle[] = [];
-  private go?: ReturnType<typeof makeButton>;
-  private status!: Phaser.GameObjects.Image;
+  private artifactBoxes: { id: string; box: Phaser.GameObjects.Rectangle }[] = [];
+  private equipped: string[] = [];
+  private info: Phaser.GameObjects.Image[] = [];
+  private goBtn?: ReturnType<typeof makeButton>;
 
   constructor() {
     super('loadout');
   }
 
-  init(data: { level: number }): void {
-    this.level = data.level ?? progress.level;
-    progress.level = this.level;
-    progress.reached = Math.max(progress.reached, this.level);
+  init(d: { level: number }): void {
+    this.level = d.level ?? 1;
   }
 
   create(): void {
-    const content = data.content;
+    this.slotImgs = [];
+    this.artifactBoxes = [];
+    this.info = [];
     const lvl = levelDef(this.level);
-    this.cameras.main.setBackgroundColor(C('f'));
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    text(this, W / 2, 12, `Level ${this.level}: ${lvl.name}`, C('4'), 1, C('0'));
+    textBlock(this, W / 2, 26, lvl.hints?.[0] ?? '', C('d'), 200);
 
-    text(this, W / 2, 16, `Level ${this.level}: ${lvl.name}`, C('4'), 1, C('0'));
-    this.status = text(this, W / 2, 30, 'Pick 4 weapons. Order matters.', C('c'));
-
-    // weapon cards, two columns
-    const owned: any[] = content.weapons.filter((w: any) => isUnlocked(w.unlock));
-    content.weapons.forEach((w: any, i: number) => {
-      const col = i % 2;
-      const row = Math.floor(i / 2);
-      const x = 6 + col * 105;
-      const y = 44 + row * 46;
-      const ok = isUnlocked(w.unlock);
-      const card = this.add.rectangle(x + 49, y + 20, 98, 42, ok ? C('8') : C('0')).setStrokeStyle(1, ok ? C('e') : C('f'));
-      this.add.image(x + 18, y + 20, weaponTexture(w.id)).setScale(2).setAlpha(ok ? 1 : 0.35);
-      text(this, x + 58, y + 9, SHORT[w.id] ?? w.name, ok ? C('c') : C('e'));
-      if (ok) {
-        this.add.image(x + 37, y + 31, `el_${w.element}`);
-        pixText(this, x + 45, y + 31, String(Math.round(w.baseDamage)), C('4')).setOrigin(0, 0.5);
-        text(this, x + 93, y + 31, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5);
-        card.setInteractive();
-        card.on('pointerdown', () => {
-          sfx.unlock();
-          this.add_(w.id);
-        });
-      } else {
-        text(this, x + 58, y + 30, w.unlock.replace('level', 'Level'), C('e'));
-      }
+    // owned weapons, two columns
+    const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
+    owned.forEach((w, i) => {
+      const x = 6 + (i % 2) * 105;
+      const y = 42 + Math.floor(i / 2) * 39;
+      panel(this, x, y, 99, 36, '8', '9', 'f', 1);
+      this.add.image(x + 18, y + 18, weaponTexture(w.id)).setScale(2).setDepth(2);
+      text(this, x + 36, y + 10, shortWeaponName(w.id, w.name), C('c')).setOrigin(0, 0.5).setDepth(2);
+      this.add.image(x + 40, y + 26, `el_${w.element}`).setDepth(2);
+      pixText(this, x + 48, y + 26, String(Math.round(w.baseDamage * upgradeMult(w.id))), C('4')).setOrigin(0, 0.5).setDepth(2);
+      text(this, x + 94, y + 26, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5).setDepth(2);
+      const hit = this.add.rectangle(x + 49, y + 18, 99, 36, 0xffffff, 0).setDepth(3).setInteractive();
+      hit.on('pointerdown', () => { sfx.unlock(); this.addToSlot(w.id); this.describe(w.id); });
     });
 
+    this.describe(null);
+
     // slots
-    for (let i = 0; i < LOADOUT_SIZE; i++) {
-      const sx = 30 + i * 52;
-      const box = this.add.rectangle(sx, 254, 40, 40, C('0')).setStrokeStyle(1, C('d'));
-      box.setInteractive();
-      box.on('pointerdown', () => {
-        sfx.click();
-        this.slots[i] = null;
-        this.refresh();
-      });
-      this.slotBoxes.push(box);
-      this.slotImgs.push(this.add.image(sx, 254, 'px').setVisible(false).setScale(2));
-      pixText(this, sx - 15, 238, String(i + 1), C('4'));
+    const n = loadoutSize();
+    const gap = Math.min(44, (W - 12) / n);
+    for (let i = 0; i < n; i++) {
+      const sx = W / 2 + (i - (n - 1) / 2) * gap;
+      const box = this.add.rectangle(sx, 270, 36, 36, C('0')).setStrokeStyle(1, C('d')).setInteractive();
+      box.on('pointerdown', () => { sfx.click(); this.slots[i] = null; this.refresh(); });
+      this.slotImgs.push(this.add.image(sx, 270, 'px').setVisible(false).setScale(2));
+      pixText(this, sx - 14, 256, String(i + 1), C('4'));
     }
-    text(this, W / 2, 284, 'Tap a slot to clear it', C('d'));
 
-    // prefill from the last loadout, else the best owned weapons in order
-    const last = progress.loadout.filter((id) => owned.some((w) => w.id === id));
-    this.slots = Array.from({ length: LOADOUT_SIZE }, (_, i) => last[i] ?? owned[i % owned.length].id);
+    // prefill from the last loadout, else the owned weapons in order
+    const last = profile.equipped.loadout.filter((id) => owns('weapons', id));
+    this.slots = Array.from({ length: n }, (_, i) => last[i] ?? owned[i % owned.length].id);
 
-    this.go = makeButton(this, W / 2, 330, 120, 30, 'Fling!', 'go', () => this.start(), 5);
-    textBlock(this, W / 2, 352, lvl.hints?.[0] ?? '', C('d'), 200);
+    this.artifactRow();
+    this.itemRow();
+
+    makeButton(this, 38, H - 16, 64, 24, 'Back', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
+    this.goBtn = makeButton(this, W - 82, H - 16, 130, 26, 'Fling!', 'go', () => this.start(), 6);
     this.refresh();
+    irisOpen(this);
   }
 
-  private add_(id: string): void {
+  private describe(id: string | null): void {
+    this.info.forEach((i) => i.destroy());
+    this.info = [];
+    if (!id) {
+      this.info.push(text(this, W / 2, 207, 'Tap weapons to fill the slots below.', C('d'), 1, C('0')));
+      return;
+    }
+    const w = data.content.weapons.find((x) => x.id === id)!;
+    this.info.push(text(this, W / 2, 200, w.name, C('4'), 1, C('0')));
+    this.info.push(...textBlock(this, W / 2, 214, w.launch ?? '', C('c'), 200));
+    this.info.push(...textBlock(this, W / 2, 238, w.tap ?? '', C('b'), 200));
+  }
+
+  private addToSlot(id: string): void {
     const i = this.slots.findIndex((s) => s === null);
     if (i < 0) return;
     sfx.click();
     this.slots[i] = id;
     this.refresh();
+  }
+
+  private artifactRow(): void {
+    const arts = data.content.artifacts.filter((a) => owns('artifacts', a.id));
+    const slots = artifactSlots();
+    text(this, 6, 297, slots > 1 ? 'Artifacts' : 'Artifact', C('d')).setOrigin(0, 0.5);
+    if (arts.length === 0) {
+      text(this, 60, 297, 'None yet. The shop sells them.', C('e')).setOrigin(0, 0.5);
+      return;
+    }
+    this.equipped = profile.equipped.artifacts.filter((id) => owns('artifacts', id)).slice(0, slots);
+    arts.forEach((a, i) => {
+      const x = 66 + i * 24;
+      const box = this.add.rectangle(x, 297, 22, 22, C('0')).setStrokeStyle(1, C('d')).setInteractive();
+      this.add.image(x, 297, iconKey(a.id)).setDepth(2);
+      box.on('pointerdown', () => {
+        sfx.click();
+        this.equipped = this.equipped.includes(a.id) ? this.equipped.filter((x2) => x2 !== a.id) : [...this.equipped, a.id].slice(-slots);
+        this.refresh();
+        this.describeArtifact(a.id);
+      });
+      this.artifactBoxes.push({ id: a.id, box });
+    });
+  }
+
+  private describeArtifact(id: string): void {
+    const a = data.content.artifacts.find((x) => x.id === id)!;
+    this.info.forEach((i) => i.destroy());
+    this.info = [text(this, W / 2, 200, a.name, C('4'), 1, C('0')), ...textBlock(this, W / 2, 214, a.effect, C('c'), 200)];
+  }
+
+  private itemRow(): void {
+    const items = data.content.consumables.filter((c) => consumableCount(c.id) > 0);
+    text(this, 6, 322, 'Items', C('d')).setOrigin(0, 0.5);
+    if (items.length === 0) {
+      text(this, 60, 322, 'None yet. One use each per level.', C('e')).setOrigin(0, 0.5);
+      return;
+    }
+    items.forEach((c, i) => {
+      const x = 66 + i * 34;
+      this.add.image(x, 322, iconKey(c.id)).setDepth(2);
+      text(this, x + 9, 322, `x${consumableCount(c.id)}`, C('b')).setOrigin(0, 0.5);
+    });
   }
 
   private refresh(): void {
@@ -107,15 +150,16 @@ export default class LoadoutScene extends Phaser.Scene {
       if (id) img.setTexture(weaponTexture(id)).setVisible(true);
       else img.setVisible(false);
     });
-    const full = this.slots.every((s) => s !== null);
-    this.go?.setEnabled(full);
-    setText(this.status, this, full ? 'Ready. Tap Fling!' : 'Pick 4 weapons. Order matters.', C('c'));
+    for (const a of this.artifactBoxes) a.box.setStrokeStyle(this.equipped.includes(a.id) ? 2 : 1, this.equipped.includes(a.id) ? C('4') : C('d'));
+    this.goBtn?.setEnabled(this.slots.every((s) => s !== null));
   }
 
   private start(): void {
     if (!this.slots.every((s) => s !== null)) return;
-    progress.loadout = this.slots as string[];
+    const loadout = this.slots as string[];
+    setLoadout(loadout);
+    setArtifacts(this.equipped);
     sfx.click();
-    this.scene.start('game', { level: this.level, loadout: progress.loadout });
+    goTo(this, 'game', { level: this.level, loadout });
   }
 }

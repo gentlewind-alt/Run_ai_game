@@ -5,7 +5,8 @@ import { C, css } from './palette';
 
 const SKY_BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 
-export function buildBackground(scene: Phaser.Scene, worldW: number, groundY: number): void {
+export function buildBackground(scene: Phaser.Scene, worldW: number, groundY: number, realm = 'hills'): void {
+  void realm; // 'wood' and 'keep' palettes arrive with the realm 2 and 3 cards
   const WW = worldW;
   const LW = WW + 700;
   const pixels = (key: string, w: number, h: number, f: (x: number, y: number) => string | null): void => {

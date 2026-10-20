@@ -62,3 +62,15 @@ export function makeButton(
     },
   };
 }
+
+/** Bevelled sticker panel with an Ink outline. (x, y) is the top-left corner. */
+export function panel(
+  scene: Phaser.Scene, x: number, y: number, w: number, h: number, face = '8', hl = '9', shade = 'f', depth = 0,
+): Phaser.GameObjects.Graphics {
+  const g = scene.add.graphics().setDepth(depth);
+  g.fillStyle(C('0'), 1).fillRect(x - 1, y - 1, w + 2, h + 2);
+  g.fillStyle(C(shade), 1).fillRect(x, y, w, h);
+  g.fillStyle(C(face), 1).fillRect(x, y, w, h - 2);
+  g.fillStyle(C(hl), 1).fillRect(x, y, w, 1);
+  return g;
+}

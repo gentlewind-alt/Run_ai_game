@@ -2,10 +2,16 @@ import Phaser from 'phaser';
 import BattleScene from './scenes/BattleScene';
 import BootScene from './scenes/BootScene';
 import LoadoutScene from './scenes/LoadoutScene';
+import MapScene from './scenes/MapScene';
+import ResultsScene from './scenes/ResultsScene';
+import ShopScene from './scenes/ShopScene';
+import TitleScene from './scenes/TitleScene';
 import './style.css';
 import { sfx } from './audio/sfx';
 import { H, W } from './config/constants';
 import { getSettings, initSettings } from './config/settings';
+import { applyDebug, wireProfile } from './core/profile';
+import { loadSave, wireSave } from './core/save';
 import { data, loadData } from './data/load';
 import { platform } from './platform';
 
@@ -27,6 +33,10 @@ async function bootstrap(): Promise<void> {
     await platform.init();
     await loadData();
     initSettings(data.config, data.content);
+    wireProfile();
+    wireSave();
+    await loadSave();
+    applyDebug();
     const S = getSettings();
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
@@ -35,7 +45,7 @@ async function bootstrap(): Promise<void> {
       parent: 'app',
       backgroundColor: '#1a1c2c',
       pixelArt: S.display.pixelArt,
-      scene: [BootScene, LoadoutScene, BattleScene],
+      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, BattleScene, ResultsScene],
       physics: {
         default: 'matter',
         matter: {

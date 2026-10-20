@@ -1,6 +1,5 @@
 // Win and lose: all monsters dead, out of shots, too many runners escaped. Only this module moves the battle to won/lost.
 import { sfx } from '../audio/sfx';
-import { progress } from '../core/profile';
 import { atHome } from './camera';
 import { discard } from './damage';
 import { popWord } from './fx';
@@ -29,7 +28,7 @@ export function step(b: BattleState): void {
     finish(b, false, 'escaped');
     return;
   }
-  if (b.state === 'flying' || b.state === 'settling') {
+  if (b.state === 'flying' || b.state === 'settling' || b.state === 'ready' || b.state === 'loading') {
     if (monsters === 0) {
       b.endTimer++;
       if (b.endTimer > F.winDelaySteps) finish(b, true);
@@ -53,10 +52,8 @@ export function finish(b: BattleState, won: boolean, why: 'shots' | 'escaped' = 
   won ? sfx.win() : sfx.lose();
   const { stars, shotsLeft } = finalize(b, won);
   if (won) {
-    progress.reached = Math.max(progress.reached, b.levelId + 1);
-    progress.bestStars[b.levelId] = Math.max(progress.bestStars[b.levelId] ?? 0, stars);
     b.events.emit('level:won', { levelId: b.levelId, stars, score: b.score, coins: b.coins, shotsLeft });
   } else {
-    b.events.emit('level:lost', { levelId: b.levelId, reason: why });
+    b.events.emit('level:lost', { levelId: b.levelId, reason: why, score: b.score, coins: b.coins });
   }
 }

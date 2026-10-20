@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { pixText } from '../art/pix';
 import { sfx } from '../audio/sfx';
+import { upgradeMult } from '../core/profile';
 import { weaponDef } from '../data/lookup';
 import { blockKey } from '../art/textures';
 import { announce, comboMult, registerKill } from './combo';
@@ -18,11 +19,11 @@ function elementMult(b: BattleState, t: Ent, element: string): number {
   return t.weak === element ? d.elementWeak : t.resist === element ? d.elementResist : 1;
 }
 
-/** damage = baseDamage x impact x element x combo x global scale x the shot's own multiplier. */
+/** damage = baseDamage x forge upgrade x impact x element x combo x global scale x the shot's own multiplier. */
 function weaponDamage(b: BattleState, t: Ent, wid: string, impactFactor: number, mul: number): { dmg: number; tag: DamageTag } {
   const w = weaponDef(wid);
   const el = elementMult(b, t, w.element);
-  const dmg = w.baseDamage * impactFactor * el * comboMult(b) * b.rules.globalScale * mul;
+  const dmg = w.baseDamage * upgradeMult(wid) * impactFactor * el * comboMult(b) * b.rules.globalScale * mul;
   return { dmg, tag: el > 1 ? 'weak' : el < 1 ? 'resist' : 'norm' };
 }
 
@@ -232,7 +233,7 @@ export function explode(b: BattleState, x: number, y: number, r: number, base: n
 }
 
 export function blast(b: BattleState, x: number, y: number, r: number, mul: number, wid: string): void {
-  explode(b, x, y, r, weaponDef(wid).baseDamage * mul, null, wid);
+  explode(b, x, y, r, weaponDef(wid).baseDamage * upgradeMult(wid) * mul, null, wid);
 }
 
 /** Push everything near (x, y) away: strength is the velocity change in px/step. */

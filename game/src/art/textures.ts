@@ -5,9 +5,9 @@ import { BLADE, GOBLIN_IDLE } from './sprites';
 
 // ---------------------------------------------------------------- tiny palette-bound drawing kit
 
-type Tone = [string, string, string]; // highlight, base, shade (light from the top left)
+export type Tone = [string, string, string]; // highlight, base, shade (light from the top left)
 
-class Px {
+export class Px {
   g: string[][];
   constructor(public w: number, public h: number) {
     this.g = Array.from({ length: h }, () => Array<string>(w).fill('.'));
@@ -92,7 +92,7 @@ const WOOD: Tone = ['i', 'g', 'h'];
 const STEEL: Tone = ['c', 'd', 'e'];
 const DARK: Tone = ['e', 'm', 'f'];
 
-function addTexture(scene: Phaser.Scene, key: string, p: Px): void {
+export function addTexture(scene: Phaser.Scene, key: string, p: Px): void {
   gridTexture(scene, key, p.rows());
 }
 
