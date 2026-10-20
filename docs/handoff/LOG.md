@@ -2,6 +2,13 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 02:40 · local · Deployed the S2-01..03 refactor as v1.4.0
+- **What:** fast-forwarded to `f9e8af0` (the refactor), then `npm ci`, `npm run check` (0 errors), `npm run build`, `rundot predeploy` (20/20), `rundot deploy`.
+- **Deployed:** v1.4.0 https://w.run/u/83DTzRcGtCh99lCAuhBn/private?k=cebc9f99a0b809b71bddcc00d5907563
+- **Host checks still open (owner, on the private URL):** mute persists across a reload; safe-area offset applies; `game_loaded` appears in analytics. The agent could only run the mock.
+- **Not applied:** the auto-mode soft_deny suggestion for `git push` writes to `*.config.prod.*` (the owner's call).
+- **Questions for owner:** phone test of v1.4.0 (shot feel, pinch, ability button, zoomed-out readability).
+
 ## 2026-10-21 · claude (side session) · S2-01, S2-02, S2-03 in `review`: GameScene split, no behaviour change
 - **What:** one refactor for the three cards, on top of the Stage 2 code (merged from `origin/claude/brave-johnson-j555ql` first).
   - **S2-01 layout:** `GameScene.ts` (1396 lines) is now `scenes/BattleScene.ts` (92 lines) plus `battle/{state,setup,world,loop,sling,camera,damage,status,combo,score,rules,projectiles,fx,matter,ctxImpl,BattleCtx}.ts`, `ui/hud.ts` (HUD, MASH banner, results panel), `art/backgrounds.ts`, block/sling/door textures in `art/textures.ts`, `content/weapons/*.ts` (one file per weapon, `WEAPONS` registry plus `weaponImpl()`, which honours `params.behavior`) and `content/monsters/*.ts` (`MONSTERS` registry keyed by the row's `behavior`, default `basic`). `src/weapons.ts` is gone. Files moved: palette/pix/sprites/art/font5x7 to `art/`, audio/beat to `audio/`, ui to `ui/widgets.ts`, progress to `core/profile.ts`. Scene key is still `'game'`.
