@@ -232,6 +232,34 @@ function troll(hurt: boolean): Px {
   return p.outline();
 }
 
+function warlord(hurt: boolean, open = false): Px {
+  const p = new Px(32, 32);
+  const armor: Tone = ['d', 'e', 'm'];
+  const iron: Tone = ['c', 'd', 'f'];
+  p.rectT(9, 22, 6, 6, DARK); p.rectT(17, 22, 6, 6, DARK);
+  p.rectT(8, 27, 7, 4, STEEL); p.rectT(17, 27, 7, 4, STEEL);
+  p.rectT(5, 11, 22, 12, armor);
+  p.rect(5, 20, 22, 2, 'g'); p.rect(13, 20, 6, 2, '4');
+  p.rect(12, 13, 8, 1, 'c'); p.rect(15, 14, 2, 6, 'd');
+  p.rectT(2, 9, 8, 6, iron); p.rectT(22, 9, 8, 6, iron);
+  p.set(4, 7, 'c'); p.set(27, 7, 'c');
+  p.rectT(1, 14, 5, 10, armor); p.rectT(26, 14, 5, 10, armor);
+  p.rectT(9, 1, 14, 11, armor);
+  p.line(7, 0, 9, 3, '4'); p.line(24, 0, 22, 3, '4');
+  p.set(6, 0, '4'); p.set(25, 0, '4');
+  if (open) {
+    p.rect(11, 3, 10, 4, '0');
+    p.rect(13, 4, 6, 2, hurt ? '1' : '3');
+    p.set(15, 4, '4'); p.set(16, 4, '4');
+    p.rect(10, 2, 12, 1, 'c');
+  } else {
+    p.rect(11, 5, 10, 2, '0');
+    p.line(12, 5, 20, 5, hurt ? '2' : '4');
+    p.set(14, 6, '0'); p.set(17, 6, '0');
+  }
+  return p.outline();
+}
+
 // ---------------------------------------------------------------- weapons (16x16, pointing up)
 
 function weaponSprite(id: string): Px {
@@ -304,6 +332,7 @@ export const MONSTER_ART: Record<string, MonsterArt> = {
   imp: { w: 10, h: 10, size: 16 },
   orc_brute: { w: 22, h: 28, size: 32 },
   troll: { w: 24, h: 28, size: 32 },
+  iron_warlord: { w: 26, h: 30, size: 32 },
 };
 
 export const WEAPON_IDS = [
@@ -333,22 +362,50 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
   for (const b of blocks) {
     for (const cracked of [false, true]) {
       make(blockKey(b.m, b.w, b.h, cracked), b.w, b.h, (g) => {
-        const stone = b.m === 'stone';
+        const m = b.m;
         rect(g, 'v', 0, 0, b.w, b.h);
-        rect(g, stone ? 'k' : 'g', 1, 1, b.w - 2, b.h - 2);
-        rect(g, stone ? 'l' : 'i', 1, 1, b.w - 2, 1);
-        rect(g, stone ? 'l' : 'i', 1, 1, 1, b.h - 2);
-        rect(g, stone ? 'm' : 'h', 1, b.h - 2, b.w - 2, 1);
-        rect(g, stone ? 'm' : 'h', b.w - 2, 1, 1, b.h - 2);
-        if (!stone) {
+        if (m === 'iron') {
+          rect(g, 'e', 1, 1, b.w - 2, b.h - 2);
+          rect(g, 'd', 1, 1, b.w - 2, 1);
+          rect(g, 'd', 1, 1, 1, b.h - 2);
+          rect(g, 'f', 1, b.h - 2, b.w - 2, 1);
+          rect(g, 'f', b.w - 2, 1, 1, b.h - 2);
+          if (b.w >= 10 && b.h >= 10) {
+            rect(g, 'c', 2, 2, 2, 2);
+            rect(g, 'c', b.w - 4, 2, 2, 2);
+            rect(g, 'd', 2, b.h - 4, 2, 2);
+            rect(g, 'd', b.w - 4, b.h - 4, 2, 2);
+          }
+        } else if (m === 'crystal') {
+          rect(g, 'b', 1, 1, b.w - 2, b.h - 2);
+          rect(g, 'c', 1, 1, b.w - 2, 1);
+          rect(g, 'c', 1, 1, 1, b.h - 2);
+          rect(g, 'a', 1, b.h - 2, b.w - 2, 1);
+          rect(g, 'a', b.w - 2, 1, 1, b.h - 2);
+          if (b.w >= 8 && b.h >= 8) {
+            rect(g, 'c', Math.floor(b.w / 2) - 1, Math.floor(b.h / 2) - 1, 2, 2);
+          }
+        } else if (m === 'stone') {
+          rect(g, 'k', 1, 1, b.w - 2, b.h - 2);
+          rect(g, 'l', 1, 1, b.w - 2, 1);
+          rect(g, 'l', 1, 1, 1, b.h - 2);
+          rect(g, 'm', 1, b.h - 2, b.w - 2, 1);
+          rect(g, 'm', b.w - 2, 1, 1, b.h - 2);
+          if (b.w >= 10 && b.h >= 10) {
+            rect(g, 'm', 3, 3, 2, 1);
+            rect(g, 'l', b.w - 5, b.h - 4, 2, 1);
+          }
+        } else {
+          rect(g, 'g', 1, 1, b.w - 2, b.h - 2);
+          rect(g, 'i', 1, 1, b.w - 2, 1);
+          rect(g, 'i', 1, 1, 1, b.h - 2);
+          rect(g, 'h', 1, b.h - 2, b.w - 2, 1);
+          rect(g, 'h', b.w - 2, 1, 1, b.h - 2);
           const long = Math.max(b.w, b.h);
           for (let i = 6; i < long - 2; i += 7) {
             if (b.w >= b.h) rect(g, 'h', i, 2, 1, b.h - 4);
             else rect(g, 'h', 2, i, b.w - 4, 1);
           }
-        } else if (b.w >= 10 && b.h >= 10) {
-          rect(g, 'm', 3, 3, 2, 1);
-          rect(g, 'l', b.w - 5, b.h - 4, 2, 1);
         }
         if (cracked) {
           rect(g, 'v', Math.floor(b.w * 0.3), 1, 1, Math.floor(b.h * 0.5));
@@ -400,6 +457,9 @@ export function registerArt(scene: Phaser.Scene): void {
   addTexture(scene, 'orc_brute_hurt', orc(true));
   addTexture(scene, 'troll', troll(false));
   addTexture(scene, 'troll_hurt', troll(true));
+  addTexture(scene, 'iron_warlord', warlord(false, false));
+  addTexture(scene, 'iron_warlord_open', warlord(false, true));
+  addTexture(scene, 'iron_warlord_hurt', warlord(true, false));
   // goblin hurt frame (eyes squint) lives in sprites.ts via GOBLIN_HURT; reuse it for the redrawn goblin
   for (const id of WEAPON_IDS) {
     if (id === 'w_militia_blade') gridTexture(scene, weaponTexture(id), BLADE);

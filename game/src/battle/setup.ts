@@ -7,6 +7,7 @@ import { createRng } from '../core/rng';
 import { data } from '../data/load';
 import { levelDef } from '../data/lookup';
 import { homeCx, homeZoom, introPan, setupCameras, setView, zoomBy } from './camera';
+import { kindFor } from '../content/levelKinds';
 import { installArtifacts } from './artifacts';
 import { buildConsumables } from './consumables';
 import { makeCtx } from './ctxImpl';
@@ -78,6 +79,7 @@ export function startBattle(b: BattleState): void {
   s.input.addPointer(1);
   s.input.keyboard?.on('keydown-SPACE', () => activateAbility(b));
   installArtifacts(b);
+  kindFor(b.level.kind)?.onStart?.(b.ctx, b.level);
   b.events.emit('level:start', { levelId: b.levelId, kind: b.level.kind ?? 'siege' });
   introPan(b, () => loadNext(b));
 }

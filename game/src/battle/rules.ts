@@ -5,6 +5,7 @@ import { groundAt } from './terrain';
 import { discard } from './damage';
 import { popWord } from './fx';
 import { finalize } from './score';
+import { kindFor } from '../content/levelKinds';
 import { loadNext } from './sling';
 import type { Ent } from './BattleCtx';
 import type { BattleState } from './state';
@@ -53,6 +54,7 @@ export function finish(b: BattleState, won: boolean, why: 'shots' | 'escaped' = 
   won ? sfx.win() : sfx.lose();
   const { stars, shotsLeft } = finalize(b, won);
   if (won) {
+    kindFor(b.level.kind)?.onWin?.(b.ctx, b.level);
     b.events.emit('level:won', { levelId: b.levelId, stars, score: b.score, coins: b.coins, shotsLeft });
   } else {
     b.events.emit('level:lost', { levelId: b.levelId, reason: why, score: b.score, coins: b.coins });

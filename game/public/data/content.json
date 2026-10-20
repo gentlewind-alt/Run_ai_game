@@ -15,7 +15,12 @@
     "coins": {
       "monster": 10,
       "wood": 2,
-      "stone": 4
+      "stone": 4,
+      "iron": 6,
+      "crystal": 15,
+      "orc_brute": 15,
+      "troll": 20,
+      "iron_warlord": 100
     },
     "points": {
       "goblin_grunt": 100,
@@ -26,8 +31,11 @@
       "imp": 120,
       "orc_brute": 300,
       "troll": 400,
+      "iron_warlord": 1000,
       "wood": 10,
-      "stone": 20
+      "stone": 20,
+      "iron": 40,
+      "crystal": 50
     },
     "shotBonusPoints": 300,
     "shotBonusCoins": 25,
@@ -587,7 +595,18 @@
       "hp": 600,
       "weak": "void",
       "resist": "physical",
-      "note": "Boss. Visor weak point takes 2x. Throws boulders at your side of the map, which only adds visual shake."
+      "behavior": "iron_warlord",
+      "boss": true,
+      "density": 0.006,
+      "coins": 200,
+      "score": 2500,
+      "note": "Boss. Visor weak point takes 2x. Throws boulders at your side of the map, which only adds visual shake.",
+      "params": {
+        "visorOpenEvery": 180,
+        "visorOpenDuration": 60,
+        "visorMult": 2,
+        "boulderEvery": 240
+      }
     }
   ],
   "materials": [
@@ -607,13 +626,17 @@
     {
       "id": "iron",
       "hp": 250,
-      "weak": "void"
+      "weak": "void",
+      "density": 0.0035,
+      "coins": 6
     },
     {
       "id": "crystal",
       "hp": 30,
       "weak": "radiant",
-      "note": "shatters and drops coins"
+      "note": "shatters and drops coins",
+      "density": 0.001,
+      "coins": 15
     }
   ],
   "realms": [
@@ -680,6 +703,8 @@
     "maxConsumableStack": 5,
     "loadoutSize": 4,
     "artifactSlots": 1,
-    "secondArtifactAfterLevel": 8
+    "secondArtifactAfterLevel": 8,
+    "dailyStreakRewardDay": 7,
+    "dailyStreakRewardCoins": 500
   }
 }

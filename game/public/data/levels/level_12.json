@@ -1,0 +1,114 @@
+{
+  "id": 12,
+  "name": "Iron Throne",
+  "realm": "iron_keep",
+  "kind": "boss",
+  "worldW": 648,
+  "shots": 5,
+  "hints": [
+    "Wait for the visor to open for 2x.",
+    "Boulders shake the ground. Stay steady."
+  ],
+  "scoreTarget": 2500,
+  "loadout": [
+    "w_iron_cleaver",
+    "w_horned_scepter",
+    "w_hunters_pike",
+    "w_ashwood_staff",
+    "w_blast_tube"
+  ],
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      110,
+      320
+    ],
+    [
+      135,
+      280
+    ],
+    [
+      330,
+      280
+    ],
+    [
+      360,
+      320
+    ],
+    [
+      648,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "stone",
+      "x": 150,
+      "y": 266,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "iron",
+      "x": 205,
+      "y": 264,
+      "w": 12,
+      "h": 32
+    },
+    {
+      "m": "iron",
+      "x": 265,
+      "y": 264,
+      "w": 12,
+      "h": 32
+    },
+    {
+      "m": "iron",
+      "x": 235,
+      "y": 245,
+      "w": 72,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 215,
+      "y": 234,
+      "w": 8,
+      "h": 16
+    },
+    {
+      "m": "stone",
+      "x": 255,
+      "y": 234,
+      "w": 8,
+      "h": 16
+    },
+    {
+      "m": "iron",
+      "x": 235,
+      "y": 223,
+      "w": 48,
+      "h": 6
+    }
+  ],
+  "monsters": [
+    {
+      "t": "iron_warlord",
+      "x": 235,
+      "y": 265.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 150,
+      "y": 273.0
+    },
+    {
+      "t": "goblin_grunt",
+      "x": 235,
+      "y": 235.0
+    }
+  ]
+}

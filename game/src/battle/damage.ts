@@ -138,11 +138,31 @@ export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: numb
     const scale = o.tag === 'weak' ? 2 : 1;
     const ft = pixText(b.scene, x, y - 6, String(shown), color, scale).setDepth(12);
     b.scene.tweens.add({ targets: ft, y: y - 22, alpha: 0, duration: 650, onComplete: () => ft.destroy() });
-    if (dmg >= 22 || o.fall) popWord(b, x, y - 14, t.kind === 'monster' ? (o.fall ? 'thud!' : 'bonk!') : t.type === 'wood' ? 'crack!' : 'clonk!');
+    if (dmg >= 22 || o.fall) {
+      popWord(
+        b, x, y - 14,
+        t.kind === 'monster'
+          ? (o.fall ? 'thud!' : 'bonk!')
+          : t.type === 'wood'
+            ? 'crack!'
+            : t.type === 'iron'
+              ? 'clank!'
+              : t.type === 'crystal'
+                ? 'shatter!'
+                : 'clonk!',
+      );
+    }
     if (dmg >= 12) ring(b, x, y, 6 + Math.min(14, dmg / 3), C('c'));
   }
-  const wood = t.type === 'wood';
-  const colors = t.kind === 'monster' ? ['5', '6', '2'] : wood ? ['g', 'i', 'h'] : ['k', 'l', 'm'];
+  const colors = t.kind === 'monster'
+    ? ['5', '6', '2']
+    : t.type === 'wood'
+      ? ['g', 'i', 'h']
+      : t.type === 'iron'
+        ? ['c', 'd', 'e', 'f']
+        : t.type === 'crystal'
+          ? ['b', 'c', '4', 'a']
+          : ['k', 'l', 'm'];
   burst(b, x, y, colors, Math.min(10, 3 + Math.round(dmg / 6)));
   sfx.hit(Math.min(1, dmg / 40));
   b.scene.cameras.main.shake(90, Phaser.Math.Clamp((dmg / 40) * 0.012, 0.002, 0.014));
@@ -165,8 +185,16 @@ function kill(b: BattleState, t: Ent): void {
   const px = t.body.position.x;
   const py = t.body.position.y;
   discard(b, t);
-  const wood = t.type === 'wood';
-  burst(b, px, py, t.kind === 'monster' ? ['5', '6', '4', '2'] : wood ? ['g', 'i', 'h'] : ['k', 'l', 'm'], 14);
+  const colors = t.kind === 'monster'
+    ? ['5', '6', '4', '2']
+    : t.type === 'wood'
+      ? ['g', 'i', 'h']
+      : t.type === 'iron'
+        ? ['c', 'd', 'e', 'f']
+        : t.type === 'crystal'
+          ? ['b', 'c', '4', 'a']
+          : ['k', 'l', 'm'];
+  burst(b, px, py, colors, 14);
   sfx.crunch();
   b.hitStop = Math.max(b.hitStop, b.tune.hitStopFrames);
   const coins = b.tune.coins;

@@ -2,6 +2,32 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · agy · Stage 4 complete: Iron Keep 9-11, Iron Warlord boss, Daily Mash, Streak, Leaderboard (S4-01..S4-05 in review)
+- **What:**
+  - **S4-01 (Iron Keep 9-11):** Authored levels 9, 10, 11 (648w worlds) using `build_levels.py`. Heavy iron blocks, orc brutes, trolls, goblin bombers, dark elf hexers/archers, and skeleton runners. Verified with greedy solver (`__mm.solveStep`) and angle sweeps (`__mm.sweep`). Set `scoreTargets` to ~70% of clear scores.
+  - **S4-02 (Iron Warlord Boss - Level 12):** Created `iron_warlord` art (32x32, iron plate armor, horned helm, open visor weak point) and registered in `MONSTER_ART` / `textures.ts`. Implemented `ironWarlord` monster behavior (visor opens every 180 steps for 60 steps exposing 2.0x weak point damage; periodically hurls boulder causing screen shake). Created `levelKinds/` registry (`boss.ts` with +500 coin victory bonus). Level 12 configured with fixed 5-shot loadout and 600 HP boss. Verified beaten in 3 shots (0 one-shot wins).
+  - **S4-03 (Daily Mash Generator):** Created `content/levelKinds/daily.ts` & `dailyLogic.js` using seeded `mulberry32` from UTC date integer (`platform.serverTime()`). Generates 3 fort structural archetypes (pillars, towers, bunkers) and day-of-week monster compositions. Fully validates against `level.schema.json`. Added `scripts/check-daily.mjs` verifying 30 consecutive days of generated levels with 100% determinism. Added `npm run check:daily` and wired into `npm run check` and `npm run build`. Enabled `features.daily: true` in `config.json`.
+  - **S4-04 (Daily Streak & Day-7 Reward):** Added `DailyInfo` tracking to `Profile` in `core/profile.ts` (`lastDay`, `streak`, `best`, `rewardsClaimed`). Implemented `recordDailyResult` tracking consecutive play streaks, reset on missed days, and granted +500 coin reward on Day 7 (`economy.dailyStreakRewardDay: 7`, `dailyStreakRewardCoins: 500`). Added Daily Mash card on `MapScene` displaying current streak and live 1-second interval "Next daily in HH:MM:SS" countdown timer.
+  - **S4-05 (Leaderboard & Social Share):** Configured `rundot/leaderboard.config.json` with simple leaderboard (`requiresToken: false`). Implemented `leaderboard` (`submit`, `top`, `myRank`), `share`, and `serverTime` in `platform/mock.ts` and `platform/rundot.ts`. Updated `ResultsScene` for `daily` level kind to submit score, render top 10 leaderboard entries and player's rank, and wired "SHARE" button with text containing "MONSTER MASH" and "RUN". Enabled `features.leaderboard: true` and `features.share: true` in `config.json`.
+- **Level Balancing & Verification Table:**
+  | Level | Kind | Solver Status | Shots to Clear | 1-Shot Wins | Escaped Runners | ScoreTarget | Final Clear Score |
+  |---|---|---|---|---|---|---|---|
+  | L9 | runner | Won | 2 shots | 0 | 0 | 1500 | 2180 |
+  | L10 | siege | Won | 4 shots | 0 | 0 | 1050 | 1470 |
+  | L11 | runner | Won | 4 shots | 0 | 0 | 700 | 980 |
+  | L12 | boss | Won | 3 shots | 0 | 0 | 2500 | 2020 (+692 coins) |
+- **Checks:**
+  - `npm run check` passes with 0 errors (including 30-day daily check and TypeScript compile).
+  - `npm run build` passes with 0 errors.
+  - Verified S4-01..S4-05 end-to-end in headless Chrome via CDP and `window.__mm`.
+- **Deployed:** Not deployed (requires owner approval per Golden Rule #9).
+- **Notes / for the next agent:**
+  - S4 cards (S4-01 through S4-05) are in `review`.
+  - Next stage is Stage 5 (Polish, Tutorial hints, Theme pass, Rewarded ad, Skins, Performance).
+- **Questions for owner:**
+  - Leaderboard config: `requiresToken: false` is configured for mock/open testing. If owner wants signed token submission, enable token validation in RUN dev portal.
+  - Share link metadata: currently uses default title/description; can be adjusted in `ResultsScene.ts` and `rundot.ts`.
+
 ## 2026-10-21 · agy · Stage 3 verification & balance complete (S3-05, S3-06, S3-07, S2-04)
 - **What:**
   - **Docs:** Updated `architecture/ARCHITECTURE.md` with new event payloads (`shot:launched`, `hit`, `kill`, `level:won/lost`) and `BattleCtx` extensions (`groundAt`, `mods`). Updated `architecture/DATA.md` for `tuning`, `economy`, `mods`, artifact & consumable `params`, level `terrain`, runner `delay`, `dir`, `speed`, and monster `boss`.

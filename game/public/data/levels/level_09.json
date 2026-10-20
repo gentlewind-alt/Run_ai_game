@@ -1,0 +1,135 @@
+{
+  "id": 9,
+  "name": "Molten gate",
+  "realm": "iron_keep",
+  "kind": "runner",
+  "worldW": 648,
+  "shots": 4,
+  "hints": [
+    "Iron blocks resist light hits.",
+    "Stop the runners before the exit."
+  ],
+  "scoreTarget": 1500,
+  "escapeLimit": 1,
+  "exit": {
+    "x": 620,
+    "y": 307
+  },
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      110,
+      320
+    ],
+    [
+      140,
+      304
+    ],
+    [
+      250,
+      304
+    ],
+    [
+      280,
+      320
+    ],
+    [
+      648,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "iron",
+      "x": 188,
+      "y": 288,
+      "w": 12,
+      "h": 32
+    },
+    {
+      "m": "iron",
+      "x": 232,
+      "y": 288,
+      "w": 12,
+      "h": 32
+    },
+    {
+      "m": "stone",
+      "x": 210,
+      "y": 269,
+      "w": 60,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 195,
+      "y": 256,
+      "w": 8,
+      "h": 20
+    },
+    {
+      "m": "stone",
+      "x": 225,
+      "y": 256,
+      "w": 8,
+      "h": 20
+    },
+    {
+      "m": "wood",
+      "x": 210,
+      "y": 243,
+      "w": 44,
+      "h": 6
+    },
+    {
+      "m": "wood",
+      "x": 150,
+      "y": 294,
+      "w": 8,
+      "h": 20
+    },
+    {
+      "m": "stone",
+      "x": 260,
+      "y": 306,
+      "w": 10,
+      "h": 28
+    }
+  ],
+  "monsters": [
+    {
+      "t": "goblin_bomber",
+      "x": 150,
+      "y": 297.0
+    },
+    {
+      "t": "orc_brute",
+      "x": 210,
+      "y": 290.0
+    },
+    {
+      "t": "troll",
+      "x": 210,
+      "y": 252.0
+    },
+    {
+      "t": "skeleton_runner",
+      "x": 285,
+      "y": 313.0,
+      "dir": 1,
+      "speed": 0.7,
+      "delay": 1.0
+    },
+    {
+      "t": "skeleton_runner",
+      "x": 315,
+      "y": 313.0,
+      "dir": 1,
+      "speed": 0.55,
+      "delay": 1.4
+    }
+  ]
+}

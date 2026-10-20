@@ -41,6 +41,12 @@ export function sanitize(raw: Record<string, unknown>): Profile {
     equipped: { loadout: strs(eq.loadout), artifacts: strs(eq.artifacts), slingSkin: typeof eq.slingSkin === 'string' ? eq.slingSkin : undefined },
     stars: numMap(raw.stars, 3),
     best: numMap(raw.best),
+    daily: {
+      lastDay: isObj(raw.daily) && typeof raw.daily.lastDay === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.daily.lastDay) ? raw.daily.lastDay : undefined,
+      streak: isObj(raw.daily) ? Math.max(0, Math.floor(num(raw.daily.streak, 0))) : 0,
+      best: isObj(raw.daily) ? Math.max(0, Math.floor(num(raw.daily.best, 0))) : 0,
+      rewardsClaimed: isObj(raw.daily) ? strs(raw.daily.rewardsClaimed) : [],
+    },
     flags,
     settings: { muted: typeof st.muted === 'boolean' ? st.muted : false, musicOn: typeof st.musicOn === 'boolean' ? st.musicOn : true },
   };

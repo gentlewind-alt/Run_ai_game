@@ -1,0 +1,136 @@
+{
+  "id": 11,
+  "name": "Furnace bastion",
+  "realm": "iron_keep",
+  "kind": "runner",
+  "worldW": 648,
+  "shots": 4,
+  "hints": [
+    "Curse with the Scepter.",
+    "Pierce the iron shield or stun runners."
+  ],
+  "scoreTarget": 700,
+  "escapeLimit": 1,
+  "exit": {
+    "x": 620,
+    "y": 307
+  },
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      110,
+      320
+    ],
+    [
+      130,
+      300
+    ],
+    [
+      190,
+      300
+    ],
+    [
+      215,
+      268
+    ],
+    [
+      325,
+      268
+    ],
+    [
+      355,
+      320
+    ],
+    [
+      648,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "stone",
+      "x": 150,
+      "y": 286,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "wood",
+      "x": 215,
+      "y": 256,
+      "w": 6,
+      "h": 24
+    },
+    {
+      "m": "iron",
+      "x": 255,
+      "y": 256,
+      "w": 6,
+      "h": 24
+    },
+    {
+      "m": "stone",
+      "x": 235,
+      "y": 241,
+      "w": 46,
+      "h": 6
+    },
+    {
+      "m": "wood",
+      "x": 225,
+      "y": 230,
+      "w": 6,
+      "h": 16
+    },
+    {
+      "m": "wood",
+      "x": 245,
+      "y": 230,
+      "w": 6,
+      "h": 16
+    },
+    {
+      "m": "iron",
+      "x": 235,
+      "y": 218,
+      "w": 34,
+      "h": 16
+    }
+  ],
+  "monsters": [
+    {
+      "t": "dark_elf_hexer",
+      "x": 165,
+      "y": 293.0
+    },
+    {
+      "t": "goblin_bomber",
+      "x": 235,
+      "y": 231.0
+    },
+    {
+      "t": "orc_brute",
+      "x": 225,
+      "y": 254.0
+    },
+    {
+      "t": "skeleton_runner",
+      "x": 275,
+      "y": 261.0,
+      "dir": 1,
+      "speed": 0.45,
+      "delay": 1.2
+    },
+    {
+      "t": "skeleton_runner",
+      "x": 300,
+      "y": 261.0,
+      "dir": 1,
+      "speed": 0.4,
+      "delay": 1.8
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 // Every mutator emits 'profile:changed' so the save (debounced) and the shop UI can react.
 import { data } from '../data/load';
 import type { Economy } from '../data/types';
+import { getDailySeed } from '../content/levelKinds/dailyLogic.js';
 import { events } from './events';
 
 const query = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
@@ -14,6 +15,13 @@ export const startLevelParam = Number(query.get('level')) || 0;
 export const SAVE_VERSION = 1;
 export const GOLD_QUIVER = 'gold_quiver'; // cosmetic id that adds a fifth weapon slot (S5-04)
 
+export interface DailyInfo {
+  lastDay?: string; // YYYY-MM-DD
+  streak: number;
+  best: number;
+  rewardsClaimed: string[];
+}
+
 export interface Profile {
   version: number;
   coins: number;
@@ -22,6 +30,7 @@ export interface Profile {
   equipped: { loadout: string[]; artifacts: string[]; slingSkin?: string };
   stars: Record<string, number>;
   best: Record<string, number>;
+  daily: DailyInfo;
   flags: Record<string, boolean>;
   settings: { muted: boolean; musicOn: boolean };
 }
@@ -54,6 +63,7 @@ export function freshProfile(): Profile {
     equipped: { loadout: [], artifacts: [] },
     stars: {},
     best: {},
+    daily: { streak: 0, best: 0, rewardsClaimed: [] },
     flags: {},
     settings: { muted: false, musicOn: true },
   };
@@ -198,10 +208,56 @@ export function setFlag(name: string, on = true): void {
   changed('flags');
 }
 
+export function daysBetween(dateStrA: string, dateStrB: string): number {
+  const [y1, m1, d1] = dateStrA.split('-').map(Number);
+  const [y2, m2, d2] = dateStrB.split('-').map(Number);
+  const utcA = Date.UTC(y1, m1 - 1, d1);
+  const utcB = Date.UTC(y2, m2 - 1, d2);
+  return Math.round((utcB - utcA) / (24 * 60 * 60 * 1000));
+}
+
+export function recordDailyResult(score: number, dateStr: string): { streak: number; rewardCoins: number; newBest: boolean } {
+  const d = profile.daily;
+  const last = d.lastDay;
+  let rewardCoins = 0;
+  let newBest = false;
+
+  if (last !== dateStr) {
+    if (!last) {
+      d.streak = 1;
+    } else {
+      const diff = daysBetween(last, dateStr);
+      if (diff === 1) {
+        d.streak++;
+      } else if (diff > 1) {
+        d.streak = 1;
+      }
+    }
+    d.lastDay = dateStr;
+
+    const rewardDay = economy().dailyStreakRewardDay ?? 7;
+    const rewardCoinAmount = economy().dailyStreakRewardCoins ?? 500;
+    const claimKey = `streak_${d.streak}`;
+    if (d.streak % rewardDay === 0 && !d.rewardsClaimed.includes(claimKey)) {
+      d.rewardsClaimed.push(claimKey);
+      rewardCoins = rewardCoinAmount;
+      profile.coins += rewardCoins;
+    }
+  }
+
+  if (score > d.best) {
+    d.best = score;
+    newBest = true;
+  }
+
+  changed('daily');
+  return { streak: d.streak, rewardCoins, newBest };
+}
+
 // ------------------------------------------------------------------ results
 
 /** Credits coins and records stars and score. First clears pay in full, replays and losses pay less. */
-export function recordResult(r: { levelId: number; won: boolean; stars: number; score: number; coins: number }): ResultInfo {
+export function recordResult(r: { levelId: number; won: boolean; stars: number; score: number; coins: number; dateStr?: string }): ResultInfo {
   const e = economy();
   const key = String(r.levelId);
   const prev = profile.stars[key] ?? 0;
@@ -211,6 +267,10 @@ export function recordResult(r: { levelId: number; won: boolean; stars: number; 
   if (r.won) {
     profile.stars[key] = Math.max(prev, r.stars);
     profile.best[key] = Math.max(profile.best[key] ?? 0, r.score);
+    if (r.levelId === 0) {
+      const dateStr = r.dateStr ?? getDailySeed(Date.now()).dateStr;
+      recordDailyResult(r.score, dateStr);
+    }
   }
   profile.coins += credited;
   lastResult = {

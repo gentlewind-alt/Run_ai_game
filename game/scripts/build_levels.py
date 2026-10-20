@@ -146,3 +146,72 @@ write(8, 'Elf bastion', 'dark_elf_wood', 'siege', 432, ['Break the cliff keep. M
       [mon('dark_elf_archer', 275, stand(topE)), mon('dark_elf_hexer', 275, stand(P8b - 34)), mon('goblin_grunt', 275, stand(P8b)),
        mon('dark_elf_hexer', 324, stand(P8b)), mon('dark_elf_archer', 190, stand(P8a)), mon('imp', 235, 195)],
       1350)
+
+# ---------------------------------------------------------------- Iron Keep (fire glow): brutes, trolls, iron blocks, runners
+# 648-wide worlds. Heavy blocks and high HP monsters require abilities, status combos, and precision.
+
+# 9 Molten gate: an iron-reinforced gatehouse with an orc brute and a troll. Runners sprint past to a distant exit.
+P9 = 304
+b9 = [
+    blk('iron', 188, P9 - 16, 12, 32), blk('iron', 232, P9 - 16, 12, 32), blk('stone', 210, P9 - 35, 60, 6),
+    blk('stone', 195, P9 - 48, 8, 20), blk('stone', 225, P9 - 48, 8, 20), blk('wood', 210, P9 - 61, 44, 6),
+    blk('wood', 150, P9 - 10, 8, 20), blk('stone', 260, GROUND - 14, 10, 28)
+]
+write(9, 'Molten gate', 'iron_keep', 'runner', 648, ['Iron blocks resist light hits.', 'Stop the runners before the exit.'],
+      [[0, 320], [110, 320], [140, P9], [250, P9], [280, 320], [648, 320]],
+      b9,
+      [mon('goblin_bomber', 150, stand(P9)), mon('orc_brute', 210, stand(P9, 28)), mon('troll', 210, stand(P9 - 38, 28)),
+       mon('skeleton_runner', 285, stand(GROUND), dir=1, speed=0.7, delay=1.0),
+       mon('skeleton_runner', 315, stand(GROUND), dir=1, speed=0.55, delay=1.4)],
+      1500, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13})
+
+# 10 Iron foundry: a sunken furnace pit with a covered troll, guarded by an orc brute and a shielded hexer high above.
+P10a, PIT10, P10b = 300, 336, 276
+b10 = [
+    blk('iron', 150, P10a - 14, 12, 28),
+    blk('stone', 210, PIT10 - 16, 10, 32), blk('stone', 246, PIT10 - 16, 10, 32), blk('wood', 228, PIT10 - 35, 48, 6),
+    blk('stone', 295, P10b - 15, 8, 30), blk('stone', 330, P10b - 15, 8, 30), blk('wood', 312.5, P10b - 33, 46, 6)
+]
+write(10, 'Iron foundry', 'iron_keep', 'siege', 648, ['Void weakens iron and brutes.', 'Hellfire burns trolls to stop regen.'],
+      [[0, 320], [105, 320], [125, P10a], [175, P10a], [195, PIT10], [255, PIT10], [275, P10b], [340, P10b], [365, 320], [648, 320]],
+      b10,
+      [mon('orc_brute', 150, stand(P10a, 28)), mon('troll', 228, stand(PIT10, 28)), mon('goblin_grunt', 228, stand(PIT10 - 38)),
+       mon('dark_elf_hexer', 312.5, stand(P10b)), mon('dark_elf_archer', 312.5, stand(P10b - 36))],
+      1050)
+
+# 11 Furnace bastion: multi-tier fortress with heavy iron footings, shielded defenders, and sprinting runners.
+P11a, P11b = 300, 268
+b11 = [
+    blk('stone', 150, P11a - 14, 8, 28),
+    blk('wood', 215, P11b - 12, 6, 24), blk('iron', 255, P11b - 12, 6, 24), blk('stone', 235, P11b - 27, 46, 6),
+    blk('wood', 225, P11b - 38, 6, 16), blk('wood', 245, P11b - 38, 6, 16), blk('iron', 235, P11b - 50, 34, 16),
+]
+write(11, 'Furnace bastion', 'iron_keep', 'runner', 648, ['Curse with the Scepter.', 'Pierce the iron shield or stun runners.'],
+      [[0, 320], [110, 320], [130, P11a], [190, P11a], [215, P11b], [325, P11b], [355, 320], [648, 320]],
+      b11,
+      [mon('dark_elf_hexer', 165, stand(P11a)), mon('goblin_bomber', 235, stand(P11b - 30)),
+       mon('orc_brute', 225, stand(P11b, 28)),
+       mon('skeleton_runner', 275, stand(P11b), dir=1, speed=0.45, delay=1.2),
+       mon('skeleton_runner', 300, stand(P11b), dir=1, speed=0.4, delay=1.8)],
+      700, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13})
+
+# 12 Iron Throne: boss arena for the Iron Warlord.
+P12 = 280
+b12 = [
+    blk('stone', 150, P12 - 14, 10, 28),
+    blk('iron', 205, P12 - 16, 12, 32), blk('iron', 265, P12 - 16, 12, 32),
+    blk('iron', 235, P12 - 35, 72, 6),
+    blk('stone', 215, P12 - 46, 8, 16), blk('stone', 255, P12 - 46, 8, 16),
+    blk('iron', 235, P12 - 57, 48, 6)
+]
+write(12, 'Iron Throne', 'iron_keep', 'boss', 648,
+      ['Wait for the visor to open for 2x.', 'Boulders shake the ground. Stay steady.'],
+      [[0, 320], [110, 320], [135, P12], [330, P12], [360, 320], [648, 320]],
+      b12,
+      [mon('iron_warlord', 235, stand(P12, 30)),
+       mon('dark_elf_hexer', 150, stand(P12)),
+       mon('goblin_grunt', 235, stand(P12 - 38))],
+      2500,
+      shots=5,
+      loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube'])
+

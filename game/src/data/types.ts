@@ -93,6 +93,8 @@ export interface Economy {
   loadoutSize: number;
   artifactSlots: number;
   secondArtifactAfterLevel: number;
+  dailyStreakRewardDay?: number;
+  dailyStreakRewardCoins?: number;
 }
 
 export interface ArtifactDef { id: string; name: string; rarity?: string; price: number; effect: string; params?: Record<string, number | string | boolean> }

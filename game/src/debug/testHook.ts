@@ -4,7 +4,10 @@ import type Phaser from 'phaser';
 import { activateAbility, launchFrom, skipToReady } from '../battle/sling';
 import { pressConsumable, targetTap } from '../battle/consumables';
 import type { BattleState } from '../battle/state';
-import { addCoins, applyDebug, profile } from '../core/profile';
+import { addCoins, applyDebug, profile, recordDailyResult } from '../core/profile';
+import { generateDailyLevel, getDailySeed } from '../content/levelKinds/daily';
+import { platform } from '../platform';
+import { setMockTimeOffset } from '../platform/mock';
 import { data } from '../data/load';
 
 const DT = 1000 / 60;
@@ -144,9 +147,11 @@ export function installTestHook(game: Phaser.Game): void {
         // an escaped runner is not a kill: count it against the shot so the solver does not trade the limit for monsters
         // runners that are still alive are urgent: they are on a clock, everything else waits
         const runnersAlive = (v.ents ?? []).filter((e) => !e.dead && e.type === 'skeleton_runner').length;
-        const left = v.monsters + 1.5 * runnersAlive + 0.75 * v.escaped;
+        const totalHp = (v.ents ?? []).filter((e) => !e.dead && e.kind === 'monster').reduce((s, e) => s + Math.max(0, e.hp), 0);
+        const left = v.monsters * 100 + v.escaped * 500 + runnersAlive * 200 + totalHp * 0.1;
+        const lostByEscape = v.lost && v.escaped > (battle().level.escapeLimit ?? 99);
         const better = !best || (v.won && !best.won) || (v.won === best.won && (left < best.monsters || (left === best.monsters && v.score > best.score)));
-        if (better && !v.lost) best = { shot, monsters: left, score: v.score, won: v.won };
+        if (better && !lostByEscape) best = { shot, monsters: left, score: v.score, won: v.won };
       }
       if (!best) break;
       st.shots.push(best.shot);
@@ -165,5 +170,10 @@ export function installTestHook(game: Phaser.Game): void {
     battle: () => battle(),
     pressConsumable: (i: number) => pressConsumable(battle(), i),
     targetTap: (wx: number, wy: number) => targetTap(battle(), wx, wy),
+    platform: () => platform,
+    setMockTimeOffset: (ms: number) => setMockTimeOffset(ms),
+    recordDaily: (score: number, dateStr: string) => recordDailyResult(score, dateStr),
+    dailySeed: (ms?: number) => getDailySeed(ms ?? Date.now()),
+    dailyLevel: (ms?: number) => generateDailyLevel(ms ?? Date.now()),
   };
 }

@@ -5,6 +5,7 @@ import { step as stepCombo } from './combo';
 import { updateParts } from './fx';
 import { MatterLib } from './matter';
 import { applyCustomGravity, endProj } from './projectiles';
+import { kindFor } from '../content/levelKinds';
 import { step as stepRules } from './rules';
 import type { BattleState } from './state';
 import { drawOverlay, updateAbilityBtn, updateQueue } from './sling';
@@ -38,6 +39,7 @@ export function update(b: BattleState, delta: number, nowMs: number): void {
 function stepLogic(b: BattleState): void {
   b.steps++;
   stepCombo(b);
+  kindFor(b.level.kind)?.onStep?.(b.ctx, b.level);
   for (const e of b.ents) {
     if (e.cool > 0) e.cool--;
     if (e.hurt > 0) e.hurt--;
@@ -94,7 +96,9 @@ function syncSprites(b: BattleState, time: number): void {
     }
     const beat = beatBob(time, e.phase);
     const running = e.def?.behavior === 'runner';
-    e.sprite.setTexture(e.hurt > 0 ? `${e.type}_hurt` : e.type);
+    const openKey = e.params.visorOpen === 1 ? `${e.type}_open` : e.type;
+    const tex = e.hurt > 0 ? `${e.type}_hurt` : (b.scene.textures.exists(openKey) ? openKey : e.type);
+    e.sprite.setTexture(tex);
     e.sprite.setPosition(bp.x, bp.y + e.h / 2 - e.size / 2 + 1 + (running ? -Math.abs(Math.sin(b.steps / 4)) * 2 : 0));
     e.sprite.setRotation(e.body.angle);
     const amp = e.size === 32 ? 0.03 : 0.05;
