@@ -29,7 +29,7 @@ I searched for RUN's docs (rundot CLI, Game Studio, Creator Hub) and found nothi
 | Rift Shrine, Echo coins, ledger, PvP, story | Cut |
 | Iron Warlord | Final boss of level 12 |
 
-Everything is in `content.json` and loaded as data. Effects are rewritten for projectile play, so `launch` and `tap` text replace the old melee `effect` text.
+Everything is in `game/public/data/content.json` and loaded as data. Effects are rewritten for projectile play, so `launch` and `tap` text replace the old melee `effect` text.
 
 ## Why these choices
 

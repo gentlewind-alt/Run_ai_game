@@ -1,0 +1,861 @@
+{
+  "armor": [
+    {
+      "id": "a_padded_jerkin",
+      "name": "Padded Jerkin",
+      "rarity": "common",
+      "defence": 3,
+      "bonusHp": 10,
+      "effect": "Cheap, light starter armour.",
+      "source": "Starter; store",
+      "stage": 1,
+      "set": null
+    },
+    {
+      "id": "a_chain_hauberk",
+      "name": "Chain Hauberk",
+      "rarity": "uncommon",
+      "defence": 4,
+      "bonusHp": 15,
+      "effect": "Blocks 10% of melee damage.",
+      "source": "Drop: Act 1; store",
+      "stage": 1,
+      "set": null
+    },
+    {
+      "id": "a_riftguard_vest",
+      "name": "Riftguard Vest",
+      "rarity": "rare",
+      "defence": 5,
+      "bonusHp": 20,
+      "effect": "After you touch a Rift Shrine, take 20% less damage for 30 s.",
+      "source": "Drop: Act 1 Elites",
+      "stage": 1,
+      "set": null
+    },
+    {
+      "id": "a_moonsilver_mail",
+      "name": "Moonsilver Mail",
+      "rarity": "epic",
+      "defence": 6,
+      "bonusHp": 25,
+      "effect": "+10% move speed; the perfect-dodge window lasts 0.05 s longer.",
+      "source": "Drop: Act 2 Champions",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "a_kinetic_weave",
+      "name": "Kinetic Weave",
+      "rarity": "legendary",
+      "defence": 8,
+      "bonusHp": 35,
+      "effect": "Stores 30% of damage taken; your next melee hit releases it as a pulse (up to 60).",
+      "source": "Drop: Act 2 Champions",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "a_siegeframe_plate",
+      "name": "Siegeframe Plate",
+      "rarity": "epic",
+      "defence": 6,
+      "bonusHp": 25,
+      "effect": "+40% HP and -15% move speed; your melee hits stagger Brutes.",
+      "source": "Store (rotating shelf)",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "a_projectile_ward_harness",
+      "name": "Projectile Ward Harness",
+      "rarity": "epic",
+      "defence": 6,
+      "bonusHp": 25,
+      "effect": "-50% damage from projectiles, +20% damage taken from melee.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "a_lifeburn_exoframe",
+      "name": "Lifeburn Exoframe",
+      "rarity": "mythic",
+      "defence": 10,
+      "bonusHp": 45,
+      "effect": "Doubles damage and resource gain, but drains 1% HP per second in combat.",
+      "source": "Arc finale: Act 2",
+      "stage": 2,
+      "set": "Hollow Crown"
+    },
+    {
+      "id": "a_living_mantle",
+      "name": "Living Mantle",
+      "rarity": "legendary",
+      "defence": 8,
+      "bonusHp": 35,
+      "effect": "A living cloak: blocks one projectile every 5 s and stuns an attacker for 1 s when you're hit.",
+      "source": "Drop: Act 3 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "a_mirrorplate",
+      "name": "Mirrorplate",
+      "rarity": "epic",
+      "defence": 6,
+      "bonusHp": 25,
+      "effect": "Every 6th projectile that hits you is reflected at full damage.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "a_starsteel_plate",
+      "name": "Starsteel Plate",
+      "rarity": "epic",
+      "defence": 6,
+      "bonusHp": 25,
+      "effect": "-30% damage from projectiles and beams; immune to burning.",
+      "source": "Drop: Act 4",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "a_starborn_weave",
+      "name": "Starborn Weave",
+      "rarity": "epic",
+      "defence": 6,
+      "bonusHp": 25,
+      "effect": "Regenerates 1% HP per second while your resource bar is above half.",
+      "source": "Drop: Act 4",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "a_nightveil_cloak",
+      "name": "Nightveil Cloak",
+      "rarity": "legendary",
+      "defence": 8,
+      "bonusHp": 35,
+      "effect": "Stand still for 1 s to turn invisible; your first hit from invisibility always crits.",
+      "source": "Drop: Act 3 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "a_quicksilver_plate",
+      "name": "Quicksilver Plate",
+      "rarity": "legendary",
+      "defence": 8,
+      "bonusHp": 35,
+      "effect": "Liquid-metal armour that blocks the first hit every 8 s, then reforms.",
+      "source": "Drop: Act 4 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "a_living_carapace",
+      "name": "Living Carapace",
+      "rarity": "legendary",
+      "defence": 8,
+      "bonusHp": 35,
+      "effect": "+20% damage to whichever of melee, shooting or dashing you used most in the last 10 s.",
+      "source": "Drop: Act 4 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "a_overdrive_exosuit",
+      "name": "Overdrive Exosuit",
+      "rarity": "mythic",
+      "defence": 10,
+      "bonusHp": 45,
+      "effect": "+50% damage and +30% HP, but drains 2 resource per second in combat; at zero you move 50% slower for 5 s.",
+      "source": "Rift Lord event",
+      "stage": 6,
+      "set": null
+    },
+    {
+      "id": "a_seers_regalia",
+      "name": "Seer's Regalia",
+      "rarity": "mythic",
+      "defence": 10,
+      "bonusHp": 45,
+      "effect": "+40% Arcane and you float over ground hazards, but you can't use consumables while wearing it.",
+      "source": "Rift Lord event",
+      "stage": 6,
+      "set": null
+    }
+  ],
+  "relics": [
+    {
+      "id": "r_wardens_badge",
+      "name": "Warden's Badge",
+      "rarity": "uncommon",
+      "effect": "+10% XP and coin find; your coin Echo shows on the minimap.",
+      "source": "Drop: Acts 1-2; store",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_field_belt",
+      "name": "Field Belt",
+      "rarity": "uncommon",
+      "effect": "+1 consumable slot; one consumable charge refills each mission.",
+      "source": "Store",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_shrine_lantern",
+      "name": "Shrine Lantern",
+      "rarity": "uncommon",
+      "effect": "Each Rift Shrine you touch stores a charge (max 3); spend one to refill your resource bar.",
+      "source": "Store",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_hazard_ward",
+      "name": "Hazard Ward",
+      "rarity": "uncommon",
+      "effect": "-50% damage from environmental hazards and ground zones.",
+      "source": "Store",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_clingstep_soles",
+      "name": "Clingstep Soles",
+      "rarity": "uncommon",
+      "effect": "Immune to knockback and ice; dashing off a wall gives a free second dash.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_medic_beads",
+      "name": "Medic Beads",
+      "rarity": "rare",
+      "effect": "Potions heal 30% more and cleanse burn and poison.",
+      "source": "Store",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_quickload_bandolier",
+      "name": "Quickload Bandolier",
+      "rarity": "rare",
+      "effect": "Active-reload sweet spot is 50% wider; reloads are 30% faster.",
+      "source": "Store",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_analyst_lens",
+      "name": "Analyst Lens",
+      "rarity": "rare",
+      "effect": "Shows enemy HP numbers and weak elements; +10% crit on a target after aiming at it for 2 s.",
+      "source": "Store",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_dread_sense",
+      "name": "Dread Sense",
+      "rarity": "rare",
+      "effect": "Enemy telegraphs appear 0.2 s earlier.",
+      "source": "Drop: Act 2 Elites",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_lodestone_bracer",
+      "name": "Lodestone Bracer",
+      "rarity": "rare",
+      "effect": "Thrown weapons return 40% faster and drag pickups along their path.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_tracker_lens",
+      "name": "Tracker Lens",
+      "rarity": "rare",
+      "effect": "Shows enemies through walls and hidden caches within 20 m.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_hookline_launcher",
+      "name": "Hookline Launcher",
+      "rarity": "rare",
+      "effect": "Dash at a target to grapple to it; small enemies are pulled to you instead.",
+      "source": "Drop: Act 2 Elites",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_quickchange_ring",
+      "name": "Quickchange Ring",
+      "rarity": "rare",
+      "effect": "Swap to your second saved loadout instantly, once per room.",
+      "source": "Boss shop (Boss Tokens)",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_echo_stone",
+      "name": "Echo Stone",
+      "rarity": "rare",
+      "effect": "When you reclaim your coin Echo, an echo of you fights beside you for 10 s.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_ghost_phase",
+      "name": "Ghost Phase",
+      "rarity": "rare",
+      "effect": "Perfect dodges make you invisible for 2 s.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_gale_eye",
+      "name": "Gale Eye",
+      "rarity": "rare",
+      "effect": "Your dash releases a wind burst that knocks enemies back.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_gamblers_charm",
+      "name": "Gambler's Charm",
+      "rarity": "rare",
+      "effect": "+20 Luck; crits have a 10% chance to drop coins.",
+      "source": "Gold Rush",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_heartforge_core",
+      "name": "Heartforge Core",
+      "rarity": "epic",
+      "effect": "+20% resource regen; energy weapons can't overheat for 3 s after a perfect dodge.",
+      "source": "Drop: Act 2 Champions",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_giants_cinch",
+      "name": "Giant's Cinch",
+      "rarity": "epic",
+      "effect": "+20% Attack; heavy attacks charge 25% faster.",
+      "source": "Drop: Act 2 Champions",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_marionette_vein",
+      "name": "Marionette Vein",
+      "rarity": "epic",
+      "effect": "Hitting a bleeding enemy yanks it 2 m toward you; 5 bleed stacks stun it for 1 s.",
+      "source": "Drop: Act 2 Champions",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_dominion_band",
+      "name": "Dominion Band",
+      "rarity": "legendary",
+      "effect": "Turn invisible for 4 s after each kill; while worn, a Rift Stalker hunts you every 3 minutes.",
+      "source": "Drop: Act 2 Champions",
+      "stage": 2,
+      "set": null
+    },
+    {
+      "id": "r_deepsight_lens",
+      "name": "Deepsight Lens",
+      "rarity": "rare",
+      "effect": "Boss weak points glow 0.5 s before they open and stay open 0.5 s longer.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_judgment_seal",
+      "name": "Judgment Seal",
+      "rarity": "rare",
+      "effect": "Enemies that hit you are marked; your next hit on a marked enemy deals +40%.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_farseer_orb",
+      "name": "Farseer Orb",
+      "rarity": "rare",
+      "effect": "Preview the next room's enemies before you open its door.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_ring_of_kindling",
+      "name": "Ring of Kindling",
+      "rarity": "rare",
+      "effect": "+20% resource regen. Wearing any 2 Triune rings adds +10% to all stats.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": "Triune Rings"
+    },
+    {
+      "id": "r_ring_of_stillwater",
+      "name": "Ring of Stillwater",
+      "rarity": "rare",
+      "effect": "Buffs and consumables last 30% longer. Triune set.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": "Triune Rings"
+    },
+    {
+      "id": "r_ring_of_highwind",
+      "name": "Ring of Highwind",
+      "rarity": "rare",
+      "effect": "Heal 1% HP per second out of combat and 0.3% in combat. Triune set.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": "Triune Rings"
+    },
+    {
+      "id": "r_kestrel_wings",
+      "name": "Kestrel Wings",
+      "rarity": "epic",
+      "effect": "Dash distance +60%; dashing over gaps and ground hazards is safe.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_stormcaller_torc",
+      "name": "Stormcaller Torc",
+      "rarity": "epic",
+      "effect": "Every 5th hit calls down a radiant lightning bolt on the target.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_twinring",
+      "name": "Twinring",
+      "rarity": "epic",
+      "effect": "Your dash leaves a rift; dash again within 5 s to return to it.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_dawnlight_vial",
+      "name": "Dawnlight Vial",
+      "rarity": "epic",
+      "effect": "Raise it with Interact to blind and repel nearby enemies for 3 s (30 s cooldown).",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_throat_of_command",
+      "name": "Throat of Command",
+      "rarity": "epic",
+      "effect": "Your parries also stun Minions and Veterans within 4 m for 1 s.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_astral_double",
+      "name": "Astral Double",
+      "rarity": "epic",
+      "effect": "Once per room, project a shadow double that taunts enemies for 4 s.",
+      "source": "Drop: Act 3",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_velocity_aura",
+      "name": "Velocity Aura",
+      "rarity": "epic",
+      "effect": "+15% move speed; after 2 s at full speed, your dash damages everything it passes.",
+      "source": "Drop: Act 4",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_stiltlimb_rig",
+      "name": "Stiltlimb Rig",
+      "rarity": "epic",
+      "effect": "A mechanical limb strikes any enemy within melee range, once per second.",
+      "source": "Drop: Act 4",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_kinetic_aura",
+      "name": "Kinetic Aura",
+      "rarity": "epic",
+      "effect": "Pick up stunned enemies with Interact and throw them for heavy damage.",
+      "source": "Drop: Act 4 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_wayfinder_cube",
+      "name": "Wayfinder Cube",
+      "rarity": "epic",
+      "effect": "Heals are 25% stronger; fast-travel between discovered shrines in the act.",
+      "source": "Drop: Act 4",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_echoing_charm",
+      "name": "Echoing Charm",
+      "rarity": "epic",
+      "effect": "Abilities have a 15% chance to cast twice.",
+      "source": "Drop: Act 4",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_implant_kit",
+      "name": "Implant Kit",
+      "rarity": "epic",
+      "effect": "Your dash fires 4 darts, and you can't be slowed.",
+      "source": "Drop: Act 4",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_deflector_vambraces",
+      "name": "Deflector Vambraces",
+      "rarity": "legendary",
+      "effect": "Parried projectiles and beams are reflected; two parries within 1 s call down lightning.",
+      "source": "Drop: Act 3 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_gorgon_mirror",
+      "name": "Gorgon Mirror",
+      "rarity": "legendary",
+      "effect": "Raise it to petrify Minions in a cone for 2 s; petrified enemies shatter for +50% damage.",
+      "source": "Drop: Act 3 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_ancestors_wrath",
+      "name": "Ancestor's Wrath",
+      "rarity": "legendary",
+      "effect": "Below 25% HP your ultimate meter fills 3x faster, and your ultimate heals 30%.",
+      "source": "Drop: Act 3 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_rimecrown",
+      "name": "Rimecrown",
+      "rarity": "legendary",
+      "effect": "All hits chill (15% slow); every 60 s a blizzard pulse freezes nearby enemies for 1 s.",
+      "source": "Drop: Act 3 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_nova_heart",
+      "name": "Nova Heart",
+      "rarity": "legendary",
+      "effect": "With a full ultimate meter, detonate it for a screen-wide blast; your stats drop 30% for 20 s afterwards.",
+      "source": "Drop: Act 4 Champions",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_haven_bubble",
+      "name": "Haven Bubble",
+      "rarity": "legendary",
+      "effect": "Hold Parry for 1 s to raise a bubble that blocks all damage for 2 s (30 s cooldown).",
+      "source": "Boss shop (Boss Tokens)",
+      "stage": 4,
+      "set": null
+    },
+    {
+      "id": "r_bloodless_scabbard",
+      "name": "Bloodless Scabbard",
+      "rarity": "mythic",
+      "effect": "Immune to damage over time. With the Sovereign Blade: +25% damage.",
+      "source": "Arc finale: Act 3",
+      "stage": 4,
+      "set": "Sovereign"
+    },
+    {
+      "id": "r_skinthief_core",
+      "name": "Skinthief Core",
+      "rarity": "mythic",
+      "effect": "Absorb the form of a Champion you defeat; once per room, become it for 10 s.",
+      "source": "Arc finale: Act 4",
+      "stage": 4,
+      "set": "Fourforce"
+    },
+    {
+      "id": "r_turnback_hourglass",
+      "name": "Turnback Hourglass",
+      "rarity": "mythic",
+      "effect": "Once per room, rewind 3 s: you return to where you were, with the HP you had.",
+      "source": "Rift Lord event",
+      "stage": 6,
+      "set": null
+    },
+    {
+      "id": "r_hollow_core",
+      "name": "Hollow Core",
+      "rarity": "mythic",
+      "effect": "Holds up to four Realm Shards and grants all their powers at once.",
+      "source": "Story finale",
+      "stage": 6,
+      "set": "Realm Shards"
+    },
+    {
+      "id": "r_ironheart_shard",
+      "name": "Ironheart Shard",
+      "rarity": "mythic",
+      "effect": "Earth shard: +25% damage; every 10th hit releases a shockwave.",
+      "source": "Story: Realm Shard quest",
+      "stage": 6,
+      "set": "Realm Shards"
+    },
+    {
+      "id": "r_ember_shard",
+      "name": "Ember Shard",
+      "rarity": "mythic",
+      "effect": "Abyss shard: kills heal 2% HP; slain Elites rise as spirit allies for 15 s.",
+      "source": "Story: Realm Shard quest",
+      "stage": 6,
+      "set": "Realm Shards"
+    },
+    {
+      "id": "r_dawn_shard",
+      "name": "Dawn Shard",
+      "rarity": "mythic",
+      "effect": "Empyrean shard: an Elite you parry fights for you for 10 s.",
+      "source": "Story: Realm Shard quest",
+      "stage": 6,
+      "set": "Realm Shards"
+    },
+    {
+      "id": "r_null_shard",
+      "name": "Null Shard",
+      "rarity": "mythic",
+      "effect": "Void shard: your dash blinks through walls; once per room, every enemy projectile on screen turns into coins.",
+      "source": "Story: Realm Shard quest",
+      "stage": 6,
+      "set": "Realm Shards"
+    }
+  ],
+  "consumables": [
+    {
+      "id": "c_minor_healing_draught",
+      "name": "Minor Healing Draught",
+      "rarity": "common",
+      "effect": "Heals 30% HP over 2 s.",
+      "source": "Store",
+      "stage": 1,
+      "price": 25
+    },
+    {
+      "id": "c_resource_tonic",
+      "name": "Resource Tonic",
+      "rarity": "common",
+      "effect": "Refills 50% of your resource bar.",
+      "source": "Store",
+      "stage": 1,
+      "price": 25
+    },
+    {
+      "id": "c_greater_healing_draught",
+      "name": "Greater Healing Draught",
+      "rarity": "uncommon",
+      "effect": "Heals 60% HP instantly.",
+      "source": "Store",
+      "stage": 1,
+      "price": 60
+    },
+    {
+      "id": "c_bridge_sigil",
+      "name": "Bridge Sigil",
+      "rarity": "uncommon",
+      "effect": "Return to the hub, then come back to the same shrine.",
+      "source": "Store",
+      "stage": 2,
+      "price": 60
+    },
+    {
+      "id": "c_moonroot_tonic",
+      "name": "Moonroot Tonic",
+      "rarity": "uncommon",
+      "effect": "For 60 s, hidden enemies show on the minimap and you move 15% faster.",
+      "source": "Store",
+      "stage": 2,
+      "price": 60
+    },
+    {
+      "id": "c_override_key",
+      "name": "Override Key",
+      "rarity": "uncommon",
+      "effect": "Hacks an enemy turret or drone to fight for you for 15 s, or opens a locked vault.",
+      "source": "Drop: Acts 1-4",
+      "stage": 2,
+      "price": null
+    },
+    {
+      "id": "c_seekers_map",
+      "name": "Seeker's Map",
+      "rarity": "uncommon",
+      "effect": "For one mission, every enemy and every Mimic chest shows on the minimap.",
+      "source": "Store",
+      "stage": 2,
+      "price": 60
+    },
+    {
+      "id": "c_shadowcap_lantern",
+      "name": "Shadowcap Lantern",
+      "rarity": "uncommon",
+      "effect": "Darkens the room for 3 s; ranged enemies can't target you.",
+      "source": "Store",
+      "stage": 2,
+      "price": 60
+    },
+    {
+      "id": "c_viper_needle",
+      "name": "Viper Needle",
+      "rarity": "uncommon",
+      "effect": "Your next hit poisons for 10% of the target's max HP over 6 s.",
+      "source": "Store",
+      "stage": 2,
+      "price": 60
+    },
+    {
+      "id": "c_jury_rigged_bomb",
+      "name": "Jury-Rigged Bomb",
+      "rarity": "uncommon",
+      "effect": "A huge blast, but 1 in 5 fizzle.",
+      "source": "Store",
+      "stage": 2,
+      "price": 60
+    },
+    {
+      "id": "c_prime_serum",
+      "name": "Prime Serum",
+      "rarity": "rare",
+      "effect": "For 30 s: +20% damage, +20% move speed and steady HP regen.",
+      "source": "Store",
+      "stage": 2,
+      "price": 150
+    },
+    {
+      "id": "c_chainward_talisman",
+      "name": "Chainward Talisman",
+      "rarity": "rare",
+      "effect": "Binds the target in chains for 3 s (1 s on bosses).",
+      "source": "Store",
+      "stage": 2,
+      "price": 150
+    },
+    {
+      "id": "c_banegas_grenade",
+      "name": "Banegas Grenade",
+      "rarity": "rare",
+      "effect": "Enemies in the cloud take 25% more damage from every element for 6 s.",
+      "source": "Store",
+      "stage": 2,
+      "price": 150
+    },
+    {
+      "id": "c_seafire_flask",
+      "name": "Seafire Flask",
+      "rarity": "rare",
+      "effect": "Thrown flask; its fire burns for 6 s, spreads, and keeps burning on water.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "price": null
+    },
+    {
+      "id": "c_whisper_talisman",
+      "name": "Whisper Talisman",
+      "rarity": "rare",
+      "effect": "Turns 3 nearby Minions or Veterans against their allies for 8 s.",
+      "source": "Store",
+      "stage": 2,
+      "price": 150
+    },
+    {
+      "id": "c_errand_cube",
+      "name": "Errand Cube",
+      "rarity": "rare",
+      "effect": "Summons an imp that fights until it lands 10 hits, then vanishes.",
+      "source": "Gold Rush",
+      "stage": 2,
+      "price": null
+    },
+    {
+      "id": "c_spirit_jar",
+      "name": "Spirit Jar",
+      "rarity": "rare",
+      "effect": "Instantly traps a spirit enemy below 25% HP; trapped Elites drop double loot.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "price": null
+    },
+    {
+      "id": "c_howl_vial",
+      "name": "Howl Vial",
+      "rarity": "rare",
+      "effect": "A scream that stuns nearby enemies for 2 s and breaks their shields.",
+      "source": "Drop: Act 2",
+      "stage": 2,
+      "price": null
+    },
+    {
+      "id": "c_mindflash",
+      "name": "Mindflash",
+      "rarity": "rare",
+      "effect": "A blinding flash stuns every enemy on screen for 1 s and resets their aggro.",
+      "source": "Store",
+      "stage": 4,
+      "price": 150
+    },
+    {
+      "id": "c_sunseed_grenade",
+      "name": "Sunseed Grenade",
+      "rarity": "epic",
+      "effect": "An expanding sphere hits everything inside very hard, then stops cleanly at its edge.",
+      "source": "Drop: Act 3 Champions",
+      "stage": 4,
+      "price": null
+    },
+    {
+      "id": "c_pocket_hole",
+      "name": "Pocket Hole",
+      "rarity": "epic",
+      "effect": "Throw it on the floor; Minions that walk in drop out of the fight.",
+      "source": "Gold Rush",
+      "stage": 4,
+      "price": null
+    }
+  ]
+}

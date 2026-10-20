@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "config.schema.json",
+  "title": "Monster Mash game settings",
+  "description": "public/data/config.json: engine, display, camera and feature flags. Balance numbers go in content.json, not here.",
+  "type": "object",
+  "required": ["version", "features"],
+  "additionalProperties": false,
+  "patternProperties": { "^_": {} },
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "display": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "width": { "type": "integer", "minimum": 120 },
+        "height": { "type": "integer", "minimum": 120 },
+        "pixelArt": { "type": "boolean" },
+        "roundPixels": { "type": "boolean" },
+        "maxParticles": { "type": "integer", "minimum": 0 },
+        "uiTextMin": { "type": "integer", "minimum": 4 }
+      }
+    },
+    "world": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "groundY": { "type": "number" },
+        "slingX": { "type": "number" },
+        "slingY": { "type": "number" }
+      }
+    },
+    "physics": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "stepHz": { "type": "integer", "minimum": 30, "maximum": 240 },
+        "gravityY": { "type": "number" },
+        "positionIterations": { "type": "integer", "minimum": 1 },
+        "velocityIterations": { "type": "integer", "minimum": 1 },
+        "enableSleeping": { "type": "boolean" },
+        "maxStepsPerFrame": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "camera": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "introPan": { "type": "boolean" },
+        "followShot": { "type": "boolean" },
+        "minZoom": { "type": "number", "exclusiveMinimum": 0 },
+        "maxZoom": { "type": "number", "exclusiveMinimum": 0 },
+        "panMs": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "features": {
+      "type": "object",
+      "description": "Every optional system is behind a flag so it can be cut or shipped independently.",
+      "additionalProperties": { "type": "boolean" },
+      "properties": {
+        "map": { "type": "boolean" },
+        "shop": { "type": "boolean" },
+        "forge": { "type": "boolean" },
+        "artifacts": { "type": "boolean" },
+        "consumables": { "type": "boolean" },
+        "combo": { "type": "boolean" },
+        "daily": { "type": "boolean" },
+        "leaderboard": { "type": "boolean" },
+        "share": { "type": "boolean" },
+        "ads": { "type": "boolean" },
+        "iap": { "type": "boolean" },
+        "tutorial": { "type": "boolean" },
+        "music": { "type": "boolean" },
+        "zoom": { "type": "boolean" }
+      }
+    },
+    "debug": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "urlOverrides": { "type": "boolean", "description": "Allow ?debug=1&tune.launchK=0.3 style overrides." },
+        "testHook": { "type": "boolean", "description": "Expose window.__mm in dev and ?debug=1." }
+      }
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "level.schema.json",
+  "title": "Monster Mash level",
+  "description": "One file per level: public/data/levels/level_NN.json (legacy: public/data/level_NN.json). World units are px in the 216x384 viewport space; y grows downward; ground top is config.world.groundY (320).",
+  "type": "object",
+  "required": ["id", "name", "worldW", "blocks", "monsters"],
+  "additionalProperties": false,
+  "patternProperties": { "^_": {} },
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "type": "integer", "minimum": 0, "description": "0 is reserved for generated Daily Mash levels." },
+    "name": { "type": "string" },
+    "realm": { "type": "string" },
+    "kind": { "enum": ["siege", "runner", "boss", "daily", "tutorial"] },
+    "worldW": { "type": "integer", "minimum": 216, "maximum": 1296 },
+    "shots": { "type": "integer", "minimum": 1, "maximum": 8, "description": "Number of shots when the player brings their own loadout." },
+    "weapon": { "type": "string", "pattern": "^w_", "description": "Deprecated (Stage 1). Use loadout." },
+    "loadout": {
+      "description": "Fixed weapon queue for this level (tutorials, boss). Omit to use the player's loadout.",
+      "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^w_" }
+    },
+    "scoreTarget": { "type": "integer", "minimum": 0, "description": "Score needed for 3 stars." },
+    "escapeLimit": { "type": "integer", "minimum": 0, "description": "How many runners may escape before the level is lost." },
+    "hints": { "type": "array", "items": { "type": "string", "maxLength": 40 } },
+    "sling": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
+    },
+    "exit": {
+      "type": "object", "additionalProperties": false, "required": ["x", "y"],
+      "properties": { "x": { "type": "number" }, "y": { "type": "number" } },
+      "description": "Door runners head for."
+    },
+    "overrides": {
+      "type": "object",
+      "description": "Per-level overrides merged over content.json (e.g. {\"tuning\": {\"launchK\": 0.3}}).",
+      "additionalProperties": { "type": "object" }
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["m", "x", "y", "w", "h"],
+        "additionalProperties": false,
+        "properties": {
+          "m": { "type": "string", "description": "Material id." },
+          "x": { "type": "number" }, "y": { "type": "number" },
+          "w": { "type": "number", "exclusiveMinimum": 0 }, "h": { "type": "number", "exclusiveMinimum": 0 },
+          "angle": { "type": "number", "description": "Degrees." },
+          "static": { "type": "boolean" }
+        }
+      }
+    },
+    "monsters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["t", "x", "y"],
+        "additionalProperties": false,
+        "properties": {
+          "t": { "type": "string", "description": "Monster id." },
+          "x": { "type": "number" }, "y": { "type": "number" },
+          "delay": { "type": "number", "minimum": 0, "description": "Seconds before a runner starts." },
+          "path": {
+            "type": "array",
+            "items": { "type": "array", "minItems": 2, "items": { "type": "number" } },
+            "description": "Waypoints [[x,y],...] for runners and fliers."
+          }
+        }
+      }
+    }
+  }
+}

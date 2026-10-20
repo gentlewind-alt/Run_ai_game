@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "save.schema.json",
+  "title": "Monster Mash save (appStorage key 'save')",
+  "description": "One versioned JSON blob. Bump version and add a migration in src/core/save.ts for any breaking change. Never remove a field without a migration.",
+  "type": "object",
+  "required": ["version", "coins", "owned", "upgrades", "stars", "settings"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "coins": { "type": "integer", "minimum": 0 },
+    "owned": {
+      "type": "object", "additionalProperties": false, "required": ["weapons", "artifacts", "consumables"],
+      "properties": {
+        "weapons": { "type": "array", "items": { "type": "string" } },
+        "artifacts": { "type": "array", "items": { "type": "string" } },
+        "consumables": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "cosmetics": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "upgrades": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "equipped": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "loadout": { "type": "array", "items": { "type": "string" } },
+        "artifacts": { "type": "array", "items": { "type": "string" } },
+        "slingSkin": { "type": "string" }
+      }
+    },
+    "stars": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 3 } },
+    "best": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "daily": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "lastDay": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "streak": { "type": "integer", "minimum": 0 },
+        "best": { "type": "integer", "minimum": 0 },
+        "rewardsClaimed": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "flags": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Tutorial hints seen, one-time popups." },
+    "settings": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "muted": { "type": "boolean" }, "musicOn": { "type": "boolean" } }
+    }
+  }
+}
