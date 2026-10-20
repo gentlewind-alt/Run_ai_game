@@ -34,14 +34,15 @@ Where does a new number go?
 
 | Section | Read by | Notes |
 |---|---|---|
-| `tuning` | sling, damage, coins, status, flow | `launchK`, `maxPull`, `aimGrabRadius`, `minPull`, `debrisK`, `debrisMinSpeed`, `projMinSpeed`, `hitCooldownSteps`, `minImpactDamage`, `impactBase`, `fallThreshold`, `fallK`, `explosionFalloff`, `explosionPush`, `explosionHitStop`, `hitStopFrames`, `mashHitStop`, `mashAt`, `stretchSoundMs`, `homeZoomMin`, `homeLeft`, `coins{}`, `points{}`, `shotBonus*`. `status{burnDamage, burnTickSteps, curseMult, slowSpeedMult}` and `flow{...}` (when a shot counts as over, settle timings, win delay) are objects |
+| `tuning` | sling, damage, coins, status, flow | `launchK`, `maxPull`, `aimGrabRadius`, `minPull`, `debrisK`, `blockDebrisFactor`, `debrisMinSpeed`, `projMinSpeed`, `hitCooldownSteps`, `minImpactDamage`, `impactBase`, `fallThreshold`, `fallK`, `explosionFalloff`, `explosionPush`, `explosionHitStop`, `hitStopFrames`, `mashHitStop`, `mashAt`, `stretchSoundMs`, `homeZoomMin`, `homeLeft`, `coins{}`, `points{}`, `shotBonus*`. `status{burnDamage, burnTickSteps, curseMult, slowSpeedMult}` and `flow{...}` (when a shot counts as over, settle timings, win delay) are objects |
 | `damageRules` | `battle/damage.ts`, forge | formula in ARCHITECTURE.md section 7. `upgradeBaseCost` (50) goes in here when the forge is built |
-| `economy` | score, results, daily | `leftoverShotCoins`, `starScoreFactor`, `dailyStreakRewardDay`, `dailyStreakRewardCoins`. Created when first needed |
+| `economy` | score, results, shop, loadout | `startCoins`, `replayCoinFactor`, `lossCoinFactor`, `maxConsumableStack`, `loadoutSize`, `artifactSlots`, `secondArtifactAfterLevel` |
 | `weapons[]` | weapon registry, shop, loadout | `physics{radius,density,spin,gravity,align}`, `ability{mode,label}` and `params{}` (every number the behaviour file reads). `params.behavior` reuses another weapon's code |
 | `stretchWeapons[]`, `stretchArtifacts[]` | nobody | parked ideas; move a row into the main list to build it |
-| `monsters[]` | monster registry, world | `behavior` defaults to the monster id, then `basic`. `density` defaults to 0.001. `params` holds the behaviour's numbers (`regenPerSec`, `blastRadius`, `shield`...); `selfMoving: 1` marks monsters that never "settle" (imp, runner). `size{w,h}` currently comes from `art/textures.ts` `MONSTER_ART` |
+| `monsters[]` | monster registry, world | `behavior` defaults to the monster id, then `basic`. `density` defaults to 0.001. `boss` (boolean) marks boss monsters (e.g. Iron Warlord; reduces chain duration). `params` holds the behaviour's numbers (`regenPerSec`, `blastRadius`, `shield`...); `selfMoving: 1` marks monsters that never "settle" (imp, runner). `size{w,h}` currently comes from `art/textures.ts` `MONSTER_ART` |
 | `materials[]` | world, damage | `density` and `friction` default to the values in `battle/world.ts` |
-| `artifacts[]`, `consumables[]` | registries, shop | numbers in `params` |
+| `artifacts[]`, `consumables[]` | registries, shop | Numbers in `params`. Artifacts: `r_gale_eye` (`radius`, `strength`), `r_echo_stone` (`delaySteps`, `mult`), `r_lodestone_bracer` (`radius`, `bonus`), `r_analyst_lens` (`previewMult`), `r_stormcaller_torc` (`everyHits`, `mult`), `r_gamblers_charm` (`coinMult`, `critChance`, `critMult`, `critCoins`). Consumables: `targeted` (boolean), `params`: `c_jury_rigged_bomb` (`radius`, `damage`, `fizzleChance`), `c_prime_serum` (`shots`, `mult`), `c_mindflash` (`steps`), `c_chainward_talisman` (`steps`, `bossSteps`, `pickRadius`) |
+| `mods` (runtime) | `BattleCtx.mods` | In-battle modifiers set by artifacts/consumables: `damageMult` (Prime Serum launch buff), `serumShots`, `serumMult`, `coinMult` (Gambler's Charm), `previewMult` (Analyst Lens) |
 | `realms[]` | map, world, art, audio | `levels` are level ids in play order |
 | `cosmetics[]` | shop, daily reward | `priceBits` needs `features.iap` and a matching `rundot/shop.config.json` entry |
 
@@ -66,7 +67,9 @@ Minimal level:
 
 - `x`, `y` are the **centre** of the block or monster. A block resting on the ground has `y = groundY - h/2`. A monster standing on the ground has `y = groundY - 7`.
 - `loadout` fixes the weapons for this level (tutorials, the boss). Omit it and set `shots` to let players bring their own loadout (from S3).
-- Runner levels need `exit` and runners with an optional `path` and `delay`. `escapeLimit` defaults to 0.
+- `terrain`: optional polyline `[[x, y], ...]` defining the ground height profile from left to right (y grows downward; flat outside the first and last point; default flat ground at `config.world.groundY`).
+- Monsters in level files specify `t` (monster id), `x`, `y`. Runner monsters (e.g. `skeleton_runner`) also support `dir` (`1` right, `-1` left, default 1), `speed` (px per fixed step, default 0.8), `delay` (seconds before starting), and optional waypoint `path`.
+- Runner levels need `exit` (door coordinates `{x, y}`) and runners. `escapeLimit` defaults to 0.
 - The Daily Mash generator builds a level object in memory with `id: 0` and `kind: "daily"`. It must pass the same schema; the generator's unit test validates it.
 - Add `"$schema"` at the top of each file to get editor autocomplete. The checker ignores it.
 

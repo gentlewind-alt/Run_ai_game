@@ -67,11 +67,15 @@ function stepLogic(b: BattleState): void {
       if (out || p.slow > F.projectileSlowSteps || p.steps > F.projectileMaxSteps) endProj(b, p);
     }
   }
-  b.actors = b.actors.filter((a) => {
+  const list = b.actors;
+  b.actors = [];
+  const keep = [];
+  for (const a of list) {
     const done = a.update();
     if (done) a.destroy();
-    return !done;
-  });
+    else keep.push(a);
+  }
+  b.actors = [...keep, ...b.actors];
   const busy = !!b.proj || b.actors.some((a) => !!a.pos);
   if (b.state === 'flying' && !busy) {
     b.state = 'settling';

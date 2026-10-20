@@ -8,7 +8,7 @@
   "hints": [
     "Kill 3 in 2 seconds for a MASH combo."
   ],
-  "scoreTarget": 3000,
+  "scoreTarget": 1200,
   "escapeLimit": 1,
   "exit": {
     "x": 580,

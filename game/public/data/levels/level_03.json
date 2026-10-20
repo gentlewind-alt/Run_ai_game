@@ -8,7 +8,7 @@
   "hints": [
     "Stop the runners before the door."
   ],
-  "scoreTarget": 2000,
+  "scoreTarget": 1700,
   "escapeLimit": 1,
   "exit": {
     "x": 520,
@@ -113,32 +113,32 @@
     },
     {
       "t": "goblin_grunt",
-      "x": 250,
-      "y": 313.0
+      "x": 225,
+      "y": 269.0
     },
     {
       "t": "skeleton_runner",
-      "x": 262,
+      "x": 252,
       "y": 313.0,
       "dir": 1,
-      "speed": 1.05,
-      "delay": 0.4
+      "speed": 1.0,
+      "delay": 0.5
     },
     {
       "t": "skeleton_runner",
-      "x": 278,
+      "x": 268,
       "y": 313.0,
       "dir": 1,
-      "speed": 0.9,
-      "delay": 0.7
+      "speed": 0.85,
+      "delay": 0.8
     },
     {
       "t": "skeleton_runner",
-      "x": 292,
+      "x": 284,
       "y": 313.0,
       "dir": 1,
-      "speed": 0.75,
-      "delay": 1.0
+      "speed": 0.7,
+      "delay": 1.1
     }
   ]
 }

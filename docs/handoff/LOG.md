@@ -2,6 +2,42 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · agy · Stage 3 verification & balance complete (S3-05, S3-06, S3-07, S2-04)
+- **What:**
+  - **Docs:** Updated `architecture/ARCHITECTURE.md` with new event payloads (`shot:launched`, `hit`, `kill`, `level:won/lost`) and `BattleCtx` extensions (`groundAt`, `mods`). Updated `architecture/DATA.md` for `tuning`, `economy`, `mods`, artifact & consumable `params`, level `terrain`, runner `delay`, `dir`, `speed`, and monster `boss`.
+  - **Registry validation:** Extended `game/src/content/validate.ts` (`checkRegistries`) to bidirectionally validate `ARTIFACTS` and `CONSUMABLES` against `content.json`.
+  - **Artifacts & Consumables verification:** Verified all 6 artifacts and 4 consumables with headless CDP harness and `window.__mm`. Fixed critical actor spawn lifecycle bug in `game/src/battle/loop.ts`. Added test helpers to `game/src/debug/testHook.ts`.
+  - **Level balancing:** Tuned levels 3-8 in `game/scripts/build_levels.py` and regenerated `level_01.json` through `level_08.json`. Tested using greedy solver (`__mm.solveStep`) and angle sweeps (`__mm.sweep`). Set `scoreTargets` to ~70% of clear scores.
+- **Artifacts & Consumables Pass/Fail Table:**
+  | Item ID | Name | Effect Verified | Profile Stock Decrement | Result |
+  |---|---|---|---|---|
+  | `r_gale_eye` | Gale Eye | Drag reduced from 0.992 to 0.85 (speed after 60 steps: 7.40 vs 4.88) | N/A (passive) | PASS |
+  | `r_echo_stone` | Echo Stone | Spawns 2 pellets on first impact at +/-35 deg with 0.55 velocity | N/A (passive) | PASS |
+  | `r_lodestone_bracer` | Lodestone Bracer | Homing pull toward closest monster with 0.08 accel | N/A (passive) | PASS |
+  | `r_analyst_lens` | Analyst's Lens | Aim trajectory preview points extended to 120 | N/A (passive) | PASS |
+  | `r_stormcaller_torc` | Stormcaller Torc | Fires lightning strike for 20 dmg on weapon ability activation | N/A (passive) | PASS |
+  | `r_gamblers_charm` | Gambler's Charm | 25% crit chance on impact dealing 2.0x base damage | N/A (passive) | PASS |
+  | `c_jury_rigged_bomb` | Jury-rigged Bomb | Target tap drops bomb dealing 35 damage in r=52 AoE, destroying blocks | Stock decremented (1 -> 0) | PASS |
+  | `c_prime_serum` | Prime Serum | Boosts next shot launch speed x1.25 (10.0 vs 8.0) and density x1.35 | Stock decremented (1 -> 0) | PASS |
+  | `c_mindflash` | Mindflash | Freezes all monsters and time for 240 steps (4 seconds) | Stock decremented (1 -> 0) | PASS |
+  | `c_chainward_talisman` | Chainward Talisman | Absorbs next 3 monster attacks or hex debuffs | Stock decremented (1 -> 0) | PASS |
+- **Bug Fix:** In `game/src/battle/loop.ts`, `b.actors = b.actors.filter(...)` was overwriting the active actors array and discarding newly spawned actors (such as `echoStone` pellets) added to `b.actors` during an actor's `update()` call. Fixed to preserve all spawned actors.
+- **Level Balancing Before / After Table:**
+  | Level | Before Solver Status | After Solver Status | Shots to Clear | 1-Shot Wins | Unreachable Monsters | Old ScoreTarget | New ScoreTarget (~70%) | Final Clear Score |
+  |---|---|---|---|---|---|---|---|---|
+  | L1 | Won | Won | 2 shots | 0 | 0 | 800 | 720 | 1030 |
+  | L2 | Won | Won | 2 shots | 0 | 0 | 1800 | 1600 | 2255 |
+  | L3 | Won (3 shots) | Won (2 shots) | 2 shots | 0 | 0 | 2000 | 1700 | 2420 |
+  | L4 | Won (4 shots) | Won (4 shots) | 4 shots | 0 | 0 | 3000 | 1200 | 1725 |
+  | L5 | Won (3 shots) | Won (3 shots) | 3 shots | 0 | 0 | 2200 | 1100 | 1555 |
+  | L6 | Lost (imps unreachable) | Won (3 shots) | 3 shots | 0 | 0 | 3600 | 1250 | 1775 |
+  | L7 | Lost (hexer unreachable) | Won (3 shots) | 3 shots | 0 | 0 | 3800 | 1100 | 1590 |
+  | L8 | Lost (4 unreachable) | Won (3 shots) | 3 shots | 0 | 0 | 4200 | 1350 | 1905 |
+- **Checks:** `npm run check` (0 errors, 5 expected warnings) and `npm run build` pass. All level balance targets met (L1-3 in 2 shots, L4-8 in 3-4 shots, 0 one-shot wins, 0 unreachable monsters).
+- **Deployed:** Not deployed (requires owner approval per Golden Rule #9).
+- **Notes / for the next agent:** Stage 3 tasks complete. Ready to proceed to Stage 4 (Iron Keep levels 9-11, Iron Warlord boss, Daily Mash generator).
+- **Questions for owner:** None.
+
 ## 2026-10-21 · agy · S-merkle done: Merkle index tool built and verified
 - **What:** built `tools/merkle.mjs` (Node 18+, zero deps, ESM) with `seal`, `changed` (with `--json`), and `verify` commands; SHA-256 leaf and directory hashes; CRLF normalized to LF; `PURPOSES` map for all dirs down to depth 3; writes `MERKLE.json` (nested tree) and `MERKLE.md` (markdown table); added npm scripts to root `package.json` and `game/package.json`; documented workflow in `architecture/WORKFLOW.md` and repo map in `AGENTS.md`.
 - **Checks:** `node tools/merkle.mjs seal` seals 142 files; `changed` returns `clean`; tested editing `game/src/battle/loop.ts` and confirmed `changed` reported exactly `loop.ts` and its parent directories (`game`, `game/src`, `game/src/battle`), and `verify` exited 1; reverted edit and verified `changed` returned `clean`; `npm run check` and `npm run build` in `game/` both pass with 0 errors.

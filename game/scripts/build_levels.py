@@ -67,7 +67,7 @@ write(1, 'First fort', 'goblin_hills', 'siege', 432, ['Drag back from the sling,
       [[0, 320], [110, 320], [140, 308], [190, 308], [216, 320], [432, 320]],
       [blk('stone', 232, 306, 10, 28), blk('stone', 268, 306, 10, 28), blk('wood', 250, 289, 56, 6), blk('wood', 236, 276, 6, 20),
        blk('wood', 264, 276, 6, 20), blk('wood', 250, 263, 48, 6), blk('stone', 238, 254, 12, 12), blk('wood', 290, 313, 14, 14)],
-      [mon('goblin_grunt', 250, 313), mon('goblin_grunt', 260, 253), mon('goblin_grunt', 308, 313)], 1200)
+      [mon('goblin_grunt', 250, 313), mon('goblin_grunt', 260, 253), mon('goblin_grunt', 308, 313)], 720)
 
 # 2 Bomb squad: a hump hides the base. Bombers chain when one goes.
 write(2, 'Bomb squad', 'goblin_hills', 'siege', 432, ['Press the ability button mid-flight.'],
@@ -75,7 +75,7 @@ write(2, 'Bomb squad', 'goblin_hills', 'siege', 432, ['Press the ability button 
       [blk('stone', 240, 300, 12, 40), blk('stone', 240, 274, 12, 12), blk('wood', 252, 306, 8, 28), blk('wood', 298, 306, 8, 28),
        blk('wood', 276, 289, 60, 6), blk('wood', 264, 276, 6, 20), blk('wood', 290, 276, 6, 20), blk('wood', 277, 263, 44, 6),
        blk('stone', 277, 280, 12, 12), blk('wood', 318, 306, 8, 28), blk('wood', 344, 306, 8, 28), blk('wood', 331, 289, 30, 6)],
-      [mon('goblin_bomber', 264, 313), mon('goblin_bomber', 284, 313), mon('goblin_grunt', 330, 313), mon('goblin_grunt', 284, 253)], 1800)
+      [mon('goblin_bomber', 264, 313), mon('goblin_bomber', 284, 313), mon('goblin_grunt', 330, 313), mon('goblin_grunt', 284, 253)], 1600)
 
 # 3 Run, skeleton, run: a fort close in, runners that sprint uphill to a door on the far side.
 b3, top3 = tower(213, GROUND, 44, 1, 'stone', 28)
@@ -83,10 +83,10 @@ b3 += [blk('wood', 204, top3 - 10, 6, 20), blk('wood', 222, top3 - 10, 6, 20), b
 write(3, 'Run, skeleton, run', 'goblin_hills', 'runner', 540, ['Stop the runners before the door.'],
       [[0, 320], [100, 320], [126, 308], [152, 308], [178, 320], [300, 320], [336, 298], [430, 298], [466, 320], [540, 320]],
       b3,
-      [mon('goblin_grunt', 213, stand(GROUND)), mon('goblin_grunt', 213, stand(top3 - 26)), mon('goblin_grunt', 250, stand(GROUND)),
-       mon('skeleton_runner', 262, stand(GROUND), dir=1, speed=1.05, delay=0.4), mon('skeleton_runner', 278, stand(GROUND), dir=1, speed=0.9, delay=0.7),
-       mon('skeleton_runner', 292, stand(GROUND), dir=1, speed=0.75, delay=1.0)],
-      2000, escapeLimit=1, exit={'x': 520, 'y': GROUND - 13})
+      [mon('goblin_grunt', 213, stand(GROUND)), mon('goblin_grunt', 213, stand(top3 - 26)), mon('goblin_grunt', 225, stand(top3 - 10)),
+       mon('skeleton_runner', 252, stand(GROUND), dir=1, speed=1.0, delay=0.5), mon('skeleton_runner', 268, stand(GROUND), dir=1, speed=0.85, delay=0.8),
+       mon('skeleton_runner', 284, stand(GROUND), dir=1, speed=0.7, delay=1.1)],
+      1700, escapeLimit=1, exit={'x': 520, 'y': GROUND - 13})
 
 # 4 Hill fort: a plateau fort with bombers in the bays, grunts on top, runners waiting beyond the slope.
 P4 = 288
@@ -100,7 +100,7 @@ write(4, 'Hill fort', 'goblin_hills', 'siege', 600, ['Kill 3 in 2 seconds for a 
       [mon('goblin_bomber', 209, stand(P4)), mon('goblin_bomber', 243, stand(P4)), mon('goblin_grunt', 226, stand(P4 - 60)),
        mon('goblin_grunt', 242, stand(P4 - 60)), mon('goblin_grunt', 120, stand(GROUND)),
        mon('skeleton_runner', 312, stand(GROUND), dir=1, speed=0.8, delay=0.8), mon('skeleton_runner', 330, stand(GROUND), dir=1, speed=0.7, delay=1.2)],
-      3000, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13})
+      1200, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13})
 
 # ---------------------------------------------------------------- Dark Elf Wood (dusk): archers, hexers, imps
 # Everything the player must kill sits inside the reach of a full pull. Distance and height are the difficulty.
@@ -114,35 +114,35 @@ write(5, 'Moonlit towers', 'dark_elf_wood', 'siege', 432, ['Archers hide high. L
       tA + tB,
       [mon('dark_elf_archer', 162, stand(topA)), mon('dark_elf_hexer', 162, stand(PA - 34)), mon('goblin_grunt', 162, stand(PA)),
        mon('dark_elf_archer', 298, stand(topB)), mon('dark_elf_hexer', 298, stand(PB))],
-      3400)
+      1100)
 
 # 6 Imp swarm: a ridge hides the fort, so shots have to lob. Imps weave above the peak and the fort.
-tC, topC = tower(310, GROUND, 44, 2, 'wood', 28)
+tC, topC = tower(300, GROUND, 44, 2, 'wood', 28)
 write(6, 'Imp swarm', 'dark_elf_wood', 'siege', 432, ['A ridge blocks flat shots. Aim high.'],
       [[0, 320], [110, 320], [140, 296], [176, 250], [214, 250], [240, 286], [270, 320], [432, 320]],
       tC,
-      [mon('imp', 250, 215), mon('imp', 290, 170), mon('imp', 332, 205), mon('dark_elf_archer', 310, stand(topC)),
-       mon('dark_elf_hexer', 310, stand(GROUND - 34)), mon('goblin_grunt', 310, stand(GROUND)),
+      [mon('imp', 230, 220), mon('imp', 255, 205), mon('imp', 280, 215), mon('dark_elf_archer', 300, stand(topC)),
+       mon('dark_elf_hexer', 300, stand(GROUND - 34)), mon('goblin_grunt', 300, stand(GROUND)),
        mon('dark_elf_archer', 195, stand(250))],
-      3600)
+      1250)
 
 # 7 Hexer court: a stone screen in front of a shielded stage. Two hexers cover a guard and an archer.
 P7 = 300
-tD, topD = tower(260, P7, 64, 2, 'stone', 28)
+tD, topD = tower(275, P7, 52, 2, 'stone', 28)
 write(7, 'Hexer court', 'dark_elf_wood', 'siege', 432, ['Hurt the hexer to drop its shields.'],
       [[0, 320], [110, 320], [150, P7], [336, P7], [356, 320], [432, 320]],
-      tD + [blk('stone', 176, P7 - 30, 12, 60), blk('stone', 176, P7 - 66, 12, 12)],
-      [mon('dark_elf_hexer', 246, stand(P7)), mon('goblin_grunt', 274, stand(P7)), mon('dark_elf_hexer', 260, stand(P7 - 34)),
-       mon('dark_elf_archer', 260, stand(topD)), mon('dark_elf_archer', 326, stand(P7)),
-       mon('imp', 290, 200)],
-      3800)
+      tD + [blk('stone', 180, P7 - 24, 12, 48)],
+      [mon('dark_elf_hexer', 230, stand(P7)), mon('goblin_grunt', 255, stand(P7)), mon('dark_elf_hexer', 275, stand(P7 - 34)),
+       mon('dark_elf_archer', 275, stand(topD)), mon('dark_elf_archer', 320, stand(P7)),
+       mon('imp', 265, 205)],
+      1100)
 
 # 8 Elf bastion: a stepped cliff, a two-tier keep on the upper step, a lower outpost. Everything at once.
 P8a, P8b = 300, 268
-tE, topE = tower(280, P8b, 60, 2, 'stone', 26)
+tE, topE = tower(275, P8b, 56, 2, 'stone', 28)
 write(8, 'Elf bastion', 'dark_elf_wood', 'siege', 432, ['Break the cliff keep. Mind the shields.'],
       [[0, 320], [110, 320], [126, P8a], [196, P8a], [220, P8b], [336, P8b], [356, 320], [432, 320]],
-      tE + [blk('stone', 160, P8a - 18, 12, 36), blk('wood', 160, P8a - 40, 12, 8), blk('wood', 330, P8b - 14, 8, 28), blk('wood', 330, P8b - 31, 22, 6)],
-      [mon('dark_elf_archer', 280, stand(topE)), mon('dark_elf_hexer', 280, stand(P8b - 32)), mon('goblin_grunt', 280, stand(P8b)),
-       mon('dark_elf_hexer', 250, stand(P8b)), mon('dark_elf_archer', 190, stand(P8a)), mon('imp', 235, 200)],
-      4200)
+      tE + [blk('stone', 160, P8a - 20, 12, 40), blk('wood', 160, P8a - 46, 12, 12), blk('wood', 324, P8b - 14, 8, 28), blk('wood', 324, P8b - 31, 24, 6)],
+      [mon('dark_elf_archer', 275, stand(topE)), mon('dark_elf_hexer', 275, stand(P8b - 34)), mon('goblin_grunt', 275, stand(P8b)),
+       mon('dark_elf_hexer', 324, stand(P8b)), mon('dark_elf_archer', 190, stand(P8a)), mon('imp', 235, 195)],
+      1350)

@@ -2,6 +2,7 @@
 // so a whole level plays in milliseconds. Tweens run on wall-clock time, so the hook skips the intro and the weapon hops.
 import type Phaser from 'phaser';
 import { activateAbility, launchFrom, skipToReady } from '../battle/sling';
+import { pressConsumable, targetTap } from '../battle/consumables';
 import type { BattleState } from '../battle/state';
 import { addCoins, applyDebug, profile } from '../core/profile';
 import { data } from '../data/load';
@@ -161,5 +162,8 @@ export function installTestHook(game: Phaser.Game): void {
     load, fire, run: tick, settle, set, give, play, sweep, solveStep,
     state: () => snapshot(battle()),
     profile: () => profile,
+    battle: () => battle(),
+    pressConsumable: (i: number) => pressConsumable(battle(), i),
+    targetTap: (wx: number, wy: number) => targetTap(battle(), wx, wy),
   };
 }

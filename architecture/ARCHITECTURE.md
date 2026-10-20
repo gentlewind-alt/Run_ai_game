@@ -132,6 +132,8 @@ export interface BattleCtx {                       // battle/BattleCtx.ts is the
   readonly tune: Tuning; readonly rules: DamageRules;   // merged settings (section 9)
   readonly events: EventBus;
   readonly sling: { x: number; y: number }; readonly groundY: number; readonly worldW: number;
+  groundAt(x: number): number;                     // ground height at world x (see battle/terrain.ts)
+  readonly mods: Mods;                             // runtime modifiers (damageMult, serumShots, serumMult, coinMult, previewMult)
   readonly level: Level; readonly phase: BattlePhase;   // phase = intro | loading | ready | aiming | flying | settling | won | lost
   readonly M: any;                                 // Matter.js namespace
   // queries (living entities only)
@@ -204,17 +206,17 @@ Typed in `core/events.ts`. Emit with `events.emit('kill', {...})`, listen with `
 | Event | Payload | Typical listeners |
 |---|---|---|
 | `level:start` | `{ levelId, kind }` | tutorial hints, analytics, artifacts install |
-| `shot:launched` | `{ weaponId, index }` | Echo Stone (ghost shot), HUD |
+| `shot:launched` | `{ weaponId, index, x, y, vx, vy, radius, density, gravity }` | Echo Stone (ghost shot), HUD |
 | `shot:ability` | `{ weaponId, x, y }` | Gale Eye (wind burst), sfx |
 | `shot:ended` | `{ weaponId }` | camera, sling queue |
-| `hit` | `{ target, amount, element, source, x, y }` | Stormcaller Torc (every 5th hit), numbers popup |
-| `kill` | `{ target, by, x, y }` | combo, score, coins, Gamblers Charm |
+| `hit` | `{ target, amount, x, y, quiet?, fall? }` | Stormcaller Torc (every 5th hit), numbers popup |
+| `kill` | `{ target, x, y }` | combo, score, coins, Gamblers Charm |
 | `combo` | `{ count, mult }` | MASH banner, sfx, haptics. Emitted only when the chain reaches `tuning.mashAt` |
 | `runner:escaped` | `{ count, limit }` | rules, HUD |
 | `coins:gained` | `{ amount, total }` | HUD, Lodestone Bracer |
 | `score:changed` | `{ score, delta }` | HUD |
-| `level:won` | `{ levelId, stars, score, coins }` | profile, save, results, leaderboard (daily) |
-| `level:lost` | `{ levelId, reason }` | results, analytics |
+| `level:won` | `{ levelId, stars, score, coins, shotsLeft }` | profile, save, results, leaderboard (daily) |
+| `level:lost` | `{ levelId, reason, score, coins }` | results, analytics |
 | `profile:changed` | `{ field }` | save (debounced), shop UI |
 
 Add events here first, then in `core/events.ts`.
