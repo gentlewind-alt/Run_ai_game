@@ -8,11 +8,11 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
 | S1 | Proof of fun + follow-ups + 1.5 | | done | local | 10-21 | queue, zoom, ability button |
-| S2-01 | Split GameScene into target layout | | doing | claude | 10-21 | do first; no behaviour change |
-| S2-02 | config.json, data migration, settings merge | S2-01 | doing | claude | 10-21 | |
-| S2-03 | Event bus, BattleCtx, RNG, platform adapter | S2-01 | doing | claude | 10-21 | |
+| S2-01 | Split GameScene into target layout | | review | claude | 10-21 | see LOG 10-21 refactor entry; check hosted platform adapter after a deploy |
+| S2-02 | config.json, data migration, settings merge | S2-01 | review | claude | 10-21 | see LOG 10-21 refactor entry; check hosted platform adapter after a deploy |
+| S2-03 | Event bus, BattleCtx, RNG, platform adapter | S2-01 | review | claude | 10-21 | see LOG 10-21 refactor entry; check hosted platform adapter after a deploy |
 | S2-04 | Test hook + shot sweep | S2-03 | todo | | | cloud session can do this |
-| S2-05 | Cleaver, Staff, Pike | S2-03 | review | local | 10-21 | built in monolithic GameScene + weapons.ts; behaviour done, not on the S2-01..03 layout |
+| S2-05 | Cleaver, Staff, Pike | S2-03 | review | local | 10-21 | behaviour done; now on the S2-01..03 layout |
 | S2-06 | Scattergun, Boomerang, Blast Tube, Scepter | S2-03 | review | local | 10-21 | same; boomerang and scepter tuned from sweeps |
 | S2-07 | Monster behaviours + iron/crystal | S2-03 | review | local | 10-21 | all behaviours but iron/crystal materials; runners use dir+speed, not path |
 | S2-08 | MASH combo, score, stars | S2-03 | review | local | 10-21 | combo, MASH banner on the beat, score, stars; no features.combo flag yet |
@@ -43,7 +43,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 
 | Card | Title | State | Notes |
 |---|---|---|---|
-| S2-new1 | Refactor the Stage 2 code into the S2-01..03 layout (GameScene is about 1000 lines) | todo | do before more content; the sweep harness in 07_local_reply.md can be the S2-04 test hook |
+| S2-new1 | Refactor the Stage 2 code into the S2-01..03 layout | done | merged into S2-01..03 (review); BattleScene is 92 lines |
 | S2-new2 | Design ladder per `docs/monster_mash/08_design_direction.md` | doing | Stage 2 pass done; Stage 3 pass is title, map, shop |
 | S2-new3 | Fall and impact damage for monsters | review | tuning.fallThreshold/fallK/debrisK |
 
