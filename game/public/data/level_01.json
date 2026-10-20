@@ -1,8 +1,13 @@
 {
   "id": 1,
   "name": "First fort",
+  "realm": "goblin_hills",
+  "kind": "siege",
   "worldW": 432,
-  "hint": "Drag back from the sling and let go.",
+  "shots": 4,
+  "hints": [
+    "Drag back from the sling, then let go."
+  ],
   "scoreTarget": 1200,
   "blocks": [
     {

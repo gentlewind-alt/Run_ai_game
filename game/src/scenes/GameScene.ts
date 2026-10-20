@@ -444,7 +444,7 @@ export default class GameScene extends Phaser.Scene {
     this.uiMode = true;
     this.coinsTxt = text(this, 4, top + 5, 'Coins 0', C('4')).setOrigin(0, 0.5).setDepth(10);
     this.scoreTxt = text(this, 4, top + 17, 'Score 0', C('c')).setOrigin(0, 0.5).setDepth(10);
-    if (this.level.maxEscapes !== undefined) this.escTxt = text(this, 4, top + 29, `Escaped 0 of ${this.level.maxEscapes}`, C('d')).setOrigin(0, 0.5).setDepth(10);
+    if (this.level.escapeLimit !== undefined) this.escTxt = text(this, 4, top + 29, `Escaped 0 of ${this.level.escapeLimit}`, C('d')).setOrigin(0, 0.5).setDepth(10);
 
     this.muteBtn = this.add.image(W - 10, top + 4, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
     this.muteBtn.setInteractive(new Phaser.Geom.Rectangle(-6, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
@@ -462,8 +462,8 @@ export default class GameScene extends Phaser.Scene {
     this.ability = makeButton(this, W - 30, H - 28, 52, 32, this.wpn.abilityLabel, 'ability', () => this.activateAbility());
     this.ability.box.setVisible(false);
 
-    if (this.level.hint) {
-      const hint = textBlock(this, W / 2, top + 44, this.level.hint, C('c'), 190, C('0'));
+    if (this.level.hints?.[0]) {
+      const hint = textBlock(this, W / 2, top + 44, this.level.hints[0], C('c'), 190, C('0'));
       hint.forEach((h) => h.setDepth(10));
       this.tweens.add({ targets: hint, alpha: 0, delay: 5200, duration: 700, onComplete: () => hint.forEach((h) => h.destroy()) });
     }
@@ -1198,7 +1198,7 @@ export default class GameScene extends Phaser.Scene {
     this.escaped++;
     sfx.lose();
     this.popWord(this.level.exit.x - 10, GROUND - 30, 'it got away!');
-    if (this.escTxt) setText(this.escTxt, this, `Escaped ${this.escaped} of ${this.level.maxEscapes}`, this.escaped > this.level.maxEscapes ? C('2') : C('d'));
+    if (this.escTxt) setText(this.escTxt, this, `Escaped ${this.escaped} of ${this.level.escapeLimit}`, this.escaped > this.level.escapeLimit ? C('2') : C('d'));
   }
 
   /** Visual only: an arrow flies at the launcher pad and fizzles. */
@@ -1266,7 +1266,7 @@ export default class GameScene extends Phaser.Scene {
 
     const alive = this.ents.filter((e) => !e.dead);
     const monsters = alive.filter((e) => e.kind === 'monster').length;
-    if (this.state !== 'won' && this.state !== 'lost' && this.escaped > (this.level.maxEscapes ?? 99)) {
+    if (this.state !== 'won' && this.state !== 'lost' && this.escaped > (this.level.escapeLimit ?? 99)) {
       this.finish(false, 'escaped');
       return;
     }

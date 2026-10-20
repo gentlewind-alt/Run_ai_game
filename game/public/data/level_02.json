@@ -1,8 +1,13 @@
 {
   "id": 2,
   "name": "Bomb squad",
+  "realm": "goblin_hills",
+  "kind": "siege",
   "worldW": 432,
-  "hint": "Press the ability button while your weapon flies.",
+  "shots": 4,
+  "hints": [
+    "Press the ability button mid-flight."
+  ],
   "scoreTarget": 1800,
   "blocks": [
     {

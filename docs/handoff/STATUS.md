@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.1.0 (Stage 1.5), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/monster_mash/07_local_reply.md`.
+**Current build:** v1.3.0 (Stage 2 first pass, built before the blueprint, see LOG), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/monster_mash/07_local_reply.md`.
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -12,14 +12,14 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S2-02 | config.json, data migration, settings merge | S2-01 | todo | | | |
 | S2-03 | Event bus, BattleCtx, RNG, platform adapter | S2-01 | todo | | | |
 | S2-04 | Test hook + shot sweep | S2-03 | todo | | | cloud session can do this |
-| S2-05 | Cleaver, Staff, Pike | S2-03 | todo | | | |
-| S2-06 | Scattergun, Boomerang, Blast Tube, Scepter | S2-03 | todo | | | |
-| S2-07 | Monster behaviours + iron/crystal | S2-03 | todo | | | split runner off if large |
-| S2-08 | MASH combo, score, stars | S2-03 | todo | | | |
-| S2-09 | Goblin Hills levels 1-4 | S2-04..08 | todo | | | |
+| S2-05 | Cleaver, Staff, Pike | S2-03 | review | local | 10-21 | built in monolithic GameScene + weapons.ts; behaviour done, not on the S2-01..03 layout |
+| S2-06 | Scattergun, Boomerang, Blast Tube, Scepter | S2-03 | review | local | 10-21 | same; boomerang and scepter tuned from sweeps |
+| S2-07 | Monster behaviours + iron/crystal | S2-03 | review | local | 10-21 | all behaviours but iron/crystal materials; runners use dir+speed, not path |
+| S2-08 | MASH combo, score, stars | S2-03 | review | local | 10-21 | combo, MASH banner on the beat, score, stars; no features.combo flag yet |
+| S2-09 | Goblin Hills levels 1-4 | S2-04..08 | review | local | 10-21 | levels 1-4 + sandbox 99; scoreTargets are guesses, set from sweeps |
 | S3-01 | Scene flow Boot/Title/Map/Results | S2-03 | todo | | | |
 | S3-02 | Save system | S2-03, S3-01 | todo | | | |
-| S3-03 | Loadout scene | S3-01 | todo | | | |
+| S3-03 | Loadout scene | S3-01 | review | local | 10-21 | LoadoutScene exists; not wired to a save yet (progress.ts is in memory) |
 | S3-04 | Shop and forge | S3-02 | todo | | | |
 | S3-05 | Artifacts (6) | S2-03, S3-03 | todo | | | |
 | S3-06 | Consumables (4) | S2-03, S3-03 | todo | | | |
@@ -39,6 +39,14 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S6-02 | Go public | S6-01 | todo | | | OWNER APPROVAL, by 30 Oct |
 | S6-03 | Jam entry form | S6-02 | todo | owner | | owner only |
 
+## New cards from the local session
+
+| Card | Title | State | Notes |
+|---|---|---|---|
+| S2-new1 | Refactor the Stage 2 code into the S2-01..03 layout (GameScene is about 1000 lines) | todo | do before more content; the sweep harness in 07_local_reply.md can be the S2-04 test hook |
+| S2-new2 | Design ladder per `docs/monster_mash/08_design_direction.md` | doing | Stage 2 pass done; Stage 3 pass is title, map, shop |
+| S2-new3 | Fall and impact damage for monsters | review | tuning.fallThreshold/fallK/debrisK |
+
 ## Parallel lanes (once S2-03 is done)
 
 - **Lane A (weapons):** S2-05, S2-06, then S3-05, S3-06
@@ -48,7 +56,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 
 ## Waiting on owner
 
-- Phone test of v1.1.0: does the shot feel good? Does pinch zoom work?
+- Phone test of v1.3.0: does the shot feel good? Does pinch zoom work? Does the ability button feel natural? Is the zoomed-out home view readable?
 - Approve: try `rundot game set-public` after S2 to learn the review turnaround (it can be undone with `set-private`).
 
 ## Not built yet (cut first if late, in this order)

@@ -88,7 +88,7 @@ export default class LoadoutScene extends Phaser.Scene {
     this.slots = Array.from({ length: LOADOUT_SIZE }, (_, i) => last[i] ?? owned[i % owned.length].id);
 
     this.go = makeButton(this, W / 2, 330, 120, 30, 'Fling!', 'go', () => this.start(), 5);
-    textBlock(this, W / 2, 352, lvl.hint, C('d'), 200);
+    textBlock(this, W / 2, 352, lvl.hints?.[0] ?? '', C('d'), 200);
     this.refresh();
   }
 

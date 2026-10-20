@@ -1,9 +1,19 @@
 {
   "id": 3,
   "name": "Run, skeleton, run",
+  "realm": "goblin_hills",
+  "kind": "runner",
   "worldW": 540,
-  "hint": "Stop the runners before they reach the door.",
+  "shots": 4,
+  "hints": [
+    "Stop the runners before the door."
+  ],
   "scoreTarget": 2000,
+  "escapeLimit": 1,
+  "exit": {
+    "x": 520,
+    "y": 307
+  },
   "blocks": [
     {
       "m": "stone",
@@ -85,9 +95,5 @@
       "dir": 1,
       "speed": 0.6
     }
-  ],
-  "exit": {
-    "x": 520
-  },
-  "maxEscapes": 1
+  ]
 }

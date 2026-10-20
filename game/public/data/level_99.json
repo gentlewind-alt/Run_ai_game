@@ -1,9 +1,19 @@
 {
   "id": 99,
   "name": "Sandbox",
+  "realm": "goblin_hills",
+  "kind": "siege",
   "worldW": 540,
-  "hint": "Sandbox.",
+  "shots": 4,
+  "hints": [
+    "Sandbox."
+  ],
   "scoreTarget": 0,
+  "escapeLimit": 5,
+  "exit": {
+    "x": 520,
+    "y": 307
+  },
   "blocks": [
     {
       "m": "wood",
@@ -70,9 +80,5 @@
       "dir": 1,
       "speed": 0.8
     }
-  ],
-  "exit": {
-    "x": 520
-  },
-  "maxEscapes": 5
+  ]
 }

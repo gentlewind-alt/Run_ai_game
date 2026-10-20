@@ -1,9 +1,19 @@
 {
   "id": 4,
   "name": "Hill fort",
+  "realm": "goblin_hills",
+  "kind": "siege",
   "worldW": 540,
-  "hint": "Chain kills inside two seconds for a MASH combo.",
+  "shots": 4,
+  "hints": [
+    "Kill 3 in 2 seconds for a MASH combo."
+  ],
   "scoreTarget": 3000,
+  "escapeLimit": 1,
+  "exit": {
+    "x": 520,
+    "y": 307
+  },
   "blocks": [
     {
       "m": "stone",
@@ -109,9 +119,5 @@
       "dir": 1,
       "speed": 0.7
     }
-  ],
-  "exit": {
-    "x": 520
-  },
-  "maxEscapes": 1
+  ]
 }
