@@ -1,6 +1,6 @@
 # Status board
 
-States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `docs/blueprint/WORKFLOW.md`. Cards are defined in `docs/blueprint/STAGES.md`.
+States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
 **Current build:** v1.1.0 (Stage 1.5), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/monster_mash/07_local_reply.md`.

@@ -1,6 +1,6 @@
 # Stage prompts: send these one at a time, after the master brief
 
-> **Superseded by `docs/blueprint/STAGES.md`** (task cards with acceptance checks). This file is kept for history. Agents should work from the blueprint and `docs/handoff/STATUS.md`.
+> **Superseded by `architecture/STAGES.md`** (task cards with acceptance checks). This file is kept for history. Agents should work from the blueprint and `docs/handoff/STATUS.md`.
 
 Send the next stage only when the previous build runs and is published. Each one ends with the same instruction, which is already written at the bottom of each prompt.
 

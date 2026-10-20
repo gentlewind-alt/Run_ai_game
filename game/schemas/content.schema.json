@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "content.schema.json",
   "title": "Monster Mash content (balance and entities)",
-  "description": "Numbers live here, behaviour lives in code registries keyed by id. Keys starting with _ are comments. Add a new field here before using it in data. See docs/blueprint/DATA.md.",
+  "description": "Numbers live here, behaviour lives in code registries keyed by id. Keys starting with _ are comments. Add a new field here before using it in data. See architecture/DATA.md.",
   "type": "object",
   "required": ["tuning", "damageRules", "weapons", "monsters", "materials", "realms"],
   "patternProperties": { "^_": {} },

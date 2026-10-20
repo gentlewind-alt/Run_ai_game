@@ -1,6 +1,10 @@
 # Handoff log
 
-Newest at the top. Use the template in `docs/blueprint/WORKFLOW.md`. Don't edit old entries; add a new one.
+Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
+
+## 2026-10-21 · cloud · Blueprint moved to architecture/
+- **What:** `docs/blueprint/` is now `architecture/` at the repo root (ARCHITECTURE, DATA, STAGES, RECIPES, WORKFLOW). References in AGENTS.md, STATUS.md, the schemas and the old stage prompts are updated. Older log entries still say `docs/blueprint/`; read that as `architecture/`.
+- **Checks:** `npm run check` and `npm run build` pass. No code changed.
 
 ## 2026-10-21 · cloud · Blueprint added
 - **What:**

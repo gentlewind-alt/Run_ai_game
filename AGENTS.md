@@ -7,11 +7,11 @@ Any coding agent (Claude Code, Cursor, Codex, Gemini, the RUN Game Studio AI) ca
 | # | File | Why |
 |---|---|---|
 | 1 | `docs/handoff/STATUS.md` | What is done, who is on what, what's next |
-| 2 | `docs/blueprint/WORKFLOW.md` | How to claim a card, commit, test, deploy, hand off |
-| 3 | `docs/blueprint/ARCHITECTURE.md` | Module layout, import rules, registries, events, settings |
-| 4 | `docs/blueprint/DATA.md` | Every data file and its conventions (schemas in `game/schemas/`) |
-| 5 | `docs/blueprint/STAGES.md` | All task cards, stage by stage, with acceptance checks |
-| 6 | `docs/blueprint/RECIPES.md` | Step-by-step guides for common changes (add a weapon, monster, level, setting...) |
+| 2 | `architecture/WORKFLOW.md` | How to claim a card, commit, test, deploy, hand off |
+| 3 | `architecture/ARCHITECTURE.md` | Module layout, import rules, registries, events, settings |
+| 4 | `architecture/DATA.md` | Every data file and its conventions (schemas in `game/schemas/`) |
+| 5 | `architecture/STAGES.md` | All task cards, stage by stage, with acceptance checks |
+| 6 | `architecture/RECIPES.md` | Step-by-step guides for common changes (add a weapon, monster, level, setting...) |
 | 7 | `docs/monster_mash/02_master_brief.md` | The game design (what, why). The blueprint is the how |
 | 8 | `docs/monster_mash/04_platform_report.md` | RUN SDK facts and limits |
 
@@ -43,7 +43,7 @@ rundot deploy          # private deploy, prints the share URL
 
 ```
 AGENTS.md                 this file
-docs/blueprint/           how to build and change the game (stable)
+architecture/             how to build and change the game (stable)
 docs/handoff/             STATUS.md (live board) and LOG.md (append-only notes between sessions)
 docs/monster_mash/        design brief, plan, platform report, review history
 catalogue/                Four Realms item catalogue (source material, not loaded)
