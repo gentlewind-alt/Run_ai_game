@@ -1,6 +1,6 @@
 # Architecture
 
-This is the target shape of `game/src/`. The code today (Stage 1.5) is mostly one big `GameScene.ts` (about 800 lines) plus `weapons.ts`. Card **S2-01** splits it into this layout without changing behaviour. Every later card builds on that layout, so do S2-01 to S2-03 first.
+This is the shape of `game/src/`. Cards S2-01 to S2-03 moved the Stage 2 code into it with no behaviour change. Every later card builds on this layout. Where the code differs from the sketch below, the notes after the import rules say how.
 
 ## 1. Principles
 
@@ -91,6 +91,14 @@ platform -> (SDK only in rundot.ts)
 data, config, art, audio -> nothing above them
 ```
 
+**As built (S2-01..03).**
+- `battle/` modules are plain functions over one mutable `BattleState` (`battle/state.ts`); `battle/setup.ts` creates it and wires input, `battle/ctxImpl.ts` implements `BattleCtx` over it. Extra helpers: `fx.ts` (particles, rings, words), `projectiles.ts` (the shot, pellets, per-body gravity), `matter.ts` (the Matter namespace).
+- `battle/` may use Phaser and the scene it is given (as `Phaser.Scene`), but never imports `scenes/` or `ui/`. HUD updates go through the `BattleUi` interface in `battle/state.ts` and through events; `scenes/BattleScene.ts` connects them to `ui/hud.ts`.
+- Content code gets `BattleCtx` only. It reaches Matter through `ctx.M` and sprites through `ctx.fx`.
+- `data/load.ts` fetches `config.json`, `content.json` and the level files listed in `config.levels` before Phaser starts (`main.ts`). `BootScene` only builds textures.
+- Moved files: palette/pix/sprites/art/font5x7 are in `art/`, audio and beat in `audio/`, widgets in `ui/`, the in-memory player state in `core/profile.ts`.
+- Dev check: `BootScene` calls `content/validate.ts` in dev to warn about data rows with no implementation.
+
 Forbidden: `content/*` or `battle/*` importing `scenes/*`; anything except `platform/rundot.ts` importing `@series-inc/rundot-game-sdk`. Check with:
 `grep -rn "rundot-game-sdk" game/src | grep -v platform/rundot.ts` (must print nothing).
 
@@ -118,22 +126,32 @@ Battle states: `intro → loading → ready → aiming → flying → settling �
 ## 4. BattleCtx (what content code may use)
 
 ```ts
-export interface BattleCtx {
-  step: number;                                   // steps since level start
-  rng: Rng;                                       // seeded, per level
-  tune: Tuning; rules: DamageRules;               // merged settings (section 9)
-  events: EventBus;
-  // queries
+export interface BattleCtx {                       // battle/BattleCtx.ts is the source of truth
+  readonly step: number;                           // fixed steps since level start
+  readonly rng: Rng;                               // seeded per level (core/rng.ts)
+  readonly tune: Tuning; readonly rules: DamageRules;   // merged settings (section 9)
+  readonly events: EventBus;
+  readonly sling: { x: number; y: number }; readonly groundY: number; readonly worldW: number;
+  readonly level: Level; readonly phase: BattlePhase;   // phase = intro | loading | ready | aiming | flying | settling | won | lost
+  readonly M: any;                                 // Matter.js namespace
+  // queries (living entities only)
   monsters(): Ent[]; blocks(): Ent[];
-  within(x: number, y: number, r: number): Ent[];
+  within(x: number, y: number, r: number): Ent[];  // monsters in a radius
+  nearestMonsters(x: number, y: number, n: number): Ent[];
   // actions
-  damage(target: Ent, amount: number, opts?: { element?: Element; source?: string; strong?: boolean }): void;
-  damageAround(x: number, y: number, r: number, mult: number, opts?: { element?: Element; source?: string }): void;
-  addStatus(target: Ent, status: StatusId, steps: number, params?: Record<string, number>): void;
-  spawnProjectile(weaponId: string, x: number, y: number, vx: number, vy: number, opts?: { ghost?: boolean; damageMult?: number }): Proj;
-  impulse(target: Ent, fx: number, fy: number): void;
-  fx(kind: 'burst' | 'ring' | 'flash' | 'shake' | 'text', x: number, y: number, opts?: object): void;
-  sfx(name: string): void;
+  damage(target: Ent, amount: number, x: number, y: number, opts: DamageOpts): void;   // raw damage, no weapon maths
+  directHit(target: Ent, weaponId: string, mult: number, x: number, y: number, strong?: boolean): void;  // weapon damage on one target
+  damageAround(x: number, y: number, r: number, mult: number, weaponId: string): void;
+  blast(x: number, y: number, r: number, mult: number, weaponId: string): void;        // radial, falls off, pushes
+  explode(x: number, y: number, r: number, base: number, exclude: Ent | null, weaponId: string | null): void;
+  addStatus(target: Ent, status: 'burn' | 'slow' | 'curse', steps: number): void;
+  push(x: number, y: number, r: number, strength: number): void;
+  setGravity(body: any, factor: number): void;
+  addActor(a: Actor): void;                        // anything that updates each step (bolts, arrows)
+  spawnPellet(o: PelletOpts): void;
+  endProj(p: Proj): void;
+  escape(runner: Ent): void;
+  fx: { ring; sparks; shake; dot; image; word };   // presentation helpers
 }
 ```
 
@@ -191,9 +209,10 @@ Typed in `core/events.ts`. Emit with `events.emit('kill', {...})`, listen with `
 | `shot:ended` | `{ weaponId }` | camera, sling queue |
 | `hit` | `{ target, amount, element, source, x, y }` | Stormcaller Torc (every 5th hit), numbers popup |
 | `kill` | `{ target, by, x, y }` | combo, score, coins, Gamblers Charm |
-| `combo` | `{ count, mult }` | MASH banner, sfx, haptics |
+| `combo` | `{ count, mult }` | MASH banner, sfx, haptics. Emitted only when the chain reaches `tuning.mashAt` |
 | `runner:escaped` | `{ count, limit }` | rules, HUD |
-| `coins:gained` | `{ amount, x?, y? }` | HUD, Lodestone Bracer |
+| `coins:gained` | `{ amount, total }` | HUD, Lodestone Bracer |
+| `score:changed` | `{ score, delta }` | HUD |
 | `level:won` | `{ levelId, stars, score, coins }` | profile, save, results, leaderboard (daily) |
 | `level:lost` | `{ levelId, reason }` | results, analytics |
 | `profile:changed` | `{ field }` | save (debounced), shop UI |
@@ -233,13 +252,15 @@ export interface Platform {
   share(text: string, params?: Record<string, string>): Promise<boolean>;
   ads: { rewardedReady(): Promise<boolean>; showRewarded(): Promise<boolean> }; // false on desktop
   iap: { available(): boolean; buy(itemId: string): Promise<boolean>; owned(itemId: string): Promise<boolean> };
-  lifecycle: { onPause(f: () => void): void; onResume(f: () => void): void };
+  lifecycle: { onPause(f: () => void): void; onResume(f: () => void): void; onSleep(f: () => void): void; onQuit(f: () => void): void };
   haptic(kind: 'light' | 'heavy'): void;
   track(event: string, data?: object): void;          // analytics
+  funnel(step: number, name: string, funnel: string): void;
+  log(message: string): void;
 }
 ```
 
-Every method catches its own errors and returns a safe default. Callers never need try/catch. A feature is active only when `config.features.X` is true **and** the platform supports it (`ads` and `iap` are false on desktop and under the mock).
+The adapter is chosen once at start: the RUN one when `RundotGameAPI.isAvailable()`, the mock otherwise. Members the game does not use yet (`serverTime`, `profile`, `leaderboard`, `share`, `ads`, `iap`, `haptic`) return safe defaults in both adapters until their cards wire them up. Every method catches its own errors and returns a safe default. Callers never need try/catch. A feature is active only when `config.features.X` is true **and** the platform supports it (`ads` and `iap` are false on desktop and under the mock).
 
 ## 9. Settings and overrides
 

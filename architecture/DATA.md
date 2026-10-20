@@ -7,8 +7,8 @@ All game numbers live in `game/public/data/`. Schemas in `game/schemas/` are the
 | File | Schema | Holds | Status |
 |---|---|---|---|
 | `content.json` | `content.schema.json` | balance (`tuning`, `damageRules`, `economy`) and entities (`weapons`, `monsters`, `materials`, `artifacts`, `consumables`, `realms`, `cosmetics`) | exists |
-| `config.json` | `config.schema.json` | engine and product settings: display, world, physics, camera, `features` flags, debug | create in S2-02 |
-| `levels/level_NN.json` | `level.schema.json` | one level each: blocks, monsters, world width, loadout, targets | `level_01.json` exists in the legacy spot `public/data/`; S2-02 moves it |
+| `config.json` | `config.schema.json` | engine and product settings: `levels` (ids of the files in `levels/`), display, world, physics, camera, `features` flags, debug | exists |
+| `levels/level_NN.json` | `level.schema.json` | one level each: blocks, monsters, world width, loadout, targets. A new file must also be added to `config.levels` (`check-data` fails if they differ) | exists |
 | save (in `appStorage`, key `save`) | `save.schema.json` | the player's progress | create in S3-02 |
 
 Where does a new number go?
@@ -34,12 +34,12 @@ Where does a new number go?
 
 | Section | Read by | Notes |
 |---|---|---|
-| `tuning` | sling, damage, coins | `launchK`, `maxPull`, `debrisK`, `hitStopFrames`, `stretchSoundMs`, `coins{monster,wood,stone,...}`. `sawSteps` is deprecated: move it to `w_militia_blade.params.sawSteps` (S2-02) |
+| `tuning` | sling, damage, coins, status, flow | `launchK`, `maxPull`, `aimGrabRadius`, `minPull`, `debrisK`, `debrisMinSpeed`, `projMinSpeed`, `hitCooldownSteps`, `minImpactDamage`, `impactBase`, `fallThreshold`, `fallK`, `explosionFalloff`, `explosionPush`, `explosionHitStop`, `hitStopFrames`, `mashHitStop`, `mashAt`, `stretchSoundMs`, `homeZoomMin`, `homeLeft`, `coins{}`, `points{}`, `shotBonus*`. `status{burnDamage, burnTickSteps, curseMult, slowSpeedMult}` and `flow{...}` (when a shot counts as over, settle timings, win delay) are objects |
 | `damageRules` | `battle/damage.ts`, forge | formula in ARCHITECTURE.md section 7. `upgradeBaseCost` (50) goes in here when the forge is built |
 | `economy` | score, results, daily | `leftoverShotCoins`, `starScoreFactor`, `dailyStreakRewardDay`, `dailyStreakRewardCoins`. Created when first needed |
-| `weapons[]` | weapon registry, shop, loadout | `physics{radius,density,spin}`, `ability{mode,label}` and `params{}` move here from `weapons.ts` in S2-02 |
+| `weapons[]` | weapon registry, shop, loadout | `physics{radius,density,spin,gravity,align}`, `ability{mode,label}` and `params{}` (every number the behaviour file reads). `params.behavior` reuses another weapon's code |
 | `stretchWeapons[]`, `stretchArtifacts[]` | nobody | parked ideas; move a row into the main list to build it |
-| `monsters[]` | monster registry, world | `behavior` defaults to the monster id. `size{w,h}` defaults to 12x14 |
+| `monsters[]` | monster registry, world | `behavior` defaults to the monster id, then `basic`. `density` defaults to 0.001. `params` holds the behaviour's numbers (`regenPerSec`, `blastRadius`, `shield`...); `selfMoving: 1` marks monsters that never "settle" (imp, runner). `size{w,h}` currently comes from `art/textures.ts` `MONSTER_ART` |
 | `materials[]` | world, damage | `density` and `friction` default to the values in `battle/world.ts` |
 | `artifacts[]`, `consumables[]` | registries, shop | numbers in `params` |
 | `realms[]` | map, world, art, audio | `levels` are level ids in play order |
@@ -70,19 +70,25 @@ Minimal level:
 - The Daily Mash generator builds a level object in memory with `id: 0` and `kind: "daily"`. It must pass the same schema; the generator's unit test validates it.
 - Add `"$schema"` at the top of each file to get editor autocomplete. The checker ignores it.
 
-## config.json starter (S2-02 creates it with these values)
+## config.json (current values)
 
 ```json
 {
   "$schema": "../../schemas/config.schema.json",
   "version": 1,
-  "display": { "width": 216, "height": 384, "pixelArt": true, "roundPixels": true, "maxParticles": 90, "uiTextMin": 8 },
+  "_note": "Engine and product settings. Balance numbers live in content.json. The viewport is the constant W x H (216 x 384) in src/config/constants.ts.",
+  "levels": [1, 2, 3, 4, 99],
+  "display": { "pixelArt": true, "maxParticles": 90 },
   "world": { "groundY": 320, "slingX": 56, "slingY": 262 },
   "physics": { "stepHz": 60, "gravityY": 1, "positionIterations": 8, "velocityIterations": 6, "enableSleeping": true, "maxStepsPerFrame": 3 },
-  "camera": { "introPan": true, "followShot": true, "minZoom": 0.5, "maxZoom": 2, "panMs": 700 },
+  "camera": {
+    "introPan": true, "followShot": true, "maxZoom": 1.8,
+    "introMs": 900, "introHoldMs": 450, "toggleMs": 260,
+    "followLead": 0.15, "followEase": 0.1, "groundFrac": 0.83, "zoomOutRise": 0.4
+  },
   "features": {
     "map": false, "shop": false, "forge": false, "artifacts": false, "consumables": false,
-    "combo": false, "daily": false, "leaderboard": false, "share": false,
+    "combo": true, "daily": false, "leaderboard": false, "share": false,
     "ads": false, "iap": false, "tutorial": false, "music": false, "zoom": true
   },
   "debug": { "urlOverrides": true, "testHook": true }
@@ -93,10 +99,6 @@ Each stage card turns on the flags for what it ships. On deadline day, a broken 
 
 ## Deprecations (keep the game reading both until the card that removes them)
 
-| Old | New | Removed in |
-|---|---|---|
-| `level.weapon` | `level.loadout` | S2-02 |
-| `tuning.sawSteps` | `weapons[w_militia_blade].params.sawSteps` | S2-02 |
-| `public/data/level_NN.json` | `public/data/levels/level_NN.json` | S2-02 |
-| `radius/density/spin/ability/abilityLabel` in `weapons.ts` | `weapon.physics`, `weapon.ability` in data | S2-02 |
-| `docs/monster_mash/content.json` | `game/public/data/content.json` (the only copy) | done |
+None open. S2-02 removed `level.weapon`, `tuning.sawSteps`, the legacy `public/data/level_NN.json` location and the weapon stats in code.
+
+
