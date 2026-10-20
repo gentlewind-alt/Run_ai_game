@@ -63,6 +63,8 @@
           "t": { "type": "string", "description": "Monster id." },
           "x": { "type": "number" }, "y": { "type": "number" },
           "delay": { "type": "number", "minimum": 0, "description": "Seconds before a runner starts." },
+          "dir": { "enum": [-1, 1], "description": "Runner direction: 1 runs right, -1 runs left (default 1)." },
+          "speed": { "type": "number", "exclusiveMinimum": 0, "description": "Runner speed in px per step (default 0.8)." },
           "path": {
             "type": "array",
             "items": { "type": "array", "minItems": 2, "items": { "type": "number" } },

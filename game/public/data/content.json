@@ -3,12 +3,20 @@
   "tuning": {
     "_note": "Feel/balance numbers read by the game. Edit here, not in code.",
     "launchK": 0.27,
+    "homeZoomMin": 0.62,
+    "homeLeft": 20,
     "maxPull": 30,
-    "debrisK": 5,
+    "debrisK": 9,
+    "blockDebrisFactor": 0.5,
+    "fallThreshold": 2.0,
+    "fallK": 6,
     "hitStopFrames": 3,
     "sawSteps": 36,
     "stretchSoundMs": 80,
-    "coins": { "monster": 10, "wood": 2, "stone": 4 }
+    "coins": { "monster": 10, "wood": 2, "stone": 4 },
+    "points": { "goblin_grunt": 100, "goblin_bomber": 150, "skeleton_runner": 120, "dark_elf_archer": 150, "dark_elf_hexer": 180, "imp": 120, "orc_brute": 300, "troll": 400, "wood": 10, "stone": 20 },
+    "shotBonusPoints": 300,
+    "shotBonusCoins": 25
   },
   "damageRules": {
     "globalScale": 2.0,

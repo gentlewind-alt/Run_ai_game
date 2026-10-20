@@ -1,0 +1,84 @@
+{
+  "id": 99,
+  "name": "Sandbox",
+  "realm": "goblin_hills",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 4,
+  "hints": [
+    "Sandbox."
+  ],
+  "scoreTarget": 0,
+  "escapeLimit": 5,
+  "exit": {
+    "x": 520,
+    "y": 307
+  },
+  "blocks": [
+    {
+      "m": "wood",
+      "x": 220,
+      "y": 256,
+      "w": 40,
+      "h": 6
+    },
+    {
+      "m": "wood",
+      "x": 208,
+      "y": 288,
+      "w": 6,
+      "h": 60
+    },
+    {
+      "m": "wood",
+      "x": 232,
+      "y": 288,
+      "w": 6,
+      "h": 60
+    }
+  ],
+  "monsters": [
+    {
+      "t": "goblin_grunt",
+      "x": 150,
+      "y": 313
+    },
+    {
+      "t": "goblin_bomber",
+      "x": 180,
+      "y": 313
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 220,
+      "y": 243
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 250,
+      "y": 313
+    },
+    {
+      "t": "orc_brute",
+      "x": 290,
+      "y": 305
+    },
+    {
+      "t": "troll",
+      "x": 340,
+      "y": 305
+    },
+    {
+      "t": "imp",
+      "x": 380,
+      "y": 180
+    },
+    {
+      "t": "skeleton_runner",
+      "x": 420,
+      "y": 313,
+      "dir": 1,
+      "speed": 0.8
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import GameScene, { W, H } from './scenes/GameScene';
+import BootScene from './scenes/BootScene';
+import LoadoutScene from './scenes/LoadoutScene';
 import './style.css';
 import RundotGameAPI from "@series-inc/rundot-game-sdk/api";
 import { sfx } from './audio';
@@ -31,7 +33,7 @@ async function bootstrap(): Promise<void> {
       parent: "app",
       backgroundColor: "#1a1c2c",
       pixelArt: true,
-      scene: GameScene,
+      scene: [BootScene, LoadoutScene, GameScene],
       physics: {
         default: "matter",
         matter: {
@@ -49,7 +51,8 @@ async function bootstrap(): Promise<void> {
       },
     };
 
-    new Phaser.Game(config);
+    const game = new Phaser.Game(config);
+    if ((import.meta as any).env?.DEV) (window as any).__game = game;
     RundotGameAPI.analytics.recordCustomEvent('game_loaded');
     if (!bootStep1Fired) {
       bootStep1Fired = true;
