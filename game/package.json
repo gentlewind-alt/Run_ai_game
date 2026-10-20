@@ -1,5 +1,5 @@
 {
-  "name": "run-template-2d-phaser",
+  "name": "monster-mash",
   "version": "1.0.0",
   "description": "Phaser 3 + Vite + TypeScript template",
   "type": "module",
@@ -23,7 +23,6 @@
     "@babel/parser": "^7.26.3",
     "@types/node": "^24.3.0",
     "cross-env": "^7.0.3",
-    "firebase": "^12.12.1",
     "magic-string": "^0.30.11",
     "typescript": "^5.9.2",
     "vite": "^6.3.5"

@@ -39,33 +39,41 @@ const G: Record<string, string> = {
   '?': 'XX./..X/.X./.../.X.',
 };
 
+function ensurePixTexture(scene: Phaser.Scene, str: string, color: number): string {
+  const key = `t:${str}:${color}`;
+  if (scene.textures.exists(key)) return key;
+  const w = str.length * 4 - 1;
+  const cv = document.createElement('canvas');
+  cv.width = w + 2;
+  cv.height = 7;
+  const ctx = cv.getContext('2d')!;
+  const cells: [number, number][] = [];
+  [...str.toUpperCase()].forEach((ch, i) => {
+    (G[ch] ?? G['?']).split('/').forEach((row, ry) => {
+      [...row].forEach((c, rx) => {
+        if (c === 'X') cells.push([1 + i * 4 + rx, 1 + ry]);
+      });
+    });
+  });
+  ctx.fillStyle = css(C('0'));
+  for (const [cx, cy] of cells) {
+    ctx.fillRect(cx - 1, cy, 3, 1);
+    ctx.fillRect(cx, cy - 1, 1, 3);
+  }
+  ctx.fillStyle = css(color);
+  for (const [cx, cy] of cells) ctx.fillRect(cx, cy, 1, 1);
+  scene.textures.addCanvas(key, cv);
+  return key;
+}
+
 /** Crisp pixel text with a 1px outline, cached per (string, colour). Returns a centred Image. */
 export function pixText(
   scene: Phaser.Scene, x: number, y: number, str: string, color = 0xf4f4f4, scale = 1,
 ): Phaser.GameObjects.Image {
-  const key = `t:${str}:${color}`;
-  if (!scene.textures.exists(key)) {
-    const w = str.length * 4 - 1;
-    const cv = document.createElement('canvas');
-    cv.width = w + 2;
-    cv.height = 7;
-    const ctx = cv.getContext('2d')!;
-    const cells: [number, number][] = [];
-    [...str.toUpperCase()].forEach((ch, i) => {
-      (G[ch] ?? G['?']).split('/').forEach((row, ry) => {
-        [...row].forEach((c, rx) => {
-          if (c === 'X') cells.push([1 + i * 4 + rx, 1 + ry]);
-        });
-      });
-    });
-    ctx.fillStyle = css(C('0'));
-    for (const [cx, cy] of cells) {
-      ctx.fillRect(cx - 1, cy, 3, 1);
-      ctx.fillRect(cx, cy - 1, 1, 3);
-    }
-    ctx.fillStyle = css(color);
-    for (const [cx, cy] of cells) ctx.fillRect(cx, cy, 1, 1);
-    scene.textures.addCanvas(key, cv);
-  }
-  return scene.add.image(x, y, key).setScale(scale);
+  return scene.add.image(x, y, ensurePixTexture(scene, str, color)).setScale(scale);
+}
+
+/** Change an existing pixText image in place. */
+export function setPixText(img: Phaser.GameObjects.Image, scene: Phaser.Scene, str: string, color = 0xf4f4f4): void {
+  img.setTexture(ensurePixTexture(scene, str, color));
 }

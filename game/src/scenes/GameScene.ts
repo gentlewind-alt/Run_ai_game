@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import RundotGameAPI from '@series-inc/rundot-game-sdk/api';
 import { C, css } from '../palette';
-import { gridTexture, pixText } from '../pix';
+import { gridTexture, pixText, setPixText } from '../pix';
 import { BLADE, GOBLIN_HURT, GOBLIN_IDLE, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON } from '../sprites';
 import { sfx } from '../audio';
+import { WEAPONS, type Proj, type WeaponImpl } from '../weapons';
 
 export const W = 216;
 export const H = 384;
@@ -11,17 +12,9 @@ const GROUND = 320;
 const STEP = 1000 / 60;
 const GRAVITY_STEP = 0.001 * STEP * STEP; // matter gravity per step, px/step^2
 
-// ---- Tuning knobs (feel) ----
+// Feel/balance numbers live in content.json (tuning, damageRules.globalScale).
 const SLING_X = 38;
 const SLING_Y = 262;
-const MAX_PULL = 30;
-const LAUNCH_K = 0.22; // pull px -> launch px/step
-const MAX_SPEED = MAX_PULL * LAUNCH_K;
-const DMG_SCALE = 2.0; // global damage tuning on top of the brief's formula
-const DEBRIS_K = 5; // falling blocks / bodies
-const HIT_STOP = 3; // frames
-const SAW_STEPS = 36; // 0.6 s
-const COINS = { monster: 10, wood: 2, stone: 4 } as const;
 
 const MatterLib: any = (Phaser.Physics.Matter as any).Matter;
 
@@ -42,7 +35,7 @@ interface Ent {
   dead: boolean;
   phase: number;
 }
-type State = 'ready' | 'aiming' | 'flying' | 'settling' | 'won' | 'lost';
+type State = 'intro' | 'ready' | 'aiming' | 'flying' | 'settling' | 'won' | 'lost';
 
 export default class GameScene extends Phaser.Scene {
   private content!: any;
@@ -54,7 +47,12 @@ export default class GameScene extends Phaser.Scene {
   private coins = 0;
   private acc = 0;
   private hitStop = 0;
-  private proj: { body: any; sprite: Phaser.GameObjects.Image; steps: number; slow: number; saw: number; tapped: boolean } | null = null;
+  private proj: Proj | null = null;
+  private wpn!: WeaponImpl;
+  private worldW = W;
+  private maxSpeed = 8;
+  private lastStretch = 0;
+  tune: any;
   private pouch = new Phaser.Math.Vector2(SLING_X, SLING_Y);
   private readySprite!: Phaser.GameObjects.Image;
   private settleSteps = 0;
@@ -78,11 +76,15 @@ export default class GameScene extends Phaser.Scene {
   create(): void {
     this.content = this.cache.json.get('content');
     this.level = this.cache.json.get('level1');
+    this.tune = this.content.tuning;
+    this.worldW = this.level.worldW ?? W;
+    this.maxSpeed = this.tune.maxPull * this.tune.launchK;
+    this.wpn = WEAPONS[this.level.weapon];
     this.ents = [];
     this.parts = [];
     this.overlay = [];
     this.hudShots = [];
-    this.state = 'ready';
+    this.state = 'intro';
     this.coins = 0;
     this.acc = 0;
     this.hitStop = 0;
@@ -92,9 +94,11 @@ export default class GameScene extends Phaser.Scene {
     this.shotsLeft = this.level.shots;
 
     this.makeTextures();
-    this.add.image(0, 0, 'bg').setOrigin(0);
-    this.matter.add.rectangle(W / 2, GROUND + 40, 800, 80, { isStatic: true, friction: 1, label: 'ground' });
-    this.matter.add.rectangle(W + 10, 200, 20, 600, { isStatic: true, label: 'wall' });
+    this.add.image(0, 0, `bg_${this.worldW}`).setOrigin(0);
+    this.matter.add.rectangle(this.worldW / 2, GROUND + 40, this.worldW + 400, 80, { isStatic: true, friction: 1, label: 'ground' });
+    this.matter.add.rectangle(this.worldW + 10, 200, 20, 600, { isStatic: true, label: 'wall' });
+    this.cameras.main.setBounds(0, 0, this.worldW, H);
+    this.cameras.main.setScroll(0, 0);
 
     this.add.image(SLING_X, SLING_Y + 28, 'sling');
     for (const b of this.level.blocks) this.addBlock(b.m, b.x, b.y, b.w, b.h);
@@ -117,6 +121,15 @@ export default class GameScene extends Phaser.Scene {
         this.muteBtn?.setTexture(sfx.muted ? 'spk_off' : 'spk_on');
       }).catch(() => {});
     } catch { /* storage optional */ }
+
+    if (this.worldW > W) {
+      this.tweens.add({
+        targets: this.cameras.main, scrollX: this.worldW - W, duration: 900, ease: 'Sine.inOut', hold: 450, yoyo: true,
+        onComplete: () => { this.state = 'ready'; },
+      });
+    } else {
+      this.state = 'ready';
+    }
 
     if ((import.meta as any).env?.DEV) (window as any).__scene = this;
   }
@@ -188,24 +201,27 @@ export default class GameScene extends Phaser.Scene {
       rect(g, 'h', 5, 16, 7, 3);
     });
 
-    make('bg', W, H, (g) => {
+    const WW = this.worldW;
+    make(`bg_${WW}`, WW, H, (g) => {
       const bands = ['a', 'a', 'a', 'b', 'b', 'b'];
-      bands.forEach((c, i) => rect(g, c, 0, i * 50, W, 51));
-      rect(g, 'c', 30, 40, 26, 6); rect(g, 'c', 38, 34, 14, 6);
-      rect(g, 'c', 130, 70, 30, 6); rect(g, 'c', 140, 64, 14, 6);
-      rect(g, 'c', 80, 110, 22, 5); rect(g, 'c', 86, 105, 10, 5);
+      bands.forEach((c, i) => rect(g, c, 0, i * 50, WW, 51));
+      for (let cx = 0; cx < WW; cx += 216) {
+        rect(g, 'c', cx + 30, 40, 26, 6); rect(g, 'c', cx + 38, 34, 14, 6);
+        rect(g, 'c', cx + 130, 70, 30, 6); rect(g, 'c', cx + 140, 64, 14, 6);
+        rect(g, 'c', cx + 80, 110, 22, 5); rect(g, 'c', cx + 86, 105, 10, 5);
+      }
       g.fillStyle = css(C('e'));
-      for (let x = 0; x < W; x++) g.fillRect(x, 230 - Math.round(24 * Math.abs(Math.sin(x / 38 + 0.6))), 1, 100);
+      for (let x = 0; x < WW; x++) g.fillRect(x, 230 - Math.round(24 * Math.abs(Math.sin(x / 38 + 0.6))), 1, 100);
       g.fillStyle = css(C('7'));
-      for (let x = 0; x < W; x++) g.fillRect(x, 262 - Math.round(20 * Math.abs(Math.sin(x / 27 + 2))), 1, 100);
+      for (let x = 0; x < WW; x++) g.fillRect(x, 262 - Math.round(20 * Math.abs(Math.sin(x / 27 + 2))), 1, 100);
       g.fillStyle = css(C('n'));
-      for (let x = 0; x < W; x++) g.fillRect(x, 290 - Math.round(14 * Math.abs(Math.sin(x / 19 + 4))), 1, 100);
-      rect(g, '6', 0, GROUND - 3, W, 3);
-      rect(g, '5', 0, GROUND - 3, W, 1);
-      rect(g, 'g', 0, GROUND, W, H - GROUND);
-      rect(g, 'h', 0, GROUND + 6, W, 2);
+      for (let x = 0; x < WW; x++) g.fillRect(x, 290 - Math.round(14 * Math.abs(Math.sin(x / 19 + 4))), 1, 100);
+      rect(g, '6', 0, GROUND - 3, WW, 3);
+      rect(g, '5', 0, GROUND - 3, WW, 1);
+      rect(g, 'g', 0, GROUND, WW, H - GROUND);
+      rect(g, 'h', 0, GROUND + 6, WW, 2);
       g.fillStyle = css(C('h'));
-      for (let i = 0; i < 70; i++) g.fillRect((i * 37) % W, GROUND + 10 + ((i * 53) % (H - GROUND - 12)), 2, 1);
+      for (let i = 0; i < 70 * (WW / W); i++) g.fillRect((i * 37) % WW, GROUND + 10 + ((i * 53) % (H - GROUND - 12)), 2, 1);
     });
   }
 
@@ -249,8 +265,8 @@ export default class GameScene extends Phaser.Scene {
       top = Math.max(6, sa.top * this.scale.displayScale.y);
     } catch { /* not ready: use default */ }
     this.hudTop = top;
-    this.hudCoins = pixText(this, 4, top + 3, 'COINS 0', C('4')).setOrigin(0, 0.5).setDepth(10);
-    this.muteBtn = this.add.image(W - 10, top + 4, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
+    this.hudCoins = pixText(this, 4, top + 3, 'COINS 0', C('4')).setOrigin(0, 0.5).setDepth(10).setScrollFactor(0);
+    this.muteBtn = this.add.image(W - 10, top + 4, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10).setScrollFactor(0);
     this.muteBtn.setInteractive(new Phaser.Geom.Rectangle(-10, -10, 29, 27), Phaser.Geom.Rectangle.Contains);
     this.muteBtn.on('pointerdown', () => {
       sfx.unlock();
@@ -266,7 +282,7 @@ export default class GameScene extends Phaser.Scene {
     this.hudShots.forEach((s) => s.destroy());
     this.hudShots = [];
     for (let i = 0; i < this.shotsLeft; i++) {
-      this.hudShots.push(this.add.image(8 + i * 11, this.hudTop + 17, 'blade').setScale(0.6).setRotation(Math.PI / 4).setDepth(10));
+      this.hudShots.push(this.add.image(8 + i * 11, this.hudTop + 17, 'blade').setScale(0.6).setRotation(Math.PI / 4).setDepth(10).setScrollFactor(0));
     }
   }
 
@@ -275,24 +291,25 @@ export default class GameScene extends Phaser.Scene {
   private onDown(p: Phaser.Input.Pointer, over: unknown[]): void {
     sfx.unlock();
     if (over.length) return;
-    if (this.state === 'ready' && Phaser.Math.Distance.Between(p.x, p.y, SLING_X, SLING_Y) < 44) {
+    if (this.state === 'ready' && Phaser.Math.Distance.Between(p.worldX, p.worldY, SLING_X, SLING_Y) < 44) {
       this.state = 'aiming';
       this.onMove(p);
     } else if (this.state === 'flying' && this.proj && !this.proj.tapped) {
       this.proj.tapped = true;
-      this.proj.saw = SAW_STEPS;
-      this.proj.body.gravityScale = { x: 0, y: 0 };
-      MatterLib.Body.setAngularVelocity(this.proj.body, 0.7);
-      sfx.saw();
+      this.wpn.onTap(this, this.proj);
     }
   }
 
   private onMove(p: Phaser.Input.Pointer): void {
     if (this.state !== 'aiming') return;
-    const v = new Phaser.Math.Vector2(p.x - SLING_X, p.y - SLING_Y);
-    if (v.length() > MAX_PULL) v.setLength(MAX_PULL);
+    const v = new Phaser.Math.Vector2(p.worldX - SLING_X, p.worldY - SLING_Y);
+    if (v.length() > this.tune.maxPull) v.setLength(this.tune.maxPull);
     this.pouch.set(SLING_X + v.x, Math.min(SLING_Y + v.y, GROUND - 6));
-    sfx.stretch();
+    const now = this.time.now;
+    if (now - this.lastStretch > this.tune.stretchSoundMs) {
+      this.lastStretch = now;
+      sfx.stretch();
+    }
   }
 
   private onUp(): void {
@@ -303,17 +320,17 @@ export default class GameScene extends Phaser.Scene {
       this.state = 'ready';
       return;
     }
-    this.launch(pull.scale(LAUNCH_K));
+    this.launch(pull.scale(this.tune.launchK));
   }
 
   private launch(v: Phaser.Math.Vector2): void {
-    const body = this.matter.add.circle(this.pouch.x, this.pouch.y, 4, {
-      density: 0.03, friction: 0.3, frictionAir: 0, restitution: 0.2, label: 'proj',
+    const body = this.matter.add.circle(this.pouch.x, this.pouch.y, this.wpn.radius, {
+      density: this.wpn.density, friction: 0.3, frictionAir: 0, restitution: 0.2, label: 'proj',
     });
     MatterLib.Body.setVelocity(body, { x: v.x, y: v.y });
-    MatterLib.Body.setAngularVelocity(body, 0.28);
-    const sprite = this.add.image(this.pouch.x, this.pouch.y, 'blade').setDepth(4);
-    this.proj = { body, sprite, steps: 0, slow: 0, saw: 0, tapped: false };
+    MatterLib.Body.setAngularVelocity(body, this.wpn.spin);
+    const sprite = this.add.image(this.pouch.x, this.pouch.y, this.wpn.texture).setDepth(4);
+    this.proj = { body, sprite, steps: 0, slow: 0, tapped: false, t: 0 };
     this.readySprite.setVisible(false);
     this.pouch.set(SLING_X, SLING_Y);
     this.shotsLeft--;
@@ -346,10 +363,10 @@ export default class GameScene extends Phaser.Scene {
     let dmg: number;
     const fromProj = otherKind === 'proj' && ob.label === 'proj';
     if (fromProj) {
-      dmg = this.bladeDamage(target, 0.5 + Math.min(rel / MAX_SPEED, 1));
+      dmg = this.bladeDamage(target, 0.5 + Math.min(rel / this.maxSpeed, 1));
     } else if (other) {
       if (target.cool > 0) return;
-      dmg = (rel - 1.5) * Math.sqrt(other.body.mass) * DEBRIS_K * (target.kind === 'monster' ? 1 : 0.5);
+      dmg = (rel - 1.5) * Math.sqrt(other.body.mass) * this.tune.debrisK * (target.kind === 'monster' ? 1 : 0.5);
     } else if (ob.label === 'ground' && target.kind === 'monster') {
       dmg = (rel - 3) * 3;
     } else {
@@ -361,7 +378,7 @@ export default class GameScene extends Phaser.Scene {
   private bladeDamage(t: Ent, impactFactor: number): number {
     const w = this.content.weapons.find((x: any) => x.id === this.level.weapon);
     const el = t.weak === w.element ? this.content.damageRules.elementWeak : t.resist === w.element ? this.content.damageRules.elementResist : 1;
-    return w.baseDamage * impactFactor * el * DMG_SCALE;
+    return w.baseDamage * impactFactor * el * this.content.damageRules.globalScale;
   }
 
   private damage(t: Ent, dmg: number, x: number, y: number, strong: boolean): void {
@@ -377,7 +394,7 @@ export default class GameScene extends Phaser.Scene {
     this.burst(x, y, colors, Math.min(10, 3 + Math.round(dmg / 6)));
     sfx.hit(Math.min(1, dmg / 40));
     this.cameras.main.shake(90, Phaser.Math.Clamp((dmg / 40) * 0.012, 0.002, 0.014));
-    if (strong) this.hitStop = HIT_STOP;
+    if (strong) this.hitStop = this.tune.hitStopFrames;
 
     if (t.hp <= 0) this.kill(t);
     else if (t.kind === 'block' && t.hp < t.maxHp * 0.5) t.sprite.setTexture(this.blockKey(t.mat, t.w, t.h, true));
@@ -392,16 +409,15 @@ export default class GameScene extends Phaser.Scene {
     const wood = t.mat === 'wood';
     this.burst(px, py, t.kind === 'monster' ? ['5', '6', '4', '2'] : wood ? ['g', 'i', 'h'] : ['k', 'l', 'm'], 14);
     sfx.crunch();
-    const gain = t.kind === 'monster' ? COINS.monster : wood ? COINS.wood : COINS.stone;
+    const gain = t.kind === 'monster' ? this.tune.coins.monster : wood ? this.tune.coins.wood : this.tune.coins.stone;
     this.coins += gain;
     sfx.coin();
     const ft = pixText(this, px, py - 8, `+${gain}`, C('4')).setDepth(12);
     this.tweens.add({ targets: ft, y: py - 26, alpha: 0, duration: 800, onComplete: () => ft.destroy() });
-    this.hudCoins.destroy();
-    this.hudCoins = pixText(this, 4, this.hudTop + 3, `COINS ${this.coins}`, C('4')).setOrigin(0, 0.5).setDepth(10);
+    setPixText(this.hudCoins, this, `COINS ${this.coins}`, C('4'));
     // Sleeping bodies don't wake when a support is removed.
     for (const e of this.ents) if (!e.dead) MatterLib.Sleeping.set(e.body, false);
-    this.hitStop = Math.max(this.hitStop, HIT_STOP);
+    this.hitStop = Math.max(this.hitStop, this.tune.hitStopFrames);
   }
 
   // ------------------------------------------------------------------ fx
@@ -443,8 +459,21 @@ export default class GameScene extends Phaser.Scene {
       this.matter.world.step(STEP);
       this.stepLogic();
     }
+    this.updateCamera();
     this.syncSprites(_t);
     this.drawOverlayGfx();
+  }
+
+  private updateCamera(): void {
+    const cam = this.cameras.main;
+    const maxScroll = this.worldW - W;
+    let target: number | null = null;
+    if (this.state === 'flying' && this.proj) target = Phaser.Math.Clamp(this.proj.body.position.x - W * 0.35, 0, maxScroll);
+    else if (this.state === 'settling' && this.settleSteps > 45) target = 0;
+    if (target !== null) {
+      cam.scrollX += (target - cam.scrollX) * 0.1;
+      if (Math.abs(cam.scrollX - target) < 0.5) cam.scrollX = target;
+    }
   }
 
   private stepLogic(): void {
@@ -459,16 +488,10 @@ export default class GameScene extends Phaser.Scene {
       const p = this.proj;
       p.steps++;
       const b = p.body;
-      if (p.saw > 0) {
-        p.saw--;
-        const sp = Math.hypot(b.velocity.x, b.velocity.y);
-        if (sp < 5.5 && sp > 0.01) MatterLib.Body.setVelocity(b, { x: (b.velocity.x / sp) * 5.5, y: (b.velocity.y / sp) * 5.5 });
-        if (p.saw % 6 === 0) this.sawTick(b);
-        if (p.saw === 0) b.gravityScale = { x: 1, y: 1 };
-      }
+      this.wpn.onUpdate(this, p);
       const speed = Math.hypot(b.velocity.x, b.velocity.y);
       p.slow = speed < 0.3 ? p.slow + 1 : 0;
-      const out = b.position.x > W + 40 || b.position.x < -40 || b.position.y > H + 40;
+      const out = b.position.x > this.worldW + 40 || b.position.x < -40 || b.position.y > H + 40;
       if (out || p.slow > 40 || p.steps > 60 * 5) {
         this.matter.world.remove(b);
         p.sprite.destroy();
@@ -489,9 +512,10 @@ export default class GameScene extends Phaser.Scene {
     if (this.state === 'settling') {
       this.settleSteps++;
       const calm = alive.every((e) => e.body.speed < 0.35);
-      if ((calm && this.settleSteps > 25) || this.settleSteps > 180) {
+      if (((calm && this.settleSteps > 25) || this.settleSteps > 180) && this.cameras.main.scrollX < 3) {
         if (this.shotsLeft > 0) {
           this.state = 'ready';
+          this.cameras.main.scrollX = 0;
           this.readySprite.setVisible(true);
         } else {
           this.finish(false);
@@ -500,15 +524,16 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  private sawTick(b: any): void {
+  /** Hit everything within a box of half-size r around (x, y). Used by area/contact tap moves. */
+  damageAround(x: number, y: number, r: number, factor: number): void {
     const hits = MatterLib.Query.region(MatterLib.Composite.allBodies(this.matter.world.engine.world), {
-      min: { x: b.position.x - 11, y: b.position.y - 11 },
-      max: { x: b.position.x + 11, y: b.position.y + 11 },
+      min: { x: x - r, y: y - r },
+      max: { x: x + r, y: y + r },
     });
     for (const o of hits) {
       const t: Ent | undefined = o.ent;
       if (!t || t.dead) continue;
-      this.damage(t, this.bladeDamage(t, 1) * 0.22, b.position.x, b.position.y, false);
+      this.damage(t, this.bladeDamage(t, 1) * factor, x, y, false);
     }
   }
 
@@ -544,7 +569,7 @@ export default class GameScene extends Phaser.Scene {
     if (this.state === 'ready' || aiming) {
       this.readySprite.setPosition(pos.x, pos.y);
       if (aiming) {
-        const v = new Phaser.Math.Vector2(SLING_X - pos.x, SLING_Y - pos.y).scale(LAUNCH_K);
+        const v = new Phaser.Math.Vector2(SLING_X - pos.x, SLING_Y - pos.y).scale(this.tune.launchK);
         this.readySprite.setRotation(Math.atan2(v.y, v.x) + Math.PI / 2);
         let x = pos.x;
         let y = pos.y;
@@ -560,13 +585,7 @@ export default class GameScene extends Phaser.Scene {
       }
     }
 
-    if (this.proj && this.proj.saw > 0) {
-      const b = this.proj.body.position;
-      g.lineStyle(1, C('c'), 1);
-      g.strokeCircle(b.x, b.y, 10);
-      g.lineStyle(1, C('4'), 1);
-      g.strokeCircle(b.x, b.y, 7);
-    }
+    if (this.proj) this.wpn.drawFx(this, this.proj, g);
   }
 
   // ------------------------------------------------------------------ end screens
@@ -575,21 +594,21 @@ export default class GameScene extends Phaser.Scene {
     if (this.state === 'won' || this.state === 'lost') return;
     this.state = won ? 'won' : 'lost';
     won ? sfx.win() : sfx.lose();
-    const shade = this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.65).setDepth(20);
+    const shade = this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.65).setDepth(20).setScrollFactor(0);
     this.overlay.push(shade);
-    const title = pixText(this, W / 2, 130, won ? 'MASHED!' : 'OUT OF SHOTS', won ? C('4') : C('3'), won ? 4 : 2).setDepth(21);
+    const title = pixText(this, W / 2, 130, won ? 'MASHED!' : 'OUT OF SHOTS', won ? C('4') : C('3'), won ? 4 : 2).setDepth(21).setScrollFactor(0);
     this.overlay.push(title);
     if (won) {
       const stars = 1 + (this.shotsLeft > 0 ? 1 : 0);
       for (let i = 0; i < 3; i++) {
-        this.overlay.push(this.add.image(W / 2 - 22 + i * 22, 172, i < stars ? 'star_on' : 'star_off').setScale(2).setDepth(21));
+        this.overlay.push(this.add.image(W / 2 - 22 + i * 22, 172, i < stars ? 'star_on' : 'star_off').setScale(2).setDepth(21).setScrollFactor(0));
       }
     }
-    this.overlay.push(pixText(this, W / 2, 205, `COINS ${this.coins}`, C('4'), 2).setDepth(21));
+    this.overlay.push(pixText(this, W / 2, 205, `COINS ${this.coins}`, C('4'), 2).setDepth(21).setScrollFactor(0));
 
-    const btn = this.add.rectangle(W / 2, 255, 80, 26, C('6')).setStrokeStyle(1, C('0')).setDepth(21);
+    const btn = this.add.rectangle(W / 2, 255, 80, 26, C('6')).setStrokeStyle(1, C('0')).setDepth(21).setScrollFactor(0);
     btn.setInteractive({ useHandCursor: true });
-    this.overlay.push(btn, pixText(this, W / 2, 255, won ? 'AGAIN' : 'RETRY', C('c'), 2).setDepth(22));
+    this.overlay.push(btn, pixText(this, W / 2, 255, won ? 'AGAIN' : 'RETRY', C('c'), 2).setDepth(22).setScrollFactor(0));
     btn.on('pointerdown', () => {
       sfx.click();
       this.scene.restart();

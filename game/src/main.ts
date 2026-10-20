@@ -2,13 +2,16 @@ import Phaser from 'phaser';
 import GameScene, { W, H } from './scenes/GameScene';
 import './style.css';
 import RundotGameAPI from "@series-inc/rundot-game-sdk/api";
+import { sfx } from './audio';
 
 let bootStep1Fired = false;
 
 RundotGameAPI.lifecycles.onPause(() => {
+  sfx.suspend();
   RundotGameAPI.analytics.recordCustomEvent('game_paused');
 });
 RundotGameAPI.lifecycles.onResume(() => {
+  sfx.resume();
   RundotGameAPI.analytics.recordCustomEvent('game_resumed');
 });
 RundotGameAPI.lifecycles.onSleep(() => {

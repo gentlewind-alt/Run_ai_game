@@ -22,6 +22,9 @@ class Sfx {
     } catch { /* audio is optional */ }
   }
 
+  suspend(): void { this.ctx?.suspend(); }
+  resume(): void { this.ctx?.resume(); }
+
   setMuted(m: boolean): void {
     this.muted = m;
     if (this.master) this.master.gain.value = m ? 0 : 0.5;
