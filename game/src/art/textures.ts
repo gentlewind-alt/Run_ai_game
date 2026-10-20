@@ -313,6 +313,78 @@ export const WEAPON_IDS = [
 
 export const weaponTexture = (id: string): string => `wpn_${id}`;
 
+export const blockKey = (m: string, w: number, h: number, cracked: boolean): string => `blk_${m}_${w}x${h}${cracked ? '_c' : ''}`;
+
+/** Textures a battle needs that depend on the level: one per block size and material (plus a cracked frame), the sling and the exit door. */
+export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: number; h: number }[]): void {
+  const make = (key: string, w: number, h: number, draw: (g: CanvasRenderingContext2D) => void): void => {
+    if (scene.textures.exists(key)) return;
+    const cv = document.createElement('canvas');
+    cv.width = w;
+    cv.height = h;
+    draw(cv.getContext('2d')!);
+    scene.textures.addCanvas(key, cv);
+  };
+  const rect = (g: CanvasRenderingContext2D, ch: string, x: number, y: number, w: number, h: number): void => {
+    g.fillStyle = css(C(ch));
+    g.fillRect(x, y, w, h);
+  };
+
+  for (const b of blocks) {
+    for (const cracked of [false, true]) {
+      make(blockKey(b.m, b.w, b.h, cracked), b.w, b.h, (g) => {
+        const stone = b.m === 'stone';
+        rect(g, 'v', 0, 0, b.w, b.h);
+        rect(g, stone ? 'k' : 'g', 1, 1, b.w - 2, b.h - 2);
+        rect(g, stone ? 'l' : 'i', 1, 1, b.w - 2, 1);
+        rect(g, stone ? 'l' : 'i', 1, 1, 1, b.h - 2);
+        rect(g, stone ? 'm' : 'h', 1, b.h - 2, b.w - 2, 1);
+        rect(g, stone ? 'm' : 'h', b.w - 2, 1, 1, b.h - 2);
+        if (!stone) {
+          const long = Math.max(b.w, b.h);
+          for (let i = 6; i < long - 2; i += 7) {
+            if (b.w >= b.h) rect(g, 'h', i, 2, 1, b.h - 4);
+            else rect(g, 'h', 2, i, b.w - 4, 1);
+          }
+        } else if (b.w >= 10 && b.h >= 10) {
+          rect(g, 'm', 3, 3, 2, 1);
+          rect(g, 'l', b.w - 5, b.h - 4, 2, 1);
+        }
+        if (cracked) {
+          rect(g, 'v', Math.floor(b.w * 0.3), 1, 1, Math.floor(b.h * 0.5));
+          rect(g, 'v', Math.floor(b.w * 0.3) + 1, Math.floor(b.h * 0.5), 1, Math.floor(b.h * 0.4));
+          rect(g, 'v', Math.floor(b.w * 0.7), Math.floor(b.h * 0.3), 1, Math.floor(b.h * 0.6));
+        }
+      });
+    }
+  }
+
+  make('sling', 16, 48, (g) => {
+    rect(g, 'v', 6, 15, 5, 33);
+    rect(g, 'h', 7, 16, 3, 32);
+    rect(g, 'g', 8, 16, 1, 32);
+    rect(g, 'v', 2, 3, 5, 16);
+    rect(g, 'v', 10, 3, 5, 16);
+    rect(g, 'h', 3, 4, 3, 14);
+    rect(g, 'h', 11, 4, 3, 14);
+    rect(g, 'i', 3, 4, 1, 14);
+    rect(g, 'i', 11, 4, 1, 14);
+    rect(g, 'h', 5, 16, 7, 3);
+  });
+
+  make('door', 16, 26, (g) => {
+    rect(g, 'v', 0, 2, 16, 24);
+    rect(g, 'v', 2, 0, 12, 2);
+    rect(g, 'h', 1, 3, 14, 23);
+    rect(g, 'g', 2, 3, 12, 23);
+    rect(g, 'i', 2, 3, 12, 1);
+    rect(g, 'h', 8, 4, 1, 22);
+    rect(g, '4', 6, 14, 2, 2);
+    rect(g, '2', 3, 8, 2, 3);
+    rect(g, '2', 11, 8, 2, 3);
+  });
+}
+
 /** Create every sprite texture once. Safe to call on every scene start. */
 export function registerArt(scene: Phaser.Scene): void {
   const small: Record<string, string[]> = {

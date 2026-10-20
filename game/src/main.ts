@@ -1,47 +1,49 @@
 import Phaser from 'phaser';
-import GameScene, { W, H } from './scenes/BattleScene';
+import BattleScene from './scenes/BattleScene';
 import BootScene from './scenes/BootScene';
 import LoadoutScene from './scenes/LoadoutScene';
 import './style.css';
-import RundotGameAPI from "@series-inc/rundot-game-sdk/api";
 import { sfx } from './audio/sfx';
+import { H, W } from './config/constants';
+import { getSettings, initSettings } from './config/settings';
+import { data, loadData } from './data/load';
+import { platform } from './platform';
 
 let bootStep1Fired = false;
 
-RundotGameAPI.lifecycles.onPause(() => {
+platform.lifecycle.onPause(() => {
   sfx.suspend();
-  RundotGameAPI.analytics.recordCustomEvent('game_paused');
+  platform.track('game_paused');
 });
-RundotGameAPI.lifecycles.onResume(() => {
+platform.lifecycle.onResume(() => {
   sfx.resume();
-  RundotGameAPI.analytics.recordCustomEvent('game_resumed');
+  platform.track('game_resumed');
 });
-RundotGameAPI.lifecycles.onSleep(() => {
-  RundotGameAPI.analytics.recordCustomEvent('game_sleep');
-});
-RundotGameAPI.lifecycles.onQuit(() => {
-  RundotGameAPI.analytics.recordCustomEvent('game_quit');
-});
+platform.lifecycle.onSleep(() => platform.track('game_sleep'));
+platform.lifecycle.onQuit(() => platform.track('game_quit'));
 
 async function bootstrap(): Promise<void> {
   try {
-    // Create Phaser game
+    await platform.init();
+    await loadData();
+    initSettings(data.config, data.content);
+    const S = getSettings();
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       width: W,
       height: H,
-      parent: "app",
-      backgroundColor: "#1a1c2c",
-      pixelArt: true,
-      scene: [BootScene, LoadoutScene, GameScene],
+      parent: 'app',
+      backgroundColor: '#1a1c2c',
+      pixelArt: S.display.pixelArt,
+      scene: [BootScene, LoadoutScene, BattleScene],
       physics: {
-        default: "matter",
+        default: 'matter',
         matter: {
-          gravity: { x: 0, y: 1 },
-          enableSleeping: true,
+          gravity: { x: 0, y: S.physics.gravityY },
+          enableSleeping: S.physics.enableSleeping,
           autoUpdate: false,
-          positionIterations: 8,
-          velocityIterations: 6,
+          positionIterations: S.physics.positionIterations,
+          velocityIterations: S.physics.velocityIterations,
           debug: false,
         },
       },
@@ -53,14 +55,14 @@ async function bootstrap(): Promise<void> {
 
     const game = new Phaser.Game(config);
     if ((import.meta as any).env?.DEV) (window as any).__game = game;
-    RundotGameAPI.analytics.recordCustomEvent('game_loaded');
+    platform.track('game_loaded');
     if (!bootStep1Fired) {
       bootStep1Fired = true;
-      RundotGameAPI.analytics.trackFunnelStep(1, 'game_loaded', 'boot', 1);
+      platform.funnel(1, 'game_loaded', 'boot');
     }
-    RundotGameAPI.log("[Main] Phaser game created");
+    platform.log('[Main] Phaser game created');
   } catch (error) {
-    console.error("[Main] Bootstrap error:", error);
+    console.error('[Main] Bootstrap error:', error);
   }
 }
 

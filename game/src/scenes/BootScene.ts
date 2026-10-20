@@ -2,20 +2,17 @@ import Phaser from 'phaser';
 import { registerArt } from '../art/textures';
 import { gridTexture } from '../art/pix';
 import { SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../art/sprites';
+import { checkRegistries } from '../content/validate';
 import { debugLevel, progress } from '../core/profile';
 
-/** Loads data once, creates every shared texture, then hands over to the loadout picker. */
+/** Creates every shared texture (data is already loaded by main.ts), then hands over to the loadout picker. */
 export default class BootScene extends Phaser.Scene {
   constructor() {
     super('boot');
   }
 
-  preload(): void {
-    this.load.json('content', 'data/content.json');
-    for (const n of [1, 2, 3, 4, 99]) this.load.json(`level${n}`, `data/level_${String(n).padStart(2, '0')}.json`);
-  }
-
   create(): void {
+    if ((import.meta as any).env?.DEV) checkRegistries();
     registerArt(this);
     gridTexture(this, 'spk_on', SPK_ON);
     gridTexture(this, 'spk_off', SPK_OFF);

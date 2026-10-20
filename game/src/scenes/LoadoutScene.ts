@@ -4,9 +4,10 @@ import { text, setText, textBlock } from '../art/font5x7';
 import { pixText } from '../art/pix';
 import { makeButton } from '../ui/widgets';
 import { weaponTexture } from '../art/textures';
-import { WEAPONS } from '../weapons';
+import { data } from '../data/load';
+import { levelDef } from '../data/lookup';
 import { LOADOUT_SIZE, isUnlocked, progress } from '../core/profile';
-import { W, H } from './BattleScene';
+import { W, H } from '../config/constants';
 import { sfx } from '../audio/sfx';
 
 const SHORT: Record<string, string> = {
@@ -34,8 +35,8 @@ export default class LoadoutScene extends Phaser.Scene {
   }
 
   create(): void {
-    const content = this.cache.json.get('content');
-    const lvl = this.cache.json.get(`level${this.level}`);
+    const content = data.content;
+    const lvl = levelDef(this.level);
     this.cameras.main.setBackgroundColor(C('f'));
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
 
@@ -56,7 +57,7 @@ export default class LoadoutScene extends Phaser.Scene {
       if (ok) {
         this.add.image(x + 37, y + 31, `el_${w.element}`);
         pixText(this, x + 45, y + 31, String(Math.round(w.baseDamage)), C('4')).setOrigin(0, 0.5);
-        text(this, x + 93, y + 31, WEAPONS[w.id]?.abilityLabel ?? '', C('b')).setOrigin(1, 0.5);
+        text(this, x + 93, y + 31, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5);
         card.setInteractive();
         card.on('pointerdown', () => {
           sfx.unlock();

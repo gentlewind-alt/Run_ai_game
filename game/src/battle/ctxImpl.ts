@@ -1,0 +1,55 @@
+// Implements BattleCtx over a BattleState: the only door content code uses to touch the battle.
+import Phaser from 'phaser';
+import { blast, damage, damageAround, directHit, explode, push } from './damage';
+import { popWord, ring, shake, burst } from './fx';
+import { MatterLib } from './matter';
+import { endProj, setGravity, spawnPellet } from './projectiles';
+import { escape } from './rules';
+import { inflict } from './status';
+import type { BattleCtx, Ent } from './BattleCtx';
+import type { BattleState } from './state';
+
+export function makeCtx(b: BattleState): BattleCtx {
+  const living = (kind: Ent['kind']): Ent[] => b.ents.filter((e) => !e.dead && e.kind === kind);
+  const dist = (x: number, y: number, e: Ent): number => Phaser.Math.Distance.Between(x, y, e.body.position.x, e.body.position.y);
+  return {
+    get step() { return b.steps; },
+    rng: b.rng,
+    tune: b.tune,
+    rules: b.rules,
+    events: b.events,
+    sling: { x: b.slingX, y: b.slingY },
+    groundY: b.groundY,
+    worldW: b.worldW,
+    level: b.level,
+    get phase() { return b.state; },
+    M: MatterLib,
+
+    monsters: () => living('monster'),
+    blocks: () => living('block'),
+    within: (x, y, r) => living('monster').filter((e) => dist(x, y, e) <= r),
+    nearestMonsters: (x, y, n) => living('monster').sort((a, c) => dist(x, y, a) - dist(x, y, c)).slice(0, n),
+
+    damage: (t, amount, x, y, o) => damage(b, t, amount, x, y, o),
+    directHit: (t, wid, mult, x, y, strong) => directHit(b, t, wid, mult, x, y, strong),
+    damageAround: (x, y, r, mult, wid) => damageAround(b, x, y, r, mult, wid),
+    blast: (x, y, r, mult, wid) => blast(b, x, y, r, mult, wid),
+    explode: (x, y, r, base, exclude, wid) => explode(b, x, y, r, base, exclude, wid),
+    addStatus: (t, status, steps) => inflict(b, t, status, steps),
+    push: (x, y, r, strength) => push(b, x, y, r, strength),
+    setGravity,
+    addActor: (a) => { b.actors.push(a); },
+    spawnPellet: (o) => spawnPellet(b, o),
+    endProj: (p) => endProj(b, p),
+    escape: (e) => escape(b, e),
+
+    fx: {
+      ring: (x, y, r, color) => ring(b, x, y, r, color),
+      sparks: (x, y, colors, n) => burst(b, x, y, colors, n),
+      shake: (i) => shake(b, i),
+      dot: (x, y, r, fill, stroke) => b.scene.add.circle(x, y, r, fill).setStrokeStyle(1, stroke).setDepth(6),
+      image: (x, y, key) => b.scene.add.image(x, y, key),
+      word: (x, y, word) => popWord(b, x, y, word),
+    },
+  };
+}
