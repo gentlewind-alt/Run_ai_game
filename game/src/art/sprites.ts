@@ -86,3 +86,15 @@ export const ZOOM_ICON = [
   '.......c.',
   '........c',
 ];
+
+export const PAUSE_ICON = [
+  '.........',
+  '.ccc.ccc.',
+  '.ccc.ccc.',
+  '.ccc.ccc.',
+  '.ccc.ccc.',
+  '.ccc.ccc.',
+  '.ccc.ccc.',
+  '.ccc.ccc.',
+  '.........',
+];

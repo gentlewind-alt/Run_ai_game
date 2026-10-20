@@ -17,13 +17,13 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S2-07 | Monster behaviours + iron/crystal | S2-03 | review | local | 10-21 | all behaviours but iron/crystal materials; runners use dir+speed, not path |
 | S2-08 | MASH combo, score, stars | S2-03 | review | local | 10-21 | combo, MASH banner on the beat, score, stars; no features.combo flag yet |
 | S2-09 | Goblin Hills levels 1-4 | S2-04..08 | review | local | 10-21 | levels 1-4 + sandbox 99; scoreTargets are guesses, set from sweeps |
-| S3-01 | Scene flow Boot/Title/Map/Results | S2-03 | doing | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
-| S3-02 | Save system | S2-03, S3-01 | doing | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
-| S3-03 | Loadout scene | S3-01 | doing | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
-| S3-04 | Shop and forge | S3-02 | doing | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
-| S3-05 | Artifacts (6) | S2-03, S3-03 | doing | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
-| S3-06 | Consumables (4) | S2-03, S3-03 | doing | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
-| S3-07 | Dark Elf Wood 5-8 + pause | S2-09, S3-01 | doing | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
+| S3-01 | Scene flow Boot/Title/Map/Results | S2-03 | review | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
+| S3-02 | Save system | S2-03, S3-01 | review | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
+| S3-03 | Loadout scene | S3-01 | review | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
+| S3-04 | Shop and forge | S3-02 | review | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
+| S3-05 | Artifacts (6) | S2-03, S3-03 | review | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
+| S3-06 | Consumables (4) | S2-03, S3-03 | review | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
+| S3-07 | Dark Elf Wood 5-8 + pause | S2-09, S3-01 | review | local | 10-21 | Stage 3 in one run with terrain + hard levels; see LOG |
 | S4-01 | Iron Keep 9-11 | S3-07 | todo | | | |
 | S4-02 | Iron Warlord boss | S2-07 | todo | | | |
 | S4-03 | Daily Mash generator | S2-03, S3-01 | todo | | | |

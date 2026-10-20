@@ -352,42 +352,67 @@
       "name": "Gale Eye",
       "rarity": "rare",
       "price": 300,
-      "effect": "Tap also releases a wind burst that knocks monsters and light blocks back."
+      "effect": "The ability also releases a wind burst that knocks monsters and light blocks back.",
+      "params": {
+        "radius": 46,
+        "strength": 3.0
+      }
     },
     {
       "id": "r_echo_stone",
       "name": "Echo Stone",
       "rarity": "rare",
       "price": 350,
-      "effect": "A ghost copy of your shot follows 0.3 s behind and deals 50% damage. This is the game's Echo."
+      "effect": "A ghost copy of your shot follows 0.3 s behind and deals 50% damage. This is the game's Echo.",
+      "params": {
+        "delaySteps": 18,
+        "mult": 0.5
+      }
     },
     {
       "id": "r_lodestone_bracer",
       "name": "Lodestone Bracer",
       "rarity": "rare",
       "price": 250,
-      "effect": "Coins and pickups near your shot's path are pulled to it."
+      "effect": "Kills near your flying weapon drop 50% more coins.",
+      "params": {
+        "radius": 60,
+        "bonus": 0.5
+      }
     },
     {
       "id": "r_analyst_lens",
       "name": "Analyst Lens",
       "rarity": "rare",
       "price": 250,
-      "effect": "Longer aim preview; shows each monster's HP and weak element."
+      "effect": "Longer aim preview; shows each monster's HP and weak element.",
+      "params": {
+        "previewMult": 1.8
+      }
     },
     {
       "id": "r_stormcaller_torc",
       "name": "Stormcaller Torc",
       "rarity": "epic",
       "price": 500,
-      "effect": "Every 5th hit calls a radiant lightning bolt on the target."
+      "effect": "Every 5th hit calls a radiant lightning bolt on the target.",
+      "params": {
+        "everyHits": 5,
+        "mult": 1.6
+      }
     },
     {
       "id": "r_gamblers_charm",
       "name": "Gamblers Charm",
       "rarity": "rare",
       "price": 300,
-      "effect": "+20% coins; crits drop extra coins."
+      "effect": "+20% coins. One hit in ten is a crit: double damage and bonus coins.",
+      "params": {
+        "coinMult": 1.2,
+        "critChance": 0.1,
+        "critMult": 2,
+        "critCoins": 5
+      }
     }
   ],
   "stretchArtifacts": [
@@ -412,25 +437,46 @@
       "id": "c_jury_rigged_bomb",
       "name": "Jury-Rigged Bomb",
       "price": 60,
-      "effect": "Drop a huge blast on a tapped spot. 1 in 5 fizzle (funny, keep it)."
+      "effect": "Drop a huge blast on a tapped spot. 1 in 5 fizzle (funny, keep it).",
+      "targeted": true,
+      "params": {
+        "radius": 44,
+        "damage": 70,
+        "fizzleChance": 0.2
+      }
     },
     {
       "id": "c_prime_serum",
       "name": "Prime Serum",
       "price": 150,
-      "effect": "Next 2 shots: +20% damage."
+      "effect": "Next 2 shots: +20% damage.",
+      "targeted": false,
+      "params": {
+        "shots": 2,
+        "mult": 1.2
+      }
     },
     {
       "id": "c_mindflash",
       "name": "Mindflash",
       "price": 150,
-      "effect": "Stuns every monster for 1 s. Stops runners mid-sprint."
+      "effect": "Stuns every monster for 1 s. Stops runners mid-sprint.",
+      "targeted": false,
+      "params": {
+        "steps": 60
+      }
     },
     {
       "id": "c_chainward_talisman",
       "name": "Chainward Talisman",
       "price": 150,
-      "effect": "Chains one monster in place for 3 s (1 s on bosses)."
+      "effect": "Chains one monster in place for 3 s (1 s on bosses).",
+      "targeted": true,
+      "params": {
+        "steps": 180,
+        "bossSteps": 60,
+        "pickRadius": 26
+      }
     }
   ],
   "monsters": [

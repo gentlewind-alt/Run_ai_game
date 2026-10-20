@@ -1,10 +1,11 @@
 // Implements BattleCtx over a BattleState: the only door content code uses to touch the battle.
 import Phaser from 'phaser';
 import { blast, damage, damageAround, directHit, explode, push } from './damage';
-import { popWord, ring, shake, burst } from './fx';
+import { bolt, popWord, ring, shake, burst } from './fx';
 import { MatterLib } from './matter';
 import { endProj, setGravity, spawnPellet } from './projectiles';
 import { escape } from './rules';
+import { addCoins } from './score';
 import { inflict } from './status';
 import { groundAt } from './terrain';
 import type { BattleCtx, Ent } from './BattleCtx';
@@ -26,12 +27,14 @@ export function makeCtx(b: BattleState): BattleCtx {
     worldW: b.worldW,
     level: b.level,
     get phase() { return b.state; },
+    mods: b.mods,
     M: MatterLib,
 
     monsters: () => living('monster'),
     blocks: () => living('block'),
     within: (x, y, r) => living('monster').filter((e) => dist(x, y, e) <= r),
     nearestMonsters: (x, y, n) => living('monster').sort((a, c) => dist(x, y, a) - dist(x, y, c)).slice(0, n),
+    shotPos: () => (b.proj ? { x: b.proj.body.position.x, y: b.proj.body.position.y } : null),
 
     damage: (t, amount, x, y, o) => damage(b, t, amount, x, y, o),
     directHit: (t, wid, mult, x, y, strong) => directHit(b, t, wid, mult, x, y, strong),
@@ -45,6 +48,11 @@ export function makeCtx(b: BattleState): BattleCtx {
     spawnPellet: (o) => spawnPellet(b, o),
     endProj: (p) => endProj(b, p),
     escape: (e) => escape(b, e),
+    addCoins: (n) => addCoins(b, n),
+    reveal: (e) => {
+      e.revealed = true;
+      if (e.weak && !e.icon) e.icon = b.scene.add.image(e.body.position.x, e.body.position.y, `el_${e.weak}`).setDepth(8);
+    },
 
     fx: {
       ring: (x, y, r, color) => ring(b, x, y, r, color),
@@ -53,6 +61,7 @@ export function makeCtx(b: BattleState): BattleCtx {
       dot: (x, y, r, fill, stroke) => b.scene.add.circle(x, y, r, fill).setStrokeStyle(1, stroke).setDepth(6),
       image: (x, y, key) => b.scene.add.image(x, y, key),
       word: (x, y, word) => popWord(b, x, y, word),
+      bolt: (x, y) => bolt(b, x, y),
     },
   };
 }

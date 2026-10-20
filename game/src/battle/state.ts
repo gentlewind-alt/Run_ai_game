@@ -5,7 +5,10 @@ import type { EventBus } from '../core/events';
 import type { Rng } from '../core/rng';
 import type { Content, DamageRules, Level, Tuning, WeaponDef } from '../data/types';
 import type { WeaponImpl } from '../content/weapons/types';
-import type { Actor, BattleCtx, BattlePhase, Ent, Proj } from './BattleCtx';
+import type { Actor, BattleCtx, BattlePhase, Ent, Mods, Proj } from './BattleCtx';
+import type { ArtifactImpl } from '../content/artifacts/types';
+import type { ConsumableImpl } from '../content/consumables';
+import type { Params } from '../data/types';
 
 export interface Particle { s: Phaser.GameObjects.Image; vx: number; vy: number; life: number }
 
@@ -14,7 +17,12 @@ export interface BattleUi {
   setAbilityLabel(label: string): void;
   showAbility(inAir: boolean, ready: boolean, scale: number): void;
   setEscaped(escaped: number, limit: number): void;
+  setTargeting(on: boolean, label?: string): void;
+  consumableUsed(i: number): void;
 }
+
+export interface InstalledArtifact { id: string; impl: ArtifactImpl; params: Params; off: () => void }
+export interface ConsumableSlot { id: string; name: string; impl: ConsumableImpl; params: Params; used: boolean }
 
 export interface View {
   z: number; // zoom
@@ -44,6 +52,11 @@ export interface BattleState {
   worldW: number;
   maxSpeed: number; // launch speed at full pull
   terrain: [number, number][]; // ground profile, see battle/terrain.ts
+  mods: Mods;
+  artifacts: InstalledArtifact[];
+  consumables: ConsumableSlot[];
+  targeting: number | null; // index of an armed targeted consumable
+  paused: boolean;
 
   ents: Ent[];
   actors: Actor[];

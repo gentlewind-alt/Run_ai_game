@@ -8,6 +8,7 @@ import { weaponDef } from '../data/lookup';
 import { clampCx, homeCx, homeZoom, pointerWorld, screenDist, setView, zoomBy } from './camera';
 import { MatterLib } from './matter';
 import { setGravity } from './projectiles';
+import { targetTap } from './consumables';
 import { groundAt } from './terrain';
 import type { BattleState } from './state';
 
@@ -115,7 +116,11 @@ export function updateAbilityBtn(b: BattleState, time: number): void {
 
 export function onDown(b: BattleState, p: Phaser.Input.Pointer, over: unknown[]): void {
   sfx.unlock();
-  if (over.length) return;
+  if (over.length || b.paused) return;
+  if (b.targeting !== null) {
+    const w = pointerWorld(b, p);
+    if (targetTap(b, w.x, w.y)) return;
+  }
   const v = b.view;
   const zoomOn = b.settings.features.zoom;
   const two = b.scene.input.pointer1.isDown && b.scene.input.pointer2.isDown;
@@ -196,6 +201,10 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   MatterLib.Body.setAngularVelocity(body, phys.spin);
   const sprite = b.scene.add.image(b.pouch.x, b.pouch.y, b.wpn.texture).setDepth(4);
   b.proj = { body, sprite, wid: id, def: b.wdef, steps: 0, slow: 0, tapped: false, t: 0, data: {} };
+  // Prime Serum: this shot is buffed if any charges are left
+  const buffed = b.mods.serumShots > 0;
+  if (buffed) b.mods.serumShots--;
+  b.mods.damageMult = buffed ? b.mods.serumMult : 1;
   b.readySprite.setVisible(false);
   b.pouch.set(b.slingX, b.slingY);
   b.shotIdx++;
@@ -204,7 +213,10 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   b.scene.cameras.main.shake(70, 0.004);
   sfx.launch();
   b.wpn.onLaunch?.(b.ctx, b.proj);
-  b.events.emit('shot:launched', { weaponId: id, index: b.shotIdx - 1 });
+  b.events.emit('shot:launched', {
+    weaponId: id, index: b.shotIdx - 1, x: body.position.x, y: body.position.y, vx: vel.x, vy: vel.y, radius: phys.radius,
+    density: phys.density, gravity: phys.gravity ?? 1,
+  });
 }
 
 // ------------------------------------------------------------------ overlay (sling bands and aim preview)
@@ -234,14 +246,23 @@ export function drawOverlay(b: BattleState): void {
       g.fillStyle(C('c'), 1);
       const gravityStep = 0.001 * b.stepMs * b.stepMs; // matter gravity per step, px/step^2
       const gr = gravityStep * (b.wdef.physics.gravity ?? 1);
-      for (let i = 1; i <= 30; i++) {
+      const steps = Math.round(30 * b.mods.previewMult);
+      for (let i = 1; i <= steps; i++) {
         x += v.x;
         vy += gr;
         y += vy;
         if (y > groundAt(b, x) - 2) break;
-        if (i % 3 === 0 && i <= 24) g.fillRect(Math.round(x) - 1, Math.round(y) - 1, 2, 2);
+        if (i % 3 === 0 && i <= steps - 6) g.fillRect(Math.round(x) - 1, Math.round(y) - 1, 2, 2);
       }
     }
   }
   if (b.proj) b.wpn.drawFx?.(b.ctx, b.proj, g);
+  for (const e of b.ents) {
+    if (!e.revealed || e.dead || e.kind !== 'monster') continue;
+    const x = e.body.position.x - 7;
+    const y = e.body.position.y - e.h / 2 - 14;
+    g.fillStyle(C('0'), 1).fillRect(x - 1, y - 1, 16, 4);
+    g.fillStyle(C('f'), 1).fillRect(x, y, 14, 2);
+    g.fillStyle(C(e.hp / e.maxHp > 0.5 ? '5' : e.hp / e.maxHp > 0.25 ? '4' : '2'), 1).fillRect(x, y, Math.max(1, Math.round((14 * e.hp) / e.maxHp)), 2);
+  }
 }

@@ -1,4 +1,5 @@
-// Battle HUD on the fixed UI camera: coins, score, escapes, mute, view-all, ability button, hint, MASH banner and the results panel.
+// Battle HUD on the fixed UI camera: coins, score, escapes, mute, pause, view-all, ability button, item tray, hint,
+// the MASH banner and the pause menu.
 import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { setText, text, textBlock } from '../art/font5x7';
@@ -7,7 +8,7 @@ import { msToNextBeat } from '../audio/beat';
 import { H, W } from '../config/constants';
 import { setMuted, profile } from '../core/profile';
 import { platform } from '../platform';
-import { makeButton, type Btn } from './widgets';
+import { makeButton, panel, type Btn } from './widgets';
 import type { BattleUi } from '../battle/state';
 
 /** What the HUD needs from the scene hosting the battle. */
@@ -22,11 +23,16 @@ export interface Hud {
   setCoins(n: number): void;
   setScore(n: number): void;
   mash(mult: number): void;
+  showPause(h: { resume: () => void; restart: () => void; map: () => void }): void;
+  hidePause(): void;
 }
 
 export function createHud(
   host: HudHost,
-  o: { escapeLimit?: number; hint?: string; abilityLabel: string; onAbility: () => void; onToggleView: () => void; showZoom: boolean },
+  o: {
+    escapeLimit?: number; hint?: string; abilityLabel: string; onAbility: () => void; onToggleView: () => void; showZoom: boolean;
+    consumables: { icon: string; label: string }[]; onUse: (i: number) => void; onPause: () => void;
+  },
 ): Hud {
   const { scene } = host;
   const sa = platform.safeArea();
@@ -37,6 +43,9 @@ export function createHud(
   let escTxt: Phaser.GameObjects.Image | undefined;
   let muteBtn!: Phaser.GameObjects.Image;
   let ability!: Btn;
+  let targetTxt: Phaser.GameObjects.Image | undefined;
+  const tray: { box: Phaser.GameObjects.Rectangle; icon: Phaser.GameObjects.Image }[] = [];
+  let pauseObjs: Phaser.GameObjects.GameObject[] = [];
 
   host.inUi(() => {
     coinsTxt = text(scene, 4, top + 5, 'Coins 0', C('4')).setOrigin(0, 0.5).setDepth(10);
@@ -52,14 +61,26 @@ export function createHud(
       muteBtn.setTexture(sfx.muted ? 'spk_off' : 'spk_on');
       sfx.click();
     });
+    const pauseBtn = scene.add.image(W - 30, top + 4, 'pause_icon').setDepth(10);
+    pauseBtn.setInteractive(new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
+    pauseBtn.on('pointerdown', () => { sfx.unlock(); sfx.click(); o.onPause(); });
     if (o.showZoom) {
-      const zoomBtn = scene.add.image(W - 30, top + 4, 'zoom_icon').setDepth(10);
+      const zoomBtn = scene.add.image(W - 50, top + 4, 'zoom_icon').setDepth(10);
       zoomBtn.setInteractive(new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
       zoomBtn.on('pointerdown', () => { sfx.unlock(); sfx.click(); o.onToggleView(); });
     }
 
     ability = makeButton(scene, W - 30, H - 28, 52, 32, o.abilityLabel, 'ability', o.onAbility);
     ability.box.setVisible(false);
+
+    // item tray along the bottom edge, one icon per consumable you own
+    o.consumables.forEach((c, i) => {
+      const x = 17 + i * 31;
+      const box = scene.add.rectangle(x, H - 17, 26, 26, C('0')).setStrokeStyle(1, C('d')).setDepth(10).setInteractive();
+      const icon = scene.add.image(x, H - 17, c.icon).setDepth(11);
+      box.on('pointerdown', () => { sfx.unlock(); o.onUse(i); });
+      tray.push({ box, icon });
+    });
 
     if (o.hint) {
       const hint = textBlock(scene, W / 2, top + 44, o.hint, C('c'), 190, C('0'));
@@ -77,6 +98,21 @@ export function createHud(
     },
     setEscaped: (escaped, limit) => {
       if (escTxt) setText(escTxt, scene, `Escaped ${escaped} of ${limit}`, escaped > limit ? C('2') : C('d'));
+    },
+    setTargeting: (on, label) => {
+      targetTxt?.destroy();
+      targetTxt = undefined;
+      tray.forEach((t) => t.box.setStrokeStyle(1, C('d')));
+      if (on && label) {
+        targetTxt = host.inUi(() => text(scene, W / 2, H - 56, label, C('4'), 1, C('0')).setDepth(12));
+        scene.tweens.add({ targets: targetTxt, alpha: 0.4, duration: 360, yoyo: true, repeat: -1 });
+      }
+    },
+    consumableUsed: (i) => {
+      const t = tray[i];
+      if (!t) return;
+      t.icon.setAlpha(0.3);
+      t.box.setStrokeStyle(1, C('f')).disableInteractive();
     },
   };
 
@@ -106,5 +142,30 @@ export function createHud(
       });
     },
 
+    showPause(h) {
+      if (pauseObjs.length) return;
+      host.inUi(() => {
+        const dim = scene.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.72).setDepth(40).setInteractive();
+        const g = panel(scene, 28, 110, W - 56, 164, '8', '9', 'f', 41);
+        const title = text(scene, W / 2, 128, 'Paused', C('4'), 2, C('0')).setDepth(42);
+        const soundLabel = (): string => (profile.settings.muted ? 'Sound is off' : 'Sound is on');
+        const sound = makeButton(scene, W / 2, 196, 120, 22, soundLabel(), 'plain', () => {
+          setMuted(!profile.settings.muted);
+          sfx.setMuted(profile.settings.muted);
+          muteBtn.setTexture(sfx.muted ? 'spk_off' : 'spk_on');
+          sound.setLabel(soundLabel());
+        }, 42);
+        pauseObjs = [
+          dim, g, title, sound.box,
+          makeButton(scene, W / 2, 158, 120, 26, 'Resume', 'go', () => { sfx.click(); h.resume(); }, 42).box,
+          makeButton(scene, W / 2, 222, 120, 22, 'Restart', 'plain', () => { sfx.click(); h.restart(); }, 42).box,
+          makeButton(scene, W / 2, 248, 120, 22, 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
+        ];
+      });
+    },
+    hidePause() {
+      pauseObjs.forEach((p) => p.destroy());
+      pauseObjs = [];
+    },
   };
 }

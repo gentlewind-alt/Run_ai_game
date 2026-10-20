@@ -30,6 +30,26 @@ export function ring(b: BattleState, x: number, y: number, r: number, color: num
   b.scene.tweens.add({ targets: c, scale: 1, alpha: 0, duration: 240, onComplete: () => c.destroy() });
 }
 
+/** A white lightning bolt zig-zagging down from above onto (x, y), then fading. */
+export function bolt(b: BattleState, x: number, y: number): void {
+  const g = b.scene.add.graphics().setDepth(14);
+  g.lineStyle(3, C('0'), 1);
+  const pts: [number, number][] = [];
+  const top = y - 150;
+  for (let i = 0; i <= 7; i++) pts.push([x + (i === 7 ? 0 : Phaser.Math.Between(-10, 10)), top + ((y - top) * i) / 7]);
+  g.beginPath();
+  g.moveTo(pts[0][0], pts[0][1]);
+  for (const [px, py] of pts) g.lineTo(px, py);
+  g.strokePath();
+  g.lineStyle(1, C('4'), 1);
+  g.beginPath();
+  g.moveTo(pts[0][0], pts[0][1]);
+  for (const [px, py] of pts) g.lineTo(px, py);
+  g.strokePath();
+  b.scene.cameras.main.flash(80, 255, 255, 200);
+  b.scene.tweens.add({ targets: g, alpha: 0, duration: 260, onComplete: () => g.destroy() });
+}
+
 export function shake(b: BattleState, intensity: number): void {
   b.scene.cameras.main.shake(100, intensity);
 }

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { registerIcons } from '../art/icons';
 import { registerArt } from '../art/textures';
 import { gridTexture } from '../art/pix';
-import { SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../art/sprites';
+import { PAUSE_ICON, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../art/sprites';
 import { sfx } from '../audio/sfx';
 import { checkRegistries } from '../content/validate';
 import { DEBUG, debugLevel, profile, startLevelParam } from '../core/profile';
@@ -20,6 +20,7 @@ export default class BootScene extends Phaser.Scene {
     gridTexture(this, 'spk_on', SPK_ON);
     gridTexture(this, 'spk_off', SPK_OFF);
     gridTexture(this, 'zoom_icon', ZOOM_ICON);
+    gridTexture(this, 'pause_icon', PAUSE_ICON);
     gridTexture(this, 'star_on', STAR_ON);
     gridTexture(this, 'star_off', STAR_OFF);
     if (!this.textures.exists('px')) {

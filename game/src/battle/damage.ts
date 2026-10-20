@@ -6,6 +6,7 @@ import { sfx } from '../audio/sfx';
 import { upgradeMult } from '../core/profile';
 import { weaponDef } from '../data/lookup';
 import { blockKey } from '../art/textures';
+import { artifactMult } from './artifacts';
 import { announce, comboMult, registerKill } from './combo';
 import { burst, popWord, ring } from './fx';
 import { MatterLib } from './matter';
@@ -23,7 +24,7 @@ function elementMult(b: BattleState, t: Ent, element: string): number {
 function weaponDamage(b: BattleState, t: Ent, wid: string, impactFactor: number, mul: number): { dmg: number; tag: DamageTag } {
   const w = weaponDef(wid);
   const el = elementMult(b, t, w.element);
-  const dmg = w.baseDamage * upgradeMult(wid) * impactFactor * el * comboMult(b) * b.rules.globalScale * mul;
+  const dmg = w.baseDamage * upgradeMult(wid) * impactFactor * el * comboMult(b) * b.rules.globalScale * mul * b.mods.damageMult * artifactMult(b, { weaponId: wid, target: t });
   return { dmg, tag: el > 1 ? 'weak' : el < 1 ? 'resist' : 'norm' };
 }
 
@@ -129,7 +130,7 @@ export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: numb
   t.cool = b.tune.hitCooldownSteps;
   t.hurt = 14;
   t.flash = 3;
-  b.events.emit('hit', { target: t, amount: dmg, x, y });
+  b.events.emit('hit', { target: t, amount: dmg, x, y, quiet: o.quiet, fall: o.fall });
   if (t.kind === 'monster' && !t.icon && t.weak) t.icon = b.scene.add.image(x, y, `el_${t.weak}`).setDepth(8);
   if (!o.quiet) {
     const shown = Math.max(1, Math.round(dmg));

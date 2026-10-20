@@ -13,8 +13,9 @@ export function addScore(b: BattleState, pts: number, x: number, y: number, quie
 }
 
 export function addCoins(b: BattleState, amount: number): void {
-  b.coins += amount;
-  b.events.emit('coins:gained', { amount, total: b.coins });
+  const n = Math.round(amount * b.mods.coinMult);
+  b.coins += n;
+  b.events.emit('coins:gained', { amount: n, total: b.coins });
 }
 
 /** Bonus for leftover shots, then 1 star for a win, 2 with a shot left, 3 at the level's score target. */

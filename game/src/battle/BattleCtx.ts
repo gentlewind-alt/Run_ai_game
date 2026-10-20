@@ -6,7 +6,7 @@ import type { DamageRules, Level, MonsterDef, Params, Tuning, WeaponDef } from '
 import type { MonsterBehavior } from '../content/monsters/types';
 
 export type Kind = 'block' | 'monster';
-export type StatusId = 'burn' | 'slow' | 'curse';
+export type StatusId = 'burn' | 'slow' | 'curse' | 'stun' | 'chain';
 export type BattlePhase = 'intro' | 'loading' | 'ready' | 'aiming' | 'flying' | 'settling' | 'won' | 'lost';
 export type DamageTag = 'weak' | 'resist' | 'norm';
 
@@ -39,6 +39,7 @@ export interface Ent {
   shieldSprite?: Phaser.GameObjects.Image;
   shieldedBy?: Ent;
   icon?: Phaser.GameObjects.Image;
+  revealed?: boolean; // show HP and element from the start (Analyst Lens)
   status: Record<StatusId, number>;
   ox: number;
   oy: number;
@@ -84,7 +85,16 @@ export interface Actor {
 
 export interface PelletOpts {
   x: number; y: number; vx: number; vy: number; radius: number; density: number; mul: number; wid: string;
-  color: string; status?: string;
+  color: string; status?: string; gravity?: number;
+}
+
+/** Numbers artifacts and consumables adjust during a battle. */
+export interface Mods {
+  damageMult: number; // set at each launch (Prime Serum)
+  serumShots: number; // shots left that get serumMult
+  serumMult: number;
+  coinMult: number; // Gambler's Charm
+  previewMult: number; // Analyst Lens
 }
 
 export interface BattleCtx {
@@ -100,6 +110,7 @@ export interface BattleCtx {
   readonly worldW: number;
   readonly level: Level;
   readonly phase: BattlePhase;
+  readonly mods: Mods;
   readonly M: any; // Matter.js namespace
 
   // queries
@@ -107,6 +118,7 @@ export interface BattleCtx {
   blocks(): Ent[];
   within(x: number, y: number, r: number): Ent[]; // living monsters in a radius
   nearestMonsters(x: number, y: number, n: number): Ent[];
+  shotPos(): { x: number; y: number } | null; // the main shot in the air, if any
 
   // actions
   damage(target: Ent, amount: number, x: number, y: number, opts: DamageOpts): void;
@@ -121,6 +133,8 @@ export interface BattleCtx {
   spawnPellet(o: PelletOpts): void;
   endProj(p: Proj): void;
   escape(runner: Ent): void;
+  addCoins(n: number): void; // goes through the coin multiplier
+  reveal(e: Ent): void; // show HP and element for this monster
 
   // presentation
   fx: {
@@ -130,5 +144,6 @@ export interface BattleCtx {
     dot(x: number, y: number, r: number, fill: number, stroke: number): Phaser.GameObjects.Arc;
     image(x: number, y: number, key: string): Phaser.GameObjects.Image;
     word(x: number, y: number, word: string): void;
+    bolt(x: number, y: number): void; // a lightning strike from above
   };
 }

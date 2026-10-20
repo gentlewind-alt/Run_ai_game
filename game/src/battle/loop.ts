@@ -13,6 +13,7 @@ import { beatBob } from '../audio/beat';
 
 /** Called every frame by the scene. Runs 0..maxStepsPerFrame whole steps, then updates the visuals. */
 export function update(b: BattleState, delta: number, nowMs: number): void {
+  if (b.paused) return;
   b.acc += Math.min(delta, 50);
   let n = 0;
   while (b.acc >= b.stepMs && n < b.settings.physics.maxStepsPerFrame) {
@@ -45,7 +46,7 @@ function stepLogic(b: BattleState): void {
   for (const e of b.ents) {
     if (e.dead || e.kind !== 'monster') continue;
     tickStatus(b, e);
-    if (!e.dead) e.behavior?.onUpdate?.(b.ctx, e);
+    if (!e.dead && e.status.stun <= 0 && e.status.chain <= 0) e.behavior?.onUpdate?.(b.ctx, e);
   }
 
   if (b.proj) {
@@ -95,6 +96,8 @@ function syncSprites(b: BattleState, time: number): void {
     const amp = e.size === 32 ? 0.03 : 0.05;
     e.sprite.setScale(running ? 1 : 1 + amp * beat, running ? 1 : 1 - amp * 1.4 * beat);
     if (e.flash > 0) e.sprite.setTintFill(0xffffff);
+    else if (e.status.chain > 0) e.sprite.setTint(0xb8c0c8);
+    else if (e.status.stun > 0) e.sprite.setTint(0x9fb8ff);
     else if (e.status.curse > 0) e.sprite.setTint(0xd7a0ff);
     else e.sprite.clearTint();
     e.sprite.setFlipX(running && e.dir < 0);

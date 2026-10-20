@@ -65,7 +65,7 @@ function makeEnt(
 ): Ent {
   const e: Ent = {
     kind, type, body, sprite, hp, maxHp: hp, weak, resist, w, h, size, cool: 0, hurt: 0, flash: 0, dead: false,
-    phase: b.rng.next() * 6, shield: 0, status: { burn: 0, slow: 0, curse: 0 }, ox: body.position.x, oy: body.position.y,
+    phase: b.rng.next() * 6, shield: 0, status: { burn: 0, slow: 0, curse: 0, stun: 0, chain: 0 }, ox: body.position.x, oy: body.position.y,
     dir: 1, speed: 0, fireT: 0, delay: 0, params,
   };
   body.ent = e;

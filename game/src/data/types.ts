@@ -25,6 +25,7 @@ export interface MonsterDef {
   resist: Element | null;
   behavior?: string;
   density?: number;
+  boss?: boolean;
   params?: Params;
 }
 

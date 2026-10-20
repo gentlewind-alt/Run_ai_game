@@ -35,6 +35,7 @@ export function spawnPellet(b: BattleState, o: PelletOpts): void {
     density: o.density, friction: 0.2, frictionAir: 0, restitution: 0.3, label: 'proj',
   });
   body.proj = { wid: o.wid, mul: o.mul, owner: 'extra', status: o.status };
+  if (o.gravity !== undefined) setGravity(body, o.gravity);
   MatterLib.Body.setVelocity(body, { x: o.vx, y: o.vy });
   const sprite = b.scene.add.image(o.x, o.y, 'px').setTint(C(o.color)).setScale(o.radius * 1.5).setDepth(5);
   let steps = 0;

@@ -3,10 +3,10 @@ import type { Ent } from '../battle/BattleCtx';
 /** Event payloads. Add an event to the table in architecture/ARCHITECTURE.md first. */
 export interface GameEvents {
   'level:start': { levelId: number; kind: string };
-  'shot:launched': { weaponId: string; index: number };
+  'shot:launched': { weaponId: string; index: number; x: number; y: number; vx: number; vy: number; radius: number; density: number; gravity: number };
   'shot:ability': { weaponId: string; x: number; y: number };
   'shot:ended': { weaponId: string };
-  hit: { target: Ent; amount: number; x: number; y: number };
+  hit: { target: Ent; amount: number; x: number; y: number; quiet?: boolean; fall?: boolean };
   kill: { target: Ent; x: number; y: number };
   combo: { count: number; mult: number };
   'runner:escaped': { count: number; limit: number };

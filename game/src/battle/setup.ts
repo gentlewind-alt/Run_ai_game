@@ -7,6 +7,8 @@ import { createRng } from '../core/rng';
 import { data } from '../data/load';
 import { levelDef } from '../data/lookup';
 import { homeCx, homeZoom, introPan, setupCameras, setView, zoomBy } from './camera';
+import { installArtifacts } from './artifacts';
+import { buildConsumables } from './consumables';
 import { makeCtx } from './ctxImpl';
 import { groundAtPoints, normalizeTerrain } from './terrain';
 import { onCollide } from './damage';
@@ -14,7 +16,7 @@ import { onDown, onMove, onUp, activateAbility, buildQueue, loadNext, setWeapon 
 import { buildWorld, populate } from './world';
 import type { BattleState, BattleUi } from './state';
 
-const noUi: BattleUi = { setAbilityLabel() {}, showAbility() {}, setEscaped() {} };
+const noUi: BattleUi = { setAbilityLabel() {}, showAbility() {}, setEscaped() {}, setTargeting() {}, consumableUsed() {} };
 
 /** The state for one battle. Scene objects (graphics, sprites, cameras) are filled in by `buildBattle`. */
 export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[]): BattleState {
@@ -25,6 +27,7 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
     loadout: level.loadout ?? loadout, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
     worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
+    mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: 1 }, artifacts: [], consumables: [], targeting: null, paused: false,
     ents: [], actors: [], proj: null, state: 'intro', shotIdx: 0, coins: 0, score: 0, chain: 0, chainT: 999, escaped: 0,
     steps: 0, acc: 0, hitStop: 0, settleSteps: 0, endTimer: 0, lastPop: 0, lastStretch: 0,
     pouch: new Phaser.Math.Vector2(settings.world.slingX, settings.world.slingY), queue: [], parts: [],
@@ -46,6 +49,7 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
   setWeapon(b, b.loadout[0]);
   b.view.z = homeZoom(b);
   b.view.cx = homeCx(b);
+  buildConsumables(b);
   return b;
 }
 
@@ -73,6 +77,7 @@ export function startBattle(b: BattleState): void {
   s.input.on('wheel', (_p: unknown, _o: unknown, _dx: number, dy: number) => zoomBy(b, dy > 0 ? 0.9 : 1.1, W / 2));
   s.input.addPointer(1);
   s.input.keyboard?.on('keydown-SPACE', () => activateAbility(b));
+  installArtifacts(b);
   b.events.emit('level:start', { levelId: b.levelId, kind: b.level.kind ?? 'siege' });
   introPan(b, () => loadNext(b));
 }
