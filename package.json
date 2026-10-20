@@ -1,0 +1,10 @@
+{
+  "name": "monster-mash",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "merkle:seal": "node tools/merkle.mjs seal",
+    "merkle:changed": "node tools/merkle.mjs changed",
+    "merkle:verify": "node tools/merkle.mjs verify"
+  }
+}

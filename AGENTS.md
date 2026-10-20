@@ -53,6 +53,9 @@ game/                     the RUN project (template run-template-2d-phaser)
   scripts/check-data.mjs  data validator (no dependencies)
   src/                    TypeScript source (layout in ARCHITECTURE.md)
   rundot/                 RUN config (leaderboard, shop, hooks)
+tools/                    repository maintenance (merkle.mjs index/seal/verify)
 ```
+
+`tools/merkle.mjs` tracks repo changes and seals the Merkle index (`MERKLE.json`, `MERKLE.md`). Run `changed` to inspect diffs, `seal` before finishing.
 
 `catalogue/` holds the full item catalogue from the parked Four Realms project: `weapons.json` (101 weapons), `gear.json` (17 armour, 53 relics, 21 consumables) and the `.xlsx` version. The game does not load them. Port items with `RECIPES.md` → "Port an item from the catalogue".

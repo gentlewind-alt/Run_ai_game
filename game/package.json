@@ -11,7 +11,10 @@
     "preview": "vite preview",
     "deploy": "npm run build && rundot deploy",
     "check:data": "node scripts/check-data.mjs",
-    "check": "node scripts/check-data.mjs && tsc --noEmit"
+    "check": "node scripts/check-data.mjs && tsc --noEmit",
+    "merkle:seal": "node ../tools/merkle.mjs seal",
+    "merkle:changed": "node ../tools/merkle.mjs changed",
+    "merkle:verify": "node ../tools/merkle.mjs verify"
   },
   "keywords": [
     "phaser",

@@ -1,0 +1,1242 @@
+{
+  "name": "",
+  "path": "",
+  "type": "dir",
+  "hash": "3c74c977baf927ba66353b71a5c6d8758de134b8e6108e47d1db8d6e158cb4bc",
+  "children": [
+    {
+      "name": "AGENTS.md",
+      "path": "AGENTS.md",
+      "type": "file",
+      "hash": "d9c0c49bc1562fe776f73add47490539c9c3bab0291c12f83feab6391de645f1",
+      "size": 4313
+    },
+    {
+      "name": "architecture",
+      "path": "architecture",
+      "type": "dir",
+      "hash": "fcc084196f25205bc16fc7028264d351046906d7d3caabd3686deb08931169a6",
+      "children": [
+        {
+          "name": "ARCHITECTURE.md",
+          "path": "architecture/ARCHITECTURE.md",
+          "type": "file",
+          "hash": "c5ebc38b88385534fa37f8f6034513e3f5d81cf57c003be1bb7d14e312fd5c14",
+          "size": 18682
+        },
+        {
+          "name": "DATA.md",
+          "path": "architecture/DATA.md",
+          "type": "file",
+          "hash": "04841a9100ced5aa7540651b3594b92c8a629c275464245f9bbd9c7e17fe3169",
+          "size": 7335
+        },
+        {
+          "name": "RECIPES.md",
+          "path": "architecture/RECIPES.md",
+          "type": "file",
+          "hash": "9406cab7230f7bd26c426d81a6c6b50a1f029172e7a2b012238bbbedfa4fb8fd",
+          "size": 8606
+        },
+        {
+          "name": "STAGES.md",
+          "path": "architecture/STAGES.md",
+          "type": "file",
+          "hash": "fcdbc8304670638160fc3f9d8e2b4eafa83e28bded49dce9411b176981b9a56e",
+          "size": 14987
+        },
+        {
+          "name": "WORKFLOW.md",
+          "path": "architecture/WORKFLOW.md",
+          "type": "file",
+          "hash": "83ae47116938c9ac9227f01ce57ad76a9b4a272143a7b78c94a561be71b718a2",
+          "size": 4902
+        }
+      ]
+    },
+    {
+      "name": "catalogue",
+      "path": "catalogue",
+      "type": "dir",
+      "hash": "8baca4d1e4ba93fb773c69c7c523073e0dcff89a2ff30fd6a7a0886617fe34bd",
+      "children": [
+        {
+          "name": "four_realms_gear_catalogue.xlsx",
+          "path": "catalogue/four_realms_gear_catalogue.xlsx",
+          "type": "file",
+          "hash": "3ccfbac5be2d1f94d517f7ce58bd68845b47b9cdfc331c8a8340685a4bd1f2db",
+          "size": 62440
+        },
+        {
+          "name": "gear.json",
+          "path": "catalogue/gear.json",
+          "type": "file",
+          "hash": "77525460e8ef2b744ef4f4476ff6c5d4b66ddcd4f8c3c7bfd79a47af46e8619f",
+          "size": 24398
+        },
+        {
+          "name": "weapons.json",
+          "path": "catalogue/weapons.json",
+          "type": "file",
+          "hash": "6426b034818a62a323ec4524d840fcd7a69c9a099937a76eeae0f39f08341e41",
+          "size": 37668
+        }
+      ]
+    },
+    {
+      "name": "CLAUDE.md",
+      "path": "CLAUDE.md",
+      "type": "file",
+      "hash": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+      "size": 11
+    },
+    {
+      "name": "docs",
+      "path": "docs",
+      "type": "dir",
+      "hash": "2095bd0a9eceeef7f8ae0848d9444d00da56dbcf3204990456f687e310887513",
+      "children": [
+        {
+          "name": "handoff",
+          "path": "docs/handoff",
+          "type": "dir",
+          "hash": "bfbe2106b3201972980123811bb81590beee484ed65c4b55583bc996960f988f",
+          "children": [
+            {
+              "name": "AGY_BRIEF.md",
+              "path": "docs/handoff/AGY_BRIEF.md",
+              "type": "file",
+              "hash": "a9d014b659b46eb118e99db991f238624960de612af06f9288a7cd0a2338436d",
+              "size": 1342
+            },
+            {
+              "name": "agy_task_merkle.md",
+              "path": "docs/handoff/agy_task_merkle.md",
+              "type": "file",
+              "hash": "8f51abd4ec780cdc3a9138a485a54559caf2e15237b660bbe74de999c30657e9",
+              "size": 1937
+            },
+            {
+              "name": "agy_task_s3_finish.md",
+              "path": "docs/handoff/agy_task_s3_finish.md",
+              "type": "file",
+              "hash": "a48834664dccac28a8035ef0cc38908c42003f9083c3dac0f263e846b84c9d65",
+              "size": 1819
+            },
+            {
+              "name": "LOG.md",
+              "path": "docs/handoff/LOG.md",
+              "type": "file",
+              "hash": "be2fcaef706e7f41d01a9cc814e65ab98063045fd8ebcb1bc0d5202d5efb0837",
+              "size": 12939
+            },
+            {
+              "name": "STATUS.md",
+              "path": "docs/handoff/STATUS.md",
+              "type": "file",
+              "hash": "aa6389a96aeb640b68be9e947a60dccd275f678907be46e7fc8722198af11490",
+              "size": 4970
+            }
+          ]
+        },
+        {
+          "name": "monster_mash",
+          "path": "docs/monster_mash",
+          "type": "dir",
+          "hash": "626828bbf89a4175f3b3175c44822864c2e04ef638cd208105efd8310c4b9f32",
+          "children": [
+            {
+              "name": "00_local_kickoff.md",
+              "path": "docs/monster_mash/00_local_kickoff.md",
+              "type": "file",
+              "hash": "e4e01a658c5bab093a83cdd6f5788e768913fdf49d7ac25d27fc0f768e9e00a4",
+              "size": 3274
+            },
+            {
+              "name": "01_plan.md",
+              "path": "docs/monster_mash/01_plan.md",
+              "type": "file",
+              "hash": "1d8ff3be2743abc640b756573f43db222c1a4f79e733f87418a7f3f4fb525956",
+              "size": 4687
+            },
+            {
+              "name": "02_master_brief.md",
+              "path": "docs/monster_mash/02_master_brief.md",
+              "type": "file",
+              "hash": "964e397f22fd10908bf85572bb6e7a93ad19dfd2830595d8fc649c5327a1d146",
+              "size": 10966
+            },
+            {
+              "name": "03_stage_prompts.md",
+              "path": "docs/monster_mash/03_stage_prompts.md",
+              "type": "file",
+              "hash": "3c3cc47f6d04a806ba1a238c26ca7b27488fd5e58397827d559f90a042191bb3",
+              "size": 6975
+            },
+            {
+              "name": "04_platform_report.md",
+              "path": "docs/monster_mash/04_platform_report.md",
+              "type": "file",
+              "hash": "6d8d948d19fe92eb9afca62fca56b08051748eb1e3ac145404b214a4c15521f2",
+              "size": 3311
+            },
+            {
+              "name": "05_review_request.md",
+              "path": "docs/monster_mash/05_review_request.md",
+              "type": "file",
+              "hash": "2c8e71c35986c9134dc85da64ba3f139aaca3b7d322c775e436d5866e5c38623",
+              "size": 2860
+            },
+            {
+              "name": "06_cloud_review.md",
+              "path": "docs/monster_mash/06_cloud_review.md",
+              "type": "file",
+              "hash": "c9e40e7db070119d953b4b45de3d715f197909cbbf6f023354b5000b98a5f4e5",
+              "size": 5768
+            },
+            {
+              "name": "07_local_reply.md",
+              "path": "docs/monster_mash/07_local_reply.md",
+              "type": "file",
+              "hash": "52437a9cff028085aa13935d8920f63975dacd6510643e7f0ffa587f732cc042",
+              "size": 6236
+            },
+            {
+              "name": "08_design_direction.md",
+              "path": "docs/monster_mash/08_design_direction.md",
+              "type": "file",
+              "hash": "7a0d86240b0d92d837c1ef225b57bf8955983b8961511184c066e52e286edc39",
+              "size": 7872
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "game",
+      "path": "game",
+      "type": "dir",
+      "hash": "2bb30a5ae20560793f7c38eecc0927d689bad9b5658da2351883323469b893aa",
+      "children": [
+        {
+          "name": ".gitignore",
+          "path": "game/.gitignore",
+          "type": "file",
+          "hash": "f72ad3ee58d4000dd821ec9cff272108bf7a4311c1f6355c23b93cb3889a2e7e",
+          "size": 105
+        },
+        {
+          "name": "AGENTS.md",
+          "path": "game/AGENTS.md",
+          "type": "file",
+          "hash": "0f2a5febea1b43def206579ce4993177cca825ca3b783813a7b00d01f582139c",
+          "size": 165
+        },
+        {
+          "name": "CLAUDE.md",
+          "path": "game/CLAUDE.md",
+          "type": "file",
+          "hash": "b8a2f28373f0a0ccb975ffd4ceb2c199591d5d269796b20761cd3a96186e9022",
+          "size": 2510
+        },
+        {
+          "name": "game.config.prod.json",
+          "path": "game/game.config.prod.json",
+          "type": "file",
+          "hash": "91be767b0a3db222596c393ab1e5898eb7b108ddbacbea5a7d0d58d256e04410",
+          "size": 291
+        },
+        {
+          "name": "index.html",
+          "path": "game/index.html",
+          "type": "file",
+          "hash": "79315fada80d54918d1cc7821350497ddb4b2550543d3ef30c12a903a877e883",
+          "size": 780
+        },
+        {
+          "name": "LICENSE.txt",
+          "path": "game/LICENSE.txt",
+          "type": "file",
+          "hash": "4dbccf9a6865376a6887836377060c8ca7361f562ff72559949adb4d51dac25c",
+          "size": 167
+        },
+        {
+          "name": "package-lock.json",
+          "path": "game/package-lock.json",
+          "type": "file",
+          "hash": "da02c76731d47cd74e136b6b0c05cd1d3b144ce0893ffa00075e668ac0c04c2d",
+          "size": 55003
+        },
+        {
+          "name": "package.json",
+          "path": "game/package.json",
+          "type": "file",
+          "hash": "4e123716c292cca2a8cf55fa72af32be7b99b772a850498919c63fd987fdef33",
+          "size": 1132
+        },
+        {
+          "name": "pnpm-workspace.yaml",
+          "path": "game/pnpm-workspace.yaml",
+          "type": "file",
+          "hash": "b023150f28d53b3a404854dded104ed5c25947dd4efd764a98c3d830c47ca112",
+          "size": 182
+        },
+        {
+          "name": "public",
+          "path": "game/public",
+          "type": "dir",
+          "hash": "7bbfe6c6cd0af299e6922a6b3b8c403fbecde34febe5426ce67822698cd72b17",
+          "children": [
+            {
+              "name": "cdn-assets",
+              "path": "game/public/cdn-assets",
+              "type": "dir",
+              "hash": "64b4c5bdb706326de9ca1bd21fd536ea88506c1923b4d16eb377910132080d0e",
+              "children": [
+                {
+                  "name": ".gitkeep",
+                  "path": "game/public/cdn-assets/.gitkeep",
+                  "type": "file",
+                  "hash": "5ba7854ccae86b70cbc469d338a95455c9061edb7005af3bf19c468f7807e9bd",
+                  "size": 126
+                },
+                {
+                  "name": "circle.png",
+                  "path": "game/public/cdn-assets/circle.png",
+                  "type": "file",
+                  "hash": "27313bfcc21c9e74a5d0305fe9816188b21dbdda0b087a923c00fefd393612d2",
+                  "size": 2160
+                },
+                {
+                  "name": "README.md",
+                  "path": "game/public/cdn-assets/README.md",
+                  "type": "file",
+                  "hash": "89ca0c994e2661eaa0ea724d7b39a63e2122444d8a23f28f3e51c3104f727caa",
+                  "size": 1009
+                }
+              ]
+            },
+            {
+              "name": "data",
+              "path": "game/public/data",
+              "type": "dir",
+              "hash": "624596fa5a776396a51ed5e0b00a5f2f471444375e60a7e93e746fa4bce3cc56",
+              "children": [
+                {
+                  "name": "config.json",
+                  "path": "game/public/data/config.json",
+                  "type": "file",
+                  "hash": "4313dc766192844f735ad0352334fcdacb25854811c76be0364b5cc680e88287",
+                  "size": 1060
+                },
+                {
+                  "name": "content.json",
+                  "path": "game/public/data/content.json",
+                  "type": "file",
+                  "hash": "5104b45b8cea977d3c470f042a69e4184b342d818472b21f2c9f74f29efe870b",
+                  "size": 16295
+                },
+                {
+                  "name": "levels",
+                  "path": "game/public/data/levels",
+                  "type": "dir",
+                  "hash": "b7ac6b0cc8ad76e639e4d7d2285f7e560e11176a6b4da50292aaad8b83519c7d",
+                  "children": [
+                    {
+                      "name": "level_01.json",
+                      "path": "game/public/data/levels/level_01.json",
+                      "type": "file",
+                      "hash": "3646a0ef0dfe99ef551f4e5bc281263fbd6ff6590cb9362031e239243900bbde",
+                      "size": 1415
+                    },
+                    {
+                      "name": "level_02.json",
+                      "path": "game/public/data/levels/level_02.json",
+                      "type": "file",
+                      "hash": "6c9dbdb1cf937f0b1f0d21c5248ec513c8bd161ce5b96c5351c98d275619ef8e",
+                      "size": 1853
+                    },
+                    {
+                      "name": "level_03.json",
+                      "path": "game/public/data/levels/level_03.json",
+                      "type": "file",
+                      "hash": "4113069ef271cebdecae3518f6a5d19f328f5213ddc994640cca6f78c638bd84",
+                      "size": 1844
+                    },
+                    {
+                      "name": "level_04.json",
+                      "path": "game/public/data/levels/level_04.json",
+                      "type": "file",
+                      "hash": "f65326e9e9f60983b4d23492f08bb5e963044a37ec311edc70a6d05fa41725e2",
+                      "size": 1988
+                    },
+                    {
+                      "name": "level_05.json",
+                      "path": "game/public/data/levels/level_05.json",
+                      "type": "file",
+                      "hash": "27126dd785590f59e450b31dc50c25df1723d1252ba2aa91fd2c81473c8bb622",
+                      "size": 1837
+                    },
+                    {
+                      "name": "level_06.json",
+                      "path": "game/public/data/levels/level_06.json",
+                      "type": "file",
+                      "hash": "5e8bc38b41d8d7ecf2d4a5771dc71beb5417798958705264f7726fa4b3c05f35",
+                      "size": 1583
+                    },
+                    {
+                      "name": "level_07.json",
+                      "path": "game/public/data/levels/level_07.json",
+                      "type": "file",
+                      "hash": "a3c7d6a98897494b1ab98e89af7075ab8240ad12d3f58dfb20c0e104f91c1989",
+                      "size": 1659
+                    },
+                    {
+                      "name": "level_08.json",
+                      "path": "game/public/data/levels/level_08.json",
+                      "type": "file",
+                      "hash": "30f0bea5c982e71aba0a6068ef984efa5d40939e3b25b489105abb03f2bdad9d",
+                      "size": 1913
+                    },
+                    {
+                      "name": "level_99.json",
+                      "path": "game/public/data/levels/level_99.json",
+                      "type": "file",
+                      "hash": "518276f7732e41916df5308119a5a50622ac8edfae52faab94ed1da183a521f0",
+                      "size": 1137
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "thumbnail.jpg",
+              "path": "game/public/thumbnail.jpg",
+              "type": "file",
+              "hash": "a707c7029dac3c2a6b557a10e7e0039d7cd92e0d68125fd631b755a1b4034551",
+              "size": 33599
+            }
+          ]
+        },
+        {
+          "name": "README.md",
+          "path": "game/README.md",
+          "type": "file",
+          "hash": "fa51c26550aaac1f887ce2455f05d137a8d9190b30fbe8aba184aa64336dc747",
+          "size": 1752
+        },
+        {
+          "name": "rundot",
+          "path": "game/rundot",
+          "type": "dir",
+          "hash": "8123935406ba6e4b25230434ee409767278414965dc35e7075f6fbfd27d5ef11",
+          "children": [
+            {
+              "name": "cli_hooks.json",
+              "path": "game/rundot/cli_hooks.json",
+              "type": "file",
+              "hash": "44c4dc0700ac3648663436b17cd6d0f10aff00dd0aca69fef8324f81728d500d",
+              "size": 175
+            },
+            {
+              "name": "textGen.config.json",
+              "path": "game/rundot/textGen.config.json",
+              "type": "file",
+              "hash": "906e7a09839588f345dd0eacd9eeed8f9d11b4f204289d2dcec16ef15b509fbd",
+              "size": 61
+            }
+          ]
+        },
+        {
+          "name": "schemas",
+          "path": "game/schemas",
+          "type": "dir",
+          "hash": "b174f12a97b253cc1cc81f8f4da90e263ea8a0d43f607307985925e848402349",
+          "children": [
+            {
+              "name": "config.schema.json",
+              "path": "game/schemas/config.schema.json",
+              "type": "file",
+              "hash": "5171557f0291aa22ca92f7069e0df645eeb3e1af7bf504ed590a92ade17b984f",
+              "size": 4040
+            },
+            {
+              "name": "content.schema.json",
+              "path": "game/schemas/content.schema.json",
+              "type": "file",
+              "hash": "3ffe9952a96a5e36710b2a92c536298e37d0c4607f9059be1c9fe3c5bea4c170",
+              "size": 10867
+            },
+            {
+              "name": "level.schema.json",
+              "path": "game/schemas/level.schema.json",
+              "type": "file",
+              "hash": "1a0e6bab808588c6c49aeba8cc0ccb1430dd58bf2b94a1e3ca6afaec9c2b7b48",
+              "size": 3935
+            },
+            {
+              "name": "save.schema.json",
+              "path": "game/schemas/save.schema.json",
+              "type": "file",
+              "hash": "e21d2cbe5c4e4ecc6fe3d32d2a815eab25d5f9ab74d10d7e2c84f2d04bbd32e6",
+              "size": 2334
+            }
+          ]
+        },
+        {
+          "name": "scripts",
+          "path": "game/scripts",
+          "type": "dir",
+          "hash": "5aaacb3c5fb8e4eaef0596ba8fcd18bdf03711dfcc62abf763a2340d19cbfa26",
+          "children": [
+            {
+              "name": "build_levels.py",
+              "path": "game/scripts/build_levels.py",
+              "type": "file",
+              "hash": "4058c30791dc3869328533004daeb37cd04b0ab852cf7af8249fb9bcdd22ae5e",
+              "size": 8655
+            },
+            {
+              "name": "check-data.mjs",
+              "path": "game/scripts/check-data.mjs",
+              "type": "file",
+              "hash": "766b47f247fb134950f187f8a58d82fd35b38a9eea886e21d12bd89a9217f178",
+              "size": 8717
+            }
+          ]
+        },
+        {
+          "name": "src",
+          "path": "game/src",
+          "type": "dir",
+          "hash": "4774ac4c3c6fe2c19cc5702f272de616f1350689d3454064ddfa8647c2733b4d",
+          "children": [
+            {
+              "name": "art",
+              "path": "game/src/art",
+              "type": "dir",
+              "hash": "dc9adc5f24f711939018392aa9af449495bb630709e141c82ac1ee1c9153a48f",
+              "children": [
+                {
+                  "name": "backgrounds.ts",
+                  "path": "game/src/art/backgrounds.ts",
+                  "type": "file",
+                  "hash": "acfaa10379599dc881d1da3bdbc987ee9049b4be7bdece1b8ef4060035e423ee",
+                  "size": 7642
+                },
+                {
+                  "name": "font5x7.ts",
+                  "path": "game/src/art/font5x7.ts",
+                  "type": "file",
+                  "hash": "de771357515c4b28118bfb1db13f46ed129357365e4049e74da83b116f96944a",
+                  "size": 7987
+                },
+                {
+                  "name": "icons.ts",
+                  "path": "game/src/art/icons.ts",
+                  "type": "file",
+                  "hash": "f26b33655a5094b7e578ddb9c3a8044ca2fe4496f78fff77a5970a6d558b003b",
+                  "size": 3029
+                },
+                {
+                  "name": "palette.ts",
+                  "path": "game/src/art/palette.ts",
+                  "type": "file",
+                  "hash": "bb6de140f751e4bc31c31ba4c16cd6d08dec0ef0856c610307d76f6bd99688f3",
+                  "size": 612
+                },
+                {
+                  "name": "pix.ts",
+                  "path": "game/src/art/pix.ts",
+                  "type": "file",
+                  "hash": "4f240553ec1e3fdc4d29ea12cd7b5202c54ef18f705dd7fffb8dd38dea5b7e0f",
+                  "size": 3363
+                },
+                {
+                  "name": "sprites.ts",
+                  "path": "game/src/art/sprites.ts",
+                  "type": "file",
+                  "hash": "16b76ff142ee78ea8b74c451399b8186c9180a24e8877c328d900e38fe003fe7",
+                  "size": 1820
+                },
+                {
+                  "name": "terrain.ts",
+                  "path": "game/src/art/terrain.ts",
+                  "type": "file",
+                  "hash": "037ef56a21a23107dde95efec6416c81a7c18f69eca37d45ef0d7bdc5db821c6",
+                  "size": 1517
+                },
+                {
+                  "name": "textures.ts",
+                  "path": "game/src/art/textures.ts",
+                  "type": "file",
+                  "hash": "42f706151f05053bbe3f905692aea4a9a09753b8e999b5e1f09cb37e135b8fb7",
+                  "size": 16705
+                }
+              ]
+            },
+            {
+              "name": "audio",
+              "path": "game/src/audio",
+              "type": "dir",
+              "hash": "b90eb8b966f2516e4f1d6e9c6b2165b1188ce9eeadd5c0140c310ed73d6ce7ba",
+              "children": [
+                {
+                  "name": "beat.ts",
+                  "path": "game/src/audio/beat.ts",
+                  "type": "file",
+                  "hash": "4eda69e28518c73699ec6d2bd5814fd885ffd4f882319eef1065a176404019e6",
+                  "size": 704
+                },
+                {
+                  "name": "sfx.ts",
+                  "path": "game/src/audio/sfx.ts",
+                  "type": "file",
+                  "hash": "9b79805efe273d01e45f1ad45ddd824a162c3f0f908668f70597c5f31f611b27",
+                  "size": 3050
+                }
+              ]
+            },
+            {
+              "name": "battle",
+              "path": "game/src/battle",
+              "type": "dir",
+              "hash": "2ba763a7e36197a56faa48c2798f2a789c8ab7e0e459752ea6c03150bc878140",
+              "children": [
+                {
+                  "name": "artifacts.ts",
+                  "path": "game/src/battle/artifacts.ts",
+                  "type": "file",
+                  "hash": "783b6c0963c3954014d8c5ca87f156a0190a2efea93f85e738817a4644ed4ec4",
+                  "size": 1033
+                },
+                {
+                  "name": "BattleCtx.ts",
+                  "path": "game/src/battle/BattleCtx.ts",
+                  "type": "file",
+                  "hash": "a00291b984571bed2a957324970b3d777ecb7275a16ff4275f7fc6344fe58e67",
+                  "size": 5262
+                },
+                {
+                  "name": "camera.ts",
+                  "path": "game/src/battle/camera.ts",
+                  "type": "file",
+                  "hash": "81e12a62a603194172cc9189c09c5fd84a5e19e31bcb04d849ae369fa5e9fbb8",
+                  "size": 5218
+                },
+                {
+                  "name": "combo.ts",
+                  "path": "game/src/battle/combo.ts",
+                  "type": "file",
+                  "hash": "a65e91c7aa01177a6c945449af77bfe90416176203fdb7a45488e4834ec63615",
+                  "size": 1144
+                },
+                {
+                  "name": "consumables.ts",
+                  "path": "game/src/battle/consumables.ts",
+                  "type": "file",
+                  "hash": "c89e3b3f00552af2af54a03bd87cd3095534c06aa1bd1d0c411f988d705b8ff5",
+                  "size": 2534
+                },
+                {
+                  "name": "ctxImpl.ts",
+                  "path": "game/src/battle/ctxImpl.ts",
+                  "type": "file",
+                  "hash": "cadff785cbe83f2478b748bc5b75d3ce50c6e68a07c770515eab2ccca29cde35",
+                  "size": 2964
+                },
+                {
+                  "name": "damage.ts",
+                  "path": "game/src/battle/damage.ts",
+                  "type": "file",
+                  "hash": "4b54c3f051fda59cba7e580156be7facd311b41e1886013711889f96ee83af18",
+                  "size": 10904
+                },
+                {
+                  "name": "fx.ts",
+                  "path": "game/src/battle/fx.ts",
+                  "type": "file",
+                  "hash": "88021d936b1454a4b0f18fdcf6785c6fc207f96c7ff01b2e9df0befe72e6ae1e",
+                  "size": 2800
+                },
+                {
+                  "name": "loop.ts",
+                  "path": "game/src/battle/loop.ts",
+                  "type": "file",
+                  "hash": "c1dd324fd4cffeaea78276efc9d1313bfa767ff6469434bffdc33e716892f7f1",
+                  "size": 3944
+                },
+                {
+                  "name": "matter.ts",
+                  "path": "game/src/battle/matter.ts",
+                  "type": "file",
+                  "hash": "980263b969f855473f4b179de886580b8619ae78728c2d15e32dc7ede968255b",
+                  "size": 151
+                },
+                {
+                  "name": "projectiles.ts",
+                  "path": "game/src/battle/projectiles.ts",
+                  "type": "file",
+                  "hash": "5d85ac893170bab780df444acf578e4a9019568287a6610f9f3ca069b5cdaa9c",
+                  "size": 2335
+                },
+                {
+                  "name": "rules.ts",
+                  "path": "game/src/battle/rules.ts",
+                  "type": "file",
+                  "hash": "8aa8eb43656de707755bcbc1c809addee28e98e899e88a1c9969be3102d666f0",
+                  "size": 2333
+                },
+                {
+                  "name": "score.ts",
+                  "path": "game/src/battle/score.ts",
+                  "type": "file",
+                  "hash": "b91418b6aa18655a10dd3543b840bf23f0c52877670d5dd18d85dab996a3ddf4",
+                  "size": 1323
+                },
+                {
+                  "name": "setup.ts",
+                  "path": "game/src/battle/setup.ts",
+                  "type": "file",
+                  "hash": "7f813e72317d5efd6f341886f342f0aad2d996b0f73ee4c60a51c3d7cb061c60",
+                  "size": 4229
+                },
+                {
+                  "name": "sling.ts",
+                  "path": "game/src/battle/sling.ts",
+                  "type": "file",
+                  "hash": "1ae93d7febdac737df30dfb39e5a9009c006e0cae3b808382290d8624fa7dd35",
+                  "size": 10849
+                },
+                {
+                  "name": "state.ts",
+                  "path": "game/src/battle/state.ts",
+                  "type": "file",
+                  "hash": "e9216a0c80734cd909299491571006524cc855fe38d8eb7b4b36bf592b70d0de",
+                  "size": 2999
+                },
+                {
+                  "name": "status.ts",
+                  "path": "game/src/battle/status.ts",
+                  "type": "file",
+                  "hash": "8f828070993b63da6a593f8de5a45bcf2f05002564e42888ed8668901a0d5d4b",
+                  "size": 1252
+                },
+                {
+                  "name": "terrain.ts",
+                  "path": "game/src/battle/terrain.ts",
+                  "type": "file",
+                  "hash": "26dec417a7ba55500714259558835d903ec7c4bbebb3a4aa64ad9c67d3345ed9",
+                  "size": 3242
+                },
+                {
+                  "name": "world.ts",
+                  "path": "game/src/battle/world.ts",
+                  "type": "file",
+                  "hash": "05c85e1921af8b60257755821f41277e027655d5fb46adccfb60d5e07e10226b",
+                  "size": 3394
+                }
+              ]
+            },
+            {
+              "name": "config",
+              "path": "game/src/config",
+              "type": "dir",
+              "hash": "a5600f3de62cd03ccfe4336b5baa3d0528142a3f0a4b24dcaa433ff9cf6837b0",
+              "children": [
+                {
+                  "name": "constants.ts",
+                  "path": "game/src/config/constants.ts",
+                  "type": "file",
+                  "hash": "7d82305c4a1f96fda68a60aed0a1f0dbeaf14f4c6989ff3bc34188b47a36a77d",
+                  "size": 181
+                },
+                {
+                  "name": "settings.ts",
+                  "path": "game/src/config/settings.ts",
+                  "type": "file",
+                  "hash": "1dce9fdd4120e9c565c7be4355f16185d14573a12449d42bedcbd0fb5b7e41ef",
+                  "size": 3228
+                }
+              ]
+            },
+            {
+              "name": "content",
+              "path": "game/src/content",
+              "type": "dir",
+              "hash": "e230753f13c5fe0432796356c5d83933613c34c579b82fe369e843706c02f42a",
+              "children": [
+                {
+                  "name": "artifacts",
+                  "path": "game/src/content/artifacts",
+                  "type": "dir",
+                  "hash": "4eaefd5b7b987e821c109a7668a6cd8dc82553e4ef3539517631249a98ab1dc4",
+                  "children": [
+                    {
+                      "name": "index.ts",
+                      "path": "game/src/content/artifacts/index.ts",
+                      "type": "file",
+                      "hash": "884d331109abed465a8f17c49e29f5d22c718e0baa31d99eff0299e9b7f99016",
+                      "size": 3448
+                    },
+                    {
+                      "name": "types.ts",
+                      "path": "game/src/content/artifacts/types.ts",
+                      "type": "file",
+                      "hash": "ed8f5e5539ff810e17f0a42673ef145e9684b6a60c0237694233fb8f904d54a9",
+                      "size": 700
+                    }
+                  ]
+                },
+                {
+                  "name": "consumables",
+                  "path": "game/src/content/consumables",
+                  "type": "dir",
+                  "hash": "8ecb3aaf753d18a7c4546ae90ff41a393befbf4e77b13a4f65f9b6aa9d7d0c63",
+                  "children": [
+                    {
+                      "name": "index.ts",
+                      "path": "game/src/content/consumables/index.ts",
+                      "type": "file",
+                      "hash": "26502b21e581275bf828956ad05c408611b259260cce0aa34d282834b16ec7d4",
+                      "size": 2277
+                    }
+                  ]
+                },
+                {
+                  "name": "monsters",
+                  "path": "game/src/content/monsters",
+                  "type": "dir",
+                  "hash": "4193bce46e62791a5c3e8aef9a436a1772c3613270043109f02008a93fb0fa41",
+                  "children": [
+                    {
+                      "name": "archer.ts",
+                      "path": "game/src/content/monsters/archer.ts",
+                      "type": "file",
+                      "hash": "a8614e24ef6b98d4804faf035fea87d72514d64b8f9d2f11fb869b6a4c655617",
+                      "size": 1419
+                    },
+                    {
+                      "name": "basic.ts",
+                      "path": "game/src/content/monsters/basic.ts",
+                      "type": "file",
+                      "hash": "e9817ccc0e3e3c2ff970311b0f562e872441411a7970a61cc408862e92211ac4",
+                      "size": 200
+                    },
+                    {
+                      "name": "bomber.ts",
+                      "path": "game/src/content/monsters/bomber.ts",
+                      "type": "file",
+                      "hash": "3be45032ae8882d00d592917385ec4f4dc69b54e9ddcef1f103527f7b9642b81",
+                      "size": 286
+                    },
+                    {
+                      "name": "hexer.ts",
+                      "path": "game/src/content/monsters/hexer.ts",
+                      "type": "file",
+                      "hash": "af7653c4bb29cb7795e30c9b98999178f68ce968c048fdbde39b080dd643a428",
+                      "size": 892
+                    },
+                    {
+                      "name": "imp.ts",
+                      "path": "game/src/content/monsters/imp.ts",
+                      "type": "file",
+                      "hash": "4ab845d821c0620004431a2d5acc67dcfc3efba04f7f8935f403631c6d868e62",
+                      "size": 594
+                    },
+                    {
+                      "name": "index.ts",
+                      "path": "game/src/content/monsters/index.ts",
+                      "type": "file",
+                      "hash": "3d4ced53eb4ed00374ad3c715272e03b887154105ef99778448b1a5a0ae39a4e",
+                      "size": 651
+                    },
+                    {
+                      "name": "runner.ts",
+                      "path": "game/src/content/monsters/runner.ts",
+                      "type": "file",
+                      "hash": "8c699b2a839a3c787883b8f914ecfe213581235dffa319763eeda1775006bb61",
+                      "size": 1142
+                    },
+                    {
+                      "name": "troll.ts",
+                      "path": "game/src/content/monsters/troll.ts",
+                      "type": "file",
+                      "hash": "f28ef479e8d01b2831ada49b39e130855581f54b823a66350462304d5c00679d",
+                      "size": 263
+                    },
+                    {
+                      "name": "types.ts",
+                      "path": "game/src/content/monsters/types.ts",
+                      "type": "file",
+                      "hash": "e058b9e75b9a87fdc7726b011da2dc07a99afc9bc94078a27660fe0835912b58",
+                      "size": 619
+                    }
+                  ]
+                },
+                {
+                  "name": "validate.ts",
+                  "path": "game/src/content/validate.ts",
+                  "type": "file",
+                  "hash": "bcb9889cba9a3e6faaa5138da8229ce0f047819a293b033bc71da7079e2c5546",
+                  "size": 631
+                },
+                {
+                  "name": "weapons",
+                  "path": "game/src/content/weapons",
+                  "type": "dir",
+                  "hash": "241ce5a258963566737372ef14362b23327fdf17065f002c341dd4b447814fc5",
+                  "children": [
+                    {
+                      "name": "blade.ts",
+                      "path": "game/src/content/weapons/blade.ts",
+                      "type": "file",
+                      "hash": "1b8d0becb6cfe9d5abec0c220ba1a2c1be833c0dcd989c0650065e3f41f499f6",
+                      "size": 1181
+                    },
+                    {
+                      "name": "blastTube.ts",
+                      "path": "game/src/content/weapons/blastTube.ts",
+                      "type": "file",
+                      "hash": "e122c854abcb6f5f28910524ab447d43aa4d1a796edf5ff78706d358a4a33915",
+                      "size": 561
+                    },
+                    {
+                      "name": "boomerang.ts",
+                      "path": "game/src/content/weapons/boomerang.ts",
+                      "type": "file",
+                      "hash": "ae8e9e32755ab4582858725b51ab056b323a83a17b854b27ac90fc8ab1e31187",
+                      "size": 1146
+                    },
+                    {
+                      "name": "cleaver.ts",
+                      "path": "game/src/content/weapons/cleaver.ts",
+                      "type": "file",
+                      "hash": "3cafb70303adfb06b6aa5ca91b50ad5bb40270e70fe3cddfcdcee08c6e3f0641",
+                      "size": 1157
+                    },
+                    {
+                      "name": "index.ts",
+                      "path": "game/src/content/weapons/index.ts",
+                      "type": "file",
+                      "hash": "81b4b179d450d747ce8cef13acf878a1c1fe9518677892c1ddc5a89df84e900f",
+                      "size": 1043
+                    },
+                    {
+                      "name": "pike.ts",
+                      "path": "game/src/content/weapons/pike.ts",
+                      "type": "file",
+                      "hash": "bc2d6a80dfbc887cdd48fd55454dea745987a0a9fba3bc5f2a1924f0837ba44a",
+                      "size": 641
+                    },
+                    {
+                      "name": "scattergun.ts",
+                      "path": "game/src/content/weapons/scattergun.ts",
+                      "type": "file",
+                      "hash": "f26ebf4fc16ea125c0de7d3514d5b9d8de0ab598fae4b260ab2c7d512749d3ae",
+                      "size": 1175
+                    },
+                    {
+                      "name": "scepter.ts",
+                      "path": "game/src/content/weapons/scepter.ts",
+                      "type": "file",
+                      "hash": "30f4f01260a566a2911b1582c7e0fb12dd010af69c70e034ca8f279913d15806",
+                      "size": 772
+                    },
+                    {
+                      "name": "staff.ts",
+                      "path": "game/src/content/weapons/staff.ts",
+                      "type": "file",
+                      "hash": "fd265b8b3bd11451ef47df292e5a9a0e7f4e5951568b28bd37ee4b05067d4875",
+                      "size": 1845
+                    },
+                    {
+                      "name": "types.ts",
+                      "path": "game/src/content/weapons/types.ts",
+                      "type": "file",
+                      "hash": "b3dbf8d3e19954249fb7e7d2d84252a98d8392367776fe938cc0c4c1c405c10b",
+                      "size": 882
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "core",
+              "path": "game/src/core",
+              "type": "dir",
+              "hash": "f0b235b86a376e31b588cadc0a54eb13bb648e4893357ab1c0108ad0abf1b9f3",
+              "children": [
+                {
+                  "name": "events.ts",
+                  "path": "game/src/core/events.ts",
+                  "type": "file",
+                  "hash": "13e5b55e4364b16ab4ea88aafcddf9712c93c51fc7871edbd3955663b8552ade",
+                  "size": 2020
+                },
+                {
+                  "name": "flow.ts",
+                  "path": "game/src/core/flow.ts",
+                  "type": "file",
+                  "hash": "8393e8e82eac1cc84d899f0585862b74aeab0a481cd0038a30944a3f910a89e6",
+                  "size": 2276
+                },
+                {
+                  "name": "profile.ts",
+                  "path": "game/src/core/profile.ts",
+                  "type": "file",
+                  "hash": "4a8e38ecf75e8cea0eaae7cf99b318616d164439de72985405e27439331df5c6",
+                  "size": 9330
+                },
+                {
+                  "name": "rng.ts",
+                  "path": "game/src/core/rng.ts",
+                  "type": "file",
+                  "hash": "057532b838702b49e6831dfbe8193a2d9447f03483f2692dc844e928cbfa46af",
+                  "size": 590
+                },
+                {
+                  "name": "save.ts",
+                  "path": "game/src/core/save.ts",
+                  "type": "file",
+                  "hash": "27d9d5105fa593edf2e769a7d8c4f9a7a925fd32d07769e08832ac50449d2fcf",
+                  "size": 4219
+                }
+              ]
+            },
+            {
+              "name": "data",
+              "path": "game/src/data",
+              "type": "dir",
+              "hash": "c523856ed28346e9400056c88b85c366ee84df9a38be5a5ffdb3f73c972c9928",
+              "children": [
+                {
+                  "name": "load.ts",
+                  "path": "game/src/data/load.ts",
+                  "type": "file",
+                  "hash": "ae73d19a11ed41d1d6d0300ff20798de95fee3e90177080c89fcf09e91a5278c",
+                  "size": 1015
+                },
+                {
+                  "name": "lookup.ts",
+                  "path": "game/src/data/lookup.ts",
+                  "type": "file",
+                  "hash": "d7787b7cd4e6fdd7603ef880d6594c7f3dc4162ba7d6341fe00c6cacb68aef05",
+                  "size": 1068
+                },
+                {
+                  "name": "types.ts",
+                  "path": "game/src/data/types.ts",
+                  "type": "file",
+                  "hash": "af130356f8bab982a2b95e0aaac6515606a0d8df488f0ef5655a3ee3c1d66b62",
+                  "size": 4469
+                }
+              ]
+            },
+            {
+              "name": "debug",
+              "path": "game/src/debug",
+              "type": "dir",
+              "hash": "0077b70043cef1179d92394aa9e74b097db355a7db2c75488012fa27df45c015",
+              "children": [
+                {
+                  "name": "testHook.ts",
+                  "path": "game/src/debug/testHook.ts",
+                  "type": "file",
+                  "hash": "8a42885b272a84c912ff94c485de3357d84bb21b6a5cc5d2fd83eb5c9510114d",
+                  "size": 7831
+                }
+              ]
+            },
+            {
+              "name": "main.ts",
+              "path": "game/src/main.ts",
+              "type": "file",
+              "hash": "d9f74dd8b67f65b1135832d782644313ff2197e75467a47e2872afec37b70f30",
+              "size": 2605
+            },
+            {
+              "name": "platform",
+              "path": "game/src/platform",
+              "type": "dir",
+              "hash": "fd3d4ce8bae5bdb654f57d1887ad69a32437ee5afde0f44a379536f7e67fc65a",
+              "children": [
+                {
+                  "name": "index.ts",
+                  "path": "game/src/platform/index.ts",
+                  "type": "file",
+                  "hash": "8b3fa8ec2a63aed751eb5474a5243470fabd3f6e428240a4d6e471ef635acd1c",
+                  "size": 338
+                },
+                {
+                  "name": "mock.ts",
+                  "path": "game/src/platform/mock.ts",
+                  "type": "file",
+                  "hash": "037c909ccedc70688d7351d040f3d088abfd8b32325b58f73c1f7a0a37fbd0b7",
+                  "size": 798
+                },
+                {
+                  "name": "rundot.ts",
+                  "path": "game/src/platform/rundot.ts",
+                  "type": "file",
+                  "hash": "b82735fab2cc7178b5a59089aef39f04b93a36c6029f4810d1195413bae472d8",
+                  "size": 1672
+                },
+                {
+                  "name": "types.ts",
+                  "path": "game/src/platform/types.ts",
+                  "type": "file",
+                  "hash": "26ac6678dc4dd070293376e42abac26cc3ca16d672c42a1209192a57b0c4f498",
+                  "size": 2153
+                }
+              ]
+            },
+            {
+              "name": "scenes",
+              "path": "game/src/scenes",
+              "type": "dir",
+              "hash": "64629325420879892de9a1cc773227333a2fe0671cd18f84d0a654e1f8b7d41b",
+              "children": [
+                {
+                  "name": "BattleScene.ts",
+                  "path": "game/src/scenes/BattleScene.ts",
+                  "type": "file",
+                  "hash": "33988c26c229b8943ef60239457e7004264b13a0bd1412ddf455da28a63e42e8",
+                  "size": 4116
+                },
+                {
+                  "name": "BootScene.ts",
+                  "path": "game/src/scenes/BootScene.ts",
+                  "type": "file",
+                  "hash": "ecaacc17062eea30c47c0a495d3837eecb0f3b3d417ae1d7e748e091450d77f3",
+                  "size": 1744
+                },
+                {
+                  "name": "LoadoutScene.ts",
+                  "path": "game/src/scenes/LoadoutScene.ts",
+                  "type": "file",
+                  "hash": "b25f5438030a4a83378413219e4dc8af88063614286a57ed8adfb443cf4676db",
+                  "size": 6893
+                },
+                {
+                  "name": "MapScene.ts",
+                  "path": "game/src/scenes/MapScene.ts",
+                  "type": "file",
+                  "hash": "6498c4cfff15d54918d3fcb5802959da517600cc2a1e86369b4580843acff7f0",
+                  "size": 5235
+                },
+                {
+                  "name": "ResultsScene.ts",
+                  "path": "game/src/scenes/ResultsScene.ts",
+                  "type": "file",
+                  "hash": "a68237466270b608310d6225f7eb2ac5205f054588456382253d7fb490273cda",
+                  "size": 3466
+                },
+                {
+                  "name": "ShopScene.ts",
+                  "path": "game/src/scenes/ShopScene.ts",
+                  "type": "file",
+                  "hash": "dcb61edbf9af182659885821c83422740a750702e2454289df40d95402b36b1b",
+                  "size": 9202
+                },
+                {
+                  "name": "TitleScene.ts",
+                  "path": "game/src/scenes/TitleScene.ts",
+                  "type": "file",
+                  "hash": "b83cc22668f3230761d3d9d50bee878e772a6e4174bc8f78611de53e55f9eb6a",
+                  "size": 2901
+                }
+              ]
+            },
+            {
+              "name": "style.css",
+              "path": "game/src/style.css",
+              "type": "file",
+              "hash": "5b83732680811a4b9aac0053bbf6b0b32ff64c85cd52cd6c5ad51f626c0cf2b7",
+              "size": 1154
+            },
+            {
+              "name": "ui",
+              "path": "game/src/ui",
+              "type": "dir",
+              "hash": "a5f74c7c30f9bbddbf3295d0cbceeda95e39df9fc74fd8881e26ec494da91105",
+              "children": [
+                {
+                  "name": "coins.ts",
+                  "path": "game/src/ui/coins.ts",
+                  "type": "file",
+                  "hash": "1550bcf97003fb8a83c9bdde451f65fc448a0aa32f144d13c72c21795334e1db",
+                  "size": 733
+                },
+                {
+                  "name": "hud.ts",
+                  "path": "game/src/ui/hud.ts",
+                  "type": "file",
+                  "hash": "987ff12a6c0f9683eed1af726541fd425c40c16f2d11f0ef30a2ef124e4aa2cb",
+                  "size": 7430
+                },
+                {
+                  "name": "widgets.ts",
+                  "path": "game/src/ui/widgets.ts",
+                  "type": "file",
+                  "hash": "998534bd6388c468791794727ebbd6e1eb333c891a88ff4f8a25c54d2fa98f64",
+                  "size": 2515
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tsconfig.json",
+          "path": "game/tsconfig.json",
+          "type": "file",
+          "hash": "956c57815aa39be7fb01128c5ebbab9d46a9b2f799dae2b588c83512c573c6a3",
+          "size": 686
+        },
+        {
+          "name": "vite.config.ts",
+          "path": "game/vite.config.ts",
+          "type": "file",
+          "hash": "1ec6b68f73298c48a1c9536321775b9e842ad6c4e541320d1b078c813ad487ab",
+          "size": 811
+        },
+        {
+          "name": "zip_project.ps1",
+          "path": "game/zip_project.ps1",
+          "type": "file",
+          "hash": "95cd34d79092647b2f46d85bc5cb3853c80cd268a9d69716ba05fbd9e1d55742",
+          "size": 2273
+        },
+        {
+          "name": "zip_project.sh",
+          "path": "game/zip_project.sh",
+          "type": "file",
+          "hash": "7ac5edb48803df7127d63af119d3c6af28c8152b1ae20c6178f7e0a39d7d019b",
+          "size": 586
+        }
+      ]
+    },
+    {
+      "name": "package.json",
+      "path": "package.json",
+      "type": "file",
+      "hash": "52da92c82e59b2e972838ba8fdc1ad8373d0aa459d6a9442d37dca7687cc26ee",
+      "size": 244
+    },
+    {
+      "name": "tools",
+      "path": "tools",
+      "type": "dir",
+      "hash": "4d03ba810276c2c81aef570dab4f3c8b691acbd6291dce309440c346da8451dc",
+      "children": [
+        {
+          "name": "merkle.mjs",
+          "path": "tools/merkle.mjs",
+          "type": "file",
+          "hash": "eb047da6789aff667a626a4e2f21e684960e3c650edb8ceb683add7e7e70d7c0",
+          "size": 13397
+        }
+      ]
+    }
+  ]
+}

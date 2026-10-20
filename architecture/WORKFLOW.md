@@ -14,6 +14,16 @@ Several agents may work on this repo at once. Typical setup: a **local session**
 2. Set it to `doing` with your agent name and today's date, commit only that change (`status: claim S2-05`), and push **before** starting. If the push conflicts, pull. Someone else may have claimed it, so pick another card.
 3. One card at a time per agent. If you stop halfway, set it back to `todo` and log where you stopped.
 
+## Merkle index
+
+Use `tools/merkle.mjs` to keep the repo index synchronized across agents:
+1. **Claim card:** pick and claim a card in `STATUS.md`.
+2. **Run changed:** run `node tools/merkle.mjs changed` (or `npm run merkle:changed`) to see what changed since the last sealed state; inspect only those paths.
+3. **Work:** make minimal, focused changes for your task.
+4. **Check and build:** in `game/`, run `npm run check` and `npm run build`.
+5. **Seal:** run `node tools/merkle.mjs seal` (or `npm run merkle:seal`) to update `MERKLE.json` and `MERKLE.md`.
+6. **Commit:** commit `MERKLE.*` with the change (`git add MERKLE.json MERKLE.md ...`). CI verifies with `verify`.
+
 ## While working
 
 - Stay inside the card's scope. If you find other work, add it as a new card at the bottom of STATUS.md (`S?-new`) instead of doing it.

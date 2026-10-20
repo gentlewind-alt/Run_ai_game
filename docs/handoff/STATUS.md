@@ -46,6 +46,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S2-new1 | Refactor the Stage 2 code into the S2-01..03 layout | done | merged into S2-01..03 (review); BattleScene is 92 lines |
 | S2-new2 | Design ladder per `docs/monster_mash/08_design_direction.md` | doing | Stage 2 pass done; Stage 3 pass is title, map, shop |
 | S2-new3 | Fall and impact damage for monsters | review | tuning.fallThreshold/fallK/debrisK |
+| S-merkle | Merkle-tree repo index (`tools/merkle.mjs`) | done | agy | 10-21 | seal, changed, verify, MERKLE.json/md |
 
 ## Parallel lanes (once S2-03 is done)
 

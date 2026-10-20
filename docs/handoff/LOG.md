@@ -2,6 +2,13 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · agy · S-merkle done: Merkle index tool built and verified
+- **What:** built `tools/merkle.mjs` (Node 18+, zero deps, ESM) with `seal`, `changed` (with `--json`), and `verify` commands; SHA-256 leaf and directory hashes; CRLF normalized to LF; `PURPOSES` map for all dirs down to depth 3; writes `MERKLE.json` (nested tree) and `MERKLE.md` (markdown table); added npm scripts to root `package.json` and `game/package.json`; documented workflow in `architecture/WORKFLOW.md` and repo map in `AGENTS.md`.
+- **Checks:** `node tools/merkle.mjs seal` seals 142 files; `changed` returns `clean`; tested editing `game/src/battle/loop.ts` and confirmed `changed` reported exactly `loop.ts` and its parent directories (`game`, `game/src`, `game/src/battle`), and `verify` exited 1; reverted edit and verified `changed` returned `clean`; `npm run check` and `npm run build` in `game/` both pass with 0 errors.
+- **Deployed:** not deployed (tooling change only).
+- **Notes / for the next agent:** run `npm run merkle:changed` or `node tools/merkle.mjs changed` at the start of any session to inspect what changed since last sealed state; run `seal` before finishing.
+- **Questions for owner:** none.
+
 ## 2026-10-21 · local · Stage 3 built (S3-01..S3-07), ready for review
 - **What:** Title/Map/Results/Loadout/Shop scenes with star iris flow; versioned save with corrupt-save recovery; shop + forge; six artifacts and four consumables (tray, targeting taps, stock taken from the save); pause menu (button, Esc, host pause); terrain polylines; Dark Elf Wood levels 5-8; test hook `window.__mm` with sweep/solver.
 - **Checks:** `npm run check` (0 errors) and `npm run build` pass. Pause freezes steps; mindflash and bomb targeting verified in the browser. Level difficulty re-sweep and each artifact effect still to be measured.

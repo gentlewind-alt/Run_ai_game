@@ -1,0 +1,9 @@
+# Task: finish Stage 3 (balance, verification, docs)
+
+Follow `docs/handoff/AGY_BRIEF.md`.
+
+1. **Docs.** Update `architecture/ARCHITECTURE.md` events table for the new payloads (`shot:launched` with x,y,vx,vy,radius,density,gravity; `hit` with quiet/fall) and `architecture/DATA.md` for the new fields: content `tuning`, `economy`, `mods`, artifact and consumable `params`, level `terrain`, runner `delay`, monster `boss`, `dir`, `speed`. Keep existing style.
+2. **Registry checks.** Make `checkRegistries` (find it with grep) also verify every artifact and consumable id in `content.json` has an implementation, and vice versa. `npm run check` must still pass.
+3. **Verify each artifact and consumable** with the test hook (`window.__mm`, see `game/src/debug/testHook.ts`; run the dev server with `npx vite` and use the browser tools or a node script with a headless Phaser if simpler). For each of the 6 artifacts and 4 consumables confirm the effect described in `content.json` params actually happens and that consuming stock updates the profile. Fix bugs you find in `game/src/battle/artifacts.ts`, `consumables.ts`, `content/**`. Record a pass/fail table in LOG.md.
+4. **Balance levels 3-8** (`game/scripts/build_levels.py` generates them; edit it, regenerate, never hand-edit the JSON). Use `__mm.sweep` and `__mm.solveStep` (greedy solver). Targets: L1-3 clearable in about 2 shots by the greedy solver; L4-8 need 3-4 shots with no one-shot wins and nothing unreachable (full pull lands about x336 on ground, about x320 on a y296 plateau). Hard but fair: every monster must be hittable by at least one loadout weapon from the sling. Then set each level's `scoreTargets` to about 70% of the best sweep score. Log the before/after table.
+5. Run `npm run check`, `npm run build`, then `node tools/merkle.mjs seal`.
