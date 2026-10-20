@@ -2,16 +2,19 @@
 
 You are building a game for the RUN "Monster Mash" jam. Read this whole brief, then do **Step 0** before writing game code.
 
-## 0. Before any code: learn the platform and report back
+## 0. Platform facts (Step 0 is DONE; see `04_platform_report.md`)
 
-I don't have the RUN SDK docs, so don't guess. Read the RUN docs and tell me, in a short list:
+The local session read the real RUN SDK (5.28.1) and CLI (7.18.0) docs. The facts that override the rest of this brief:
 
-1. Which stack and project template Game Studio expects (HTML5/TypeScript? a specific engine?), and the build and publish steps.
-2. Screen orientation and size on RUN (portrait, landscape or both), and the size limit for the bundle.
-3. What the platform provides for: saved player data, leaderboards, sharing or inviting friends, ads, in-app purchases, daily-reset or notification hooks, and the player's name or avatar.
-4. Anything that is not allowed.
-
-Then **publish a one-screen "hello" build to RUN as a public game right now**, so the publish pipeline is proven early. We replace it with each new version. Tell me the URL.
+- **Stack:** `run-template-2d-phaser` (Phaser 3 + Vite + TypeScript), project in `game/`. Build with `npm run build`, then `rundot predeploy`, then `rundot deploy` (private, unlisted, returns a share URL). `rundot game set-public` submits for review.
+- **Orientation: portrait.** The game is registered as portrait. Everything in this brief that says landscape or 384x216 now means **216x384 portrait**.
+- **Storage:** `localStorage` and IndexedDB do not work in the RUN iframe. All saved data, including the mute flag, goes through `RundotGameAPI.appStorage`.
+- **Time:** the Daily Mash seed, streak and countdown use `requestTimeAsync()` server time, never the device clock.
+- **Leaderboard:** `RundotGameAPI.leaderboard` (period `daily` for the Daily Mash). **Share:** `social.shareLinkAsync`. **Name/avatar:** `getProfile()`.
+- **Ads:** rewarded ads (`ads.showRewardedAdAsync`) do not run on desktop. Hide the button there.
+- **Purchases:** they use **RUN Bits** via `iap.spendCurrency`, not cash. The shop catalogue lives in `rundot/shop.config.json` and needs a config upload. This is last on the list. If it fights us, ship the disabled-button version.
+- **Rules:** no own backend, no `window.open`, no `requestFullscreen`, only own-origin files and Google Fonts. Every SDK call can reject, so wrap each in try/catch.
+- **Skills:** `rundot skills list` offers `rundot-feature-save`, `rundot-feature-daily-rewards`, `rundot-feature-ads`, `rundot-feature-tutorial` and `rundot-polish-feel`. Install the one for each feature when you reach that stage, and read it first.
 
 Wherever this brief names a feature and the platform has no support for it, say so, cut it, and move on. Never fake it.
 
@@ -31,8 +34,9 @@ Name on screen: **MONSTER MASH: Slingshot Siege**.
 
 ## 3. Platform, look and feel
 
-- Pixel art, 16-bit. Internal resolution 384x216 (landscape), scaled up with nearest-neighbour only, no smoothing. If RUN needs portrait, use 216x384 and move the layout, but keep the same art.
-- One fixed palette of 32 colours (e.g. the free "Resurrect 32" or "Sweetie 16" palette). Every sprite uses only that palette.
+- Pixel art, 16-bit. Internal **viewport 216x384 (portrait)**, scaled up with nearest-neighbour only, no smoothing.
+- **The world is wider than the screen.** A level has a `worldW` in its JSON (216 for a tutorial level, usually 432, up to 648 for big forts and the boss). The slingshot is at the left, the fort further right. The camera pans to the fort at level start, follows the projectile, then pans back to the slingshot. This is how portrait mode gets long shots and bigger forts. Block and monster positions in level files may exceed 216.
+- One fixed palette of 32 colours: "Mash32" (Sweetie 16 plus 16 extra earth and stone tones), as already built in `game/src/palette.ts`. Every sprite uses only that palette.
 - You may not have an art tool. Draw sprites as palette-indexed text grids in code and render them to textures at startup. 16x16 for monsters, weapons and blocks, 32x32 for the troll and orc, 48x48 for the Iron Warlord. Make 2 animation frames per monster (idle bob, hurt). Palette-swap for rarity tints.
 - Backgrounds: 3 parallax layers per realm, generated from simple shapes in the palette (hills, forest, keep walls). Day, dusk, fire-glow.
 - Sound: synthesise all sound with WebAudio (blips, thuds, crunch, coin ding, "MASH!" sting). Two short chiptune loops (map, battle) built from note arrays. A mute button that remembers its state.
@@ -72,10 +76,10 @@ All numbers are in the attached `content.json`. Treat it as the source of truth,
 
 - **Map screen:** a scrolling map with 3 realms and level nodes, star counts, a locked-node look, and a conga line of monsters on the title.
 - **Shop and forge:** buy weapons, artifacts and consumables, and upgrade weapons (max level 5). Show before and after numbers.
-- **Save:** use the platform's saved-data API (never localStorage alone if the platform offers a cloud save). Save coins, owned items, upgrade levels, star ratings, streak, and daily best.
-- **Most Sticky: Daily Mash.** A new seeded fort every day, the same for every player (seed from the UTC date). One free attempt per day plus a **streak counter** with a day-7 reward (a cosmetic slingshot skin or bonus coins). The map shows "next daily in HH:MM:SS".
-- **Best Social Features: Challenge a friend.** After a Daily Mash, a **Share** button creates a text/link like "I mashed 12 monsters for 8,430 on today's Daily. Beat me!" using the platform's share or invite API. Show a leaderboard of the day's scores using the platform leaderboard if there is one. If the platform has no social API, tell me and we show a local "your best" and a copy-text share only.
-- **Best Monetization:** nothing in the core game is locked behind payment. Offer, via the platform's store only if it exists: (a) **Gold Quiver**, a one-time purchase that adds a 5th shot slot to every loadout; (b) cosmetic slingshot skins (wood, bone, gold, void); (c) an optional rewarded ad for "double coins after a win". Don't use any timers or walls. If there is no purchase API, build the UI for (a) and (b) with the buttons disabled and a note, and tell me.
+- **Save:** `RundotGameAPI.appStorage`, as one versioned JSON blob (about 977 KiB limit per value). Save coins, owned items, upgrade levels, star ratings, streak, daily best and the mute flag. Load it before showing the map.
+- **Most Sticky: Daily Mash.** A new seeded fort every day, the same for every player (seed from the UTC date of `requestTimeAsync()`). One free attempt per day plus a **streak counter** with a day-7 reward (a cosmetic slingshot skin or bonus coins). The map shows "next daily in HH:MM:SS".
+- **Best Social Features: Challenge a friend.** After a Daily Mash, a **Share** button calls `social.shareLinkAsync` with text like "I mashed 12 monsters for 8,430 on today's Daily. Beat me!". Show the day's leaderboard (`leaderboard`, period `daily`) with `getProfile()` names. Add `rundot/leaderboard.config.json`.
+- **Best Monetization:** nothing in the core game is locked behind payment. Offer: (a) **Gold Quiver**, a one-time purchase that adds a 5th shot slot to every loadout; (b) cosmetic slingshot skins (wood, bone, gold, void); (c) an optional rewarded ad for "double coins after a win", hidden on desktop. Purchases are priced in **RUN Bits**. Don't use any timers or walls. If the shop config fights us, build the UI for (a) and (b) with disabled buttons and a note.
 - First-time experience: no text walls. Level 1 teaches drag-and-release, level 2 teaches tap-in-flight, level 3 shows element weaknesses with a single hint, each in one line.
 
 ## 7. Quality bar

@@ -1,6 +1,7 @@
 {
   "_note": "Trimmed content for the Monster Mash jam build. Numbers come from data/weapons.json and data/gear.json. 'launch' and 'tap' fields are new: they replace the melee/ranged 'effect' text because weapons are now projectiles on a slingshot.",
   "damageRules": {
+    "globalScale": 2.0,
     "elementWeak": 1.5,
     "elementResist": 0.6,
     "upgradeDamagePerStep": 0.08,
