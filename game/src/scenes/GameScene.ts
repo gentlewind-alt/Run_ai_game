@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import RundotGameAPI from '@series-inc/rundot-game-sdk/api';
 import { C, css } from '../palette';
 import { gridTexture, pixText, setPixText } from '../pix';
-import { BLADE, GOBLIN_HURT, GOBLIN_IDLE, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON } from '../sprites';
+import { BLADE, GOBLIN_HURT, GOBLIN_IDLE, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../sprites';
 import { sfx } from '../audio';
 import { WEAPONS, type Proj, type WeaponImpl } from '../weapons';
 
@@ -13,7 +13,7 @@ const STEP = 1000 / 60;
 const GRAVITY_STEP = 0.001 * STEP * STEP; // matter gravity per step, px/step^2
 
 // Feel/balance numbers live in content.json (tuning, damageRules.globalScale).
-const SLING_X = 38;
+const SLING_X = 56;
 const SLING_Y = 262;
 
 const MatterLib: any = (Phaser.Physics.Matter as any).Matter;
@@ -35,7 +35,7 @@ interface Ent {
   dead: boolean;
   phase: number;
 }
-type State = 'intro' | 'ready' | 'aiming' | 'flying' | 'settling' | 'won' | 'lost';
+type State = 'intro' | 'loading' | 'ready' | 'aiming' | 'flying' | 'settling' | 'won' | 'lost';
 
 export default class GameScene extends Phaser.Scene {
   private content!: any;
@@ -58,8 +58,16 @@ export default class GameScene extends Phaser.Scene {
   private settleSteps = 0;
   private endTimer = 0;
   private hudCoins!: Phaser.GameObjects.Image;
-  private hudShots: Phaser.GameObjects.Image[] = [];
-  private hudTop = 6;
+  private queue: Phaser.GameObjects.Image[] = [];
+  private uiCam!: Phaser.Cameras.Scene2D.Camera;
+  private uiMode = false;
+  private vz = 1; // view zoom
+  private vcx = W / 2; // view centre x (world)
+  private free = false; // user moved the camera since the last launch
+  private pinchPrev = 0;
+  private panLast: number | null = null;
+  private abilityBtn!: Phaser.GameObjects.Rectangle;
+  private abilityTxt!: Phaser.GameObjects.Image;
   private muteBtn!: Phaser.GameObjects.Image;
   private parts: { s: Phaser.GameObjects.Image; vx: number; vy: number; life: number }[] = [];
   private overlay: Phaser.GameObjects.GameObject[] = [];
@@ -83,7 +91,12 @@ export default class GameScene extends Phaser.Scene {
     this.ents = [];
     this.parts = [];
     this.overlay = [];
-    this.hudShots = [];
+    this.queue = [];
+    this.vz = 1;
+    this.vcx = W / 2;
+    this.free = false;
+    this.pinchPrev = 0;
+    this.panLast = null;
     this.state = 'intro';
     this.coins = 0;
     this.acc = 0;
@@ -93,20 +106,36 @@ export default class GameScene extends Phaser.Scene {
     this.endTimer = 0;
     this.shotsLeft = this.level.shots;
 
+    this.uiMode = false;
+    this.uiCam = this.cameras.add(0, 0, W, H);
+    const route = (go: Phaser.GameObjects.GameObject): void => {
+      if (this.uiMode) this.cameras.main.ignore(go);
+      else this.uiCam.ignore(go);
+    };
+    this.events.on(Phaser.Scenes.Events.ADDED_TO_SCENE, route);
+    this.events.once('shutdown', () => this.events.off(Phaser.Scenes.Events.ADDED_TO_SCENE, route));
+
     this.makeTextures();
+    // sky above the playfield so zooming out never shows black
+    this.add.rectangle(this.worldW / 2, -300, this.worldW + 800, 700, C('a')).setDepth(-2);
     this.add.image(0, 0, `bg_${this.worldW}`).setOrigin(0);
+    this.add.rectangle(this.worldW / 2, H + 300, this.worldW + 800, 600, C('g')).setDepth(-2);
     this.matter.add.rectangle(this.worldW / 2, GROUND + 40, this.worldW + 400, 80, { isStatic: true, friction: 1, label: 'ground' });
     this.matter.add.rectangle(this.worldW + 10, 200, 20, 600, { isStatic: true, label: 'wall' });
-    this.cameras.main.setBounds(0, 0, this.worldW, H);
-    this.cameras.main.setScroll(0, 0);
+    this.setView(1, W / 2);
 
     this.add.image(SLING_X, SLING_Y + 28, 'sling');
     for (const b of this.level.blocks) this.addBlock(b.m, b.x, b.y, b.w, b.h);
     for (const m of this.level.monsters) this.addMonster(m.t, m.x, m.y);
 
     this.gfx = this.add.graphics().setDepth(5);
-    this.readySprite = this.add.image(SLING_X, SLING_Y, 'blade').setDepth(6);
+    this.readySprite = this.add.image(SLING_X, SLING_Y, this.wpn.texture).setDepth(6).setVisible(false);
     this.readySprite.setRotation(Math.PI / 4);
+    for (let i = 0; i < this.shotsLeft; i++) {
+      const q = this.add.image(this.slotX(i), GROUND - 7, this.wpn.texture).setDepth(3).setScale(0.85);
+      q.setData('phase', i * 1.3);
+      this.queue.push(q);
+    }
 
     this.buildHud();
     this.matter.world.on('collisionstart', this.onCollide, this);
@@ -114,6 +143,9 @@ export default class GameScene extends Phaser.Scene {
     this.input.on('pointermove', this.onMove, this);
     this.input.on('pointerup', this.onUp, this);
     this.input.on('pointerupoutside', this.onUp, this);
+    this.input.on('wheel', (_p: unknown, _o: unknown, _dx: number, dy: number) => this.zoomBy(dy > 0 ? 0.9 : 1.1, W / 2));
+    this.input.addPointer(1);
+    this.input.keyboard?.on('keydown-SPACE', () => this.activateAbility());
 
     try {
       RundotGameAPI.appStorage.getItem('muted').then((v: string | null) => {
@@ -124,11 +156,11 @@ export default class GameScene extends Phaser.Scene {
 
     if (this.worldW > W) {
       this.tweens.add({
-        targets: this.cameras.main, scrollX: this.worldW - W, duration: 900, ease: 'Sine.inOut', hold: 450, yoyo: true,
-        onComplete: () => { this.state = 'ready'; },
+        targets: this, vcx: this.worldW - W / 2, duration: 900, ease: 'Sine.inOut', hold: 450, yoyo: true,
+        onComplete: () => this.loadNext(),
       });
     } else {
-      this.state = 'ready';
+      this.loadNext();
     }
 
     if ((import.meta as any).env?.DEV) (window as any).__scene = this;
@@ -142,6 +174,7 @@ export default class GameScene extends Phaser.Scene {
     gridTexture(this, 'blade', BLADE);
     gridTexture(this, 'spk_on', SPK_ON);
     gridTexture(this, 'spk_off', SPK_OFF);
+    gridTexture(this, 'zoom_icon', ZOOM_ICON);
     gridTexture(this, 'star_on', STAR_ON);
     gridTexture(this, 'star_off', STAR_OFF);
 
@@ -264,10 +297,11 @@ export default class GameScene extends Phaser.Scene {
       const sa = RundotGameAPI.system.getSafeArea();
       top = Math.max(6, sa.top * this.scale.displayScale.y);
     } catch { /* not ready: use default */ }
-    this.hudTop = top;
-    this.hudCoins = pixText(this, 4, top + 3, 'COINS 0', C('4')).setOrigin(0, 0.5).setDepth(10).setScrollFactor(0);
-    this.muteBtn = this.add.image(W - 10, top + 4, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10).setScrollFactor(0);
-    this.muteBtn.setInteractive(new Phaser.Geom.Rectangle(-10, -10, 29, 27), Phaser.Geom.Rectangle.Contains);
+    this.uiMode = true;
+    this.hudCoins = pixText(this, 4, top + 3, 'COINS 0', C('4')).setOrigin(0, 0.5).setDepth(10);
+
+    this.muteBtn = this.add.image(W - 10, top + 4, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
+    this.muteBtn.setInteractive(new Phaser.Geom.Rectangle(-6, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
     this.muteBtn.on('pointerdown', () => {
       sfx.unlock();
       sfx.setMuted(!sfx.muted);
@@ -275,44 +309,204 @@ export default class GameScene extends Phaser.Scene {
       sfx.click();
       try { RundotGameAPI.appStorage.setItem('muted', sfx.muted ? '1' : '0').catch(() => {}); } catch { /* optional */ }
     });
-    this.refreshShots();
+
+    const zoomBtn = this.add.image(W - 30, top + 4, 'zoom_icon').setDepth(10);
+    zoomBtn.setInteractive(new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
+    zoomBtn.on('pointerdown', () => { sfx.unlock(); sfx.click(); this.toggleView(); });
+
+    // Ability button: bottom right, only live while a shot is in the air.
+    this.abilityBtn = this.add.rectangle(W - 28, H - 28, 46, 34, C('3')).setStrokeStyle(2, C('0')).setDepth(10).setVisible(false);
+    this.abilityBtn.setInteractive();
+    this.abilityBtn.on('pointerdown', () => this.activateAbility());
+    this.abilityTxt = pixText(this, W - 28, H - 28, this.wpn.abilityLabel, C('c'), 2).setDepth(11).setVisible(false);
+    this.uiMode = false;
   }
 
-  private refreshShots(): void {
-    this.hudShots.forEach((s) => s.destroy());
-    this.hudShots = [];
-    for (let i = 0; i < this.shotsLeft; i++) {
-      this.hudShots.push(this.add.image(8 + i * 11, this.hudTop + 17, 'blade').setScale(0.6).setRotation(Math.PI / 4).setDepth(10).setScrollFactor(0));
+  // ------------------------------------------------------------------ view (zoom / pan)
+
+  private minZoom(): number {
+    return Math.min(1, W / this.worldW);
+  }
+
+  private clampCx(cx: number, z: number): number {
+    const half = W / z / 2;
+    return W / z >= this.worldW ? this.worldW / 2 : Phaser.Math.Clamp(cx, half, this.worldW - half);
+  }
+
+  /** Zoom is about the screen centre. Zoomed in the view is bottom-aligned so the ground stays on screen. */
+  private setView(z: number, cx: number): void {
+    this.vz = Phaser.Math.Clamp(z, this.minZoom(), 1.8);
+    this.vcx = this.clampCx(cx, this.vz);
+    const cam = this.cameras.main;
+    cam.setZoom(this.vz);
+    cam.scrollX = this.vcx - W / 2;
+    const cy = this.vz >= 1 ? H - H / this.vz / 2 : H / 2; // zoomed in: ground stays low; zoomed out: centred
+    cam.scrollY = cy - H / 2;
+  }
+
+  private zoomBy(f: number, focusScreenX: number): void {
+    const z0 = this.vz;
+    const z1 = Phaser.Math.Clamp(z0 * f, this.minZoom(), 1.8);
+    const wx = this.vcx + (focusScreenX - W / 2) / z0;
+    this.vz = z1;
+    this.vcx = this.clampCx(wx - (focusScreenX - W / 2) / z1, z1);
+    this.free = true;
+  }
+
+  private toggleView(): void {
+    if (this.state === 'intro' || this.state === 'won' || this.state === 'lost') return;
+    const fit = this.vz > this.minZoom() + 0.01 && this.worldW > W;
+    this.free = fit;
+    this.tweens.add({
+      targets: this, vz: fit ? this.minZoom() : 1, vcx: fit ? this.worldW / 2 : W / 2, duration: 260, ease: 'Sine.inOut',
+    });
+  }
+
+  private updateCamera(): void {
+    if (!this.free) {
+      let target: number | null = null;
+      if (this.state === 'flying' && this.proj) target = this.proj.body.position.x + W * 0.15;
+      else if (this.state === 'settling' && this.settleSteps > 45) target = W / 2;
+      if (target !== null) {
+        const t = this.clampCx(target, this.vz);
+        this.vcx += (t - this.vcx) * 0.1;
+        if (Math.abs(this.vcx - t) < 0.5) this.vcx = t;
+      }
     }
+    this.setView(this.vz, this.vcx);
+  }
+
+  private atHome(): boolean {
+    return this.free || Math.abs(this.vcx - this.clampCx(W / 2, this.vz)) < 3;
+  }
+
+  // ------------------------------------------------------------------ queue (weapons waiting to be fired)
+
+  private slotX(i: number): number {
+    return Math.max(4, SLING_X - 22 - i * 12);
+  }
+
+  private hop(img: Phaser.GameObjects.Image, tx: number, ty: number, dur: number, arc: number, done?: () => void): void {
+    const sx = img.x;
+    const sy = img.y;
+    this.tweens.addCounter({
+      from: 0, to: 1, duration: dur, ease: 'Sine.inOut',
+      onUpdate: (tw) => {
+        const t = tw.getValue() ?? 0;
+        img.setPosition(sx + (tx - sx) * t, sy + (ty - sy) * t - Math.sin(Math.PI * t) * arc);
+      },
+      onComplete: () => {
+        img.setPosition(tx, ty);
+        done?.();
+      },
+    });
+  }
+
+  /** The next weapon in line hops onto the sling; the rest shuffle up. */
+  private loadNext(): void {
+    if (this.queue.length === 0) {
+      this.state = 'ready';
+      return;
+    }
+    this.state = 'loading';
+    const first = this.queue.shift()!;
+    first.setDepth(7).setScale(0.85);
+    this.queue.forEach((q, i) => this.hop(q, this.slotX(i), GROUND - 7, 260, 5));
+    sfx.click();
+    this.hop(first, SLING_X, SLING_Y, 420, 26, () => {
+      first.destroy();
+      this.readySprite.setVisible(true).setRotation(Math.PI / 4).setScale(1);
+      this.pouch.set(SLING_X, SLING_Y);
+      this.tweens.add({ targets: this.readySprite, scaleY: 0.8, scaleX: 1.15, duration: 70, yoyo: true });
+      this.state = 'ready';
+    });
+    this.tweens.add({ targets: first, rotation: Math.PI * 2 + Math.PI / 4, scale: 1, duration: 420, ease: 'Sine.inOut' });
+  }
+
+  private updateQueue(time: number): void {
+    this.queue.forEach((q) => {
+      if (this.tweens.isTweening(q)) return;
+      const ph = q.getData('phase') as number;
+      q.setScale(0.85 + 0.03 * Math.sin(time / 180 + ph), 0.85 - 0.04 * Math.sin(time / 180 + ph));
+      q.setRotation(0.12 * Math.sin(time / 320 + ph));
+    });
+  }
+
+  // ------------------------------------------------------------------ ability
+
+  activateAbility(): void {
+    if (this.state !== 'flying' || !this.proj || this.proj.tapped || this.wpn.ability === 'impact') return;
+    this.proj.tapped = true;
+    this.wpn.onAbility(this, this.proj);
+  }
+
+  private updateAbilityBtn(): void {
+    const inAir = this.state === 'flying' && !!this.proj && this.wpn.ability !== 'impact';
+    const ready = inAir && !this.proj!.tapped;
+    this.abilityBtn.setVisible(inAir);
+    this.abilityTxt.setVisible(inAir);
+    this.abilityBtn.setFillStyle(ready ? C('3') : C('e'));
+    this.abilityBtn.setScale(ready ? 1 + 0.04 * Math.sin(this.time.now / 90) : 1);
   }
 
   // ------------------------------------------------------------------ input
 
+  private screenDist(p: Phaser.Input.Pointer, wx: number, wy: number): number {
+    const w = this.cameras.main.getWorldPoint(p.x, p.y);
+    return Phaser.Math.Distance.Between(w.x, w.y, wx, wy) * this.vz;
+  }
+
+  private pointerWorld(p: Phaser.Input.Pointer): Phaser.Math.Vector2 {
+    return this.cameras.main.getWorldPoint(p.x, p.y);
+  }
+
   private onDown(p: Phaser.Input.Pointer, over: unknown[]): void {
     sfx.unlock();
     if (over.length) return;
-    if (this.state === 'ready' && Phaser.Math.Distance.Between(p.worldX, p.worldY, SLING_X, SLING_Y) < 44) {
+    const two = this.input.pointer1.isDown && this.input.pointer2.isDown;
+    if (two && this.state !== 'aiming') {
+      this.pinchPrev = Phaser.Math.Distance.Between(this.input.pointer1.x, this.input.pointer1.y, this.input.pointer2.x, this.input.pointer2.y);
+      this.panLast = null;
+      return;
+    }
+    if (this.state === 'ready' && this.screenDist(p, SLING_X, SLING_Y) < 44) {
       this.state = 'aiming';
+      this.free = false;
       this.onMove(p);
-    } else if (this.state === 'flying' && this.proj && !this.proj.tapped) {
-      this.proj.tapped = true;
-      this.wpn.onTap(this, this.proj);
+    } else if (this.state !== 'aiming' && this.state !== 'won' && this.state !== 'lost') {
+      this.panLast = p.x;
     }
   }
 
   private onMove(p: Phaser.Input.Pointer): void {
-    if (this.state !== 'aiming') return;
-    const v = new Phaser.Math.Vector2(p.worldX - SLING_X, p.worldY - SLING_Y);
-    if (v.length() > this.tune.maxPull) v.setLength(this.tune.maxPull);
-    this.pouch.set(SLING_X + v.x, Math.min(SLING_Y + v.y, GROUND - 6));
-    const now = this.time.now;
-    if (now - this.lastStretch > this.tune.stretchSoundMs) {
-      this.lastStretch = now;
-      sfx.stretch();
+    if (this.state === 'aiming') {
+      const w = this.pointerWorld(p);
+      const v = new Phaser.Math.Vector2(w.x - SLING_X, w.y - SLING_Y);
+      if (v.length() > this.tune.maxPull) v.setLength(this.tune.maxPull);
+      this.pouch.set(SLING_X + v.x, Math.min(SLING_Y + v.y, GROUND - 6));
+      const now = this.time.now;
+      if (now - this.lastStretch > this.tune.stretchSoundMs) {
+        this.lastStretch = now;
+        sfx.stretch();
+      }
+      return;
+    }
+    const p1 = this.input.pointer1;
+    const p2 = this.input.pointer2;
+    if (p1.isDown && p2.isDown && this.pinchPrev > 0) {
+      const d = Phaser.Math.Distance.Between(p1.x, p1.y, p2.x, p2.y);
+      this.zoomBy(d / this.pinchPrev, (p1.x + p2.x) / 2);
+      this.pinchPrev = d;
+    } else if (this.panLast !== null && p.isDown) {
+      this.vcx = this.clampCx(this.vcx - (p.x - this.panLast) / this.vz, this.vz);
+      this.panLast = p.x;
+      this.free = true;
     }
   }
 
   private onUp(): void {
+    this.pinchPrev = 0;
+    this.panLast = null;
     if (this.state !== 'aiming') return;
     const pull = new Phaser.Math.Vector2(SLING_X - this.pouch.x, SLING_Y - this.pouch.y);
     if (pull.length() < 8) {
@@ -334,7 +528,7 @@ export default class GameScene extends Phaser.Scene {
     this.readySprite.setVisible(false);
     this.pouch.set(SLING_X, SLING_Y);
     this.shotsLeft--;
-    this.refreshShots();
+    this.free = false;
     this.state = 'flying';
     this.cameras.main.shake(70, 0.004);
     sfx.launch();
@@ -348,6 +542,10 @@ export default class GameScene extends Phaser.Scene {
       const b: Ent | undefined = pr.bodyB.ent;
       const aProj = pr.bodyA.label === 'proj';
       const bProj = pr.bodyB.label === 'proj';
+      if ((aProj || bProj) && this.proj && !this.proj.tapped && this.wpn.ability !== 'button' && this.wpn.onImpact) {
+        this.proj.tapped = true;
+        this.wpn.onImpact(this, this.proj);
+      }
       const rel = Math.hypot(pr.bodyA.velocity.x - pr.bodyB.velocity.x, pr.bodyA.velocity.y - pr.bodyB.velocity.y);
       if (rel < 1.5) continue;
       const sup = pr.collision?.supports?.[0];
@@ -460,20 +658,10 @@ export default class GameScene extends Phaser.Scene {
       this.stepLogic();
     }
     this.updateCamera();
+    this.updateQueue(_t);
+    this.updateAbilityBtn();
     this.syncSprites(_t);
     this.drawOverlayGfx();
-  }
-
-  private updateCamera(): void {
-    const cam = this.cameras.main;
-    const maxScroll = this.worldW - W;
-    let target: number | null = null;
-    if (this.state === 'flying' && this.proj) target = Phaser.Math.Clamp(this.proj.body.position.x - W * 0.35, 0, maxScroll);
-    else if (this.state === 'settling' && this.settleSteps > 45) target = 0;
-    if (target !== null) {
-      cam.scrollX += (target - cam.scrollX) * 0.1;
-      if (Math.abs(cam.scrollX - target) < 0.5) cam.scrollX = target;
-    }
   }
 
   private stepLogic(): void {
@@ -512,11 +700,9 @@ export default class GameScene extends Phaser.Scene {
     if (this.state === 'settling') {
       this.settleSteps++;
       const calm = alive.every((e) => e.body.speed < 0.35);
-      if (((calm && this.settleSteps > 25) || this.settleSteps > 180) && this.cameras.main.scrollX < 3) {
+      if (((calm && this.settleSteps > 25) || this.settleSteps > 180) && this.atHome()) {
         if (this.shotsLeft > 0) {
-          this.state = 'ready';
-          this.cameras.main.scrollX = 0;
-          this.readySprite.setVisible(true);
+          this.loadNext();
         } else {
           this.finish(false);
         }
@@ -593,6 +779,7 @@ export default class GameScene extends Phaser.Scene {
   private finish(won: boolean): void {
     if (this.state === 'won' || this.state === 'lost') return;
     this.state = won ? 'won' : 'lost';
+    this.uiMode = true;
     won ? sfx.win() : sfx.lose();
     const shade = this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.65).setDepth(20).setScrollFactor(0);
     this.overlay.push(shade);

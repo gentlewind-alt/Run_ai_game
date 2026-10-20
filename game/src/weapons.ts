@@ -15,13 +15,20 @@ export interface Proj {
   t: number;
 }
 
-/** One entry per weapon id in content.json. Stats (damage, element) come from the data; this holds the feel and the tap move. */
+/**
+ * One entry per weapon id in content.json. Stats (damage, element) come from the data; this holds the feel and the ability.
+ * `ability` says how it fires: 'button' (on-screen button while in flight), 'impact' (automatically on the first hit,
+ * ground included, once) or 'both' (button, or the first hit if the player never pressed it).
+ */
 export interface WeaponImpl {
   texture: string;
   radius: number;
   density: number;
   spin: number;
-  onTap(s: GameScene, p: Proj): void;
+  ability: 'button' | 'impact' | 'both';
+  abilityLabel: string;
+  onAbility(s: GameScene, p: Proj): void;
+  onImpact?(s: GameScene, p: Proj): void;
   onUpdate(s: GameScene, p: Proj): void;
   drawFx(s: GameScene, p: Proj, g: Phaser.GameObjects.Graphics): void;
 }
@@ -32,8 +39,10 @@ export const WEAPONS: Record<string, WeaponImpl> = {
     radius: 4,
     density: 0.03,
     spin: 0.28,
+    ability: 'button',
+    abilityLabel: 'SAW',
     // Spin-saw: ignores gravity, keeps moving, and hits everything it touches for ~0.6 s.
-    onTap(s, p) {
+    onAbility(s, p) {
       p.t = s.tune.sawSteps;
       p.body.gravityScale = { x: 0, y: 0 };
       MatterLib.Body.setAngularVelocity(p.body, 0.7);

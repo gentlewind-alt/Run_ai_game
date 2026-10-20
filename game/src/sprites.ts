@@ -74,3 +74,15 @@ export const STAR_ON = [
 ];
 
 export const STAR_OFF = STAR_ON.map((r) => r.replace(/3/g, 'm').replace(/4/g, 'e'));
+
+export const ZOOM_ICON = [
+  '.ccc.....',
+  'c...c....',
+  'c...c....',
+  'c...c....',
+  '.ccc.....',
+  '.....c...',
+  '......c..',
+  '.......c.',
+  '........c',
+];

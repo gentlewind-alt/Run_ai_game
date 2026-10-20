@@ -27,3 +27,10 @@ The command exists in 7.18.0 (`rundot game --help` lists it) but has NOT been ru
 - `launchK` went back to 0.27 (the fort is farther away now), so full pull reaches about x 260 to 300.
 - Not verified: `appStorage`, `getSafeArea`, lifecycle events and pixel crispness on a phone. Still open.
 - The thumbnail is a placeholder rendered from the game (`game/public/thumbnail.jpg`, 512x512).
+
+## 6. Stage 1.5 (user feedback after playing Stage 1), deployed as version 1.1.0
+- Weapon queue: waiting weapons idle beside the sling and the next one hops onto it (loading state), the rest shuffle up.
+- Camera: pinch zoom, one-finger pan, mouse wheel, and a view-all button (top right). A second UI camera keeps the HUD fixed while the world zooms. Aiming works at any zoom.
+- Abilities are an on-screen button (bottom right, space on desktop) instead of tap anywhere. Registry fields: `ability: 'button' | 'impact' | 'both'`, `abilityLabel`, `onAbility`, optional `onImpact` (fires once on the first hit, ground included). A lightning-hammer style weapon is one registry entry plus a content.json row.
+- Sling moved to x=56 to make room for the queue. Re-swept level 1: a plain shot kills 0 to 2 monsters, nothing clears it in one shot.
+- Untested on a real device: pinch (only the shared zoom function was exercised, via wheel and the button), two-finger input.
