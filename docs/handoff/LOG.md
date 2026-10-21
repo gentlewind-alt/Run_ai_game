@@ -2,6 +2,11 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Fix: weapon never loaded on the sling after interrupting the intro (v1.13.0, private)
+- **Cause (owner-diagnosed):** `introPan` loaded the first weapon only in its tween `onComplete`. A drag or pinch during the intro called `killTweensOf(b.view)` (added in the camera fix), cancelling the tween, so `loadNext` never ran: empty sling, state stuck in `intro`. This is the Retry and "arrow not mounted" bug reported earlier; it was not specific to any weapon.
+- **Fix:** `introPan` now exits only through one guarded `finish` (`b.introSkip`); `zoomBy` and drag-pan call it instead of killing the tween; `updateCamera` has a watchdog that finishes the intro if the tween is ever gone. Files: `battle/camera.ts`, `battle/sling.ts`, `battle/state.ts`.
+- **Verified:** `tools/repro_mount.mjs <level> <weapons> <baseUrl> --interrupt` (drag during intro): old code stuck in `intro` after 1200+ steps with the sprite hidden, fixed code reaches `ready` with the sprite mounted. `check`, `build`, `regress:quick` pass. TODO: fold the repro into `tools/regress.mjs` (needs its own dev server) when agy is available.
+
 ## 2026-10-22 · claude · Game icon redone (not deployed)
 - New 512x512 store icon: grinning goblin in a MASH burst, the Skyforge Maul smashing in with lightning, big MONSTER MASH wordmark. Reads at 64 px. Generated procedurally by `tools/make_icon.html` (renders via headless Chrome `--screenshot`; reuses `docs/handoff/relic_art_reference.js`). Outputs: `game/public/thumbnail.png`, `game/public/thumbnail.jpg` (now a real JPEG; it was a PNG with a .jpg name), `game/public/favicon.png` (linked in `index.html`), `docs/release/icon_512.png`.
 - Jam form upload still uses `game/public/thumbnail.jpg` (see `docs/release/CHECKLIST.md`). Paused until Saturday per owner.

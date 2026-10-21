@@ -43,7 +43,8 @@ export function setView(b: BattleState, z: number, cx: number): void {
 
 export function zoomBy(b: BattleState, f: number, focusScreenX: number): void {
   if (!b.settings.features.zoom) return;
-  b.scene.tweens.killTweensOf(b.view);
+  if (b.introSkip) b.introSkip();
+  else b.scene.tweens.killTweensOf(b.view);
   const v = b.view;
   const z0 = v.z;
   const z1 = Phaser.Math.Clamp(z0 * f, minZoom(b), b.settings.camera.maxZoom);
@@ -82,6 +83,8 @@ function followPos(b: BattleState): { x: number; y: number } | null {
 /** Once per frame: follow the shot, return home after it settles, and apply the view to the camera. */
 export function updateCamera(b: BattleState): void {
   const v = b.view;
+  // watchdog: if anything ever cancels the intro tween, still finish the intro so the weapon loads
+  if (b.introSkip && !b.scene.tweens.isTweening(v)) b.introSkip();
   const C = b.settings.camera;
   if (!v.free && !b.scene.tweens.isTweening(v)) {
     let targetCx: number | null = null;
@@ -149,12 +152,23 @@ export function screenDist(b: BattleState, p: Phaser.Input.Pointer, wx: number, 
 /** On a wide level the camera pans out to the fort and back, then `done` runs. */
 export function introPan(b: BattleState, done: () => void): void {
   const C = b.settings.camera;
+  // `finish` is the only way out of the intro, so the first weapon always gets loaded, even if a drag or pinch interrupts the pan.
+  let finished = false;
+  const finish = (): void => {
+    if (finished) return;
+    finished = true;
+    b.introSkip = undefined;
+    b.scene.tweens.killTweensOf(b.view);
+    if (!b.view.free) setView(b, homeZoom(b), homeCx(b));
+    done();
+  };
   if (b.worldW > W && C.introPan) {
+    b.introSkip = finish;
     b.scene.tweens.add({
       targets: b.view, cx: b.worldW - W / homeZoom(b) / 2, duration: C.introMs, ease: 'Sine.inOut', hold: C.introHoldMs, yoyo: true,
-      onComplete: done,
+      onComplete: finish,
     });
   } else {
-    done();
+    finish();
   }
 }

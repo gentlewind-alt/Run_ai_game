@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.12.0 (landscape 480x270, relic weapons batch A mechanics, visual polish pending), private
+**Current build:** v1.13.0 (landscape 480x270, relic weapons batch A mechanics, visual polish pending), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|

@@ -77,6 +77,8 @@ export interface BattleState {
   acc: number;
   hitStop: number;
   settleSteps: number;
+  /** Set while the intro pan runs; ends it early (and loads the first weapon). Cleared once the intro is over. */
+  introSkip?: () => void;
   endTimer: number;
   lastPop: number;
   lastStretch: number;

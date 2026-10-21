@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "64dcb96c7b5693a5e85ca831bdc400b13f9ee545d7b733fc74d81992f9c2a7a6",
+  "hash": "08034733eb796319fda848552277fdb518f038e9257f95cc7eb37919f4d133ec",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "12f39a599032dab39a510308ab61a11b1f2f89f3de32bc4a7b613f54dc205574",
+      "hash": "8d4bdd096fbbec8873f03cfa795f21f02ad4237a6cd6b790274cdd0e148643fc",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "ae8d9333f7d1b0be637c5f105dd0872b56c2713e4502aee644e08540c1787b5a",
+          "hash": "ce3f12f175d17d5aa2a529f2c30407657f981678937073ea387a2898cc780bf5",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -253,8 +253,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "9f96678a23b6f98d393be50bf07fb159000d21f5a81cbdc017fb9c62c3367bd0",
-              "size": 82703
+              "hash": "39f1218a07619262e31538c59757cab2c55b4324d17f476c5912e9d297d87612",
+              "size": 83834
             },
             {
               "name": "ref",
@@ -303,7 +303,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "6098a1142ac9a76bce3e7df23fe196a2611b6c7f02b4d8ed608bb4da51276bb1",
+              "hash": "5da0509d3d27be407fb12d3307fbd13b8aefd2cfdc07ee6fb38ca86ba9dbb6b0",
               "children": [
                 {
                   "name": "01_title.png",
@@ -719,6 +719,13 @@
                       "size": 22965
                     }
                   ]
+                },
+                {
+                  "name": "repro_mount.png",
+                  "path": "docs/handoff/shots/repro_mount.png",
+                  "type": "file",
+                  "hash": "288251d78bae28d6e39aceb4be8af2df9c9c79ca9996fe8b8f55d5f73b702129",
+                  "size": 76994
                 },
                 {
                   "name": "resp",
@@ -1155,7 +1162,7 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "86faf50125ec215f61163e9dd0ea19b83b5994e04ffc79cd6c4e46541419461d",
+              "hash": "469eb796ae50868a3d46b0d1948602b07ef449d65901eff75489c30a4619068b",
               "size": 8504
             }
           ]
@@ -1294,7 +1301,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "e04d44dd11463c76f38b5a4cfcf8692847f4fdcf47b979ea335a856a7db7b475",
+      "hash": "c1e15dcd275793f78f230f6001f28377e4218312a6624e95a084e05a2b5103af",
       "children": [
         {
           "name": ".gitignore",
@@ -1664,7 +1671,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "e89c1e7400ca5c7f30edc3955c6a6a23be6aee095e5cc667575b380a7679b0aa",
+          "hash": "76de4e58c350dcc46c3f1e9b91dfc6d00d15ca5ef7f149dc4e1924c6a1d9c429",
           "children": [
             {
               "name": "art",
@@ -1777,7 +1784,7 @@
               "name": "battle",
               "path": "game/src/battle",
               "type": "dir",
-              "hash": "45b19ce4e04c10511182c7821c8b7353e29989d90c6f01afed1f4a33c53a0052",
+              "hash": "e443a826b671aa602369163d7415cd3b031427927ccceb7d91b47f3f33adb77d",
               "children": [
                 {
                   "name": "artifacts.ts",
@@ -1797,8 +1804,8 @@
                   "name": "camera.ts",
                   "path": "game/src/battle/camera.ts",
                   "type": "file",
-                  "hash": "7e40b1c972f4917af4bb88f3e2385c799e204372ff4c1d074d68efaab71700a2",
-                  "size": 6365
+                  "hash": "87a02b2f9533c4e33eec30245a097982e5af930a65af8261615c35dba3a307e7",
+                  "size": 6980
                 },
                 {
                   "name": "combo.ts",
@@ -1881,8 +1888,8 @@
                   "name": "sling.ts",
                   "path": "game/src/battle/sling.ts",
                   "type": "file",
-                  "hash": "19c8fdb21471704705d3af4670c18d73da2e5eb3d458d10f24549d6f6b8a68c8",
-                  "size": 17281
+                  "hash": "32cc535c5198bb2f17863dbab003f1040666f679a71f4e540622b2c8e974b63d",
+                  "size": 17322
                 },
                 {
                   "name": "snapshot.ts",
@@ -1895,8 +1902,8 @@
                   "name": "state.ts",
                   "path": "game/src/battle/state.ts",
                   "type": "file",
-                  "hash": "5a6cbca93f3609d70aba92577459d964585771015e081767082dd747c50b951b",
-                  "size": 3170
+                  "hash": "38276278f479c56e636bf107ba2dc87b490a74da95ed09bf44f695c1166bbc72",
+                  "size": 3311
                 },
                 {
                   "name": "status.ts",
@@ -2558,7 +2565,7 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "fe3ca217ac13992a65444c5c4f9ea1b352a48019d4cde5c60b781d51796db0d4",
+      "hash": "0b4b7d12a330a183f519efd336d6d241775b71226e7eb9a52e6a6750b5e836ef",
       "children": [
         {
           "name": "agy_chain.sh",
@@ -2617,6 +2624,13 @@
           "size": 8791
         },
         {
+          "name": "repro_mount.mjs",
+          "path": "tools/repro_mount.mjs",
+          "type": "file",
+          "hash": "3146d237284a752774dc35e96fa55cff3bd0dabc457c472fa9302087194d3b41",
+          "size": 4289
+        },
+        {
           "name": "responsive_shots.mjs",
           "path": "tools/responsive_shots.mjs",
           "type": "file",
@@ -2652,6 +2666,13 @@
           "size": 15553
         }
       ]
+    },
+    {
+      "name": "vite4.log",
+      "path": "vite4.log",
+      "type": "file",
+      "hash": "2ce6b2d5e9348b2c858efa327f6e5946e49517ba114520dbea7f5a936dd24bc0",
+      "size": 999
     }
   ]
 }
