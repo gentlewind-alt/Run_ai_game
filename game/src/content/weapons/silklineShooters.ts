@@ -47,19 +47,24 @@ export const silklineShooters: WeaponImpl = {
       ctx.damage(target, p.def.baseDamage * 0.5, tx, ty, { strong: false, tag: 'norm' });
     }
 
-    // Splat effect at target
-    ctx.fx.image(tx, ty, 'fx_web_splat');
-    ctx.fx.sparks(tx, ty, ['c', 'l'], 8);
+    // Splat effect at target (24px splat held at peak for 30 steps)
+    ctx.fx.webSplat?.(tx, ty, 30);
+    ctx.fx.sparks(tx, ty, ['c', 'l', 'b'], 14);
 
-    // Save line endpoints to draw live web strand
+    // 2 px strand with a white outline from shooter to target (held for 26 steps)
+    ctx.fx.webStrand?.(p.body.position.x, p.body.position.y, tx, ty, 26);
+
     p.data.webLine = {
-      tx, ty, steps: 18,
+      tx, ty, steps: 26,
     };
   },
   drawFx(_ctx, p, g) {
     if (p.data.webLine && p.data.webLine.steps > 0) {
       p.data.webLine.steps--;
-      g.lineStyle(1, C('c'), 1);
+      // 2 px strand with white outline
+      g.lineStyle(4, 0xffffff, 1);
+      g.lineBetween(p.body.position.x, p.body.position.y, p.data.webLine.tx, p.data.webLine.ty);
+      g.lineStyle(2, C('b'), 1);
       g.lineBetween(p.body.position.x, p.body.position.y, p.data.webLine.tx, p.data.webLine.ty);
     }
   },

@@ -42,11 +42,13 @@ export const steersongArrow: WeaponImpl = {
           y: p.body.position.y,
           vx: Math.cos(a) * sp,
           vy: Math.sin(a) * sp,
-          radius: 3,
+          radius: 4,
           density: p.def.physics.density,
           mul: splitMult,
           wid: p.wid,
           color: '2',
+          texture: 'wpn_w_steersong_arrow',
+          scale: 0.85,
           gravity: p.def.physics.gravity,
         });
       });
@@ -59,8 +61,8 @@ export const steersongArrow: WeaponImpl = {
       const r = P.blastRadius ?? 38;
       const mult = P.blastMult ?? 1.2;
       ctx.blast(p.body.position.x, p.body.position.y, r, mult, p.wid);
-      ctx.fx.sparks(p.body.position.x, p.body.position.y, ['3', '4', '2', 'f'], 16);
-      ctx.fx.ring(p.body.position.x, p.body.position.y, r, C('3'));
+      ctx.fx.flameBlast?.(p.body.position.x, p.body.position.y, r, 30);
+      ctx.fx.sparks(p.body.position.x, p.body.position.y, ['3', '4', '2', 't'], 20);
       sfx.crunch();
       ctx.endProj(p);
     }

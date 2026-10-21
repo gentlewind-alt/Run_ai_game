@@ -26,15 +26,14 @@ export const cometFists: WeaponImpl = {
 
     // Earthquake: expanding ground rings, low rumble and thud
     sfx.quake();
-    ctx.fx.shake(0.025);
-    ctx.fx.ring(ix, iy, 40, C('5'));
-    ctx.fx.ring(ix, iy, 80, C('6'));
-    ctx.fx.sparks(ix, iy, ['6', '5', 'd', 'e'], 20);
-
+    ctx.fx.shake(0.04);
     const rangeX = P.quakeRangeX ?? 90;
-    const hopVy = P.quakeHopVy ?? -3.5;
+    ctx.fx.quakeRings?.(ix, iy, rangeX);
+    ctx.fx.sparks(ix, iy, ['6', '5', 'd', 'e', 'c'], 24);
+
+    const hopVy = P.quakeHopVy ?? -4.5;
     const dmgMult = P.quakeDamageMult ?? 0.9;
-    const stunSteps = P.quakeStunSteps ?? 36; // 0.6 s = 36 steps
+    const stunSteps = P.quakeStunSteps ?? 40; // 40 steps stun
 
     // Blocks within +-90 px along the ground hop and take damage (does NOT launch debris into the sky)
     const blocks = ctx.blocks().filter((b) => !b.dead && Math.abs(b.body.position.x - ix) <= rangeX);
@@ -43,13 +42,13 @@ export const cometFists: WeaponImpl = {
       ctx.damage(b, p.def.baseDamage * dmgMult, b.body.position.x, b.body.position.y, { strong: false, tag: 'norm' });
     }
 
-    // Monsters in the wave are knocked flat and stunned 0.6 s and take damage
+    // Monsters in the wave are knocked flat and stunned 40 steps and take damage
     const monsters = ctx.monsters().filter((m) => !m.dead && Math.abs(m.body.position.x - ix) <= rangeX);
     for (const m of monsters) {
       ctx.damage(m, p.def.baseDamage * dmgMult, m.body.position.x, m.body.position.y, { strong: false, tag: 'norm' });
       ctx.addStatus(m, 'stun', stunSteps);
       const dir = m.body.position.x >= ix ? 1 : -1;
-      ctx.M.Body.setVelocity(m.body, { x: dir * 2.5, y: -2 });
+      ctx.M.Body.setVelocity(m.body, { x: dir * 3.0, y: -2.5 });
       ctx.M.Body.setAngle(m.body, dir * Math.PI / 2);
     }
   },

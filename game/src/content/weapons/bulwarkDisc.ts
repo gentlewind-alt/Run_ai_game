@@ -34,23 +34,40 @@ export const bulwarkDisc: WeaponImpl = {
     p.body.proj.mul = 1 + bCount * bonus;
 
     sfx.ping();
-    ctx.fx.sparks(p.body.position.x, p.body.position.y, ['c', '4', 'b'], 8);
+    ctx.fx.pingStar?.(p.body.position.x, p.body.position.y);
+    ctx.fx.sparks(p.body.position.x, p.body.position.y, ['c', '4', 'b'], 12);
   },
   onUpdate(_ctx, p) {
     // Record trail positions for dithered ghost copies
     const trail = p.data.trail as { x: number; y: number }[];
     if (trail) {
       trail.unshift({ x: p.body.position.x, y: p.body.position.y });
-      if (trail.length > 5) trail.pop();
+      if (trail.length > 8) trail.pop();
     }
   },
   drawFx(_ctx, p, g) {
+    // 1. Dithered ghost trail behind disc
     const trail = p.data.trail as { x: number; y: number }[] | undefined;
     if (trail && trail.length > 1) {
-      trail.slice(1, 4).forEach((pt, idx) => {
-        const alpha = 0.6 - idx * 0.18;
-        g.lineStyle(1, C('a'), alpha).strokeCircle(pt.x, pt.y, 8 - idx);
+      trail.slice(1, 5).forEach((pt, idx) => {
+        const alpha = 0.7 - idx * 0.14;
+        g.lineStyle(2, C('b'), alpha).strokeCircle(pt.x, pt.y, 11 - idx * 2);
+        g.lineStyle(1, C('c'), alpha * 0.9).strokeCircle(pt.x, pt.y, 7 - idx);
       });
+    }
+
+    // 2. Bounce counter pips floating above disc
+    const bCount = (p.data.bounces as number) ?? 0;
+    if (bCount > 0) {
+      const bx = p.body.position.x;
+      const by = p.body.position.y - 15;
+      const totalPips = Math.min(bCount, 6);
+      const startX = bx - ((totalPips - 1) * 5) / 2;
+      for (let i = 0; i < totalPips; i++) {
+        const px = startX + i * 5;
+        g.fillStyle(C('0'), 1).fillRect(px - 1, by - 1, 4, 4);
+        g.fillStyle(C('4'), 1).fillRect(px, by, 2, 2);
+      }
     }
   },
 };

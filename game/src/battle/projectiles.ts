@@ -37,7 +37,10 @@ export function spawnPellet(b: BattleState, o: PelletOpts): void {
   body.proj = { wid: o.wid, mul: o.mul, owner: 'extra', status: o.status };
   if (o.gravity !== undefined) setGravity(body, o.gravity);
   MatterLib.Body.setVelocity(body, { x: o.vx, y: o.vy });
-  const sprite = b.scene.add.image(o.x, o.y, 'px').setTint(C(o.color)).setScale(o.radius * 1.5).setDepth(5);
+  const texKey = o.texture ?? 'px';
+  const sprite = b.scene.add.image(o.x, o.y, texKey).setDepth(5);
+  if (!o.texture) sprite.setTint(C(o.color)).setScale(o.radius * 1.5);
+  else sprite.setScale(o.scale ?? 0.8);
   let steps = 0;
   let slow = 0;
   b.actors.push({
@@ -45,6 +48,9 @@ export function spawnPellet(b: BattleState, o: PelletOpts): void {
     update: () => {
       steps++;
       sprite.setPosition(body.position.x, body.position.y);
+      if (o.texture && Math.hypot(body.velocity.x, body.velocity.y) > 0.2) {
+        sprite.setRotation(Math.atan2(body.velocity.y, body.velocity.x) + Math.PI / 4);
+      }
       slow = Math.hypot(body.velocity.x, body.velocity.y) < 0.3 ? slow + 1 : 0;
       return slow > 30 || steps > 240 || body.position.x > b.worldW + 40 || body.position.x < -40 || body.position.y > Math.max(H, b.groundY) + 60 || body.position.y < -400;
     },

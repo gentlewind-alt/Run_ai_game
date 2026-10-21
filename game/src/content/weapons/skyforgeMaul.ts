@@ -28,7 +28,7 @@ export const skyforgeMaul: WeaponImpl = {
       // Lightning strike from top of screen onto the nearest monster
       ctx.fx.bolt(tx, ty);
       sfx.thunder();
-      ctx.fx.shake(0.02);
+      ctx.fx.shake(0.04);
 
       // Hit target
       if (target) {
@@ -42,6 +42,8 @@ export const skyforgeMaul: WeaponImpl = {
       const fieldSteps = P.fieldSteps ?? 180;
       const tickSteps = P.fieldTickSteps ?? 20;
       const tickMult = P.fieldTickMult ?? 0.2;
+
+      ctx.fx.electricField?.(tx, ty, fieldRadius, fieldSteps);
 
       let remaining = fieldSteps;
       let tickCounter = 0;

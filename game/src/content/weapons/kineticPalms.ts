@@ -24,16 +24,22 @@ export const kineticPalms: WeaponImpl = {
       const sx = p.body.position.x;
       const sy = p.body.position.y;
 
-      // Small recoil on the shot
+      // Cyan muzzle flash at palm
+      ctx.fx.muzzleFlash?.(sx + 10, sy);
+
+      // Visible recoil on the shot
       ctx.M.Body.setVelocity(p.body, {
         x: p.body.velocity.x + recoilVx,
         y: p.body.velocity.y + recoilVy,
       });
-      ctx.fx.sparks(sx, sy, ['b', 'c'], 4);
+      ctx.fx.sparks(sx, sy, ['b', 'c'], 6);
 
-      let bx = sx + 8;
+      let bx = sx + 12;
       const by = sy;
       let bSteps = 0;
+
+      // Visible 3px bolt with white core flying forward
+      const boltSprite = ctx.fx.image(bx, by, 'fx_palm_bolt').setDepth(11);
 
       // Fast flat bolt travelling horizontally forward
       const boltActor: Actor = {
@@ -41,6 +47,7 @@ export const kineticPalms: WeaponImpl = {
         update() {
           bSteps++;
           bx += boltSpeed;
+          boltSprite.setPosition(bx, by);
           // Check collision with living monsters or blocks
           const hitMonster = ctx.within(bx, by, 10)[0];
           if (hitMonster) {
@@ -49,7 +56,7 @@ export const kineticPalms: WeaponImpl = {
               x: hitMonster.body.velocity.x + knockback,
               y: hitMonster.body.velocity.y - 1.5,
             });
-            ctx.fx.sparks(bx, by, ['b', 'c', '8'], 6);
+            ctx.fx.sparks(bx, by, ['b', 'c', '8'], 8);
             return true;
           }
           const hitBlock = ctx.blocks().find((b) => !b.dead && Math.hypot(b.body.position.x - bx, b.body.position.y - by) <= 10);
@@ -59,12 +66,14 @@ export const kineticPalms: WeaponImpl = {
               x: hitBlock.body.velocity.x + knockback * 0.7,
               y: hitBlock.body.velocity.y - 1.0,
             });
-            ctx.fx.sparks(bx, by, ['b', 'c'], 6);
+            ctx.fx.sparks(bx, by, ['b', 'c'], 8);
             return true;
           }
           return bSteps > 90 || bx > ctx.worldW + 30;
         },
-        destroy() {},
+        destroy() {
+          boltSprite.destroy();
+        },
       };
       ctx.addActor(boltActor);
     };

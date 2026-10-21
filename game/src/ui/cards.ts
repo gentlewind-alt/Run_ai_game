@@ -40,12 +40,15 @@ export function createItemCard(opts: CardOptions): CardResult {
 
   const iconBox = opts.scene.add.rectangle(opts.x + 15, opts.y + 19, 24, 30, C('0'))
     .setStrokeStyle(1, C(baseStroke)).setDepth(2);
-  const tex = opts.scene.textures.get(opts.icon);
+  const cardKey = opts.icon.startsWith('wpn_') && !opts.icon.startsWith('wpn_card_') && opts.scene.textures.exists(`wpn_card_${opts.icon.slice(4)}`)
+    ? `wpn_card_${opts.icon.slice(4)}`
+    : opts.icon;
+  const tex = opts.scene.textures.get(cardKey);
   const srcW = tex?.getSourceImage()?.width ?? 16;
-  const autoScale = srcW >= 32 ? 0.75 : 1.2;
-  const icon = opts.scene.add.image(opts.x + 15, opts.y + 19, opts.icon)
+  const autoScale = srcW === 24 ? 1.0 : srcW >= 32 ? 0.75 : 1.2;
+  const icon = opts.scene.add.image(opts.x + 15, opts.y + 19, cardKey)
     .setScale(opts.iconScale ?? autoScale).setDepth(2);
-  if (opts.locked && (opts.isSilhouette || opts.icon.startsWith('wpn_'))) {
+  if (opts.locked && (opts.isSilhouette || cardKey.startsWith('wpn_'))) {
     icon.setTint(0x1a1c2c).setAlpha(0.6);
   }
 

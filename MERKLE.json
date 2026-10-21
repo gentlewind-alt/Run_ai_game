@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "5ed0c4c729cd4d4b605e704e0d4cadb50e59a7ccd763bb61519652f57373b46f",
+  "hash": "99a1582ae81fdbbb8be4410d099dcb65436ca72322f97ba1d23e325ba71f390f",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "d9ba21931f7411588747d44470a0f8cd3c48f6ea260635bd77d3c8ba16884486",
+      "hash": "289faf18893238ba3c0714c16740b149b13146559c2cc8df1902dc5643aa663c",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "8f0e06df956851ad4f6ea9dced6b7cd90148b44d77323ac15d1c1519eafc05af",
+          "hash": "f515dce2412ea48c10513f942d681980cf39d7494a6678cf3aea9de57b2352c9",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -253,8 +253,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "27dabbd9750ebf334658d0a75d56c00a317f80ee1b83e40cb7071d61c892049e",
-              "size": 78806
+              "hash": "479e4985f4b2f39fa001f3e1db178b547fcaa66c49914de6f810e7e0279fbb9b",
+              "size": 82032
             },
             {
               "name": "ref",
@@ -303,7 +303,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "1b096ae5aabb924b2edbab0915ee2c66cd4f8530056c63097a4e05cde155dc2a",
+              "hash": "6098a1142ac9a76bce3e7df23fe196a2611b6c7f02b4d8ed608bb4da51276bb1",
               "children": [
                 {
                   "name": "01_title.png",
@@ -1068,7 +1068,7 @@
                   "name": "weapons",
                   "path": "docs/handoff/shots/weapons",
                   "type": "dir",
-                  "hash": "68fc83039478082af288f1bc8634d72f84d9a87b8e43dec2c7ccb5d7a59eee20",
+                  "hash": "c0263b6cc54e93652608c2209456351eae8f222eee8ac80a48cdd4493cd0f231",
                   "children": [
                     {
                       "name": "01_loadout_relic_weapons.png",
@@ -1088,57 +1088,57 @@
                       "name": "03_skyforge_maul_lightning.png",
                       "path": "docs/handoff/shots/weapons/03_skyforge_maul_lightning.png",
                       "type": "file",
-                      "hash": "a4b317eecf0d8612a535a4727904ea92f6994448df422df5a22489ae51745e0e",
-                      "size": 79378
+                      "hash": "fa3934c6cba3b8b036c6df41934b73c930134b33f696e519e6d17fefb3d182bc",
+                      "size": 78984
                     },
                     {
                       "name": "04_comet_fists_earthquake.png",
                       "path": "docs/handoff/shots/weapons/04_comet_fists_earthquake.png",
                       "type": "file",
-                      "hash": "5fa2f68ebe1b4ffaf8bdb3ac2a9363bb7746ea85ca5b723fba003ff20c55c618",
-                      "size": 78825
+                      "hash": "89d09eb880dc50916512eae52ac54cb458a103e9cb43f733bed82e55a3f381d4",
+                      "size": 78740
                     },
                     {
                       "name": "05_bulwark_disc_ricochet.png",
                       "path": "docs/handoff/shots/weapons/05_bulwark_disc_ricochet.png",
                       "type": "file",
-                      "hash": "761b89bf8297d129238f537b6b89602c3009b4a35844822f6745e4ecabf1c63a",
-                      "size": 77246
+                      "hash": "03f2282f597826729f15554694cdf267eef3b8e397fb9bc7f0d15b4287c81c5f",
+                      "size": 77748
                     },
                     {
                       "name": "06_steersong_arrow_split.png",
                       "path": "docs/handoff/shots/weapons/06_steersong_arrow_split.png",
                       "type": "file",
-                      "hash": "35a9aa8fb95558270a499fce26f28a4047802abfdb2058b28934145f4f51f833",
-                      "size": 75432
+                      "hash": "d7db32e244665635f8a583e41c7ee3cdcde1053460a31732a102da46cd1a3d01",
+                      "size": 75561
                     },
                     {
                       "name": "07_silkline_shooters_web.png",
                       "path": "docs/handoff/shots/weapons/07_silkline_shooters_web.png",
                       "type": "file",
-                      "hash": "42883aee0fa6ace2766a53eb57cb8fb405570c2e02e30b3f1c7a99f941b0d885",
-                      "size": 76932
+                      "hash": "7eb3516eb21dbb7a6ffb7d0b6b60b5288e5d0fe9c2de680eb9e0dbb38714ff61",
+                      "size": 76415
                     },
                     {
                       "name": "08_kinetic_palms_repulsor.png",
                       "path": "docs/handoff/shots/weapons/08_kinetic_palms_repulsor.png",
                       "type": "file",
-                      "hash": "ed035f9f09e39a5d85c8527a6f86f3056647cb610e2c7699f455ecb61f91ceba",
-                      "size": 77209
+                      "hash": "64c804cdb3db764d724c19fcf361fa58d86bfc8ebbbe28f7d32331a5d70af67f",
+                      "size": 77396
                     },
                     {
                       "name": "09_quicksilver_sling_speed.png",
                       "path": "docs/handoff/shots/weapons/09_quicksilver_sling_speed.png",
                       "type": "file",
-                      "hash": "9e9c1d8a5dd6089a54d4d4fafb65092556c04504b74781f32f13b33fd21fab54",
-                      "size": 74600
+                      "hash": "6bce92d50c6895afa35298ea7a10580a9afa7b953c7dbfbb88b7c314ed90e50f",
+                      "size": 74628
                     },
                     {
                       "name": "10_gemini_strand_twin_launch.png",
                       "path": "docs/handoff/shots/weapons/10_gemini_strand_twin_launch.png",
                       "type": "file",
-                      "hash": "bcaa46d2a75982eab933cbfde7db94d75d5e320f3d83359128905d773a2b6b45",
-                      "size": 74637
+                      "hash": "60b4f27a26e0a935802711e97d9cc27412d35319e20da5fe2cb40597de2c68c9",
+                      "size": 74718
                     },
                     {
                       "name": "sheet.png",
@@ -1155,8 +1155,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "5b997ce5b42f3ce230bfe9af7682fbca189e91a6d5b669c0fcc0c997e8280290",
-              "size": 8203
+              "hash": "86faf50125ec215f61163e9dd0ea19b83b5994e04ffc79cd6c4e46541419461d",
+              "size": 8504
             }
           ]
         },
@@ -1287,7 +1287,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "e0d2d947f7080eb895957e2ce44b0cabf38f92f7ab0f693c89afdbb0150f4220",
+      "hash": "211eac757ce21a713d7ec99181edc827868334a6295c2d1f90a4bd306850287d",
       "children": [
         {
           "name": ".gitignore",
@@ -1650,13 +1650,13 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "71a410af13b310deec3eddb588a0c4ab620f89400df3696b103901e62ffab76d",
+          "hash": "e89c1e7400ca5c7f30edc3955c6a6a23be6aee095e5cc667575b380a7679b0aa",
           "children": [
             {
               "name": "art",
               "path": "game/src/art",
               "type": "dir",
-              "hash": "f0e15e206cd1f0bc953da9910da6cf0ac36daa2f488f0a6b06fe0c84243a0e23",
+              "hash": "02d09f1c8c3ed35390792f0f01566ac3c403ea8dc82b3bc286ad4f25671f1119",
               "children": [
                 {
                   "name": "backgrounds.ts",
@@ -1704,8 +1704,8 @@
                   "name": "relicTextures.ts",
                   "path": "game/src/art/relicTextures.ts",
                   "type": "file",
-                  "hash": "0efed82c66331fa0e760264a9e30129af9fcd1613d6215e77f57dc1c9871c2b6",
-                  "size": 15358
+                  "hash": "8f5059ad460fa8e1b667c66b0a8b09b173fb76ff7a870b492ac5b61b5517c43d",
+                  "size": 22782
                 },
                 {
                   "name": "sprites.ts",
@@ -1763,7 +1763,7 @@
               "name": "battle",
               "path": "game/src/battle",
               "type": "dir",
-              "hash": "a5de9011196b18fe936fe38da601eb3120cc5016fb4215b2254a7f8082895701",
+              "hash": "45b19ce4e04c10511182c7821c8b7353e29989d90c6f01afed1f4a33c53a0052",
               "children": [
                 {
                   "name": "artifacts.ts",
@@ -1776,8 +1776,8 @@
                   "name": "BattleCtx.ts",
                   "path": "game/src/battle/BattleCtx.ts",
                   "type": "file",
-                  "hash": "a3230a2837185ab2b0e3e9482a31fdcd0122c7a8c07f5e6175c7c42223f73291",
-                  "size": 5505
+                  "hash": "a370877c54182bd1dd41c3305b60ad6ac7a5737b9509392ea9322d537cd9df9e",
+                  "size": 5983
                 },
                 {
                   "name": "camera.ts",
@@ -1804,8 +1804,8 @@
                   "name": "ctxImpl.ts",
                   "path": "game/src/battle/ctxImpl.ts",
                   "type": "file",
-                  "hash": "06dc1b98b0f8367cde511e504bebceb977fd6de6ce682b87019d6c119c9ab5b6",
-                  "size": 3163
+                  "hash": "8c7675e523f932323976d85f46df51d396121ddaf1da4ea570a0fe9901f55418",
+                  "size": 3696
                 },
                 {
                   "name": "damage.ts",
@@ -1818,15 +1818,15 @@
                   "name": "fx.ts",
                   "path": "game/src/battle/fx.ts",
                   "type": "file",
-                  "hash": "88021d936b1454a4b0f18fdcf6785c6fc207f96c7ff01b2e9df0befe72e6ae1e",
-                  "size": 2800
+                  "hash": "503993b8d309a7b254b6ac0be436f8ae570c1051f253bcef0ebd10a77e534128",
+                  "size": 13016
                 },
                 {
                   "name": "loop.ts",
                   "path": "game/src/battle/loop.ts",
                   "type": "file",
-                  "hash": "20a8a6b0c21f0ac5eaed5e431467da4e3508d2e33dd23267673b9d403eb43000",
-                  "size": 4595
+                  "hash": "7f51fdb23fb3f408b54a064641bdbb16c792a58195c2e7ab6b336a11da753c50",
+                  "size": 4655
                 },
                 {
                   "name": "matter.ts",
@@ -1839,8 +1839,8 @@
                   "name": "projectiles.ts",
                   "path": "game/src/battle/projectiles.ts",
                   "type": "file",
-                  "hash": "0ab756846a99e82b458f680efc48d324dabfa3edca5be030d32ef8d1d0640242",
-                  "size": 2331
+                  "hash": "80f482ae06f5d1045879b1b1d0b06e1ec9387352c5ef2f8d90fa3f06acdd29ba",
+                  "size": 2608
                 },
                 {
                   "name": "rules.ts",
@@ -1867,8 +1867,8 @@
                   "name": "sling.ts",
                   "path": "game/src/battle/sling.ts",
                   "type": "file",
-                  "hash": "0ff3c314b331f613742a18ff6da4037117bd88d397bcc3733e80ee4ccded3728",
-                  "size": 16359
+                  "hash": "19c8fdb21471704705d3af4670c18d73da2e5eb3d458d10f24549d6f6b8a68c8",
+                  "size": 17281
                 },
                 {
                   "name": "snapshot.ts",
@@ -1933,7 +1933,7 @@
               "name": "content",
               "path": "game/src/content",
               "type": "dir",
-              "hash": "a79221e98926c506ab4157ccdeab751c8c8c5c5ff3aef7b23fa85a0bcaf9375d",
+              "hash": "885a732c9107108e3c4dc44263ace2ce641b97daf36ad95ab74f8d4c42923857",
               "children": [
                 {
                   "name": "artifacts",
@@ -2125,7 +2125,7 @@
                   "name": "weapons",
                   "path": "game/src/content/weapons",
                   "type": "dir",
-                  "hash": "b4e1509d8b114de83c3ac805c92843efe67be8477456bffffe01e802fd4dcdbb",
+                  "hash": "8f8501635f5ba102479bc42633c522b90fe759c1ac05307fda69f5324ebf28f0",
                   "children": [
                     {
                       "name": "blade.ts",
@@ -2152,8 +2152,8 @@
                       "name": "bulwarkDisc.ts",
                       "path": "game/src/content/weapons/bulwarkDisc.ts",
                       "type": "file",
-                      "hash": "b279426cb8f6d2d061a6aef66286cee1b989fbbe42a027a620b3171f31ef6f83",
-                      "size": 1995
+                      "hash": "544fbf7ea801a53c84bc5169720f732b05d67ca0dc1db23626ea2db2d70c0dfe",
+                      "size": 2695
                     },
                     {
                       "name": "cleaver.ts",
@@ -2166,8 +2166,8 @@
                       "name": "cometFists.ts",
                       "path": "game/src/content/weapons/cometFists.ts",
                       "type": "file",
-                      "hash": "2c4d90f7ae70c20739c0d0d343a7458bdb3b74da4de9c89ed7482667ab9e04d1",
-                      "size": 2824
+                      "hash": "1e136dfbad319c6d4086c98b7611571e5ffe720ee78823a0813cab5d0678f56f",
+                      "size": 2797
                     },
                     {
                       "name": "index.ts",
@@ -2180,8 +2180,8 @@
                       "name": "kineticPalms.ts",
                       "path": "game/src/content/weapons/kineticPalms.ts",
                       "type": "file",
-                      "hash": "32bfcdfd06fbaf4c6554d981e4e65838e6bdc3b8ad98d1a05b3b20475100450c",
-                      "size": 3085
+                      "hash": "49db002560c4e491ccafdeb576aeb1e5a1d4c715f1264817f7630489eb6d62c3",
+                      "size": 3382
                     },
                     {
                       "name": "pike.ts",
@@ -2208,15 +2208,15 @@
                       "name": "silklineShooters.ts",
                       "path": "game/src/content/weapons/silklineShooters.ts",
                       "type": "file",
-                      "hash": "57e59d51f8ae334a3d6e68f06925ddf54820d14a45dd817461003f2fc0c84ec8",
-                      "size": 2212
+                      "hash": "5af21dde649f7bfad538bb89aa1a76256334478582c896cf2565fce19b4d765e",
+                      "size": 2529
                     },
                     {
                       "name": "skyforgeMaul.ts",
                       "path": "game/src/content/weapons/skyforgeMaul.ts",
                       "type": "file",
-                      "hash": "1a26ffd1e0c6d325e73d9c613428827ce698bcee4306576b68915bb217842460",
-                      "size": 4668
+                      "hash": "b6677ff2ae1474453d34e6549b5bf0f62340e08eef8a295569904932e988a08c",
+                      "size": 4732
                     },
                     {
                       "name": "staff.ts",
@@ -2229,8 +2229,8 @@
                       "name": "steersongArrow.ts",
                       "path": "game/src/content/weapons/steersongArrow.ts",
                       "type": "file",
-                      "hash": "925dfd8b09b8df8590dd07df1b0399225f35b4a00f31b6c02422c70c6f970ce8",
-                      "size": 2341
+                      "hash": "e7390126d5c651884bbcb519136a604b49095bbcff6d20715d93f15c3867019d",
+                      "size": 2412
                     },
                     {
                       "name": "types.ts",
@@ -2462,14 +2462,14 @@
               "name": "ui",
               "path": "game/src/ui",
               "type": "dir",
-              "hash": "3b9459595717bbfa063e3d7e0e32ab3f293f2785c1869a682f77bb145385b675",
+              "hash": "a5133a9bde1d1a395647cea4ac6eb24498aaa304474280a076b508c34afb6b79",
               "children": [
                 {
                   "name": "cards.ts",
                   "path": "game/src/ui/cards.ts",
                   "type": "file",
-                  "hash": "64dbb804a310ff67a1f502392c24bc44539d0a2bee687d8a3774d960eaa4d553",
-                  "size": 2248
+                  "hash": "eeaa828c22c8ee4dfc75f59020f869770a9cb4c36f1784246b574187b0407807",
+                  "size": 2467
                 },
                 {
                   "name": "coins.ts",

@@ -87,7 +87,7 @@ export interface Actor {
 
 export interface PelletOpts {
   x: number; y: number; vx: number; vy: number; radius: number; density: number; mul: number; wid: string;
-  color: string; status?: string; gravity?: number;
+  color: string; status?: string; gravity?: number; texture?: string; scale?: number;
 }
 
 /** Numbers artifacts and consumables adjust during a battle. */
@@ -152,5 +152,12 @@ export interface BattleCtx {
     image(x: number, y: number, key: string): Phaser.GameObjects.Image;
     word(x: number, y: number, word: string): void;
     bolt(x: number, y: number): void; // a lightning strike from above
+    electricField?(x: number, y: number, r: number, steps?: number): void;
+    quakeRings?(x: number, y: number, rangeX?: number): void;
+    pingStar?(x: number, y: number): void;
+    flameBlast?(x: number, y: number, r?: number, steps?: number): void;
+    webStrand?(x0: number, y0: number, x1: number, y1: number, steps?: number): void;
+    webSplat?(x: number, y: number, steps?: number): void;
+    muzzleFlash?(x: number, y: number): void;
   };
 }

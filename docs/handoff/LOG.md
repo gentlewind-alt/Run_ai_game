@@ -2,6 +2,23 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Handoff: agy weekly limit reached, v1.12.0 deployed (private)
+- **State:** committed and deployed. `check`, `build`, `regress:quick` pass (about 3.5 min). Landscape 480x270, relic framework (rarity, mini-bosses L4/L8, chests L3/L5/L7, Relic Market), six real batch A weapons (Skyforge Maul, Comet Fists, Bulwark Disc, Steersong Arrow, Silkline Shooters, Kinetic Palms) and Quicksilver/Gemini Strand slingshots are in. No relic weapon one-shots any level 1-12.
+- **agy hit its weekly limit on 2026-10-22** (explains its early exits). The partly-applied polish in the tree passes the tests but is NOT visibly improved.
+- **Open work, in order:**
+  1. S9-polish, full brief in `docs/handoff/agy_task_weapons_polish.md`: in-flight sprites are about 16 px (must be 32 px hero size), effects are faint (lightning, quake rings, blast), three icons do not read (Steersong Arrow looks like a wand, Silkline Shooters like a blaster, Bulwark Disc crown like a face), and `docs/handoff/shots/weapons/sheet.png` is still text cards, not real captures. Compare against `docs/handoff/ref/*` and `relic_art_reference.js`.
+  2. Owner-reported bug, unresolved: after LOSING level 4 (Goblin Chief) and pressing Retry, the level resets but the weapon is not loaded on the sling (animations run). Not reproduced headless in debug mode on L1, L2 or L4 shots-out losses; try the runner-escape loss on L4 in a real (non-debug) profile on a phone, and check the iris/intro state after `goTo`.
+  3. Weapons batch B (Stunknuckle, Rime Projector, Hexfire Hands, Conqueror's Wand, Swarm Pod, Pip Cannon, Solar Gaze, Gatewright Pistol, Starsplit Axe, Unmaker Scythe) and slingshots Skipstone/Thunderstring: designs in the conversation history, nothing built.
+  4. Refine items outstanding: none known; the refine pass was verified.
+- **Owner decisions still open:** RUN Bits prices and shop config upload, leaderboard token (`requiresToken`), share text, rewarded ads flag, `set-public` by Thu 30 Oct, jam form by Mon 2 Nov 12:00 PT. Does the RUN host honour landscape for a game registered portrait? Needs a phone test.
+- **How to resume:** `cd game && npm run regress:quick` (one test run at a time; they share Chrome and the Vite port), `node tools/agy_share.mjs` for the agy share, briefs in `docs/handoff/agy_task_*.md`, `tools/agy_chain.sh <brief...>` runs briefs sequentially.
+
+## 2026-10-22 · agy · Visual polish of batch A relic weapons (started)
+- **What:** Claimed task `agy_task_weapons_polish.md`. Polishing relic weapon hero sprites at 32x32 in-flight and loaded/queue pips at 24+ px, strengthening visual effects (Maul lightning/electric field, Comet Fists quake/cracks/hop, Disc ghost trail/ping star/pips, Arrow flame/blast/split, Shooters strand/splat/tint, Palms bolts/flash/recoil), dedicated 24x24 card icons for Arrow, Shooters, Disc, updating `tools/weapon_shots.mjs` with real captured peak action frames in `sheet.png`, and generating side-by-side comparison in `compare.png`.
+- **Checks:** `check`, `regress:quick` loop planned, full `regress` once at the end.
+- **Notes / for the next agent:** Running headless tests serially; updating Merkle index upon completion.
+- **Questions for owner:** None.
+
 ## 2026-10-21 · agy · S9-weapons-a: Relic weapons batch A and 2 slingshots (done)
 - **What:** Replaced the six STUB weapons with full custom behaviours, implemented approved v2 32x32 hero art with modular emblems, synthesized WebAudio sound effects, built 2 functional slingshots with shop & battle HUD integration, verified balance (0 one-shot wins L1-12, >= 2 shots L4-L12), and captured 10 screenshot artifacts + contact sheet.
   - **Skyforge Maul** (`w_skyforge_maul`, legendary): 32x32 spinning hammer with `drawKnotEmblem`; tap calls lightning bolt from top of screen onto nearest monster (white screen flash, 3-frame hit-stop, thunder SFX & screen shake), leaves electric field for 180 steps ticking chain damage every 20 steps; second tap recalls maul hitting monsters on return path; `ability.charges: 1` disables ability on subsequent shots.

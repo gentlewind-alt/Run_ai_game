@@ -110,6 +110,7 @@ function syncSprites(b: BattleState, time: number): void {
     else if (e.status.chain > 0) e.sprite.setTint(0xb8c0c8);
     else if (e.status.stun > 0) e.sprite.setTint(0x9fb8ff);
     else if (e.status.curse > 0) e.sprite.setTint(0xd7a0ff);
+    else if (e.status.slow > 0) e.sprite.setTint(0x8af0f8);
     else e.sprite.clearTint();
     e.sprite.setFlipX(running && e.dir < 0);
     e.shieldSprite?.setPosition(bp.x, bp.y).setAlpha(0.55 + 0.2 * beat);

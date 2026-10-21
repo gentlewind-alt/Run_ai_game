@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.11.0 (landscape 480x270) (Stages 3-6, private), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
+**Current build:** v1.12.0 (landscape 480x270, relic weapons batch A mechanics, visual polish pending), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -56,7 +56,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S7-03 | Treasure chests (L3, L5, L7) & pity shop (Relic Market) | review | agy | 10-21 | wave 1 part 1; chests grant relic or 150 coins fallback, pity unlocks at >= 3 boss losses |
 | S8-landscape | Convert game from portrait 216x384 to LANDSCAPE (16:9) | review | agy | 10-21 | 480x270 measured & built; all scenes re-laid, rotate overlay, full regress passes |
 | S8-refine | Code-quality review and refinement pass | done | agy | 10-21 | Golden rules 1&2, listener hygiene, split modules, boundary errs, types, docs |
-| S9-weapons-a | Relic weapons batch A (6 weapons) & 2 slingshots | review | agy | 10-21 | 6 relic weapons + 2 slingshots complete, 10 shots + sheet in shots/weapons/, check/build/regress (full) 100% pass |
+| S9-weapons-a | Relic weapons batch A (6 weapons) & 2 slingshots | doing | agy | 10-22 | Visual polish pass per agy_task_weapons_polish.md (sprites, fx, icons, sheet, compare) |
 
 ## Parallel lanes (once S2-03 is done)
 
@@ -64,6 +64,9 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 - **Lane B (monsters and levels):** S2-07, S2-09, S3-07, S4-01, S4-02
 - **Lane C (meta):** S2-08, S3-01, S3-02, S3-03, S3-04, S4-03, S4-04, S4-05
 - **Lane D (tooling, cloud-friendly):** S2-04, then review of every `review` card
+
+| S9-weapons-a | Relic weapons batch A (6) + Quicksilver/Gemini slingshots | S7 | review | agy | 10-22 | mechanics + tests pass; visuals below the approved bar |
+| S9-polish | Visual polish of batch A (sprite size, effects, icons, real contact sheet) | S9-weapons-a | todo | | | blocked: agy weekly limit reached 10-22; brief ready in agy_task_weapons_polish.md |
 
 ## Waiting on owner
 
