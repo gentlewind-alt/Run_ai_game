@@ -27,6 +27,7 @@ Any coding agent (Claude Code, Cursor, Codex, Gemini, the RUN Game Studio AI) ca
 8. **`npm run check` and `npm run build` must pass** before every commit. The build runs the data check first.
 9. **Ask the owner first** before: `rundot game set-public`, IAP or RUN Bits prices, deleting content or levels, changing the save version, spending RUN AI credits, or anything that touches the jam form.
 10. Never commit `node_modules`, `dist`, `.env*`, API keys or tokens.
+11. **Claude plans and reviews; all feature code, level content, data and docs go through agy** with a brief in `docs/handoff/agy_task_*.md`. Commit subjects of agy work end in `via agy`; target 70-80% of added lines going forward (track with `npm run agy:share`).
 
 ## Commands (run in `game/`)
 

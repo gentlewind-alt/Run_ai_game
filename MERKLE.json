@@ -2,20 +2,20 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "7d4a685edb30c76a59734ca5bb645d759c544d47d89d77178c3e4f30a8aac8de",
+  "hash": "2c3a227f33514f9d29df8d78f8e66f1ae9de1986368db22cd4734fb00f021caa",
   "children": [
     {
       "name": "AGENTS.md",
       "path": "AGENTS.md",
       "type": "file",
-      "hash": "d9c0c49bc1562fe776f73add47490539c9c3bab0291c12f83feab6391de645f1",
-      "size": 4313
+      "hash": "75380741e7fba6869aea65850a306b95be63dcd2d218f01ca858d416236cea08",
+      "size": 4578
     },
     {
       "name": "architecture",
       "path": "architecture",
       "type": "dir",
-      "hash": "9eff719f33d02edcddf46a7d61dbf7bf031c200852eb2c54381a14a763662fe1",
+      "hash": "4414d507c8666eef380da7ffd83400d560102b0aff918bf3a0737b1cf5aa87f9",
       "children": [
         {
           "name": "ARCHITECTURE.md",
@@ -49,8 +49,8 @@
           "name": "WORKFLOW.md",
           "path": "architecture/WORKFLOW.md",
           "type": "file",
-          "hash": "83ae47116938c9ac9227f01ce57ad76a9b4a272143a7b78c94a561be71b718a2",
-          "size": 4902
+          "hash": "ee6f0e8ca4075b41ab04b133e8452d9fa9b557503e127d94d8f1515814c4373b",
+          "size": 5442
         }
       ]
     },
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "0b1e28e5553e91585d958cbcfecc411d55ece704f126f48e86241833c58b0031",
+      "hash": "5025251e0c30c684ee3678f6422c06ccc6d8120a6bbb50b928633c509214ad1c",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "e61f15327289f2adbd342aadb65be6848ae8aef2f082741b6055377ccacdea84",
+          "hash": "651ec43caeeae8077c0accc1c9e3f91be51d8a8eeda903fbece5d4acdd6a1ef7",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -136,6 +136,13 @@
               "type": "file",
               "hash": "95c89f23fd83e9437c064dfca6a9d375351908315f21c2b3eaa687f88dd01439",
               "size": 1536
+            },
+            {
+              "name": "agy_task_wrapup.md",
+              "path": "docs/handoff/agy_task_wrapup.md",
+              "type": "file",
+              "hash": "eb4a859f22095735b6f9b2d4cc5473008757285446dae8034c758cb6ee1273dc",
+              "size": 1764
             },
             {
               "name": "LOG.md",
@@ -365,7 +372,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "abcb32ef3dc2842f784b69cf91638314b0bdac54efc85e6baf379772d3ca4db5",
+      "hash": "7d1fddb91b44f65ecf373b1529880bc2c90e30eba2abcd1ef7f7c4801b3b6c0f",
       "children": [
         {
           "name": ".gitignore",
@@ -420,8 +427,8 @@
           "name": "package.json",
           "path": "game/package.json",
           "type": "file",
-          "hash": "5df334a81750b5b82f17b47f45f3ad48443d341bd56c62347538acf8e3443755",
-          "size": 1247
+          "hash": "c3068c23bd30aa7b9ce26642ac0407f50c411e1501aa1e5a0a0bda3bdebe6e7a",
+          "size": 1295
         },
         {
           "name": "pnpm-workspace.yaml",
@@ -714,7 +721,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "56c486baf20e73014012cdecae87ad83e1205acb96bdab7ef8008811b13d6438",
+          "hash": "1587fa22796ad384492b9e1c0be5b7e8d46da8fd0415a9e659a4375d94c95db6",
           "children": [
             {
               "name": "art",
@@ -1306,14 +1313,14 @@
               "name": "debug",
               "path": "game/src/debug",
               "type": "dir",
-              "hash": "681d67c64b124f13d7dd7317c1f92f8ef84d89fe1c5a6270f91dadcd72d52cf9",
+              "hash": "0cc7933c6478dc1f655d559e479f0169d7713450e9d4c15d8167ad7fbba784fc",
               "children": [
                 {
                   "name": "testHook.ts",
                   "path": "game/src/debug/testHook.ts",
                   "type": "file",
-                  "hash": "c7d8d1f560d536b511d675bedfc8fdcab02d16e3a19c7ef465493d9dadae6276",
-                  "size": 8817
+                  "hash": "9dd01c2eb751d3d7f9b4d21853a0e01c8739730617a0c6f6186b72776eee65f8",
+                  "size": 8967
                 }
               ]
             },
@@ -1364,7 +1371,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "a45f7f0e87f517fcc897a0427bd1a93c2e2b0a9d7cab3a1917dc17493571b7d0",
+              "hash": "80ba2d7458a40f7db5afd120513fa9ce5eed9e551bd430baabad8ff263a31a22",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -1391,8 +1398,8 @@
                   "name": "LoadoutScene.ts",
                   "path": "game/src/scenes/LoadoutScene.ts",
                   "type": "file",
-                  "hash": "9e988025ec2940be85f8452781bde2c10102b4dcdf2d30ddd9b6594d840a9f1e",
-                  "size": 6893
+                  "hash": "903050827f48de6a133a204b8d7d2b2730e7325f34a5cd94a5eb4562babd9961",
+                  "size": 6867
                 },
                 {
                   "name": "MapScene.ts",
@@ -1496,8 +1503,8 @@
       "name": "package.json",
       "path": "package.json",
       "type": "file",
-      "hash": "52da92c82e59b2e972838ba8fdc1ad8373d0aa459d6a9442d37dca7687cc26ee",
-      "size": 244
+      "hash": "a513e882183dab027c40bad2aa2ffdf8b9caf6d5304a59a15776cf82d76cd310",
+      "size": 289
     },
     {
       "name": "README.md",
@@ -1510,14 +1517,21 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "12ca5ca6a60c79dd5a016faa1fdb6bdd3505f26d87d3812d8a2e926120f6c682",
+      "hash": "0e59688a928e8c29de20634ad6ff55956307ef0d7f7ecf3fb11c99d5a44fc113",
       "children": [
+        {
+          "name": "agy_share.mjs",
+          "path": "tools/agy_share.mjs",
+          "type": "file",
+          "hash": "d85d128d817d88e116e237b6b8b398617b128c41b142045e53fabe6e059423f0",
+          "size": 3607
+        },
         {
           "name": "audit_shots.mjs",
           "path": "tools/audit_shots.mjs",
           "type": "file",
-          "hash": "67e536a9039636c4227fce4ec91ab86fedf43e33f059e6a69cb12d790b5a745b",
-          "size": 7736
+          "hash": "ad8635cc65f0a0184cd2f3a90b55f6c8746703f39b753ff6816e28216afa594f",
+          "size": 17089
         },
         {
           "name": "merkle.mjs",

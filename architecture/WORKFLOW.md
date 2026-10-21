@@ -2,6 +2,13 @@
 
 Several agents may work on this repo at once. Typical setup: a **local session** on the owner's PC (it can run `rundot`, log in and deploy), a **cloud session** (it reviews code, writes docs and data, and runs headless tests, but cannot deploy), and possibly others. They coordinate only through git and two files in `docs/handoff/`.
 
+## Agent roles and Agy workflow
+
+- **Claude plans and reviews:** Claude outlines requirements, authors task cards, runs design reviews, and coordinates the roadmap.
+- **Agy executes:** all feature code, level content, data and docs go through agy with a brief in `docs/handoff/agy_task_*.md`.
+- **Commit attribution:** commit subjects of agy work end in `via agy` (or start with `tools:` or `agy:`).
+- **Share target:** target 70-80% of added lines going forward. Track with `npm run agy:share` (in `game/`) or `node tools/agy_share.mjs`.
+
 ## Start of every session
 
 1. `git fetch origin && git pull origin claude/brave-johnson-j555ql`. If the branch is checked out in another worktree, work on your own branch and push with `git push origin HEAD:claude/brave-johnson-j555ql`.

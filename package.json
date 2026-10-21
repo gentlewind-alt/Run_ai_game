@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "agy:share": "node tools/agy_share.mjs",
     "merkle:seal": "node tools/merkle.mjs seal",
     "merkle:changed": "node tools/merkle.mjs changed",
     "merkle:verify": "node tools/merkle.mjs verify"

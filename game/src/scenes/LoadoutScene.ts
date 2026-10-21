@@ -104,7 +104,7 @@ export default class LoadoutScene extends Phaser.Scene {
   private artifactRow(): void {
     const arts = data.content.artifacts.filter((a) => owns('artifacts', a.id));
     const slots = artifactSlots();
-    text(this, 6, 287, slots > 1 ? 'Artifacts' : 'Artifact', C('d')).setOrigin(0, 0.5);
+    text(this, 6, 287, 'Artifact', C('d')).setOrigin(0, 0.5);
     if (arts.length === 0) {
       text(this, 62, 287, 'None yet. The shop sells them.', C('e')).setOrigin(0, 0.5);
       return;
