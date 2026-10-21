@@ -45,12 +45,23 @@ function Process($file, $dest, $S) {
 }
 $map = @{
   'w_skyforge_maul' = 'maul_test.png'; 'w_comet_fists' = 'fists.png'; 'w_bulwark_disc' = 'disc_v2_2.png';
-  'w_steersong_arrow' = 'arrow.png'; 'w_silkline_shooters' = 'shooters.png'; 'w_kinetic_palms' = 'palms.png'
+  'w_steersong_arrow' = 'arrow.png'; 'w_silkline_shooters' = 'shooters.png'; 'w_kinetic_palms' = 'palms.png';
+  'w_brahmastra_arrow' = 'w_brahmastra_arrow.png'; 'w_omnitrix_dial' = 'w_omnitrix_dial.png'
 }
+# monsters: id -> @(source file, size in px); the output has no _card variant
+$monsters = @{ 'frost_wolf' = @('frost_wolf.png', 32); 'ice_golem' = @('ice_golem.png', 40); 'frost_giant' = @('frost_giant.png', 56) }
 foreach ($id in $map.Keys) {
   $f = Join-Path $src $map[$id]
   if (-not (Test-Path $f)) { Write-Output "missing $f"; continue }
   Process $f (Join-Path $out "$id.png") $Size
   Process $f (Join-Path $out "${id}_card.png") $CardSize
   Write-Output "ok $id"
+}
+$outM = Join-Path $root 'game\public\sprites\monsters'
+New-Item -ItemType Directory -Force $outM | Out-Null
+foreach ($id in $monsters.Keys) {
+  $f = Join-Path $src $monsters[$id][0]
+  if (-not (Test-Path $f)) { Write-Output "missing $f"; continue }
+  Process $f (Join-Path $outM "$id.png") $monsters[$id][1]
+  Write-Output "ok monster $id"
 }
