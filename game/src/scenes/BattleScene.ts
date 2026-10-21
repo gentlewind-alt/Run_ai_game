@@ -8,7 +8,9 @@ import { events } from '../core/events';
 import { irisOpen } from '../core/flow';
 import { snapshot } from '../debug/testHook';
 import { iconKey } from '../art/icons';
+import { music } from '../audio/music';
 import { pressConsumable } from '../battle/consumables';
+import { hasSeenHint, markHintSeen } from '../core/profile';
 import { goTo } from '../core/flow';
 import { platform } from '../platform';
 import { createHud, type Hud } from '../ui/hud';
@@ -38,9 +40,15 @@ export default class BattleScene extends Phaser.Scene {
     const b = (this.b = createBattle(this, this.levelId, this.loadout));
     buildBattle(b);
 
+    const shouldShowHint = b.settings.features.tutorial !== false && !hasSeenHint(this.levelId, 0);
+    const hintText = shouldShowHint ? b.level.hints?.[0] : undefined;
+    if (hintText) {
+      markHintSeen(this.levelId, 0);
+    }
+
     this.hud = createHud(b, {
       escapeLimit: b.level.escapeLimit,
-      hint: b.level.hints?.[0],
+      hint: hintText,
       abilityLabel: b.wdef.ability.label,
       onAbility: () => activateAbility(b),
       onToggleView: () => toggleView(b),
@@ -52,6 +60,8 @@ export default class BattleScene extends Phaser.Scene {
     b.ui = this.hud.ui;
     this.wireHud(b);
     startBattle(b);
+    const bgTheme = (b.level.realm === 'wood' || b.level.realm === 'keep' || b.level.kind === 'boss') ? 'dusk' : 'cheerful';
+    music.play(bgTheme);
     irisOpen(this, (fn) => b.inUi(fn));
     this.input.keyboard?.on('keydown-ESC', () => this.setPaused(!b.paused));
     if (!this.lifecycleWired) {

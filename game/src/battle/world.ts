@@ -3,6 +3,7 @@ import { buildBackground } from '../art/backgrounds';
 import { MONSTER_ART, blockKey, makeBattleTextures } from '../art/textures';
 import { behaviorFor } from '../content/monsters';
 import { buildTerrain, groundAt } from './terrain';
+import { profile } from '../core/profile';
 import { data } from '../data/load';
 import { materialDef, monsterDef } from '../data/lookup';
 import type { LevelMonster, Params } from '../data/types';
@@ -25,7 +26,9 @@ export function buildWorld(b: BattleState): void {
 /** Sling, blocks, monsters and the exit door. Call after the view is set up. */
 export function populate(b: BattleState): void {
   const s = b.scene;
-  s.add.image(b.slingX, b.slingY + 28, 'sling').setDepth(2);
+  const slingSkin = profile.equipped.slingSkin;
+  const slingTex = slingSkin && s.textures.exists(slingSkin) ? slingSkin : 'sling';
+  s.add.image(b.slingX, b.slingY + 28, slingTex).setDepth(2);
   for (const blk of b.level.blocks) addBlock(b, blk.m, blk.x, blk.y, blk.w, blk.h);
   for (const m of b.level.monsters) addMonster(b, m);
   for (const e of b.ents) if (e.kind === 'monster') e.behavior?.onSpawn?.(b.ctx, e);

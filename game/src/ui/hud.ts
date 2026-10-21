@@ -83,9 +83,23 @@ export function createHud(
     });
 
     if (o.hint) {
-      const hint = textBlock(scene, W / 2, top + 44, o.hint, C('c'), 190, C('0'));
-      hint.forEach((h) => h.setDepth(10));
-      scene.tweens.add({ targets: hint, alpha: 0, delay: 5200, duration: 700, onComplete: () => hint.forEach((h) => h.destroy()) });
+      const bubbleW = Math.min(196, W - 20);
+      const bubbleH = 34;
+      const bx = (W - bubbleW) / 2;
+      const by = top + 34;
+      const bubblePanel = panel(scene, bx, by, bubbleW, bubbleH, '8', '9', 'f', 10);
+      const face = scene.add.image(bx + 14, by + bubbleH / 2, 'goblin_grunt').setScale(1.1).setDepth(11);
+      const textLines = textBlock(scene, bx + 27, by + 10, o.hint, C('c'), bubbleW - 32, C('0'));
+      textLines.forEach((t) => t.setOrigin(0, 0.5).setDepth(11));
+      const bubbleTail = scene.add.triangle(bx + 20, by + bubbleH + 4, 0, 0, 8, 0, 4, 6, C('8')).setDepth(10);
+      const allHint = [bubblePanel, face, ...textLines, bubbleTail];
+      scene.tweens.add({
+        targets: allHint,
+        alpha: 0,
+        delay: 5500,
+        duration: 600,
+        onComplete: () => allHint.forEach((h) => h.destroy()),
+      });
     }
   });
 
@@ -127,6 +141,7 @@ export function createHud(
       scene.time.delayedCall(Math.min(delay, 500), () => {
         scene.cameras.main.flash(120, 255, 255, 255);
         scene.cameras.main.shake(220, 0.012);
+        platform.haptic('heavy');
         sfx.win();
         const [t, m] = host.inUi(() => [
           text(scene, W / 2, -20, 'MASH!', C('4'), 5, C('q')).setDepth(30),

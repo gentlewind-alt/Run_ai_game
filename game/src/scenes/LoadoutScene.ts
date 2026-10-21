@@ -58,13 +58,13 @@ export default class LoadoutScene extends Phaser.Scene {
 
     // slots
     const n = loadoutSize();
-    const gap = Math.min(44, (W - 12) / n);
+    const gap = Math.min(42, (W - 12) / n);
     for (let i = 0; i < n; i++) {
       const sx = W / 2 + (i - (n - 1) / 2) * gap;
-      const box = this.add.rectangle(sx, 270, 36, 36, C('0')).setStrokeStyle(1, C('d')).setInteractive();
+      const box = this.add.rectangle(sx, 252, 32, 32, C('0')).setStrokeStyle(1, C('d')).setInteractive();
       box.on('pointerdown', () => { sfx.click(); this.slots[i] = null; this.refresh(); });
-      this.slotImgs.push(this.add.image(sx, 270, 'px').setVisible(false).setScale(2));
-      pixText(this, sx - 14, 256, String(i + 1), C('4'));
+      this.slotImgs.push(this.add.image(sx, 252, 'px').setVisible(false).setScale(2));
+      pixText(this, sx - 12, 240, String(i + 1), C('4'));
     }
 
     // prefill from the last loadout, else the owned weapons in order
@@ -84,13 +84,13 @@ export default class LoadoutScene extends Phaser.Scene {
     this.info.forEach((i) => i.destroy());
     this.info = [];
     if (!id) {
-      this.info.push(text(this, W / 2, 207, 'Tap weapons to fill the slots below.', C('d'), 1, C('0')));
+      this.info.push(text(this, W / 2, 204, 'Tap weapons to fill the slots below.', C('d'), 1, C('0')));
       return;
     }
     const w = data.content.weapons.find((x) => x.id === id)!;
-    this.info.push(text(this, W / 2, 200, w.name, C('4'), 1, C('0')));
-    this.info.push(...textBlock(this, W / 2, 214, w.launch ?? '', C('c'), 200));
-    this.info.push(...textBlock(this, W / 2, 238, w.tap ?? '', C('b'), 200));
+    this.info.push(text(this, W / 2, 198, w.name, C('4'), 1, C('0')));
+    this.info.push(...textBlock(this, W / 2, 210, w.launch ?? '', C('c'), 200));
+    this.info.push(...textBlock(this, W / 2, 226, w.tap ?? '', C('b'), 200));
   }
 
   private addToSlot(id: string): void {
@@ -104,16 +104,16 @@ export default class LoadoutScene extends Phaser.Scene {
   private artifactRow(): void {
     const arts = data.content.artifacts.filter((a) => owns('artifacts', a.id));
     const slots = artifactSlots();
-    text(this, 6, 297, slots > 1 ? 'Artifacts' : 'Artifact', C('d')).setOrigin(0, 0.5);
+    text(this, 6, 287, slots > 1 ? 'Artifacts' : 'Artifact', C('d')).setOrigin(0, 0.5);
     if (arts.length === 0) {
-      text(this, 60, 297, 'None yet. The shop sells them.', C('e')).setOrigin(0, 0.5);
+      text(this, 62, 287, 'None yet. The shop sells them.', C('e')).setOrigin(0, 0.5);
       return;
     }
     this.equipped = profile.equipped.artifacts.filter((id) => owns('artifacts', id)).slice(0, slots);
     arts.forEach((a, i) => {
-      const x = 66 + i * 24;
-      const box = this.add.rectangle(x, 297, 22, 22, C('0')).setStrokeStyle(1, C('d')).setInteractive();
-      this.add.image(x, 297, iconKey(a.id)).setDepth(2);
+      const x = 76 + i * 23;
+      const box = this.add.rectangle(x, 287, 22, 22, C('0')).setStrokeStyle(1, C('d')).setInteractive();
+      this.add.image(x, 287, iconKey(a.id)).setDepth(2);
       box.on('pointerdown', () => {
         sfx.click();
         this.equipped = this.equipped.includes(a.id) ? this.equipped.filter((x2) => x2 !== a.id) : [...this.equipped, a.id].slice(-slots);
@@ -127,20 +127,20 @@ export default class LoadoutScene extends Phaser.Scene {
   private describeArtifact(id: string): void {
     const a = data.content.artifacts.find((x) => x.id === id)!;
     this.info.forEach((i) => i.destroy());
-    this.info = [text(this, W / 2, 200, a.name, C('4'), 1, C('0')), ...textBlock(this, W / 2, 214, a.effect, C('c'), 200)];
+    this.info = [text(this, W / 2, 198, a.name, C('4'), 1, C('0')), ...textBlock(this, W / 2, 212, a.effect, C('c'), 200)];
   }
 
   private itemRow(): void {
     const items = data.content.consumables.filter((c) => consumableCount(c.id) > 0);
-    text(this, 6, 322, 'Items', C('d')).setOrigin(0, 0.5);
+    text(this, 6, 318, 'Items', C('d')).setOrigin(0, 0.5);
     if (items.length === 0) {
-      text(this, 60, 322, 'None yet. One use each per level.', C('e')).setOrigin(0, 0.5);
+      text(this, 72, 318, 'None yet. One use each per level.', C('e')).setOrigin(0, 0.5);
       return;
     }
     items.forEach((c, i) => {
-      const x = 66 + i * 34;
-      this.add.image(x, 322, iconKey(c.id)).setDepth(2);
-      text(this, x + 9, 322, `x${consumableCount(c.id)}`, C('b')).setOrigin(0, 0.5);
+      const x = 76 + i * 32;
+      this.add.image(x, 318, iconKey(c.id)).setDepth(2);
+      text(this, x + 9, 318, `x${consumableCount(c.id)}`, C('b')).setOrigin(0, 0.5);
     });
   }
 

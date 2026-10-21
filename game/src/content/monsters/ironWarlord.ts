@@ -16,7 +16,7 @@ export const ironWarlord: MonsterBehavior = {
     m.params.timer = timer;
 
     const cycle = timer % openEvery;
-    const isOpen = cycle < openDur;
+    const isOpen = cycle >= (openEvery - openDur);
     const wasOpen = m.params.visorOpen === 1;
     m.params.visorOpen = isOpen ? 1 : 0;
 

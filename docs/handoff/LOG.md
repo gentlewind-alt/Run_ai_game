@@ -2,6 +2,55 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · agy · Stage 5 complete: Polish, Tutorial hints, Theme pass, Ads, Skins, Performance & Design Audit (S5-01..S5-06 in review)
+- **What:**
+  - **Design Audit & Visual Polish:**
+    - Authored CDP screenshot tool `tools/audit_shots.mjs` driving Chrome headless at 2x scale (432x768) and captured all 12 scene screenshots to `docs/handoff/shots/`.
+    - Identified and fixed visual flaws per `08_design_direction.md`:
+      - *MapScene Daily Mash card:* Fixed text rendering at depth 0 underneath the card background panel (set to depth 2).
+      - *MapScene node stars:* Raised map nodes and stars above the ground band to prevent clipping into the soil texture.
+      - *LoadoutScene overlap:* Weapon slot boxes (y=270, h=36) directly collided with artifact boxes (y=297, h=22). Staggered layout to y=252 (slots), y=287 (artifacts), y=318 (items), y=366 (buttons).
+      - *ShopScene text truncation:* Replaced long card names with `shortItemName()` in `data/lookup.ts` (e.g. "Lodestone Bracer" -> "Lodestone", "Chainward Talisman" -> "Chainward").
+      - *ResultsScene lose title overflow:* Replaced overflowing "Too many got away" (204px) with "Runners escaped!" (scale 1.5) with clean padding.
+      - *Boss Level 12 Step 1 collision:* Shifted "BOSS BATTLE!" banner to y=180 and delayed initial visor opening in `ironWarlord.ts` to prevent overlapping notifications.
+  - **S5-01 (Tutorial hints):**
+    - Added `hasSeenHint` and `markHintSeen` in `core/profile.ts` backed by `profile.flags`.
+    - Wired hints into `BattleScene.ts` to trigger once per save from `level.hints`.
+    - Designed monster speech sticker bubble in `ui/hud.ts` with `goblin_grunt` avatar, speech tail, and 5.5s tweened fadeout.
+  - **S5-02 (Theme pass: Conga, Dance, Music):**
+    - Added procedural `ghost_dance_1` and `ghost_dance_2` 16x16 pixel sprites in `art/textures.ts`.
+    - Animated dancing ghosts on 120 BPM beat on level win in `ResultsScene.ts`.
+    - Built procedural Web Audio chiptune music engine `audio/music.ts` featuring two 120 BPM loops (`cheerful` party theme and `dusk` siege/boss march) scheduled on `AudioContext.currentTime` with zero external assets; wired to `TitleScene` and `BattleScene`. Fixed octave 1 note frequencies and added non-finite AudioParam guards.
+  - **S5-03 (Rewarded Ad: Double Coins):**
+    - Implemented `platform.ads.rewardedReady()` and `showRewarded()` in `platform/mock.ts` and `platform/rundot.ts` (desktop-safe with `deviceType !== 'desktop'`).
+    - Added "2x coins (Ad)" button to `ResultsScene.ts`; doubles coins via `addCoins` and plays coin jingle.
+  - **S5-04 (Gold Quiver & Skins):**
+    - Created `rundot/shop.config.json` with `gold_quiver`, `skin_bone`, `skin_iron` (0 Bits).
+    - Added `cosmetics` array to `content.json` and `CosmeticDef` to `data/types.ts`.
+    - Added procedural `sling_bone` and `sling_iron` textures in `art/textures.ts`; wired into `world.ts` via `profile.equipped.slingSkin`.
+    - Added 5th tab `Skins` to `ShopScene.ts` supporting 0-Bits IAP purchase, 5-slot Gold Quiver unlock, and skin equip/unequip toggles.
+  - **S5-05 (Feel & Performance Pass):**
+    - Added `roundPixels: true` to Phaser config in `main.ts`.
+    - Added `platform.haptic('heavy')` on MASH banner trigger in `ui/hud.ts`.
+    - Verified 60 FPS under 4x CPU throttle in headless Chrome:
+      - Level 12 (Boss): 59.1 FPS (120 frames in 2030ms).
+      - Daily Mash: 58.8 FPS (120 frames in 2041ms).
+  - **S5-06 (Credits, README, Thumbnail, Release Prep):**
+    - Authored `CreditsScene.ts` and registered in `main.ts`; linked from `TitleScene` and `MapScene`.
+    - Authored comprehensive player guide `README.md` at repo root and updated `game/README.md`.
+    - Rendered 512x512 store thumbnail (`game/public/thumbnail.jpg` and `game/public/thumbnail.png`) from Title Scene elements (dusk sky, mountain silhouettes, giant block MONSTER MASH title with 3D drop shadow, gold bevel frame, slingshot with glowing Militia Blade, and high-contrast pixel monsters).
+    - Prepared `docs/release/` with 4 store screenshots and 2-sentence description for Creator Hub jam entry.
+- **Checks:**
+  - `npm run check` passes with 0 errors (including 30-day daily check and TypeScript compile).
+  - `npm run build` passes with 0 errors.
+  - Save migration & sanitization verified across legacy v1 fixtures.
+  - Solver playthrough of levels 1-12 verified in headless Chrome with 0 console errors and 0 uncaught exceptions.
+  - Verified 60 FPS under 4x CPU throttle on Level 12 boss and Daily Mash.
+- **Deployed:** Not deployed (per Golden Rule #9; requires owner approval).
+- **Questions for owner:**
+  - RUN Bits prices: catalog items (`gold_quiver`, `skin_bone`, `skin_iron`) are currently configured with `value: "0"` in `game/rundot/shop.config.json` awaiting owner pricing approval.
+  - Uploading shop config (`rundot game upload-server-config`) requires owner command execution or explicit approval.
+
 ## 2026-10-21 · agy · Stage 4 complete: Iron Keep 9-11, Iron Warlord boss, Daily Mash, Streak, Leaderboard (S4-01..S4-05 in review)
 - **What:**
   - **S4-01 (Iron Keep 9-11):** Authored levels 9, 10, 11 (648w worlds) using `build_levels.py`. Heavy iron blocks, orc brutes, trolls, goblin bombers, dark elf hexers/archers, and skeleton runners. Verified with greedy solver (`__mm.solveStep`) and angle sweeps (`__mm.sweep`). Set `scoreTargets` to ~70% of clear scores.

@@ -8,20 +8,23 @@ import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
 import {
-  DEBUG, buyArtifact, buyConsumable, buyWeapon, consumableCount, economy, owns, profile, reachedLevel, upgradeCost, upgradeMult,
+  DEBUG, GOLD_QUIVER, buyArtifact, buyConsumable, buyWeapon, consumableCount, economy, equipSlingSkin, owns, profile, reachedLevel, upgradeCost, upgradeMult,
   upgradeWeapon, weaponLevel, weaponUnlockLevel,
 } from '../core/profile';
+import type { CosmeticDef } from '../data/types';
 import { data } from '../data/load';
-import { shortWeaponName } from '../data/lookup';
+import { shortItemName, shortWeaponName } from '../data/lookup';
+import { platform } from '../platform';
 import { coinCounter } from '../ui/coins';
 import { makeButton, panel, type Btn } from '../ui/widgets';
 
-type Tab = 'weapons' | 'artifacts' | 'items' | 'forge';
+type Tab = 'weapons' | 'artifacts' | 'items' | 'forge' | 'skins';
 const TABS: { id: Tab; label: string; w: number }[] = [
-  { id: 'weapons', label: 'Weapons', w: 50 },
-  { id: 'artifacts', label: 'Artifacts', w: 60 },
-  { id: 'items', label: 'Items', w: 40 },
-  { id: 'forge', label: 'Forge', w: 40 },
+  { id: 'weapons', label: 'Weapons', w: 42 },
+  { id: 'artifacts', label: 'Artifacts', w: 46 },
+  { id: 'items', label: 'Items', w: 34 },
+  { id: 'forge', label: 'Forge', w: 34 },
+  { id: 'skins', label: 'Skins', w: 34 },
 ];
 
 interface Item { id: string; name: string; desc: string[]; price: number; icon: string; scale: number; state: 'buy' | 'owned' | 'locked' | 'full'; note: string }
@@ -82,15 +85,36 @@ export default class ShopScene extends Phaser.Scene {
     }
     if (this.tab === 'artifacts') {
       return c.artifacts.map((a) => ({
-        id: a.id, name: a.name.replace('Gamblers', "Gambler's"), price: a.price, icon: iconKey(a.id), scale: 2, desc: [a.effect],
+        id: a.id, name: shortItemName(a.id, a.name.replace('Gamblers', "Gambler's")), price: a.price, icon: iconKey(a.id), scale: 2, desc: [a.name, a.effect],
         state: owns('artifacts', a.id) ? 'owned' : 'buy', note: '',
       }));
     }
     const cap = economy().maxConsumableStack;
-    return c.consumables.map((k) => ({
-      id: k.id, name: k.name, price: k.price, icon: iconKey(k.id), scale: 2, desc: [k.effect, `You have ${consumableCount(k.id)}, up to ${cap}.`],
-      state: consumableCount(k.id) >= cap ? 'full' : 'buy', note: '',
-    }));
+    if (this.tab === 'items') {
+      return c.consumables.map((k) => ({
+        id: k.id, name: shortItemName(k.id, k.name), price: k.price, icon: iconKey(k.id), scale: 2, desc: [k.name, k.effect, `You have ${consumableCount(k.id)}, up to ${cap}.`],
+        state: consumableCount(k.id) >= cap ? 'full' : 'buy', note: '',
+      }));
+    }
+    const cosmetics: CosmeticDef[] = c.cosmetics ?? [
+      { id: 's_gold_quiver', name: 'Gold Quiver', kind: 'sling_skin', priceBits: 0, priceCoins: 0 },
+      { id: 's_skin_bone', name: 'Bone Sling', kind: 'sling_skin', priceBits: 0, priceCoins: 0 },
+      { id: 's_skin_iron', name: 'Iron Ballista', kind: 'sling_skin', priceBits: 0, priceCoins: 0 },
+    ];
+    return cosmetics.map((sk: CosmeticDef) => {
+      const isQuiver = sk.id === 's_gold_quiver' || sk.id === 'gold_quiver';
+      const owned = isQuiver ? (owns('cosmetics', 's_gold_quiver') || owns('cosmetics', GOLD_QUIVER)) : owns('cosmetics', sk.id);
+      const isEquipped = profile.equipped.slingSkin === sk.id;
+      const icon = isQuiver ? 'icon_coin' : sk.id;
+      const desc = isQuiver
+        ? [sk.name, 'Carry a 5th weapon into battle.', 'Prices in RUN Bits (owner approval).']
+        : [sk.name, 'Custom slingshot frame.', 'Changes sling silhouette in battle.'];
+      const note = isQuiver ? (owned ? '5 Slots' : '0 Bits') : (isEquipped ? 'Equipped' : owned ? 'Equip' : '0 Bits');
+      return {
+        id: sk.id, name: sk.name, price: sk.priceBits ?? 0, icon, scale: isQuiver ? 2 : 1, desc,
+        state: isQuiver ? (owned ? 'owned' : 'buy') : (owned ? 'owned' : 'buy'), note,
+      };
+    });
   }
 
   private renderGrid(): void {
@@ -106,8 +130,11 @@ export default class ShopScene extends Phaser.Scene {
       const icon = this.add.image(x + 18, y + 20, it.icon).setScale(it.scale).setDepth(2);
       const name = text(this, x + 36, y + 11, it.name, it.state === 'locked' ? C('e') : C('c')).setOrigin(0, 0.5).setDepth(2);
       const parts: Phaser.GameObjects.GameObject[] = [g, icon, name];
-      if (it.state === 'owned') parts.push(text(this, x + 36, y + 28, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
-      else if (it.state === 'locked') {
+      if (this.tab === 'skins') {
+        parts.push(text(this, x + 36, y + 28, it.note, it.note === 'Equipped' ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
+      } else if (it.state === 'owned') {
+        parts.push(text(this, x + 36, y + 28, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
+      } else if (it.state === 'locked') {
         parts.push(this.add.image(x + 40, y + 28, 'icon_lock').setDepth(2), text(this, x + 48, y + 28, it.note.replace('Reach level', 'Level'), C('e')).setOrigin(0, 0.5).setDepth(2));
         icon.setAlpha(0.4);
       } else {
@@ -129,13 +156,60 @@ export default class ShopScene extends Phaser.Scene {
     const lines = it.desc.flatMap((d) => textBlock(this, W / 2, 0, d, C('c'), 196));
     lines.forEach((l, i) => { l.setY(y0 + 22 + i * 12); });
     this.body.add(lines);
-    const label = it.state === 'owned' ? 'Owned' : it.state === 'locked' ? it.note : it.state === 'full' ? 'Stock full' : `Buy for ${it.price}`;
+    let label = it.state === 'owned' ? 'Owned' : it.state === 'locked' ? it.note : it.state === 'full' ? 'Stock full' : `Buy for ${it.price}`;
+    let btnEnabled = it.state === 'buy';
+    if (this.tab === 'skins') {
+      const isQuiver = it.id === 's_gold_quiver' || it.id === 'gold_quiver';
+      if (isQuiver) {
+        const has = owns('cosmetics', 's_gold_quiver') || owns('cosmetics', GOLD_QUIVER);
+        label = has ? '5 Slots Active' : `Unlock (${it.price} Bits)`;
+        btnEnabled = !has;
+      } else {
+        const has = owns('cosmetics', it.id);
+        const eq = profile.equipped.slingSkin === it.id;
+        if (eq) {
+          label = 'Equipped (Tap to remove)';
+          btnEnabled = true;
+        } else if (has) {
+          label = 'Equip this skin';
+          btnEnabled = true;
+        } else {
+          label = `Unlock (${it.price} Bits)`;
+          btnEnabled = true;
+        }
+      }
+    }
     const buy = makeButton(this, W / 2, H - 46, 140, 26, label, 'go', () => this.buy(it), 6);
-    buy.setEnabled(it.state === 'buy');
+    buy.setEnabled(btnEnabled);
     this.body.add(buy.box);
   }
 
   private buy(it: Item): void {
+    if (this.tab === 'skins') {
+      const isQuiver = it.id === 's_gold_quiver' || it.id === 'gold_quiver';
+      if (!isQuiver && owns('cosmetics', it.id)) {
+        const cur = profile.equipped.slingSkin;
+        equipSlingSkin(cur === it.id ? undefined : it.id);
+        sfx.click();
+        this.render();
+        this.toast(profile.equipped.slingSkin === it.id ? `${it.name} equipped!` : 'Default sling equipped.', C('5'));
+        return;
+      }
+      void platform.iap.buy(it.id).then((ok) => {
+        if (ok) {
+          sfx.coin();
+          if (!profile.owned.cosmetics.includes(it.id)) profile.owned.cosmetics.push(it.id);
+          if (isQuiver && !profile.owned.cosmetics.includes(GOLD_QUIVER)) profile.owned.cosmetics.push(GOLD_QUIVER);
+          if (!isQuiver) equipSlingSkin(it.id);
+          this.render();
+          this.toast(`${it.name} unlocked!`, C('5'));
+        } else {
+          sfx.lose();
+          this.toast('Purchase cancelled.', C('3'));
+        }
+      });
+      return;
+    }
     const r = this.tab === 'weapons' ? buyWeapon(it.id) : this.tab === 'artifacts' ? buyArtifact(it.id) : buyConsumable(it.id);
     if (r === 'ok') {
       sfx.coin();

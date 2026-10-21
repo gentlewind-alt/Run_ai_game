@@ -99,6 +99,7 @@ export interface Economy {
 
 export interface ArtifactDef { id: string; name: string; rarity?: string; price: number; effect: string; params?: Record<string, number | string | boolean> }
 export interface ConsumableDef { id: string; name: string; price: number; effect: string; targeted?: boolean; params?: Record<string, number | string | boolean> }
+export interface CosmeticDef { id: string; name: string; kind: 'sling_skin' | 'trail' | 'banner'; priceCoins?: number; priceBits?: number; reward?: string }
 
 export interface Content {
   tuning: Tuning;
@@ -106,6 +107,7 @@ export interface Content {
   economy: Economy;
   artifacts: ArtifactDef[];
   consumables: ConsumableDef[];
+  cosmetics?: CosmeticDef[];
   weapons: WeaponDef[];
   monsters: MonsterDef[];
   materials: MaterialDef[];

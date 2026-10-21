@@ -57,8 +57,9 @@ export default class MapScene extends Phaser.Scene {
       this.drawDaily(302);
     }
 
-    makeButton(this, 58, H - 16, 80, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
-    makeButton(this, W - 58, H - 16, 80, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
+    makeButton(this, 38, H - 16, 60, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
+    makeButton(this, W / 2, H - 16, 64, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
+    makeButton(this, W - 38, H - 16, 60, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
     irisOpen(this);
   }
 
@@ -74,18 +75,18 @@ export default class MapScene extends Phaser.Scene {
     const dInfo = profile.daily;
     const doneToday = dInfo.lastDay === dateStr;
 
-    text(this, x + 8, y0 + 10, 'Daily Mash', C('4'), 1, C('0')).setOrigin(0, 0.5);
+    text(this, x + 8, y0 + 10, 'Daily Mash', C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
     const streakStr = dInfo.streak > 0 ? `Streak ${dInfo.streak}d` : 'Streak 0d';
-    text(this, x + 8, y0 + 22, streakStr, C('c'), 1, C('0')).setOrigin(0, 0.5);
+    text(this, x + 8, y0 + 22, streakStr, C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
     if (dInfo.streak === 6) {
-      text(this, x + 8, y0 + 32, 'Day 7: +500c bonus!', C('4'), 1, C('0')).setOrigin(0, 0.5);
+      text(this, x + 8, y0 + 32, 'Day 7: +500c bonus!', C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
     } else if (dInfo.best > 0) {
-      text(this, x + 8, y0 + 32, `Best ${dInfo.best}`, C('d'), 1, C('0')).setOrigin(0, 0.5);
+      text(this, x + 8, y0 + 32, `Best ${dInfo.best}`, C('d'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
     }
 
     if (doneToday) {
-      text(this, x + w - 8, y0 + 12, 'Done today', C('6'), 1, C('0')).setOrigin(1, 0.5);
-      this.dailyCountdownText = text(this, x + w - 8, y0 + 26, this.formatCountdown(nowMs), C('b'), 1, C('0')).setOrigin(1, 0.5);
+      text(this, x + w - 8, y0 + 12, 'Done today', C('6'), 1, C('0')).setOrigin(1, 0.5).setDepth(2);
+      this.dailyCountdownText = text(this, x + w - 8, y0 + 26, this.formatCountdown(nowMs), C('b'), 1, C('0')).setOrigin(1, 0.5).setDepth(2);
     } else {
       makeButton(this, x + w - 34, y0 + 20, 56, 24, 'Play', 'ability', () => {
         sfx.click();
@@ -140,7 +141,7 @@ export default class MapScene extends Phaser.Scene {
 
   private node(id: number, k: number, y0: number, open: boolean): void {
     const x = 28 + k * 53;
-    const y = y0 + 46 + (k % 2 === 0 ? 6 : -6);
+    const y = y0 + 42 + (k % 2 === 0 ? 5 : -5);
     const built = !!data.levels[id];
     const unlocked = open && levelUnlocked(id);
     const cleared = starsFor(id) > 0;
@@ -148,7 +149,7 @@ export default class MapScene extends Phaser.Scene {
       const g = this.add.graphics();
       g.fillStyle(C('c'), 0.8);
       const dir = k % 2 === 0 ? -1 : 1;
-      for (let i = 1; i < 6; i++) g.fillRect(Math.round(x + 14 + (i * 25) / 6), Math.round(y + (dir * (i * 12)) / 6), 2, 2);
+      for (let i = 1; i < 6; i++) g.fillRect(Math.round(x + 14 + (i * 25) / 6), Math.round(y + (dir * (i * 10)) / 6), 2, 2);
     }
     const kind = cleared ? 'go' : unlocked && id === reachedLevel() ? 'ability' : unlocked ? 'go' : 'plain';
     const btn: Btn = makeButton(this, x, y, 26, 22, built && unlocked ? String(id) : '', kind, () => {
@@ -163,7 +164,7 @@ export default class MapScene extends Phaser.Scene {
     if (unlocked && id === reachedLevel() && !cleared) this.pulse.push({ box: btn.box });
     const stars = starsFor(id);
     for (let s = 0; s < 3; s++) {
-      this.add.image(x - 9 + s * 9, y + 18, s < stars ? 'star_on' : 'star_off').setScale(0.8).setDepth(6);
+      this.add.image(x - 9 + s * 9, y + 16, s < stars ? 'star_on' : 'star_off').setScale(0.8).setDepth(6);
     }
   }
 

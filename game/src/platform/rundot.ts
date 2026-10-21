@@ -90,6 +90,56 @@ export const rundotPlatform: Platform = {
       return false;
     }
   },
+  ads: {
+    async rewardedReady(): Promise<boolean> {
+      try {
+        const dev = safe(() => RundotGameAPI.system.getDevice(), undefined);
+        if (!dev || dev.deviceType === 'desktop') return false;
+        return await RundotGameAPI.ads.isRewardedAdReadyAsync();
+      } catch {
+        return false;
+      }
+    },
+    async showRewarded(): Promise<boolean> {
+      try {
+        return await RundotGameAPI.ads.showRewardedAdAsync({
+          adDisplayId: 'double_coins',
+          adDisplayName: 'Double Battle Coins',
+        });
+      } catch {
+        return false;
+      }
+    },
+  },
+  iap: {
+    available: () => safe(() => RundotGameAPI.isAvailable(), false),
+    async buy(itemId: string): Promise<boolean> {
+      try {
+        const key = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `buy_${Date.now()}_${Math.random()}`;
+        const res = await RundotGameAPI.shop.purchase(itemId, key);
+        return Boolean(res?.success || (res as any)?.orderId || (res as any)?.order?.orderId);
+      } catch (e) {
+        console.warn('IAP purchase error:', e);
+        return false;
+      }
+    },
+    async owned(itemId: string): Promise<boolean> {
+      try {
+        const entitlements: any = await RundotGameAPI.entitlements.listEntitlements();
+        return (entitlements?.items ?? []).some((e: any) => e.entitlementId === itemId);
+      } catch {
+        return false;
+      }
+    },
+  },
+  haptic: (kind: 'light' | 'heavy') => {
+    safe(() => {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(kind === 'heavy' ? [45, 30, 75] : 30);
+      }
+      (RundotGameAPI as any).system?.vibrateAsync?.(kind);
+    }, undefined);
+  },
   track: (event) => safe(() => RundotGameAPI.analytics.recordCustomEvent(event), undefined),
   funnel: (step, name, funnel) => safe(() => RundotGameAPI.analytics.trackFunnelStep(step, name, funnel, 1), undefined),
   log: (message) => safe(() => RundotGameAPI.log(message), undefined),

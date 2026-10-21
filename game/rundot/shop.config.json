@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "itemId": "gold_quiver",
+      "name": "Gold Quiver",
+      "description": "Carry a 5th weapon into battle instead of 4",
+      "category": "non_consumable",
+      "price": { "type": "bucks", "value": "0" },
+      "entitlements": [
+        { "entitlementId": "gold_quiver", "quantity": 1, "consumable": false }
+      ],
+      "unique": true,
+      "active": true
+    },
+    {
+      "itemId": "skin_bone",
+      "name": "Bone Sling",
+      "description": "Sling carved from ancient dragon bone",
+      "category": "non_consumable",
+      "price": { "type": "bucks", "value": "0" },
+      "entitlements": [
+        { "entitlementId": "skin_bone", "quantity": 1, "consumable": false }
+      ],
+      "unique": true,
+      "active": true
+    },
+    {
+      "itemId": "skin_iron",
+      "name": "Iron Ballista",
+      "description": "Reinforced iron siege launcher frame",
+      "category": "non_consumable",
+      "price": { "type": "bucks", "value": "0" },
+      "entitlements": [
+        { "entitlementId": "skin_iron", "quantity": 1, "consumable": false }
+      ],
+      "unique": true,
+      "active": true
+    }
+  ]
+}

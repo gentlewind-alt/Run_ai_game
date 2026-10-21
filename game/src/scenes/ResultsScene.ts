@@ -4,7 +4,9 @@ import { text } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { goTo } from '../core/flow';
-import { lastResult, levelUnlocked, profile } from '../core/profile';
+import { addCoins, lastResult, levelUnlocked, profile } from '../core/profile';
+import { beatBob, beatPhase } from '../audio/beat';
+import { setText } from '../art/font5x7';
 import { data } from '../data/load';
 import { platform } from '../platform';
 import { makeButton, panel } from '../ui/widgets';
@@ -21,11 +23,14 @@ export interface ResultsData {
 
 /** Launched over a paused battle: stars, score, coins, then Next, Retry or Map. */
 export default class ResultsScene extends Phaser.Scene {
+  private ghosts: Phaser.GameObjects.Image[] = [];
+
   constructor() {
     super('results');
   }
 
   create(d: ResultsData): void {
+    this.ghosts = [];
     this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.7);
 
     if (d.levelId === 0) {
@@ -36,8 +41,13 @@ export default class ResultsScene extends Phaser.Scene {
     const r = lastResult;
     const py = 50;
     panel(this, 16, py, W - 32, 276, '8', '9', 'f', 1);
-    text(this, W / 2, py + 16, d.won ? 'Level cleared!' : d.why === 'escaped' ? 'Too many got away' : 'Out of shots', d.won ? C('4') : C('3'), 2, C('0')).setDepth(2);
+    const titleStr = d.won ? 'Level cleared!' : d.why === 'escaped' ? 'Runners escaped!' : 'Out of shots';
+    const titleScale = d.won ? 2 : d.why === 'escaped' ? 1.5 : 2;
+    text(this, W / 2, py + 16, titleStr, d.won ? C('4') : C('3'), titleScale, C('0')).setDepth(2);
     if (d.won) {
+      const g1 = this.add.image(W / 2 - 68, py + 52, 'ghost_dance_1').setScale(1.5).setDepth(4);
+      const g2 = this.add.image(W / 2 + 68, py + 52, 'ghost_dance_2').setScale(1.5).setDepth(4);
+      this.ghosts = [g1, g2];
       for (let i = 0; i < 3; i++) {
         const star = this.add.image(W / 2 - 24 + i * 24, py + 52, 'star_off').setScale(2).setDepth(2);
         if (i < d.stars) {
@@ -54,20 +64,44 @@ export default class ResultsScene extends Phaser.Scene {
       text(this, W / 2, py + 54, d.why === 'escaped' ? 'Stop the runners early.' : 'Try a different order.', C('c')).setDepth(2);
       text(this, W / 2, py + 70, `Score ${d.score}`, C('d')).setDepth(2);
     }
+    let coinsTxt: Phaser.GameObjects.Image | undefined;
     if (r) {
       this.add.image(W / 2 - 34, py + 116, 'icon_coin').setDepth(2);
-      text(this, W / 2 - 26, py + 116, `+${r.credited} coins`, C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
+      coinsTxt = text(this, W / 2 - 26, py + 116, `+${r.credited} coins`, C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
       text(this, W / 2, py + 130, r.credited < r.earned ? (d.won ? 'Replays pay less' : 'Losses pay a quarter') : `Total ${profile.coins}`, C('d')).setDepth(2);
     }
 
     const next = d.levelId + 1;
     const hasNext = d.won && !!data.levels[next] && levelUnlocked(next);
     const go = (key: string, payload?: object): void => { sfx.click(); goTo(this, key, payload); };
-    let y = py + 152;
+    let y = py + 148;
     if (d.won) {
-      if (hasNext) makeButton(this, W / 2, y, 128, 26, 'Next level', 'go', () => go('loadout', { level: next }), 3);
-      else makeButton(this, W / 2, y, 128, 26, 'Map', 'go', () => go('map'), 3);
-      y += 30;
+      if (hasNext) makeButton(this, W / 2, y, 128, 24, 'Next level', 'go', () => go('loadout', { level: next }), 3);
+      else makeButton(this, W / 2, y, 128, 24, 'Map', 'go', () => go('map'), 3);
+      y += 28;
+
+      if (r && r.credited > 0 && data.config.features?.ads !== false) {
+        const adY = y;
+        y += 26;
+        void platform.ads.rewardedReady().then((ready) => {
+          if (!ready || !this.scene.isActive()) return;
+          const adBtn = makeButton(this, W / 2, adY, 128, 22, '2x coins (Ad)', 'go', async () => {
+            sfx.click();
+            adBtn.setEnabled(false);
+            const earned = await platform.ads.showRewarded();
+            if (earned) {
+              addCoins(r.credited);
+              sfx.coin();
+              adBtn.setLabel('Coins doubled!');
+              if (coinsTxt) setText(coinsTxt, this, `+${r.credited * 2} coins!`, C('4'));
+              platform.track('rewarded_ad_complete', { coins: r.credited });
+            } else {
+              adBtn.setEnabled(true);
+            }
+          }, 3);
+        });
+      }
+
       makeButton(this, W / 2, y, 128, 22, 'Retry', 'plain', () => go('game', { level: d.levelId, loadout: d.loadout }), 3);
       y += 26;
       if (data.config.features?.share !== false) {
@@ -130,5 +164,16 @@ export default class ResultsScene extends Phaser.Scene {
       sfx.click();
       goTo(this, 'map');
     }, 4);
+  }
+
+  update(time: number): void {
+    if (this.ghosts.length >= 2) {
+      const p = beatPhase(time);
+      const bob = Math.abs(beatBob(time, 0)) * 4;
+      const tex1 = p < 0.5 ? 'ghost_dance_1' : 'ghost_dance_2';
+      const tex2 = p < 0.5 ? 'ghost_dance_2' : 'ghost_dance_1';
+      this.ghosts[0].setTexture(tex1).setY(102 - bob);
+      this.ghosts[1].setTexture(tex2).setY(102 - bob);
+    }
   }
 }

@@ -12,9 +12,9 @@
     "followLead": 0.15, "followEase": 0.1, "groundFrac": 0.83, "zoomOutRise": 0.4
   },
   "features": {
-    "map": false, "shop": false, "forge": false, "artifacts": false, "consumables": false,
+    "map": true, "shop": true, "forge": true, "artifacts": true, "consumables": true,
     "combo": true, "daily": true, "leaderboard": true, "share": true,
-    "ads": false, "iap": false, "tutorial": false, "music": false, "zoom": true
+    "ads": true, "iap": true, "tutorial": true, "music": true, "zoom": true
   },
   "debug": { "urlOverrides": true, "testHook": true }
 }

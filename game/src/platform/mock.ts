@@ -60,6 +60,28 @@ export const mockPlatform: Platform = {
     console.debug('[mock] share:', text, params ?? '');
     return true;
   },
+  ads: {
+    async rewardedReady() {
+      return true;
+    },
+    async showRewarded() {
+      console.debug('[mock] showRewarded watched successfully');
+      return true;
+    },
+  },
+  iap: {
+    available: () => true,
+    async buy(itemId: string) {
+      console.debug('[mock] iap buy:', itemId);
+      return true;
+    },
+    async owned(_itemId: string) {
+      return false;
+    },
+  },
+  haptic(kind: 'light' | 'heavy') {
+    console.debug('[mock] haptic:', kind);
+  },
   track(event, data) { console.debug('[mock] track', event, data ?? ''); },
   funnel(step, name, funnel) { console.debug('[mock] funnel', funnel, step, name); },
   log(message) { console.debug('[mock]', message); },

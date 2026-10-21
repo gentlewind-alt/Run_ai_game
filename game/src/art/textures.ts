@@ -429,6 +429,32 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
     rect(g, 'h', 5, 16, 7, 3);
   });
 
+  make('sling_bone', 16, 48, (g) => {
+    rect(g, '0', 6, 15, 5, 33);
+    rect(g, 'c', 7, 16, 3, 32);
+    rect(g, 'b', 8, 16, 1, 32);
+    rect(g, '0', 2, 3, 5, 16);
+    rect(g, '0', 10, 3, 5, 16);
+    rect(g, 'c', 3, 4, 3, 14);
+    rect(g, 'c', 11, 4, 3, 14);
+    rect(g, 'b', 3, 4, 1, 14);
+    rect(g, 'b', 11, 4, 1, 14);
+    rect(g, 'd', 5, 16, 7, 3);
+  });
+
+  make('sling_iron', 16, 48, (g) => {
+    rect(g, '0', 6, 15, 5, 33);
+    rect(g, 'f', 7, 16, 3, 32);
+    rect(g, 'e', 8, 16, 1, 32);
+    rect(g, '0', 2, 3, 5, 16);
+    rect(g, '0', 10, 3, 5, 16);
+    rect(g, 'e', 3, 4, 3, 14);
+    rect(g, 'e', 11, 4, 3, 14);
+    rect(g, 'c', 3, 4, 1, 14);
+    rect(g, 'c', 11, 4, 1, 14);
+    rect(g, 'f', 5, 16, 7, 3);
+  });
+
   make('door', 16, 26, (g) => {
     rect(g, 'v', 0, 2, 16, 24);
     rect(g, 'v', 2, 0, 12, 2);
@@ -442,8 +468,29 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
   });
 }
 
+function ghost(armsUp: boolean): Px {
+  const p = new Px(16, 16);
+  p.disc(8, 6, 4.5, ['b', 'c', 'd']);
+  p.rectT(4, 6, 8, 7, ['b', 'c', 'd']);
+  p.set(6, 5, '0');
+  p.set(10, 5, '0');
+  p.set(8, 7, '0');
+  if (armsUp) {
+    p.rectT(1, 3, 3, 4, ['b', 'c', 'd']);
+    p.rectT(12, 3, 3, 4, ['b', 'c', 'd']);
+  } else {
+    p.rectT(2, 7, 3, 4, ['b', 'c', 'd']);
+    p.rectT(11, 7, 3, 4, ['b', 'c', 'd']);
+  }
+  p.set(4, 13, 'c'); p.set(6, 13, 'c'); p.set(8, 13, 'c'); p.set(10, 13, 'c');
+  p.outline();
+  return p;
+}
+
 /** Create every sprite texture once. Safe to call on every scene start. */
 export function registerArt(scene: Phaser.Scene): void {
+  addTexture(scene, 'ghost_dance_1', ghost(false));
+  addTexture(scene, 'ghost_dance_2', ghost(true));
   const small: Record<string, string[]> = {
     goblin_grunt: GOBLIN, goblin_bomber: BOMBER, dark_elf_archer: ARCHER, dark_elf_hexer: HEXER, skeleton_runner: SKELETON,
   };

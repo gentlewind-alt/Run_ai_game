@@ -4,6 +4,7 @@ import { text, textWidth } from '../art/font5x7';
 import { buildBackground } from '../art/backgrounds';
 import { MONSTER_ART } from '../art/textures';
 import { beatBob, beatPhase } from '../audio/beat';
+import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { W } from '../config/constants';
 import { getSettings } from '../config/settings';
@@ -45,9 +46,14 @@ export default class TitleScene extends Phaser.Scene {
       this.line.push({ img, id, i });
     });
 
-    makeButton(this, W / 2, 196, 120, 32, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
-    text(this, W / 2, 226, 'Fling real weapons. Mash the monsters.', C('d'), 1, C('0')).setDepth(6);
-    this.input.once('pointerdown', () => sfx.unlock());
+    makeButton(this, W / 2, 190, 120, 28, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
+    makeButton(this, W / 2, 224, 88, 22, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
+    text(this, W / 2, 256, 'Fling real weapons. Mash the monsters.', C('d'), 1, C('0')).setDepth(6);
+    this.input.once('pointerdown', () => {
+      sfx.unlock();
+      music.updateVolume();
+    });
+    music.play('cheerful');
     irisOpen(this);
   }
 

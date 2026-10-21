@@ -27,3 +27,18 @@ const SHORT: Record<string, string> = {
 };
 /** Card-sized weapon names (cards are about 99 px wide). */
 export const shortWeaponName = (id: string, fallback = id): string => SHORT[id] ?? fallback;
+
+const SHORT_ITEM: Record<string, string> = {
+  r_gale_eye: 'Gale Eye',
+  r_echo_stone: 'Echo Stone',
+  r_lodestone_bracer: 'Lodestone',
+  r_analyst_lens: 'Analyst Lens',
+  r_stormcaller_torc: 'Stormcaller',
+  r_gamblers_charm: 'Gambler',
+  c_jury_rigged_bomb: 'Jury Bomb',
+  c_prime_serum: 'Prime Serum',
+  c_mindflash: 'Mindflash',
+  c_chainward_talisman: 'Chainward',
+};
+/** Card-sized item/artifact names so they never clip in 99px shop cards. */
+export const shortItemName = (id: string, fallback = id): string => SHORT_ITEM[id] ?? fallback;

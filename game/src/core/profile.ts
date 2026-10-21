@@ -85,10 +85,19 @@ const changed = (field: string): void => events.emit('profile:changed', { field 
 /** Highest story level in the data (ids 90+ are test levels). */
 export const lastLevel = (): number => Math.max(1, ...Object.keys(data.levels).map(Number).filter((n) => n < 90));
 
-export function clearedLevel(): number {
+export const clearedLevel = (): number => {
   let top = 0;
   for (const [k, v] of Object.entries(profile.stars)) if (v > 0) top = Math.max(top, Number(k));
   return top;
+};
+
+export function hasSeenHint(levelId: number, hintIdx = 0): boolean {
+  return !!profile.flags[`hint_l${levelId}_${hintIdx}`];
+}
+
+export function markHintSeen(levelId: number, hintIdx = 0): void {
+  profile.flags[`hint_l${levelId}_${hintIdx}`] = true;
+  changed('flags');
 }
 
 /** The highest level the player may start. */
@@ -99,7 +108,12 @@ export const starsFor = (id: number): number => profile.stars[String(id)] ?? 0;
 // ------------------------------------------------------------------ ownership and slots
 
 export const weaponLevel = (id: string): number => profile.upgrades[id] ?? 0;
-export const owns = (kind: 'weapons' | 'artifacts', id: string): boolean => profile.owned[kind].includes(id);
+export const owns = (kind: 'weapons' | 'artifacts' | 'cosmetics', id: string): boolean => profile.owned[kind]?.includes(id) ?? false;
+export const ownsCosmetic = (id: string): boolean => profile.owned.cosmetics.includes(id);
+export const equipSlingSkin = (id?: string): void => {
+  profile.equipped.slingSkin = id;
+  changed('equipped');
+};
 export const consumableCount = (id: string): number => profile.owned.consumables[id] ?? 0;
 
 /** "start" or "level N": a weapon can be bought once the player has reached level N. */
@@ -107,7 +121,7 @@ export function weaponUnlockLevel(unlock: string): number {
   return unlock === 'start' ? 1 : Number(unlock.replace(/\D/g, '')) || 1;
 }
 
-export const loadoutSize = (): number => economy().loadoutSize + (profile.owned.cosmetics.includes(GOLD_QUIVER) ? 1 : 0);
+export const loadoutSize = (): number => economy().loadoutSize + (profile.owned.cosmetics.includes(GOLD_QUIVER) || profile.owned.cosmetics.includes('s_gold_quiver') ? 1 : 0);
 export const artifactSlots = (): number => economy().artifactSlots + (DEBUG || clearedLevel() >= economy().secondArtifactAfterLevel ? 1 : 0);
 
 // ------------------------------------------------------------------ coins and purchases

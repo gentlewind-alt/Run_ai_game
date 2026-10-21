@@ -695,6 +695,29 @@
       "background": "keep"
     }
   ],
+  "cosmetics": [
+    {
+      "id": "s_gold_quiver",
+      "name": "Gold Quiver",
+      "kind": "sling_skin",
+      "priceCoins": 0,
+      "priceBits": 0
+    },
+    {
+      "id": "s_skin_bone",
+      "name": "Bone Sling",
+      "kind": "sling_skin",
+      "priceCoins": 0,
+      "priceBits": 0
+    },
+    {
+      "id": "s_skin_iron",
+      "name": "Iron Ballista",
+      "kind": "sling_skin",
+      "priceCoins": 0,
+      "priceBits": 0
+    }
+  ],
   "economy": {
     "_note": "Coins and slots. Replays pay less so grinding level 1 is not the plan.",
     "startCoins": 0,

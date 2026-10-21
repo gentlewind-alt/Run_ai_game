@@ -24,6 +24,7 @@ class Sfx {
 
   suspend(): void { this.ctx?.suspend(); }
   resume(): void { this.ctx?.resume(); }
+  getContext(): AudioContext | undefined { return this.ctx; }
 
   setMuted(m: boolean): void {
     this.muted = m;
