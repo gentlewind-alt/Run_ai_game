@@ -46,6 +46,9 @@ async function main() {
   ]);
 
   const cleanup = () => {
+    if (chrome && chrome.pid) {
+      try { spawn('taskkill', ['/F', '/T', '/PID', String(chrome.pid)]); } catch (e) {}
+    }
     try { chrome.kill(); } catch (e) {}
     if (devProc) {
       try { spawn('taskkill', ['/F', '/T', '/PID', String(devProc.pid)]); } catch (e) {}
@@ -146,12 +149,26 @@ async function main() {
 
   const solDef = await evalCode(`window.__mm.solveStep(12, ${JSON.stringify(defaultLoadout)}, 20000)`);
   console.log('Solve L12 (default loadout): shots=' + solDef.shots?.length + ', won=' + solDef.view?.won + ', score=' + solDef.view?.score);
+  console.log('Solve L12 shots detail:', JSON.stringify(solDef.shots));
+  const v1 = await evalCode(`window.__mm.play(12, ${JSON.stringify(defaultLoadout)}, [${JSON.stringify(solDef.shots[0])}])`);
+  console.log('After shot 1: monsters left =', v1.monsters, 'ents:', JSON.stringify(v1.ents?.filter(e => e.kind === 'monster')));
+  if (solDef.shots.length > 1) {
+    const v2 = await evalCode(`window.__mm.play(12, ${JSON.stringify(defaultLoadout)}, [${JSON.stringify(solDef.shots[0])}, ${JSON.stringify(solDef.shots[1])}])`);
+    console.log('After shot 2: monsters left =', v2.monsters, 'ents:', JSON.stringify(v2.ents?.filter(e => e.kind === 'monster')));
+  }
 
   const swLvl = await evalCode(`window.__mm.sweep(12, ${JSON.stringify(l12Loadout)})`);
   console.log('Sweep L12 (level loadout):', JSON.stringify(swLvl, null, 2));
 
   const solLvl = await evalCode(`window.__mm.solveStep(12, ${JSON.stringify(l12Loadout)}, 20000)`);
   console.log('Solve L12 (level loadout): shots=' + solLvl.shots?.length + ', won=' + solLvl.view?.won + ', score=' + solLvl.view?.score);
+  console.log('Solve L12 (level loadout) shots detail:', JSON.stringify(solLvl.shots));
+  const vL1 = await evalCode(`window.__mm.play(12, ${JSON.stringify(l12Loadout)}, [${JSON.stringify(solLvl.shots[0])}])`);
+  console.log('Level loadout after shot 1: monsters left =', vL1.monsters, 'ents:', JSON.stringify(vL1.ents?.filter(e => e.kind === 'monster')));
+  if (solLvl.shots.length > 1) {
+    const vL2 = await evalCode(`window.__mm.play(12, ${JSON.stringify(l12Loadout)}, [${JSON.stringify(solLvl.shots[0])}, ${JSON.stringify(solLvl.shots[1])}])`);
+    console.log('Level loadout after shot 2: monsters left =', vL2.monsters, 'ents:', JSON.stringify(vL2.ents?.filter(e => e.kind === 'monster')));
+  }
 
   // Now test with the phone pass save fixture (r_gale_eye + upgrade 2)
   console.log('\n=== LEVEL 12 WITH PHONE PASS FIXTURE (r_gale_eye + upgrade 2) ===');
@@ -175,26 +192,44 @@ async function main() {
   console.log('Solve L12 (r_gale_eye): shots=' + solGale.shots?.length + ', won=' + solGale.view?.won + ', score=' + solGale.view?.score);
 
   // Test across each artifact
-  console.log('\n=== TESTING ALL ARTIFACTS ON L12 ===');
+  console.log('\n=== TESTING ALL ARTIFACTS ON L12 (LEVEL LOADOUT) ===');
   const artifacts = ['r_gale_eye', 'r_echo_stone', 'r_lodestone_bracer', 'r_analyst_lens', 'r_stormcaller_torc', 'r_gamblers_charm'];
   for (const a of artifacts) {
     const swA = await evalCode(`(() => {
       const p = window.__mm.profile();
       p.owned.artifacts = ['${a}'];
       p.equipped.artifacts = ['${a}'];
-      return window.__mm.sweep(12, ${JSON.stringify(defaultLoadout)});
+      return window.__mm.sweep(12, ${JSON.stringify(l12Loadout)});
     })()`);
     const solA = await evalCode(`(() => {
       const p = window.__mm.profile();
       p.owned.artifacts = ['${a}'];
       p.equipped.artifacts = ['${a}'];
-      return window.__mm.solveStep(12, ${JSON.stringify(defaultLoadout)}, 20000);
+      return window.__mm.solveStep(12, ${JSON.stringify(l12Loadout)}, 20000);
     })()`);
     console.log(`Artifact ${a.padEnd(20)}: sweep 1-shot wins=${swA.oneShotWins}, bestScore=${swA.best.score} | solve shots=${solA.shots?.length}, won=${solA.view?.won}, score=${solA.view?.score}`);
+    console.log(`  Shots:`, JSON.stringify(solA.shots));
   }
 
   // Level 10 test
   console.log('\n=== LEVEL 10 TESTS ===');
+  // 1. No artifact
+  const sw10NoArt = await evalCode(`(() => {
+    const p = window.__mm.profile();
+    p.owned.artifacts = [];
+    p.equipped.artifacts = [];
+    return window.__mm.sweep(10, ${JSON.stringify(defaultLoadout)});
+  })()`);
+  const sol10NoArt = await evalCode(`(() => {
+    const p = window.__mm.profile();
+    p.owned.artifacts = [];
+    p.equipped.artifacts = [];
+    return window.__mm.solveStep(10, ${JSON.stringify(defaultLoadout)}, 20000);
+  })()`);
+  console.log(`L10 (no artifact): sweep bestScore=${sw10NoArt.best.score}, 1-shot wins=${sw10NoArt.oneShotWins} | solve shots=${sol10NoArt.shots?.length}, won=${sol10NoArt.view?.won}, score=${sol10NoArt.view?.score}`);
+  console.log('L10 (no artifact) shots:', JSON.stringify(sol10NoArt.shots));
+
+  // 2. Gale Eye
   const sw10 = await evalCode(`(() => {
     const p = window.__mm.profile();
     p.owned.artifacts = ['r_gale_eye'];
@@ -208,6 +243,7 @@ async function main() {
     return window.__mm.solveStep(10, ${JSON.stringify(defaultLoadout)}, 20000);
   })()`);
   console.log(`L10 (r_gale_eye): sweep bestScore=${sw10.best.score}, 1-shot wins=${sw10.oneShotWins} | solve shots=${sol10.shots?.length}, won=${sol10.view?.won}, score=${sol10.view?.score}`);
+  console.log('L10 (r_gale_eye) shots:', JSON.stringify(sol10.shots));
 
   ws.close();
   cleanup();

@@ -4,12 +4,12 @@
   "realm": "iron_keep",
   "kind": "siege",
   "worldW": 648,
-  "shots": 5,
+  "shots": 4,
   "hints": [
     "Void weakens iron and brutes.",
     "Hellfire burns trolls to stop regen."
   ],
-  "scoreTarget": 1050,
+  "scoreTarget": 500,
   "terrain": [
     [
       0,
@@ -54,24 +54,24 @@
   ],
   "blocks": [
     {
-      "m": "iron",
+      "m": "stone",
       "x": 150,
       "y": 286,
-      "w": 12,
+      "w": 10,
       "h": 28
     },
     {
       "m": "stone",
       "x": 210,
       "y": 320,
-      "w": 10,
+      "w": 8,
       "h": 32
     },
     {
       "m": "stone",
       "x": 246,
       "y": 320,
-      "w": 10,
+      "w": 8,
       "h": 32
     },
     {

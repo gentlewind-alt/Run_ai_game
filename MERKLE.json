@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "2d5e9ce069f3aaa01f41e80d333c3dde54aa558a8d99c6eb9160ca76067bc4f7",
+  "hash": "8288d09a8b3d26245c079873d9c970203eb8ec7044fb256b5bed3a7a287f641f",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "494e71ceb664df7aa57feafa5909055f6cd26775bc64f4e5bab8df17c39f7db5",
+      "hash": "c8a43e12bcc78fffbca690b31cdbebf36768ba8bdb8bfdfe392e994fb74a4a7e",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "0a98727b395940fa604304a3a7540a996607c7af85ff83ae93beaca4c1377233",
+          "hash": "813d5438c727e991992d0e53ff17a42adc7a12d3f4e8e4e62fe873ff435fd2b9",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -152,6 +152,13 @@
               "size": 1536
             },
             {
+              "name": "agy_task_tune2.md",
+              "path": "docs/handoff/agy_task_tune2.md",
+              "type": "file",
+              "hash": "c3c9d2a2abbc786b91758814fe1b912e5ce284b91ff88fdb35b52b9e22cccd3e",
+              "size": 1065
+            },
+            {
               "name": "agy_task_wrapup.md",
               "path": "docs/handoff/agy_task_wrapup.md",
               "type": "file",
@@ -162,8 +169,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "b6d595b50ad10a13e1147cb8343e9ce26e7f96340b03b177a345b6c3b9ada0e1",
-              "size": 29072
+              "hash": "79263fc607c98361d4d38be595ed90f6f16ad98a661f50b20fd0d39a1e087f06",
+              "size": 32395
             },
             {
               "name": "shots",
@@ -261,8 +268,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "9cb9cdcf6a9378b04305b39fccd79152e9c90d35eec062576c8e07d76f53bea6",
-              "size": 6272
+              "hash": "8bfca4eb541c1f8cbb8a281affe0b2068a0d2cac6eee4eab04343cf21b7c192b",
+              "size": 6293
             }
           ]
         },
@@ -386,7 +393,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "05a5ba41ab52e30d4d8a0d2e525adf9af30e9133dd4668cbff006e45af48338b",
+      "hash": "5cc6aaa3be18c08906b70b8330789915c6c90278e14f8eff9a54f9fd6f626ca3",
       "children": [
         {
           "name": ".gitignore",
@@ -455,7 +462,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "0813af36fdef3a8ddb1a71676cad55911b01576a8a1fb3b6f9bf803676f2ec72",
+          "hash": "f61cc5ad794e638fd136c85816e782a5231ddd33d041a42f55114b32e8235c1b",
           "children": [
             {
               "name": "cdn-assets",
@@ -490,7 +497,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "09d0175f6291f269a40f9fe6c706300ab2d5c48962cb1c483811d2e5a14558ba",
+              "hash": "96ab0e34e3cb913d03a5c97523099fb13ee1e7db6585f19cf6a660ec72ca4b4e",
               "children": [
                 {
                   "name": "config.json",
@@ -503,14 +510,14 @@
                   "name": "content.json",
                   "path": "game/public/data/content.json",
                   "type": "file",
-                  "hash": "4189527c5e70ffe45903c52b02f3df4b38ce3ef78f4347beb9cc9a6f2407444b",
-                  "size": 17381
+                  "hash": "7b5f523b0095ee3ab3a753a163ea4dd960d2913ed42fe8d74cb0dd9f75d0e3db",
+                  "size": 17382
                 },
                 {
                   "name": "levels",
                   "path": "game/public/data/levels",
                   "type": "dir",
-                  "hash": "b5bd302349636b992f2260e2b459fe99acc6d41afaebea1781cb5b98e6d13ab1",
+                  "hash": "4a458d510e12e81ee98930f8cce4ac52233063ad1d2aa4596fc076ae77cb4554",
                   "children": [
                     {
                       "name": "level_01.json",
@@ -579,8 +586,8 @@
                       "name": "level_10.json",
                       "path": "game/public/data/levels/level_10.json",
                       "type": "file",
-                      "hash": "342b2d742b36a3e48ccad81d29075771ea873530852a72d045db91d56f4e3af9",
-                      "size": 1647
+                      "hash": "179fec36ad80b61fbb812bc895e6a4c92dbf2ce77aa8b0a79cfec20f200f5fe9",
+                      "size": 1645
                     },
                     {
                       "name": "level_11.json",
@@ -593,8 +600,8 @@
                       "name": "level_12.json",
                       "path": "game/public/data/levels/level_12.json",
                       "type": "file",
-                      "hash": "99d19f51f3af4b7aa8a73fe2d0b949039a3f973c6d6dc3677f0c80bca043916f",
-                      "size": 1501
+                      "hash": "bb880342c5bdf1bac0484dfb54ba60affef4f9964a0b85d976cd7d5286c3c3ed",
+                      "size": 1500
                     },
                     {
                       "name": "level_99.json",
@@ -706,14 +713,14 @@
           "name": "scripts",
           "path": "game/scripts",
           "type": "dir",
-          "hash": "2dde656514da8a8f6d65c73336e1c1a9fa16bf0794397ded0b666177b7b098c3",
+          "hash": "05e578f9eae81a159cc100039db0fb751cb4bcf32139f62f2bc994f4872e605c",
           "children": [
             {
               "name": "build_levels.py",
               "path": "game/scripts/build_levels.py",
               "type": "file",
-              "hash": "079acf143d4c5122d62a9ece47bd169437d8e08baf984d19b1622b5d6ac0f5ab",
-              "size": 12674
+              "hash": "00832186768f4cf2695ed3c3055ef64c4d745ce837f05dd42a79800ab5e192ad",
+              "size": 12671
             },
             {
               "name": "check-daily.mjs",
@@ -1531,14 +1538,14 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "bbde81dd65b5661e387464e68dfe526183ac90a8fba39f3be9933a90f8601716",
+      "hash": "cb559147ca2806fdde8f112c757070deff054710a07274965d50f3a66a1af595",
       "children": [
         {
           "name": "agy_share.mjs",
           "path": "tools/agy_share.mjs",
           "type": "file",
-          "hash": "d85d128d817d88e116e237b6b8b398617b128c41b142045e53fabe6e059423f0",
-          "size": 3607
+          "hash": "e86dd8b3a9da7b8fdaee7d353325df47304f79aab6117b053e1fae6cf113f599",
+          "size": 4326
         },
         {
           "name": "audit_shots.mjs",
@@ -1558,15 +1565,15 @@
           "name": "test_l12_solver.mjs",
           "path": "tools/test_l12_solver.mjs",
           "type": "file",
-          "hash": "aba4283ebfb24cd308e99d7e61e263a96064cb2cf80bcfbe218bf042e1352101",
-          "size": 8095
+          "hash": "dc09354ed4437fdb0416efb6bfac600bc64ce0510c3f3638378646abcc0c9225",
+          "size": 10507
         },
         {
           "name": "tune_boss.mjs",
           "path": "tools/tune_boss.mjs",
           "type": "file",
-          "hash": "e749f72c9ca28ae0ce0a8597402291d21fa6101ad2f7c4f55bffe669890b14eb",
-          "size": 5834
+          "hash": "9ae91da9edda37f369616a76c3608b3c68918f09936654dec0fcf650e811d7bd",
+          "size": 7014
         },
         {
           "name": "verify_s5_all.mjs",

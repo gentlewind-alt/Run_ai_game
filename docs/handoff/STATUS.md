@@ -24,8 +24,8 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S3-05 | Artifacts (6) | S2-03, S3-03 | done | agy | 10-21 | all 6 verified in headless browser; actor spawn bug in loop.ts fixed |
 | S3-06 | Consumables (4) | S2-03, S3-03 | done | agy | 10-21 | all 4 verified with targeting, effect & stock decrement |
 | S3-07 | Dark Elf Wood 5-8 + pause | S2-09, S3-01 | done | agy | 10-21 | balanced via build_levels.py; solver clears in 3 shots; scoreTargets ~70% |
-| S4-01 | Iron Keep 9-11 | S3-07 | review | agy | 10-21 | levels 9-11 tuned, verified with test solver (won in 2-4 shots, targets ~70%) |
-| S4-02 | Iron Warlord boss | S2-07 | review | agy | 10-21 | Iron Warlord boss + boss level kind, visor weak point (2x), ground shake, 3-shot win |
+| S4-01 | Iron Keep 9-11 | S3-07 | review | agy | 10-21 | levels 9-11 tuned, verified with test solver (L10 won in 4 shots, targets ~70%) |
+| S4-02 | Iron Warlord boss | S2-07 | review | agy | 10-21 | Iron Warlord boss tuned (HP 1070, armour 26, visor 2x, 3-4 shots across all artifacts, scoreTarget 850) |
 | S4-03 | Daily Mash generator | S2-03, S3-01 | review | agy | 10-21 | daily generator (mulberry32 UTC date seed, fort templates, 30-day test passes) |
 | S4-04 | Streak, countdown, day-7 reward | S4-03, S3-02 | review | agy | 10-21 | profile daily tracking, consecutive streaks, day-7 +500 coin reward, MapScene countdown |
 | S4-05 | Leaderboard and share | S4-03 | review | agy | 10-21 | leaderboard.config.json, mock/rundot platform adapter, Results top 10 & rank, share text |

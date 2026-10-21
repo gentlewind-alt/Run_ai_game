@@ -24,8 +24,12 @@ function isExcluded(filePath) {
   return false;
 }
 
-export function calculateAgyShare() {
-  const raw = execSync('git log --no-merges --numstat --format="COMMIT\t%h\t%s"', {
+export function calculateAgyShare(sinceSha = null) {
+  const gitCmd = sinceSha
+    ? `git log ${sinceSha}..HEAD --no-merges --numstat --format="COMMIT\t%h\t%s"`
+    : `git log --no-merges --numstat --format="COMMIT\t%h\t%s"`;
+
+  const raw = execSync(gitCmd, {
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
   });
@@ -69,10 +73,10 @@ export function calculateAgyShare() {
   return { commits, agyAdded, otherAdded, totalAdded, agyPercent };
 }
 
-function run() {
-  const { commits, agyAdded, otherAdded, totalAdded, agyPercent } = calculateAgyShare();
+function formatReport(title, report) {
+  const { commits, agyAdded, otherAdded, totalAdded, agyPercent } = report;
 
-  console.log('=== AGY SHARE REPORT ===\n');
+  console.log(`=== ${title} ===\n`);
   console.log(`Total added lines (filtered): ${totalAdded}`);
   console.log(`  Agy added lines:            ${agyAdded} (${agyPercent}%)`);
   console.log(`  Other added lines:          ${otherAdded} (${(100 - parseFloat(agyPercent)).toFixed(1)}%)\n`);
@@ -88,7 +92,26 @@ function run() {
     console.log(`${c.hash.padEnd(7)}  ${type}  ${added}  ${subj}`);
   }
   console.log('----------------------------------------------------------------------------------------------------\n');
-  console.log(`Target: 70-80% agy share going forward. Current overall: ${agyPercent}%`);
+  console.log(`Target: 70-80% agy share going forward. Current: ${agyPercent}%\n`);
+}
+
+function run() {
+  const args = process.argv.slice(2);
+  let sinceSha = null;
+  const sinceIdx = args.indexOf('--since');
+  if (sinceIdx !== -1 && args[sinceIdx + 1]) {
+    sinceSha = args[sinceIdx + 1];
+  }
+
+  if (sinceSha) {
+    const report = calculateAgyShare(sinceSha);
+    formatReport(`AGY SHARE REPORT (SINCE ${sinceSha})`, report);
+  } else {
+    const overall = calculateAgyShare();
+    formatReport('AGY SHARE REPORT (OVERALL)', overall);
+    const sinceGoal = calculateAgyShare('3ce282c');
+    formatReport('AGY SHARE REPORT (SINCE GOAL START: 3ce282c)', sinceGoal);
+  }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname.replace(/^\/([a-zA-Z]:)/, '$1'))) {

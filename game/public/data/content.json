@@ -406,7 +406,7 @@
       "effect": "Every 5th hit calls a radiant lightning bolt on the target.",
       "params": {
         "everyHits": 5,
-        "mult": 1.6
+        "mult": 0.3
       }
     },
     {
@@ -592,7 +592,7 @@
     {
       "id": "iron_warlord",
       "name": "Iron Warlord",
-      "hp": 850,
+      "hp": 1070,
       "weak": "void",
       "resist": "physical",
       "behavior": "iron_warlord",

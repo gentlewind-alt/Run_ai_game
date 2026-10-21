@@ -43,6 +43,9 @@ async function main() {
   ]);
 
   const cleanup = () => {
+    if (chrome && chrome.pid) {
+      try { spawn('taskkill', ['/F', '/T', '/PID', String(chrome.pid)]); } catch (e) {}
+    }
     try { chrome.kill(); } catch (e) {}
     if (devProc) {
       try { spawn('taskkill', ['/F', '/T', '/PID', String(devProc.pid)]); } catch (e) {}
@@ -126,7 +129,10 @@ async function main() {
   }
 
   for (let i = 0; i < 60; i++) {
-    const res = await evalCode(`Boolean(window.__mm && typeof window.__mm.solveStep === 'function')`);
+    let res = false;
+    try {
+      res = await evalCode(`Boolean(window.__mm && typeof window.__mm.platform === 'function' && typeof window.__mm.solveStep === 'function')`);
+    } catch (e) {}
     if (res === true) break;
     await new Promise((r) => setTimeout(r, 250));
   }
@@ -149,40 +155,65 @@ async function main() {
 
   const defaultLoadout = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun'];
 
-  // Test combinations
+  console.log('\n=== TESTING HP & ARMOUR WITH STONE ROOFS ON L12 ===');
+  const l12Loadout = ['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube'];
+  const testArtifacts = ['none', 'r_gale_eye', 'r_echo_stone', 'r_lodestone_bracer', 'r_analyst_lens', 'r_stormcaller_torc'];
+
   const candidates = [
-    { hp: 700, armour: 20 },
-    { hp: 750, armour: 20 },
-    { hp: 800, armour: 18 },
-    { hp: 800, armour: 20 },
-    { hp: 850, armour: 18 },
-    { hp: 850, armour: 20 },
-    { hp: 900, armour: 16 },
-    { hp: 900, armour: 18 },
+    { hp: 700, armour: 12 },
+    { hp: 750, armour: 12 },
+    { hp: 800, armour: 12 },
+    { hp: 700, armour: 14 },
+    { hp: 750, armour: 14 },
+    { hp: 800, armour: 14 },
+    { hp: 700, armour: 16 },
+    { hp: 750, armour: 16 },
+    { hp: 800, armour: 16 },
   ];
 
   for (const c of candidates) {
-    const res = await evalCode(`(() => {
-      window.__mm.load(12);
-      const bDef = window.__mm.battle().content.monsters.find(m => m.id === 'iron_warlord');
-      bDef.hp = ${c.hp};
-      bDef.params.armour = ${c.armour};
-      bDef.params.initialDelay = 180;
-      bDef.params.visorOpenEvery = 220;
-      bDef.params.visorOpenDuration = 24;
+    console.log(`\n--- Candidate: HP ${c.hp}, Armour ${c.armour} ---`);
+    let pass = true;
+    for (const art of testArtifacts) {
+      const res = await evalCode(`(async () => {
+        window.__mm.load(12, ${JSON.stringify(l12Loadout)});
+        const b = window.__mm.battle();
+        const bDef = b.content.monsters.find(m => m.id === 'iron_warlord');
+        bDef.hp = ${c.hp};
+        bDef.params.armour = ${c.armour};
+        bDef.params.initialDelay = 180;
+        bDef.params.visorOpenDuration = 24;
 
-      const sw = window.__mm.sweep(12, ${JSON.stringify(defaultLoadout)});
-      const sol = window.__mm.solveStep(12, ${JSON.stringify(defaultLoadout)}, 15000);
-      return {
-        sweep1ShotWins: sw.oneShotWins,
-        sweepBestKills: sw.best.kills,
-        sweepBestScore: sw.best.score,
-        shots: sol.shots?.length,
-        won: sol.view?.won,
-        score: sol.view?.score
-      };
-    })()`);
-    console.log(`HP ${c.hp}, Armour ${c.armour} -> 1shotWins: ${res.sweep1ShotWins}, bestScore: ${res.sweepBestScore} | solve shots: ${res.shots}, won: ${res.won}, score: ${res.score}`);
+        const p = window.__mm.profile();
+        if ('${art}' === 'none') {
+          p.owned.artifacts = [];
+          p.equipped.artifacts = [];
+        } else {
+          p.owned.artifacts = ['${art}'];
+          p.equipped.artifacts = ['${art}'];
+        }
+        p.upgrades = {};
+
+        const sw = window.__mm.sweep(12, ${JSON.stringify(l12Loadout)});
+        const sol = window.__mm.solveStep(12, ${JSON.stringify(l12Loadout)}, 15000);
+        return {
+          shots: sol.shots?.length,
+          won: sol.view?.won,
+          score: sol.view?.score,
+          sweepScore: sw.best.score,
+          oneShotWins: sw.oneShotWins
+        };
+      })()`);
+      console.log(`  Art: ${art.padEnd(20)} -> shots: ${res.shots}, won: ${res.won}, score: ${res.score}, sweepScore: ${res.sweepScore}`);
+      if (!res.won || res.shots < 3 || res.shots > 4) {
+        pass = false;
+        break;
+      }
+    }
+    if (pass) {
+      console.log(`\n >>>>>> PERFECT CANDIDATE FOUND! HP ${c.hp}, Armour ${c.armour} passes all artifacts in 3-4 shots! <<<<<<\n`);
+      break;
+    }
   }
 
   ws.close();
