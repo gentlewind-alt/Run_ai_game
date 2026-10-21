@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>html,body{margin:0;background:#12131f}canvas{display:block;width:512px;height:512px;image-rendering:pixelated}</style>
+<canvas id="c" width="128" height="128"></canvas>
+<script src="../docs/handoff/relic_art_reference.js"></script>
+<script>
+const SZ = 128;
+const C = { k: '#12131f', K: '#1a1c2c', w: '#ffffff', y: '#ffd27a', Y: '#fff0b0', o: '#f08a52', r: '#c2415b', R: '#6b2a5e', p: '#e8a0a0', d: '#1d5a22', m: '#3a8c3d', l: '#52b04f', h: '#86d874', c: '#41a6f6', C2: '#8af0f8', s1: '#1b1736', s2: '#241d49', s3: '#2e2560', s4: '#3f3180', h1: '#2a2f4f', h2: '#1e2240', gr: '#161830' };
+let px = Array.from({ length: SZ }, () => Array(SZ).fill(null));
+const blank = () => Array.from({ length: SZ }, () => Array(SZ).fill(null));
+const composite = (base, top) => { for (let y = 0; y < SZ; y++) for (let x = 0; x < SZ; x++) if (top[y][x]) base[y][x] = top[y][x]; return base; };
+const set = (x, y, c) => { x = Math.round(x); y = Math.round(y); if (x >= 0 && x < SZ && y >= 0 && y < SZ) px[y][x] = c; };
+const at = (x, y) => (x >= 0 && x < SZ && y >= 0 && y < SZ) ? px[y][x] : null;
+const inPoly = (poly, x, y) => { let ins = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) ins = !ins; } return ins; };
+const fillPoly = (poly, c) => { for (let y = 0; y < SZ; y++) for (let x = 0; x < SZ; x++) if (inPoly(poly, x + .5, y + .5)) set(x, y, c); };
+const fillEll = (cx, cy, rx, ry, c, f) => { for (let y = 0; y < SZ; y++) for (let x = 0; x < SZ; x++) { const e = Math.hypot((x + .5 - cx) / rx, (y + .5 - cy) / ry); if (e <= 1) set(x, y, f ? f(x, y, e) : c); } };
+const lineP = (x0, y0, x1, y1, c, th = 1) => { const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) * 2 + 1; for (let i = 0; i <= n; i++) { const x = x0 + (x1 - x0) * i / n, y = y0 + (y1 - y0) * i / n; for (let a = 0; a < th; a++) for (let b = 0; b < th; b++) set(x + a - (th >> 1), y + b - (th >> 1), c); } };
+const outlineAll = (col) => { const o = px.map(r => r.slice()); for (let y = 0; y < SZ; y++) for (let x = 0; x < SZ; x++) if (!px[y][x] && (at(x + 1, y) || at(x - 1, y) || at(x, y + 1) || at(x, y - 1))) o[y][x] = col; px = o; };
+
+// sky, stars, hills
+const bands = [[0, 'cs1'], [22, 'cs2'], [44, 'cs3'], [64, 'cs4']];
+for (let y = 0; y < SZ; y++) { let c = C.s1; if (y >= 22) c = C.s2; if (y >= 44) c = C.s3; if (y >= 64) c = C.s4; for (let x = 0; x < SZ; x++) { let cc = c; for (const [b, nc] of [[22, C.s2], [44, C.s3], [64, C.s4]]) if (Math.abs(y - b) < 2 && (x + y) % 2 === 0) cc = nc; set(x, y, cc); } }
+for (let i = 0; i < 26; i++) { const x = (i * 53 + 17) % 128, y = (i * 29 + 5) % 60; set(x, y, i % 3 ? C.w : C.y); }
+for (let x = 0; x < SZ; x++) { const h = 84 + Math.round(5 * Math.sin(x / 11) + 3 * Math.sin(x / 5 + 1)); for (let y = h; y < SZ; y++) set(x, y, C.h1); const h2 = 92 + Math.round(4 * Math.sin(x / 8 + 2)); for (let y = h2; y < SZ; y++) set(x, y, C.h2); }
+for (let y = 100; y < SZ; y++) for (let x = 0; x < SZ; x++) set(x, y, C.gr);
+
+// burst behind the goblin
+const star = (cx, cy, ro, ri, n) => { const pts = []; for (let i = 0; i < n * 2; i++) { const a = -Math.PI / 2 + i * Math.PI / n; const r = i % 2 ? ri : ro; pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); } return pts; };
+fillPoly(star(64, 48, 43, 27, 12), C.r); fillPoly(star(64, 48, 39, 24, 12), C.o); fillPoly(star(64, 48, 31, 20, 12), C.y); fillPoly(star(64, 48, 22, 15, 12), C.Y);
+
+// goblin head (own layer so it gets an outline)
+const bgLayer = px; px = blank();
+const ear = (s) => { const x0 = 64 + s * 15; fillPoly([[x0, 44], [64 + s * 33, 34], [64 + s * 29, 40], [x0, 58]], C.m); fillPoly([[x0 + s * 1, 46], [64 + s * 29, 38], [64 + s * 27, 42], [x0 + s * 1, 54]], C.p); lineP(x0, 45, 64 + s * 33, 34, C.l, 1); };
+ear(-1); ear(1);
+fillEll(64, 52, 19, 16, null, (x, y) => { const lx = (x - 64) / 19 + (y - 52) / 16 * .8; return lx < -.9 ? C.h : lx < -.35 ? C.l : lx > .75 ? C.d : C.m; });
+// eyes + brows
+for (const s of [-1, 1]) { fillEll(64 + s * 8, 48, 4.4, 3.8, C.y); fillEll(64 + s * 8 - s * 0.8, 48.5, 1.6, 2, C.k); set(64 + s * 8 - s * 2, 46.5, C.w); }
+lineP(51, 41, 60, 45, C.k, 2); lineP(77, 41, 68, 45, C.k, 2);
+// nose
+set(63, 53, C.d); set(64, 53, C.d); set(63, 54, C.d); set(64, 54, C.d); set(62, 54, C.d); set(65, 54, C.d);
+// mouth and teeth
+fillEll(64, 61, 12, 5.5, C.R);
+for (let y = 0; y < 58; y++) for (let x = 50; x < 80; x++) if (px[y][x] === C.R) px[y][x] = C.m;
+for (const x of [54, 58, 62, 66, 70, 74]) { set(x, 58, C.w); set(x + 1, 58, C.w); set(x, 59, C.w); set(x + 1, 59, C.w); }
+for (const x of [57, 63, 69]) { set(x, 64, C.w); set(x + 1, 64, C.w); set(x, 65, C.w); }
+fillEll(64, 65, 5, 2, C.r);
+outlineAll(C.k);
+px = composite(bgLayer, px);
+
+// the maul smashing in from the top right
+const stamp = (spr, cx, cy, sc, deg) => { const a = deg * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a); const half = Math.ceil(16 * sc * 1.5); for (let y = -half; y <= half; y++) for (let x = -half; x <= half; x++) { const sx = Math.round(16 + (x * ca + y * sa) / sc), sy = Math.round(16 + (-x * sa + y * ca) / sc); if (sx < 0 || sx > 31 || sy < 0 || sy > 31) continue; const k = spr[sy][sx]; if (k) set(cx + x, cy + y, P[k]); } };
+// lightning from the hammer head to the goblin
+let sd = 21; const rn = () => { sd = (sd * 16807) % 2147483647; return sd / 2147483647; };
+const zap = (x0, y0, x1, y1) => { const pts = [[x0, y0]]; const n = 6; for (let i = 1; i < n; i++) { const t = i / n; pts.push([x0 + (x1 - x0) * t + (rn() - .5) * 7, y0 + (y1 - y0) * t + (rn() - .5) * 7]); } pts.push([x1, y1]); for (let i = 0; i < pts.length - 1; i++) lineP(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], C.c, 3); for (let i = 0; i < pts.length - 1; i++) lineP(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], C.w, 1); };
+zap(91, 31, 76, 43); zap(97, 38, 84, 52); zap(108, 12, 118, 22);
+stamp(maul(), 105, 20, 1.55, 225);
+
+// wordmark
+const GL = { M: ['X...X', 'XX.XX', 'X.X.X', 'X.X.X', 'X...X', 'X...X', 'X...X'], O: ['.XXX.', 'X...X', 'X...X', 'X...X', 'X...X', 'X...X', '.XXX.'], N: ['X...X', 'XX..X', 'X.X.X', 'X..XX', 'X...X', 'X...X', 'X...X'], S: ['.XXXX', 'X....', 'X....', '.XXX.', '....X', '....X', 'XXXX.'], T: ['XXXXX', '..X..', '..X..', '..X..', '..X..', '..X..', '..X..'], E: ['XXXXX', 'X....', 'X....', 'XXXX.', 'X....', 'X....', 'XXXXX'], R: ['XXXX.', 'X...X', 'X...X', 'XXXX.', 'X.X..', 'X..X.', 'X...X'], A: ['.XXX.', 'X...X', 'X...X', 'XXXXX', 'X...X', 'X...X', 'X...X'], H: ['X...X', 'X...X', 'X...X', 'XXXXX', 'X...X', 'X...X', 'X...X'] };
+const word = (str, sc, gap, y0, main, hi, shadow) => { const w = str.length * 5 * sc + (str.length - 1) * gap; let x = Math.round((SZ - w) / 2); const layer = []; for (const ch of str) { const g = GL[ch]; for (let j = 0; j < 7; j++) for (let i = 0; i < 5; i++) if (g[j][i] === 'X') for (let a = 0; a < sc; a++) for (let b = 0; b < sc; b++) layer.push([x + i * sc + a, y0 + j * sc + b, j === 0 && b === 0 ? hi : main]); x += 5 * sc + gap; } const tmp = px.map(r => r.slice()); layer.forEach(([X, Y]) => { for (let d = 1; d <= Math.max(1, sc - 1); d++) set(X + d, Y + d, shadow); }); layer.forEach(([X, Y, c]) => set(X, Y, c)); };
+const bgLayer2 = px; px = blank();
+word('MONSTER', 2, 2, 88, C.h, C.Y, C.d);
+word('MASH', 3, 3, 104, C.y, C.Y, C.r);
+outlineAll(C.k);
+px = composite(bgLayer2, px);
+
+const cv = document.getElementById('c').getContext('2d');
+for (let y = 0; y < SZ; y++) for (let x = 0; x < SZ; x++) { if (px[y][x]) { cv.fillStyle = px[y][x]; cv.fillRect(x, y, 1, 1); } }
+</script>

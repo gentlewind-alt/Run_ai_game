@@ -2,6 +2,10 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Game icon redone (not deployed)
+- New 512x512 store icon: grinning goblin in a MASH burst, the Skyforge Maul smashing in with lightning, big MONSTER MASH wordmark. Reads at 64 px. Generated procedurally by `tools/make_icon.html` (renders via headless Chrome `--screenshot`; reuses `docs/handoff/relic_art_reference.js`). Outputs: `game/public/thumbnail.png`, `game/public/thumbnail.jpg` (now a real JPEG; it was a PNG with a .jpg name), `game/public/favicon.png` (linked in `index.html`), `docs/release/icon_512.png`.
+- Jam form upload still uses `game/public/thumbnail.jpg` (see `docs/release/CHECKLIST.md`). Paused until Saturday per owner.
+
 ## 2026-10-22 · claude · Handoff: agy weekly limit reached, v1.12.0 deployed (private)
 - **State:** committed and deployed. `check`, `build`, `regress:quick` pass (about 3.5 min). Landscape 480x270, relic framework (rarity, mini-bosses L4/L8, chests L3/L5/L7, Relic Market), six real batch A weapons (Skyforge Maul, Comet Fists, Bulwark Disc, Steersong Arrow, Silkline Shooters, Kinetic Palms) and Quicksilver/Gemini Strand slingshots are in. No relic weapon one-shots any level 1-12.
 - **agy hit its weekly limit on 2026-10-22** (explains its early exits). The partly-applied polish in the tree passes the tests but is NOT visibly improved.
