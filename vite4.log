@@ -9,3 +9,26 @@
 [2m3:15:47 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/battle/camera.ts[22m
 [2m3:16:18 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/battle/camera.ts[22m
 [2m3:16:18 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/battle/sling.ts[22m
+node:internal/fs/watchers:323
+    const error = new UVException({
+                  ^
+
+Error: EBUSY: resource busy or locked, watch 'C:\Users\samar\OneDrive\Desktop\Run_ai_game\.claude\worktrees\new-session-c737a3\game\MONSTER_MASH__Slingshot_Siege_d23a0264feb532a7.zip'
+    at FSWatcher.<computed> (node:internal/fs/watchers:323:19)
+    at Object.watch (node:fs:2608:36)
+    at createFsWatchInstance (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22195:17)
+    at setFsWatchListener (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22242:15)
+    at NodeFsHandler._watchWithNodeFs (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22397:14)
+    at NodeFsHandler._handleFile (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22461:23)
+    at NodeFsHandler._addToNodeFs (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22703:21)
+Emitted 'error' event on FSWatcher instance at:
+    at FSWatcher._handleError (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:23896:10)
+    at NodeFsHandler._addToNodeFs (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22711:18) {
+  errno: -4082,
+  syscall: 'watch',
+  code: 'EBUSY',
+  path: 'C:\\Users\\samar\\OneDrive\\Desktop\\Run_ai_game\\.claude\\worktrees\\new-session-c737a3\\game\\MONSTER_MASH__Slingshot_Siege_d23a0264feb532a7.zip',
+  filename: 'C:\\Users\\samar\\OneDrive\\Desktop\\Run_ai_game\\.claude\\worktrees\\new-session-c737a3\\game\\MONSTER_MASH__Slingshot_Siege_d23a0264feb532a7.zip'
+}
+
+Node.js v24.21.0

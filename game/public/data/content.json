@@ -339,6 +339,7 @@
     },
     {
       "id": "w_comet_fists",
+      "sprite": "sprites/relics/w_comet_fists",
       "name": "Comet Fists",
       "archetype": "fists",
       "element": "physical",
@@ -374,6 +375,7 @@
     },
     {
       "id": "w_bulwark_disc",
+      "sprite": "sprites/relics/w_bulwark_disc",
       "name": "Bulwark Disc",
       "archetype": "shield",
       "element": "physical",
@@ -408,6 +410,7 @@
     },
     {
       "id": "w_skyforge_maul",
+      "sprite": "sprites/relics/w_skyforge_maul",
       "name": "Skyforge Maul",
       "archetype": "hammer",
       "element": "radiant",
@@ -446,6 +449,7 @@
     },
     {
       "id": "w_steersong_arrow",
+      "sprite": "sprites/relics/w_steersong_arrow",
       "name": "Steersong Arrow",
       "archetype": "bow",
       "element": "hellfire",
@@ -478,6 +482,7 @@
     },
     {
       "id": "w_silkline_shooters",
+      "sprite": "sprites/relics/w_silkline_shooters",
       "name": "Silkline Shooters",
       "archetype": "crossbow",
       "element": "physical",
@@ -508,6 +513,7 @@
     },
     {
       "id": "w_kinetic_palms",
+      "sprite": "sprites/relics/w_kinetic_palms",
       "name": "Kinetic Palms",
       "archetype": "gauntlet",
       "element": "radiant",

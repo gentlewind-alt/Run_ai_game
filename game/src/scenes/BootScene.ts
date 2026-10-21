@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { registerIcons } from '../art/icons';
+import { applyGeneratedSprites, preloadGeneratedSprites } from '../art/generatedSprites';
 import { registerArt } from '../art/textures';
 import { gridTexture } from '../art/pix';
 import { PAUSE_ICON, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../art/sprites';
@@ -13,9 +14,14 @@ export default class BootScene extends Phaser.Scene {
     super('boot');
   }
 
+  preload(): void {
+    preloadGeneratedSprites(this);
+  }
+
   create(): void {
     if ((import.meta as any).env?.DEV) checkRegistries();
     registerArt(this);
+    applyGeneratedSprites(this);
     registerIcons(this);
     gridTexture(this, 'spk_on', SPK_ON);
     gridTexture(this, 'spk_off', SPK_OFF);

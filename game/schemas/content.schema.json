@@ -112,6 +112,7 @@
         },
         "price": { "type": "number", "minimum": 0 },
         "launch": { "type": "string" },
+        "sprite": { "type": "string", "description": "Path (no extension) of generated art under public/, e.g. sprites/relics/w_x: <path>.png and <path>_card.png" },
         "tap": { "type": "string" },
         "enabled": { "type": "boolean", "description": "false hides it from shop and loadout without deleting it." },
         "physics": {

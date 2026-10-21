@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "08034733eb796319fda848552277fdb518f038e9257f95cc7eb37919f4d133ec",
+  "hash": "12449514902a74d142462d4d30e0812191db4cbdf63ac751be0578fd98dbbe1e",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "8d4bdd096fbbec8873f03cfa795f21f02ad4237a6cd6b790274cdd0e148643fc",
+      "hash": "f62a516a2e2e31ad80dcf06608bd8e99fe6e51d5d303606400da99ba6b5ecacf",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "ce3f12f175d17d5aa2a529f2c30407657f981678937073ea387a2898cc780bf5",
+          "hash": "07d25043e2fd6630d6aa74dcfc664ce93ec74f61bdd1823dd5cb6702c91dcb03",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -250,11 +250,46 @@
               "size": 1764
             },
             {
+              "name": "agy_task_x1_art_fix.md",
+              "path": "docs/handoff/agy_task_x1_art_fix.md",
+              "type": "file",
+              "hash": "b98af3a9ca342da830e64cdf792edf40b9c6f1db4843ddae4a2cbd3d6266db20",
+              "size": 3377
+            },
+            {
+              "name": "agy_task_x2_slots6_balance.md",
+              "path": "docs/handoff/agy_task_x2_slots6_balance.md",
+              "type": "file",
+              "hash": "d2c12e1e4ad1758bef5247a6ff6c282f4600ee584e75d6b5edb270502f8db4eb",
+              "size": 2546
+            },
+            {
+              "name": "agy_task_x3_realm4.md",
+              "path": "docs/handoff/agy_task_x3_realm4.md",
+              "type": "file",
+              "hash": "954cfead736812ce13e6c33cf6d0b0bd10ac08291bf1fd9b9b2ab497d091fb79",
+              "size": 3864
+            },
+            {
+              "name": "agy_task_x4_leaderboards.md",
+              "path": "docs/handoff/agy_task_x4_leaderboards.md",
+              "type": "file",
+              "hash": "1dab6f4556b847ff89cb2210d26c80de4197e4d5cd816fabf60df98c52794085",
+              "size": 2310
+            },
+            {
+              "name": "agy_task_x5_abilities.md",
+              "path": "docs/handoff/agy_task_x5_abilities.md",
+              "type": "file",
+              "hash": "69ddc20f9e4d8cfbb1534695e9e380e88e9077338ef847f9a6192b17457a8196",
+              "size": 3174
+            },
+            {
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "39f1218a07619262e31538c59757cab2c55b4324d17f476c5912e9d297d87612",
-              "size": 83834
+              "hash": "49fd8d43469aa1dcf59980beaa2e8a8c8dcd5307b45786694699cab954896276",
+              "size": 85248
             },
             {
               "name": "ref",
@@ -303,7 +338,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "5da0509d3d27be407fb12d3307fbd13b8aefd2cfdc07ee6fb38ca86ba9dbb6b0",
+              "hash": "dc9b7b368541a8eb24a0f143f7db2b4c697084f1f1aed6604293cd6c6f9ff8da",
               "children": [
                 {
                   "name": "01_title.png",
@@ -416,6 +451,154 @@
                   "type": "file",
                   "hash": "873e7ad4b0c59c13e1917195d9143844c4bc426f55cec88b075553fad0e5eb77",
                   "size": 9799
+                },
+                {
+                  "name": "gen",
+                  "path": "docs/handoff/shots/gen",
+                  "type": "dir",
+                  "hash": "221ad64861fef7f21cbbbc203a1e201de737277634c84254895a430500dbc1ca",
+                  "children": [
+                    {
+                      "name": "arrow.png",
+                      "path": "docs/handoff/shots/gen/arrow.png",
+                      "type": "file",
+                      "hash": "49df433e5ee23e6129212a5d87bd32c037e34469c1cb3679d8544249ee372b52",
+                      "size": 5592
+                    },
+                    {
+                      "name": "arrow.png.json",
+                      "path": "docs/handoff/shots/gen/arrow.png.json",
+                      "type": "file",
+                      "hash": "40524f2856d49711b1ab3e47d259115aa4b20c71964d28cb1125b2630e034ec5",
+                      "size": 506
+                    },
+                    {
+                      "name": "contact_sheet.png",
+                      "path": "docs/handoff/shots/gen/contact_sheet.png",
+                      "type": "file",
+                      "hash": "a34bdbca3e0a7bb2d3e00486eb90d8088f45da9bc177cd82f1132058604416a5",
+                      "size": 107659
+                    },
+                    {
+                      "name": "disc_v2_1.png",
+                      "path": "docs/handoff/shots/gen/disc_v2_1.png",
+                      "type": "file",
+                      "hash": "b89ea8cb4985b3355d3dd4bfbbe923e1202d77a2b874c85b6b37b9e99cc4063f",
+                      "size": 18778
+                    },
+                    {
+                      "name": "disc_v2_1.png.json",
+                      "path": "docs/handoff/shots/gen/disc_v2_1.png.json",
+                      "type": "file",
+                      "hash": "cc0ae491329932ede26417152db592fd504c8df1e8656adca71ce83884bf9ccc",
+                      "size": 610
+                    },
+                    {
+                      "name": "disc_v2_2.png",
+                      "path": "docs/handoff/shots/gen/disc_v2_2.png",
+                      "type": "file",
+                      "hash": "b7a8a4846ebde6b0925eb83fa732c25fe596f3ad5ad1bb82315a74ee49598739",
+                      "size": 31044
+                    },
+                    {
+                      "name": "disc_v2_2.png.json",
+                      "path": "docs/handoff/shots/gen/disc_v2_2.png.json",
+                      "type": "file",
+                      "hash": "f6b0eb5432990a246554056c1a7c4c26244080a0d567f824120c82cedda7ca07",
+                      "size": 612
+                    },
+                    {
+                      "name": "disc.png",
+                      "path": "docs/handoff/shots/gen/disc.png",
+                      "type": "file",
+                      "hash": "f91ffec7165a97bceedb718eeb7d608976e9dae1f8b2827202c09eb24531fa89",
+                      "size": 2761
+                    },
+                    {
+                      "name": "disc.png.json",
+                      "path": "docs/handoff/shots/gen/disc.png.json",
+                      "type": "file",
+                      "hash": "c7c7c1e9791daa56f730b41476be21e6b9ebf44fd72d86f2483721b031092bb8",
+                      "size": 530
+                    },
+                    {
+                      "name": "fists.png",
+                      "path": "docs/handoff/shots/gen/fists.png",
+                      "type": "file",
+                      "hash": "daa10c7ff408a9e105e07197eebf4b35343d46682cad3b5d8132917744dbd561",
+                      "size": 14054
+                    },
+                    {
+                      "name": "fists.png.json",
+                      "path": "docs/handoff/shots/gen/fists.png.json",
+                      "type": "file",
+                      "hash": "dde03d1bda191c8ee85656394f56592fbe5068ee7189dffe7a1651c6a45aa333",
+                      "size": 522
+                    },
+                    {
+                      "name": "frost_wolf.png",
+                      "path": "docs/handoff/shots/gen/frost_wolf.png",
+                      "type": "file",
+                      "hash": "d49fbd42a5f47bc8fba9bc25884e794df9875800c6797a55529bec6092be33fa",
+                      "size": 7289
+                    },
+                    {
+                      "name": "frost_wolf.png.json",
+                      "path": "docs/handoff/shots/gen/frost_wolf.png.json",
+                      "type": "file",
+                      "hash": "15cd3917b8f618db6ca85914b9e95202a386bc1d059ca7b280b709ad3ff36b7a",
+                      "size": 479
+                    },
+                    {
+                      "name": "maul_test.png",
+                      "path": "docs/handoff/shots/gen/maul_test.png",
+                      "type": "file",
+                      "hash": "1847ac67a6ad9ecd0354190598414e63c5d67fcf32b720d319ecefb8d845ae06",
+                      "size": 68215
+                    },
+                    {
+                      "name": "maul_test.png.json",
+                      "path": "docs/handoff/shots/gen/maul_test.png.json",
+                      "type": "file",
+                      "hash": "a66ad2be8dff1e00fc8015615bd9080e491c7c7cde28c90a2b4102148ea12bf3",
+                      "size": 565
+                    },
+                    {
+                      "name": "palms.png",
+                      "path": "docs/handoff/shots/gen/palms.png",
+                      "type": "file",
+                      "hash": "2d161bee56f6db6fbe6499d6b9d2481b2c25afbd95e5ba75e8b48ab18e3c2823",
+                      "size": 9159
+                    },
+                    {
+                      "name": "palms.png.json",
+                      "path": "docs/handoff/shots/gen/palms.png.json",
+                      "type": "file",
+                      "hash": "6408fab54bb9032389d50a95d54c4ceb3d83a3c10c8f16beb68e700f9b677aa5",
+                      "size": 533
+                    },
+                    {
+                      "name": "processed_sheet.png",
+                      "path": "docs/handoff/shots/gen/processed_sheet.png",
+                      "type": "file",
+                      "hash": "8e10474e562a7b334bf88759f3e346947fed66d98c0a99661b4f2162564f5601",
+                      "size": 50955
+                    },
+                    {
+                      "name": "shooters.png",
+                      "path": "docs/handoff/shots/gen/shooters.png",
+                      "type": "file",
+                      "hash": "59dac1314acec5750d3da7e5601731d1867f7718c76d3fbcad57f7cc63819927",
+                      "size": 6174
+                    },
+                    {
+                      "name": "shooters.png.json",
+                      "path": "docs/handoff/shots/gen/shooters.png.json",
+                      "type": "file",
+                      "hash": "d19b7b601c769b0b3ebf0758f23da6f9621454dccfb1154c55a37506002ae0f1",
+                      "size": 486
+                    }
+                  ]
                 },
                 {
                   "name": "land",
@@ -724,8 +907,8 @@
                   "name": "repro_mount.png",
                   "path": "docs/handoff/shots/repro_mount.png",
                   "type": "file",
-                  "hash": "288251d78bae28d6e39aceb4be8af2df9c9c79ca9996fe8b8f55d5f73b702129",
-                  "size": 76994
+                  "hash": "f36b6aaa19b31c5a214a6d348c1aabed7bf789ac091ce8505ba207915f0dabeb",
+                  "size": 80711
                 },
                 {
                   "name": "resp",
@@ -1171,7 +1354,7 @@
           "name": "monster_mash",
           "path": "docs/monster_mash",
           "type": "dir",
-          "hash": "a4384424b8aa68f1e94157035cc73e65419075d7781aed83965a4ba00491b692",
+          "hash": "54e7b0543f82c3c2e2618fc53076d76dbbbbdb67d2ad70b2719033d4fa0d9818",
           "children": [
             {
               "name": "00_local_kickoff.md",
@@ -1235,6 +1418,13 @@
               "type": "file",
               "hash": "7a0d86240b0d92d837c1ef225b57bf8955983b8961511184c066e52e286edc39",
               "size": 7872
+            },
+            {
+              "name": "09_expansion_design.md",
+              "path": "docs/monster_mash/09_expansion_design.md",
+              "type": "file",
+              "hash": "5df1b8e4d92bf1ffc1657d3d41eb678b4bc1395572ea8a1e8679c98382e10036",
+              "size": 11584
             }
           ]
         },
@@ -1301,7 +1491,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "c1e15dcd275793f78f230f6001f28377e4218312a6624e95a084e05a2b5103af",
+      "hash": "121b85eede297b14ce1042e4f4286c0ec632860f39f2405d828fe0c39a833c36",
       "children": [
         {
           "name": ".gitignore",
@@ -1377,7 +1567,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "b5a7aa2f2feede911f05d569b02f1aab64c487021b73e7c18936b9031711d89d",
+          "hash": "dadc88cdc1d8a153a66d6587767efcdf7ad5413d368826351e4247dd96ae8f14",
           "children": [
             {
               "name": "cdn-assets",
@@ -1412,7 +1602,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "c19f78b0e9cff8c7bcd411a193476e85871bfdf9428ba6e4e43ab3c5f9217327",
+              "hash": "ad1e0480028dd46c1d6693f133a69311c39cc3b366168c9738829ba1395f2aaa",
               "children": [
                 {
                   "name": "config.json",
@@ -1425,8 +1615,8 @@
                   "name": "content.json",
                   "path": "game/public/data/content.json",
                   "type": "file",
-                  "hash": "6d01ec9cb0f94566635ddf305a241b7590171d0897aa7c1df7843cb108e6241f",
-                  "size": 24363
+                  "hash": "a080ca06d23d8d5d6b7765fdfe18c124080cadf61d064018ca22ad6b3b15e2eb",
+                  "size": 24666
                 },
                 {
                   "name": "levels",
@@ -1537,6 +1727,106 @@
               "size": 1533
             },
             {
+              "name": "sprites",
+              "path": "game/public/sprites",
+              "type": "dir",
+              "hash": "7f781a26c41016162bfc5ecafffcb575f4c8e43db673e15b67cae9473e6ce2bf",
+              "children": [
+                {
+                  "name": "relics",
+                  "path": "game/public/sprites/relics",
+                  "type": "dir",
+                  "hash": "e2e8f2a00841610bac6c58d721f229155e130d857f158699823fc1d326c6be43",
+                  "children": [
+                    {
+                      "name": "w_bulwark_disc_card.png",
+                      "path": "game/public/sprites/relics/w_bulwark_disc_card.png",
+                      "type": "file",
+                      "hash": "eac72238251ca85a91dde81c45ff5706746b337b6642812c08fcfb71ca19636b",
+                      "size": 481
+                    },
+                    {
+                      "name": "w_bulwark_disc.png",
+                      "path": "game/public/sprites/relics/w_bulwark_disc.png",
+                      "type": "file",
+                      "hash": "e99fb8be47a9d5a7b1c04ba8684034a72121e18e4a128e653e76b62e57526ccf",
+                      "size": 697
+                    },
+                    {
+                      "name": "w_comet_fists_card.png",
+                      "path": "game/public/sprites/relics/w_comet_fists_card.png",
+                      "type": "file",
+                      "hash": "4e97994173f6acb87f80109a60f7413cc4a9c11e7ac026f9b9698f65c26c77aa",
+                      "size": 470
+                    },
+                    {
+                      "name": "w_comet_fists.png",
+                      "path": "game/public/sprites/relics/w_comet_fists.png",
+                      "type": "file",
+                      "hash": "8feab387c3929f68e6935cd1208e1c97cad78915eb660de93fdc1d84c1d33920",
+                      "size": 649
+                    },
+                    {
+                      "name": "w_kinetic_palms_card.png",
+                      "path": "game/public/sprites/relics/w_kinetic_palms_card.png",
+                      "type": "file",
+                      "hash": "28f4b9f5b822ba66cf44a1079300ce82c758e0c154fe79435cb5f59c080dd202",
+                      "size": 434
+                    },
+                    {
+                      "name": "w_kinetic_palms.png",
+                      "path": "game/public/sprites/relics/w_kinetic_palms.png",
+                      "type": "file",
+                      "hash": "07b75e3849e88602b9b635e571faa4d968d6ca8adc195198536f2e6785195672",
+                      "size": 586
+                    },
+                    {
+                      "name": "w_silkline_shooters_card.png",
+                      "path": "game/public/sprites/relics/w_silkline_shooters_card.png",
+                      "type": "file",
+                      "hash": "7fa9467fefe279f129ba06e6eba45c5bad9824f4d78025c8355146c1e973005c",
+                      "size": 439
+                    },
+                    {
+                      "name": "w_silkline_shooters.png",
+                      "path": "game/public/sprites/relics/w_silkline_shooters.png",
+                      "type": "file",
+                      "hash": "558855668c4e270625c656d34c21b2958173ff518b14f1c7034fbe16fa8ea304",
+                      "size": 585
+                    },
+                    {
+                      "name": "w_skyforge_maul_card.png",
+                      "path": "game/public/sprites/relics/w_skyforge_maul_card.png",
+                      "type": "file",
+                      "hash": "5343c6b1fb10d7bd5d01d229940af8bdb187f50caceeff531da801206a3b341d",
+                      "size": 381
+                    },
+                    {
+                      "name": "w_skyforge_maul.png",
+                      "path": "game/public/sprites/relics/w_skyforge_maul.png",
+                      "type": "file",
+                      "hash": "4ca11c3c82f26c12d5aa0a01bce91d2cba6eed5553033d4aaf27dcfe09c9d360",
+                      "size": 488
+                    },
+                    {
+                      "name": "w_steersong_arrow_card.png",
+                      "path": "game/public/sprites/relics/w_steersong_arrow_card.png",
+                      "type": "file",
+                      "hash": "a491110c4a9270d9abe512b9323a7cb5ddfbc527cc1210a41f519c05fdcfd6d1",
+                      "size": 349
+                    },
+                    {
+                      "name": "w_steersong_arrow.png",
+                      "path": "game/public/sprites/relics/w_steersong_arrow.png",
+                      "type": "file",
+                      "hash": "187d0868db0134c543bcbe65fda3673321f9a2b8ffd63271c369e62bab488b9f",
+                      "size": 426
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "name": "thumbnail.jpg",
               "path": "game/public/thumbnail.jpg",
               "type": "file",
@@ -1599,7 +1889,7 @@
           "name": "schemas",
           "path": "game/schemas",
           "type": "dir",
-          "hash": "45b5a42771b75d87ab14151968f97f758f47148a78083cebf6c8bfcbfd4d4e37",
+          "hash": "cc1273a8a917c2cb6fee9a65ce7a4ff53fc82824730239157e80fc2a4ac55b8b",
           "children": [
             {
               "name": "config.schema.json",
@@ -1612,8 +1902,8 @@
               "name": "content.schema.json",
               "path": "game/schemas/content.schema.json",
               "type": "file",
-              "hash": "7433a93e60faef5fc870e60052259b41b6ed5bc469a0f7d8d1cf6a7239f8a87a",
-              "size": 12539
+              "hash": "2c992456d2d32484a2a8af533476d917e1b08942f7bc5ea5b478834a48a6b827",
+              "size": 12705
             },
             {
               "name": "level.schema.json",
@@ -1671,13 +1961,13 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "76de4e58c350dcc46c3f1e9b91dfc6d00d15ca5ef7f149dc4e1924c6a1d9c429",
+          "hash": "3b19a37efae1b9de14a4525fed77201ff61898bc6dad3019fa635993eef4d7c4",
           "children": [
             {
               "name": "art",
               "path": "game/src/art",
               "type": "dir",
-              "hash": "02d09f1c8c3ed35390792f0f01566ac3c403ea8dc82b3bc286ad4f25671f1119",
+              "hash": "5ac5b024d3d160a80b85b515d56e4e186f5dc4d775ce71b46d330934fa52d3fd",
               "children": [
                 {
                   "name": "backgrounds.ts",
@@ -1692,6 +1982,13 @@
                   "type": "file",
                   "hash": "de771357515c4b28118bfb1db13f46ed129357365e4049e74da83b116f96944a",
                   "size": 7987
+                },
+                {
+                  "name": "generatedSprites.ts",
+                  "path": "game/src/art/generatedSprites.ts",
+                  "type": "file",
+                  "hash": "87dbc3ac76db424dee5b3e07718d0819f82e6d96197591d3f0cba1cf69cf4e02",
+                  "size": 1694
                 },
                 {
                   "name": "icons.ts",
@@ -2325,7 +2622,7 @@
               "name": "data",
               "path": "game/src/data",
               "type": "dir",
-              "hash": "21e6010ab41b6a2797a36b08065bc6465650580bd6a7187cff1df17568207552",
+              "hash": "4c7443e9c5b4838a2e24d6e778b10b5144f2225d11901e46202847550d69758a",
               "children": [
                 {
                   "name": "load.ts",
@@ -2345,8 +2642,8 @@
                   "name": "types.ts",
                   "path": "game/src/data/types.ts",
                   "type": "file",
-                  "hash": "e56fa31847745512b549516861a5b174b954ca324a0f1aea6dea853be804ea49",
-                  "size": 5484
+                  "hash": "c8f8a9192f90ead3813620ec0a8c3ae37dcb0f5b001e3ae37582554773682da8",
+                  "size": 5503
                 }
               ]
             },
@@ -2412,7 +2709,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "1b5c2a684431a772bde24792ca7037b71678c0cd0c4bc487a325687ede353f3e",
+              "hash": "44f2d72ea00bbf9d96b49f8b67a223fe627452118c18fc0e955ff0f57be73a03",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -2425,8 +2722,8 @@
                   "name": "BootScene.ts",
                   "path": "game/src/scenes/BootScene.ts",
                   "type": "file",
-                  "hash": "ecaacc17062eea30c47c0a495d3837eecb0f3b3d417ae1d7e748e091450d77f3",
-                  "size": 1744
+                  "hash": "707827ec1a926d30700285f5daaf1a3584af9ce9350bf319e9db73d0f309d0ae",
+                  "size": 1927
                 },
                 {
                   "name": "CreditsScene.ts",
@@ -2548,6 +2845,20 @@
       ]
     },
     {
+      "name": "gen_log.txt",
+      "path": "gen_log.txt",
+      "type": "file",
+      "hash": "3083c8f365db31d25518909038523e4ecaf5a7e9588496a6867697b038d68171",
+      "size": 505
+    },
+    {
+      "name": "gen_realm_log.txt",
+      "path": "gen_realm_log.txt",
+      "type": "file",
+      "hash": "1f11d6e79a80ec6c961b8fa5dddb9be8dffd9f8b98c238d69b484a3536c70cff",
+      "size": 53
+    },
+    {
       "name": "package.json",
       "path": "package.json",
       "type": "file",
@@ -2565,14 +2876,14 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "0b4b7d12a330a183f519efd336d6d241775b71226e7eb9a52e6a6750b5e836ef",
+      "hash": "40f21096c79ed82aeeed5d2467501a2ecb46e569d0e49e8bf3c2369ff4c77314",
       "children": [
         {
           "name": "agy_chain.sh",
           "path": "tools/agy_chain.sh",
           "type": "file",
-          "hash": "f490e1dacfa5ad16a9e88866217365e78b61405b04d968263e42ed20060237d2",
-          "size": 263
+          "hash": "3268f6a72d56502e60e62143ca31457e0f3e33dacf4abd4c01b561cb712e23e5",
+          "size": 1462
         },
         {
           "name": "agy_share.mjs",
@@ -2587,6 +2898,20 @@
           "type": "file",
           "hash": "b2880d7abedbec66dce981cf6ce34af3cb16c09f4d6076efb3060508f19925d5",
           "size": 19659
+        },
+        {
+          "name": "gen_realm_sprites.sh",
+          "path": "tools/gen_realm_sprites.sh",
+          "type": "file",
+          "hash": "79f966b1ddd90bcd59a0cf5b582885e53348ffcd3ea36f9120869b5c02b8aea9",
+          "size": 1940
+        },
+        {
+          "name": "gen_relic_sprites.sh",
+          "path": "tools/gen_relic_sprites.sh",
+          "type": "file",
+          "hash": "8edc2094f093ff5ee9f9489b8e90b92ed88c3f750d64811a35ea2bab007b4acf",
+          "size": 1983
         },
         {
           "name": "make_icon.html",
@@ -2608,6 +2933,13 @@
           "type": "file",
           "hash": "eb047da6789aff667a626a4e2f21e684960e3c650edb8ceb683add7e7e70d7c0",
           "size": 13397
+        },
+        {
+          "name": "process_sprites.ps1",
+          "path": "tools/process_sprites.ps1",
+          "type": "file",
+          "hash": "b14c90da993a272c486a1425ba7f4c47d2e050005db9845752ce23fb9681725a",
+          "size": 3559
         },
         {
           "name": "regress.mjs",
@@ -2636,6 +2968,13 @@
           "type": "file",
           "hash": "44935cdd39c2b72e186996901e401a6379848b017c7ff115572551c79f4286d6",
           "size": 10370
+        },
+        {
+          "name": "sprite_sheet.ps1",
+          "path": "tools/sprite_sheet.ps1",
+          "type": "file",
+          "hash": "ba180a13b785a24bd07b2dbc146eabf79362f7ba59a556de0d67326be035384d",
+          "size": 2026
         },
         {
           "name": "test_l12_solver.mjs",
@@ -2671,8 +3010,15 @@
       "name": "vite4.log",
       "path": "vite4.log",
       "type": "file",
-      "hash": "2ce6b2d5e9348b2c858efa327f6e5946e49517ba114520dbea7f5a936dd24bc0",
-      "size": 999
+      "hash": "042fe9919bc2a4a4e28c864cc5315472a6fe01631944d17859b2102f2f2237ea",
+      "size": 3129
+    },
+    {
+      "name": "vite5.log",
+      "path": "vite5.log",
+      "type": "file",
+      "hash": "f921336fd0e457e3bb8f396bf0875a6af545cd44644e1803e4ad91ecebe7e09c",
+      "size": 246
     }
   ]
 }

@@ -2,6 +2,13 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Sprites via RUN CLI, expansion design and agy task chain (owner goal)
+- **RUN CLI sprites:** six relic weapons generated with `rundot generate sprite` (90 credits each; disc regenerated, 2 variations), processed by `tools/process_sprites.ps1` (crop, fit, downscale, snap to Mash32) into `game/public/sprites/relics/<id>.png` (32 px) and `_card.png` (24 px), loaded through the new weapon `sprite` field (`src/art/generatedSprites.ts`, `BootScene.preload`). `check`, `build`, `regress:quick` pass. About 800 credits spent so far.
+- **Design:** `docs/monster_mash/09_expansion_design.md` (six slots, damage vs HP table, Pocket Tanks ability pass, Brahmastra Arrow, Omnitrix Dial, six more weapons, realms 4-6 with 12 levels, leaderboards, sound plan, order of work).
+- **Routing:** `tools/agy_chain.sh` runs agy briefs in order with Gemini 3.8 Flash, falls back to Claude Sonnet through agy, stops if a brief is not marked `DONE <brief>` in `docs/handoff/agy_done.txt`. Briefs: `agy_task_x1_art_fix`, `x2_slots6_balance`, `x3_realm4`, `x4_leaderboards`, `x5_abilities`.
+- **Art in progress:** `tools/gen_realm_sprites.sh` generates frost wolf, ice golem, frost giant, Brahmastra Arrow and Omnitrix Dial icons (outputs in `docs/handoff/shots/gen/`, not yet processed).
+- **Open:** shop description is covered by the buy button (x1 fixes it); relic sprite scale on the field is small (x1).
+
 ## 2026-10-22 · claude · Fix: weapon never loaded on the sling after interrupting the intro (v1.13.0, private)
 - **Cause (owner-diagnosed):** `introPan` loaded the first weapon only in its tween `onComplete`. A drag or pinch during the intro called `killTweensOf(b.view)` (added in the camera fix), cancelling the tween, so `loadNext` never ran: empty sling, state stuck in `intro`. This is the Retry and "arrow not mounted" bug reported earlier; it was not specific to any weapon.
 - **Fix:** `introPan` now exits only through one guarded `finish` (`b.introSkip`); `zoomBy` and drag-pan call it instead of killing the tween; `updateCamera` has a watchdog that finishes the intro if the tween is ever gone. Files: `battle/camera.ts`, `battle/sling.ts`, `battle/state.ts`.

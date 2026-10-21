@@ -15,6 +15,7 @@ export interface WeaponDef {
   price?: number;
   enabled?: boolean;
   launch?: string;
+  sprite?: string;
   tap?: string;
   physics: { radius: number; density: number; spin: number; gravity?: number; align?: boolean; friction?: number; restitution?: number; frictionAir?: number };
   ability: { mode: AbilityMode; label: string; charges?: number };
