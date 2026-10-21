@@ -2,6 +2,65 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · claude · v1.9.0 (private): Next opens Loadout, camera returns to sling after each shot
+- **Cause of camera bug:** v1.8.0 let the battle leave `settling` before the camera was home, and the camera only eased home while `settling`; fixed in `battle/camera.ts` (ease cx and zoom home in settling/loading/ready; view-all button resets a free view first). Regress covers L1, L3, L5, L12.
+- **Next level** goes through the Loadout screen again (equipped weapons preselected).
+
+## 2026-10-21 · agy · Camera returns to sling frame after shot (done)
+- **What:**
+  - Resolved phone-test bug where camera remained focused on the fort after shots rather than easing back to sling framing.
+  - In `game/src/battle/camera.ts`:
+    - Updated `updateCamera` to ease both `targetCx` to `homeCx(b)` and `targetZ` to `homeZoom(b)` during `settling` (after `homeSettleSteps`), `loading`, and `ready` states.
+    - Added snapping thresholds (`|cx - t| < 0.5` and `|z - tz| < 0.005`) when arriving at home framing.
+    - Guarded manual easing with `!b.scene.tweens.isTweening(v)` to prevent conflicting with active scene tweens (`toggleView`, `introPan`).
+    - Fixed `toggleView`: when view is free (`b.view.free === true`, e.g. from pinch or pan or previous view-all), clicking the view button resets to home framing (`homeZoom(b)`, `homeCx(b)`) and clears `view.free`. If already at home, it toggles to view-all (`minZoom(b)`, `worldW / 2`) and sets `view.free`.
+    - Added `killTweensOf(b.view)` to `zoomBy` and `sling.ts:onMove` so user pinch/pan gestures instantly take over from running view tweens.
+  - In `game/src/battle/consumables.ts`:
+    - Reset `b.view.free = false` in `spend(...)` so consumable use (e.g. bomb, talisman, serum) eases the view back to `homeCx(b)` and `homeZoom(b)` before the next shot.
+  - In `game/src/debug/testHook.ts`:
+    - Exposed `homeCx`, `homeZoom`, and `toggleView` on `window.__mm`.
+  - In `tools/regress.mjs`:
+    - Added Section 7 assertion: on Levels 1, 3, 5, and 12, fires a shot, awaits transition back to `ready` state, waits up to 3s, and asserts `|view.cx - homeCx| < 3`, `|view.z - homeZoom| < 0.02`, and sling positioned at 22-26% visible width.
+    - Also verifies: free pan maintains free position without forced return; `toggleView` resets free view to home; consumable detonation resets free view and returns home.
+- **Checks:**
+  - `npm run check`: 0 errors, 1 warning (sandbox), 30-day daily check passes (100% deterministic), TypeScript passes.
+  - `npm run build`: built cleanly in production mode.
+  - `npm run regress`: 8/8 test suites pass cleanly with exit code 0:
+    - 30-day daily generation & variety
+    - v1 save migration
+    - Levels 1-12 balance bands (0 one-shot wins)
+    - Next level transition (Bug 1: L1->L2, L2->L3 through loadout)
+    - Weapon card text / art clearance (Bug 2: 8/8 Loadout and 8/8 Shop cards)
+    - Slingshot & fort framing (Bug 3: 22-26% visible width across all levels)
+    - Camera return to sling frame after shot (L1, L3, L5, L12 return within 3s; free view & toggle reset & consumable reset pass)
+    - 0 console errors and 0 uncaught exceptions recorded across all tests.
+  - `node tools/merkle.mjs seal`: sealed.
+- **Deployed:** Not deployed (no commit or deploy per instructions).
+
+## 2026-10-21 · agy · Next level goes through Loadout screen (done)
+- **What:**
+  - In `game/src/scenes/ResultsScene.ts`, restored Next button to open the Loadout screen for the next level: `go('loadout', { level: next })`.
+  - Preserved `game/src/core/flow.ts:goTo` fix stopping paused scenes, ensuring `BattleScene` is cleanly stopped when navigating to `loadout` and starts fresh upon pressing Fling. Retry stays direct to battle; Map stays Map.
+  - Updated Bug 1 assertion in `tools/regress.mjs`:
+    - Simulates Level 1 win -> clicks Next button.
+    - Asserts `LoadoutScene` is active and shows level 2 header (`"Level 2: Bomb squad"`).
+    - Asserts previously equipped weapons are preselected in `loadoutScene.slots` and profile loadout is preserved without being reset.
+    - Clicks 'Fling!' button in `LoadoutScene`.
+    - Asserts `BattleScene` is active for Level 2 and state cleanly reaches `'ready'` with the equipped loadout.
+    - Repeats the complete cycle for Level 2 win -> Next -> `LoadoutScene` shows level 3 header (`"Level 3: Run, skeleton, run"`) with preselected weapons -> Fling -> `BattleScene` Level 3 reaching `'ready'`.
+- **Checks:**
+  - `npm run check`: 0 errors, 1 warning (sandbox), 30-day daily check passes (100% deterministic), TypeScript passes cleanly.
+  - `npm run build`: built cleanly in production mode.
+  - `npm run regress`: 7/7 test suites pass cleanly with exit code 0:
+    - 30-day daily generation & variety
+    - v1 save migration
+    - Levels 1-12 balance bands (0 one-shot wins)
+    - Next level transition (Bug 1: L1 win -> Loadout L2 -> Fling -> Battle L2 ready, L2 win -> Loadout L3 -> Fling -> Battle L3 ready)
+    - Weapon card text / art clearance (Bug 2: 8/8 Loadout and 8/8 Shop cards)
+    - Slingshot & fort framing (Bug 3: 22-26% visible width, right margin > 0)
+    - 0 console errors and 0 uncaught exceptions recorded across all tests.
+- **Deployed:** Not deployed (per instructions, no commit or deploy).
+
 ## 2026-10-21 · claude · Reviewed agy bug fixes, deployed v1.8.0 (private)
 - **Checks:** `check`, `build`, `regress` pass (new assertions: Next advances L1->L2->L3, no weapon-card overlaps, sling at 22-26% of view).
 - **Watch:** Next level now starts the battle directly with the equipped loadout instead of opening the Loadout screen. agy removed `atHome` from the settling transition in `rules.ts`, which changed timing: L10 now clears in 2 shots (was 4), still inside its band; re-tune L10 if it feels easy.

@@ -372,21 +372,29 @@ async function run() {
   }
 
   // =========================================================================
-  // 4. PHONE-TEST BUG 1: NEXT LEVEL FLOW ASSERTION
+  // 4. PHONE-TEST BUG 1: NEXT LEVEL FLOW ASSERTION (RESULTS -> LOADOUT -> GAME)
   // =========================================================================
-  console.log('\n--- 4. ASSERTING NEXT LEVEL TRANSITION (BUG 1) ---');
+  console.log('\n--- 4. ASSERTING NEXT LEVEL TRANSITION (BUG 1: RESULTS -> LOADOUT -> GAME) ---');
   try {
     const b1Res = await evalCode(`(async () => {
       const results = [];
       const g = window.__game;
 
+      window.__mm.give({ unlockAll: true });
+      const testEquipped = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike'];
+      window.__mm.profile().equipped.loadout = testEquipped.slice();
+
       for (const [currLvl, nextLvl] of [[1, 2], [2, 3]]) {
+        window.__mm.profile().stars['1'] = 3;
         window.__mm.profile().stars[String(currLvl)] = 3;
         window.__mm.profile().stars[currLvl] = 3;
 
-        for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'boot') g.scene.stop(s.scene.key);
-        g.scene.start('game', { level: currLvl });
-        await new Promise(r => setTimeout(r, 400));
+        const curScene = g.scene.getScene('game');
+        if (!curScene || !curScene.scene.isActive() || curScene.levelId !== currLvl) {
+          for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'boot') g.scene.stop(s.scene.key);
+          g.scene.start('game', { level: currLvl, loadout: testEquipped });
+          await new Promise(r => setTimeout(r, 400));
+        }
         
         const gameScene = g.scene.getScene('game');
         gameScene.scene.pause();
@@ -397,7 +405,7 @@ async function run() {
           stars: 3,
           score: 1500,
           target: 1000,
-          loadout: ['w_militia_blade']
+          loadout: testEquipped
         });
         await new Promise(r => setTimeout(r, 400));
 
@@ -408,7 +416,8 @@ async function run() {
         }
 
         const nextBtnBox = resultsScene.children.list.find(c => 
-          c.type === 'Container' && c.input && c.input.enabled && c.width === 128 && c.height === 26
+          c.type === 'Container' && c.input && c.input.enabled &&
+          (c.list?.[0]?.list?.some(sub => sub.texture?.key?.includes('Next level')) || (c.width === 128 && c.height === 26))
         );
         if (!nextBtnBox) {
           results.push({ currLvl, nextLvl, error: 'Next level button not found' });
@@ -417,20 +426,90 @@ async function run() {
 
         nextBtnBox.emit('pointerdown');
         nextBtnBox.emit('pointerup');
-        await new Promise(r => setTimeout(r, 800));
 
-        const newGame = g.scene.getScene('game');
+        let loadoutScene = null;
+        for (let t = 0; t < 30; t++) {
+          loadoutScene = g.scene.getScene('loadout');
+          if (loadoutScene && loadoutScene.scene.isActive()) break;
+          await new Promise(r => setTimeout(r, 100));
+        }
+
+        if (!loadoutScene || !loadoutScene.scene.isActive()) {
+          results.push({ currLvl, nextLvl, error: 'LoadoutScene not active after Next level' });
+          continue;
+        }
+
+        const headerImg = loadoutScene.children.list.find(c => 
+          c.type === 'Image' && c.y === 12 && c.texture && c.texture.key.includes('Level ' + nextLvl + ':')
+        );
+        let headerText = '';
+        if (headerImg && headerImg.texture) {
+          const key = headerImg.texture.key;
+          const lastColon = key.lastIndexOf(':');
+          const secondLastColon = key.lastIndexOf(':', lastColon - 1);
+          headerText = key.slice(3, secondLastColon);
+        }
+        const headerOk = headerText.startsWith('Level ' + nextLvl + ':');
+
+        const currentSlots = loadoutScene.slots ? loadoutScene.slots.slice() : [];
+        const slotsOk = JSON.stringify(currentSlots) === JSON.stringify(testEquipped);
+
+        const profileEquipped = window.__mm.profile().equipped.loadout ? window.__mm.profile().equipped.loadout.slice() : [];
+        const profileOk = JSON.stringify(profileEquipped) === JSON.stringify(testEquipped);
+
+        if (!headerOk || !slotsOk || !profileOk) {
+          results.push({
+            currLvl,
+            nextLvl,
+            headerText,
+            headerOk,
+            slotsOk,
+            profileOk,
+            error: !headerOk ? 'Loadout header mismatch (' + headerText + ')' : (!slotsOk ? 'Slots not preselected' : 'Profile loadout was reset')
+          });
+          continue;
+        }
+
+        const flingBtn = loadoutScene.goBtn ? loadoutScene.goBtn.box : loadoutScene.children.list.find(c =>
+          c.type === 'Container' && c.input && c.input.enabled &&
+          c.list?.[0]?.list?.some(sub => sub.texture?.key?.includes('Fling!'))
+        );
+
+        if (!flingBtn) {
+          results.push({ currLvl, nextLvl, error: 'Fling button not found in LoadoutScene' });
+          continue;
+        }
+
+        flingBtn.emit('pointerdown');
+        flingBtn.emit('pointerup');
+
+        let newGame = null;
+        let bState = null;
+        for (let t = 0; t < 70; t++) {
+          newGame = g.scene.getScene('game');
+          if (newGame && newGame.scene.isActive() && newGame.levelId === nextLvl && newGame.b) {
+            bState = newGame.b.state;
+            if (bState === 'ready') break;
+          }
+          await new Promise(r => setTimeout(r, 100));
+        }
+
         const isActive = newGame && newGame.scene.isActive();
         const newLevelId = newGame ? newGame.levelId : null;
-        const bState = newGame && newGame.b ? newGame.b.state : null;
+        const battleLoadoutOk = newGame && newGame.b && JSON.stringify(newGame.b.loadout) === JSON.stringify(testEquipped);
 
         results.push({
           currLvl,
           nextLvl,
+          headerText,
+          headerOk,
+          slotsOk,
+          profileOk,
           isActive,
           newLevelId,
           bState,
-          passed: isActive && newLevelId === nextLvl && (bState === 'ready' || bState === 'intro')
+          battleLoadoutOk,
+          passed: isActive && newLevelId === nextLvl && bState === 'ready' && headerOk && slotsOk && profileOk && battleLoadoutOk
         });
       }
 
@@ -440,12 +519,15 @@ async function run() {
     const failed = b1Res.filter(r => !r.passed);
     if (failed.length > 0) {
       failed.forEach(f => {
-        const msg = `Next level stuck: L${f.currLvl} -> L${f.nextLvl} failed (active=${f.isActive}, id=${f.newLevelId}, state=${f.bState}, err=${f.error})`;
+        const msg = `Next level flow: L${f.currLvl} -> L${f.nextLvl} failed (header="${f.headerText}", slotsOk=${f.slotsOk}, profileOk=${f.profileOk}, active=${f.isActive}, id=${f.newLevelId}, state=${f.bState}, err=${f.error})`;
         console.error('  FAIL', msg);
         failures.push(msg);
       });
     } else {
-      console.log('  ✓ Bug 1 assertion passed: L1 win -> Next -> active L2, L2 win -> Next -> active L3 fresh.\n');
+      b1Res.forEach(r => {
+        console.log(`  ✓ L${r.currLvl} win -> Next -> Loadout shows "${r.headerText}" with preselected weapons -> Fling -> Battle L${r.nextLvl} ready.`);
+      });
+      console.log('  ✓ Bug 1 assertion passed: Next opens Loadout with correct header & preselected loadout, Fling reaches ready (L1->L2, L2->L3).\n');
     }
   } catch (err) {
     console.error('  Bug 1 check exception:', err);
@@ -615,9 +697,176 @@ async function run() {
   }
 
   // =========================================================================
-  // 7. ASSERT CONSOLE ERRORS & UNCAUGHT EXCEPTIONS
+  // 7. CAMERA RETURN AFTER SHOT ASSERTION (L1, L3, L5, L12)
   // =========================================================================
-  console.log('--- 7. ASSERTING CONSOLE LOG & EXCEPTION INTEGRITY ---');
+  console.log('--- 7. ASSERTING CAMERA RETURN TO SLING FRAME AFTER SHOT ---');
+  try {
+    const camRes = await evalCode(`(async () => {
+      const results = [];
+      const testLevels = [1, 3, 5, 12];
+      const W = 216;
+
+      for (const lvl of testLevels) {
+        window.__mm.load(lvl);
+        await new Promise(r => setTimeout(r, 200));
+
+        const expectedCx = window.__mm.homeCx();
+        const expectedZoom = window.__mm.homeZoom();
+
+        // Fire a shot toward the fort
+        window.__mm.fire({ angleDeg: 50, power: 0.75 });
+
+        // Wait for the battle to reach 'ready' again
+        let reachedReady = false;
+        let lastState = '';
+        for (let t = 0; t < 120; t++) {
+          const b = window.__mm.battle();
+          if (b) {
+            lastState = b.state;
+            if (b.state === 'ready') {
+              reachedReady = true;
+              break;
+            }
+          }
+          await new Promise(r => setTimeout(r, 50));
+        }
+
+        if (!reachedReady) {
+          results.push({
+            lvl,
+            reachedReady: false,
+            lastState,
+            passed: false,
+            error: 'Battle did not reach ready state after shot within 6s (state: ' + lastState + ')'
+          });
+          continue;
+        }
+
+        // Wait up to 3 s, assert |view.cx - homeCx| < 3 and |view.z - homeZoom| < 0.02.
+        // Also assert the sling is still at 22-26% of the visible width.
+        let easedHome = false;
+        let finalCx = 0;
+        let finalZ = 0;
+        let finalFrac = 0;
+        let cxDiff = 999;
+        let zDiff = 999;
+        let fracOk = false;
+
+        const tStart = Date.now();
+        while (Date.now() - tStart < 3000) {
+          const b = window.__mm.battle();
+          finalCx = b.view.cx;
+          finalZ = b.view.z;
+          cxDiff = Math.abs(finalCx - expectedCx);
+          zDiff = Math.abs(finalZ - expectedZoom);
+
+          const Vw = W / finalZ;
+          const leftEdge = finalCx - Vw / 2;
+          const slingScreenX = (b.slingX - leftEdge) * finalZ;
+          finalFrac = slingScreenX / W;
+          fracOk = finalFrac >= 0.22 && finalFrac <= 0.26;
+
+          if (cxDiff < 3 && zDiff < 0.02 && fracOk) {
+            easedHome = true;
+            break;
+          }
+          await new Promise(r => setTimeout(r, 50));
+        }
+
+        results.push({
+          lvl,
+          reachedReady: true,
+          easedHome,
+          finalCx: Math.round(finalCx * 10) / 10,
+          expectedCx: Math.round(expectedCx * 10) / 10,
+          cxDiff: Math.round(cxDiff * 10) / 10,
+          finalZ: Math.round(finalZ * 1000) / 1000,
+          expectedZoom: Math.round(expectedZoom * 1000) / 1000,
+          zDiff: Math.round(zDiff * 1000) / 1000,
+          slingFrac: Math.round(finalFrac * 1000) / 1000,
+          fracOk,
+          passed: reachedReady && easedHome
+        });
+      }
+
+      // Check free view preservation, view-all reset, and consumable reset
+      window.__mm.load(1);
+      await new Promise(r => setTimeout(r, 200));
+      const expCx = window.__mm.homeCx();
+      const expZoom = window.__mm.homeZoom();
+      let b = window.__mm.battle();
+      b.view.cx = 200;
+      b.view.free = true;
+      await new Promise(r => setTimeout(r, 200));
+      const freePreserved = b.view.free === true && Math.abs(b.view.cx - 200) < 1;
+
+      // View-all button resets free view back to home framing
+      window.__mm.toggleView();
+      await new Promise(r => setTimeout(r, 400));
+      b = window.__mm.battle();
+      const toggleResetOk = b.view.free === false && Math.abs(b.view.cx - expCx) < 3 && Math.abs(b.view.z - expZoom) < 0.02;
+
+      // Consumable use clears free view and eases home
+      window.__mm.give({ unlockAll: true });
+      window.__mm.load(1);
+      await new Promise(r => setTimeout(r, 200));
+      b = window.__mm.battle();
+      b.view.cx = 200;
+      b.view.free = true;
+      window.__mm.pressConsumable(0);
+      window.__mm.targetTap(200, 200);
+      const freeClearedOnSpend = b.view.free === false;
+      let consumableHomeOk = false;
+      const tCons = Date.now();
+      while (Date.now() - tCons < 3000) {
+        if (Math.abs(b.view.cx - expCx) < 3 && Math.abs(b.view.z - expZoom) < 0.02) {
+          consumableHomeOk = true;
+          break;
+        }
+        await new Promise(r => setTimeout(r, 50));
+      }
+
+      results.push({
+        lvl: 'free_and_consumable_checks',
+        reachedReady: true,
+        freePreserved,
+        toggleResetOk,
+        freeClearedOnSpend,
+        consumableHomeOk,
+        passed: freePreserved && toggleResetOk && freeClearedOnSpend && consumableHomeOk
+      });
+
+      return results;
+    })()`);
+
+    const failed = camRes.filter(r => !r.passed);
+    if (failed.length > 0) {
+      failed.forEach(f => {
+        const msg = f.lvl === 'free_and_consumable_checks'
+          ? `Free & consumable camera checks fail: freePreserved=${f.freePreserved}, toggleResetOk=${f.toggleResetOk}, freeCleared=${f.freeClearedOnSpend}, consumableHomeOk=${f.consumableHomeOk}`
+          : `Level ${f.lvl} camera return fail: reachedReady=${f.reachedReady}, easedHome=${f.easedHome}, cxDiff=${f.cxDiff} (target <3), zDiff=${f.zDiff} (target <0.02), slingFrac=${(f.slingFrac * 100).toFixed(1)}% (target 22-26%), err=${f.error || 'none'}`;
+        console.error('  FAIL', msg);
+        failures.push(msg);
+      });
+    } else {
+      camRes.forEach(r => {
+        if (r.lvl === 'free_and_consumable_checks') {
+          console.log(`  ✓ Free/pinch view preserved without forced return; toggleView resets to home; consumable use resets free and returns home.`);
+        } else {
+          console.log(`  ✓ Level ${r.lvl}: shot fired -> ready reached -> view returned to cx=${r.finalCx} (|diff|=${r.cxDiff} < 3), z=${r.finalZ} (|diff|=${r.zDiff} < 0.02), sling at ${(r.slingFrac * 100).toFixed(1)}% width.`);
+        }
+      });
+      console.log('  ✓ Camera return assertion passed: L1, L3, L5, L12 return to sling frame within 3s after shot.\n');
+    }
+  } catch (err) {
+    console.error('  Camera return check exception:', err);
+    failures.push(`Camera return exception: ${err.message}`);
+  }
+
+  // =========================================================================
+  // 8. ASSERT CONSOLE ERRORS & UNCAUGHT EXCEPTIONS
+  // =========================================================================
+  console.log('--- 8. ASSERTING CONSOLE LOG & EXCEPTION INTEGRITY ---');
   if (consoleErrors.length > 0) {
     consoleErrors.forEach((e) => {
       console.error('  Browser console error:', e);

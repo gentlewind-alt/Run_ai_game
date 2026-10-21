@@ -40,6 +40,7 @@ function spend(b: BattleState, i: number, target?: { x: number; y: number; ent?:
   b.ui.consumableUsed(i);
   sfx.click();
   slot.impl.use(b.ctx, slot.params, target);
+  b.view.free = false;
 }
 
 /** A tap in the world while a targeted item is armed. Returns true if the tap was taken. */

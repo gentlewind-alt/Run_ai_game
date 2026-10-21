@@ -161,6 +161,7 @@ export function onMove(b: BattleState, p: Phaser.Input.Pointer): void {
     zoomBy(b, d / v.pinchPrev, (p1.x + p2.x) / 2);
     v.pinchPrev = d;
   } else if (v.panLast !== null && p.isDown) {
+    b.scene.tweens.killTweensOf(v);
     v.cx = clampCx(b, v.cx - (p.x - v.panLast) / v.z, v.z);
     v.panLast = p.x;
     v.free = true;

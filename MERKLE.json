@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "cbcbe2635522192c271605d582631c778112b9d95e6e98f758cb306c875b2a7a",
+  "hash": "0ebafbba96a2c94b54c4b985ed4d713f8344a42d83cd1ee5005547be1a19115e",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "a7b614fda25a71ba337bff8067b6912084458686679bc054575c36bd43be2d46",
+      "hash": "1ddaeb04014914343ba4c87182163281a878795be32c9ba530cbe2265f7d9a60",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "9167aefd875f4de55ab173a3637f26337dd1b7b40b7edb88a25aea424ced77e8",
+          "hash": "f07f4c384557d97613ddbf792cca4eac7474b4d6edbed402cff97665c2049070",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -124,11 +124,25 @@
               "size": 2308
             },
             {
+              "name": "agy_task_camera.md",
+              "path": "docs/handoff/agy_task_camera.md",
+              "type": "file",
+              "hash": "e64dd49da7e42c16052fc70815332a30219c0c4bb0cee4a1efa55f1a47d1fd4e",
+              "size": 1461
+            },
+            {
               "name": "agy_task_merkle.md",
               "path": "docs/handoff/agy_task_merkle.md",
               "type": "file",
               "hash": "8f51abd4ec780cdc3a9138a485a54559caf2e15237b660bbe74de999c30657e9",
               "size": 1937
+            },
+            {
+              "name": "agy_task_nextloadout.md",
+              "path": "docs/handoff/agy_task_nextloadout.md",
+              "type": "file",
+              "hash": "b4302ac581c5f26da8d0916d44270fd135262fe3b1f8e00b867a5753932f8365",
+              "size": 926
             },
             {
               "name": "agy_task_phone.md",
@@ -190,8 +204,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "cd2175791f46ddd3f50718224ed0f173186ca63b9d3314fea3c747d4a49e1b30",
-              "size": 43648
+              "hash": "3fe509bb85df5baf2da1664dce46fa366c29273b2177f823aa3d4be4fbebf5d7",
+              "size": 48910
             },
             {
               "name": "ref_angry_birds_layout.png",
@@ -415,8 +429,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "abadda224ccb1842c1d29b9e4bed781b5525adf13e271ababa73ef1a9a8566f9",
-              "size": 6564
+              "hash": "c7e144d27f6675b110a24803bbdaefdbee889e98c269a7b061695b4593dfe474",
+              "size": 6880
             }
           ]
         },
@@ -547,7 +561,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "7fd81b5c5f62e57c2a372510d9ed3193e5fb7f8b55ebc2d75a031996a59c611a",
+      "hash": "18e29206c1bf94c5250786f6a29958cb9cafcf13cdfaa567c4782359b02715ca",
       "children": [
         {
           "name": ".gitignore",
@@ -910,7 +924,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "ffbd3be0806de27c282f65013ca85fd6aff11aca5ab05900585fc86897847e7d",
+          "hash": "a5b8aecb34b3f53738ca013804ac94f7ea5762b5e94441ceaf4c3b1163c5f268",
           "children": [
             {
               "name": "art",
@@ -1009,7 +1023,7 @@
               "name": "battle",
               "path": "game/src/battle",
               "type": "dir",
-              "hash": "f3e1fbe12dc63145bef61efd4a7b5b90caee26a8f8cbaae5a3c4c77eddf1a501",
+              "hash": "e5dc64ca419e37134293c3896dc40523c78f8d9a4d668c9ab7f643b8bb3d9b94",
               "children": [
                 {
                   "name": "artifacts.ts",
@@ -1029,8 +1043,8 @@
                   "name": "camera.ts",
                   "path": "game/src/battle/camera.ts",
                   "type": "file",
-                  "hash": "c5c14b0eda8f7c20249aedd974ab06fa7a728ac487bac2ece7420bf994b2b9a3",
-                  "size": 5815
+                  "hash": "d30f54b10de9b017c7cce2339e3a24ae52f06b5583a80d442ca62cf951c6d6ae",
+                  "size": 6374
                 },
                 {
                   "name": "combo.ts",
@@ -1043,8 +1057,8 @@
                   "name": "consumables.ts",
                   "path": "game/src/battle/consumables.ts",
                   "type": "file",
-                  "hash": "c89e3b3f00552af2af54a03bd87cd3095534c06aa1bd1d0c411f988d705b8ff5",
-                  "size": 2534
+                  "hash": "07525c3afe0cac0e0e48a9293d96b854e9c63ad59c354acc105e73ec085e2854",
+                  "size": 2557
                 },
                 {
                   "name": "ctxImpl.ts",
@@ -1113,8 +1127,8 @@
                   "name": "sling.ts",
                   "path": "game/src/battle/sling.ts",
                   "type": "file",
-                  "hash": "1ae93d7febdac737df30dfb39e5a9009c006e0cae3b808382290d8624fa7dd35",
-                  "size": 10849
+                  "hash": "a6b851f775ed74a4c39b949aeb3c2a58f813ad2f05e2e6fcdd1488cb05718715",
+                  "size": 10885
                 },
                 {
                   "name": "state.ts",
@@ -1502,14 +1516,14 @@
               "name": "debug",
               "path": "game/src/debug",
               "type": "dir",
-              "hash": "0cc7933c6478dc1f655d559e479f0169d7713450e9d4c15d8167ad7fbba784fc",
+              "hash": "9a9a63b879d823370da6d6806edf9204db5a2a8772026c89caf71ed7211c5301",
               "children": [
                 {
                   "name": "testHook.ts",
                   "path": "game/src/debug/testHook.ts",
                   "type": "file",
-                  "hash": "9dd01c2eb751d3d7f9b4d21853a0e01c8739730617a0c6f6186b72776eee65f8",
-                  "size": 8967
+                  "hash": "fb61258c678cfbdad0319da6db0aacad4e7f07d99725c1e52db99879a0c73b07",
+                  "size": 9152
                 }
               ]
             },
@@ -1560,7 +1574,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "1a5ff809f8de2cc8327c2611758956c5b6f4697304a41c7bf808ebd4c816d084",
+              "hash": "c1229c2bc89b5bfb221c7f82d8ebde67ea4ce520c11c8be5760fff3c37935f57",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -1601,8 +1615,8 @@
                   "name": "ResultsScene.ts",
                   "path": "game/src/scenes/ResultsScene.ts",
                   "type": "file",
-                  "hash": "eec8f62d3ca7f3603612a9abe79fceec8b46f1b0ca444da3b418904ff3e2d33a",
-                  "size": 7882
+                  "hash": "69a31bb7b05ea481880e45e8ed62c6c952598cbfefedf924b89a0be9c9407236",
+                  "size": 7803
                 },
                 {
                   "name": "ShopScene.ts",
@@ -1706,7 +1720,7 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "f89dab63a5df8d5d2779dacbc6cbdf183a1d7f4d65cf47c23b1eda5b945d6148",
+      "hash": "dc1bed397c2f7d1679c19e39bc05813f715c0b527cc844626ae21b053d2200cf",
       "children": [
         {
           "name": "agy_share.mjs",
@@ -1733,8 +1747,8 @@
           "name": "regress.mjs",
           "path": "tools/regress.mjs",
           "type": "file",
-          "hash": "a4410ed49bf460ea8cc5aed225d662f20f1fd0220e8cf05b3880934be8d23c1f",
-          "size": 25109
+          "hash": "b495aa38bdfdb8d8a373d395b4349e7255b71d129b1cf032de546c0660790438",
+          "size": 35167
         },
         {
           "name": "test_l12_solver.mjs",

@@ -42,6 +42,7 @@ export function setView(b: BattleState, z: number, cx: number): void {
 
 export function zoomBy(b: BattleState, f: number, focusScreenX: number): void {
   if (!b.settings.features.zoom) return;
+  b.scene.tweens.killTweensOf(b.view);
   const v = b.view;
   const z0 = v.z;
   const z1 = Phaser.Math.Clamp(z0 * f, minZoom(b), b.settings.camera.maxZoom);
@@ -55,10 +56,16 @@ export function zoomBy(b: BattleState, f: number, focusScreenX: number): void {
 export function toggleView(b: BattleState): void {
   if (!b.settings.features.zoom) return;
   if (b.state === 'intro' || b.state === 'won' || b.state === 'lost') return;
-  const fit = b.view.z > minZoom(b) + 0.01 && b.worldW > W;
-  b.view.free = fit;
+  const toHome = b.view.free;
+  if (!toHome && b.worldW <= W) return;
+  b.view.free = !toHome;
+  b.scene.tweens.killTweensOf(b.view);
   b.scene.tweens.add({
-    targets: b.view, z: fit ? minZoom(b) : homeZoom(b), cx: fit ? b.worldW / 2 : homeCx(b), duration: b.settings.camera.toggleMs, ease: 'Sine.inOut',
+    targets: b.view,
+    z: toHome ? homeZoom(b) : minZoom(b),
+    cx: toHome ? homeCx(b) : b.worldW / 2,
+    duration: b.settings.camera.toggleMs,
+    ease: 'Sine.inOut',
   });
 }
 
@@ -75,15 +82,28 @@ function followPos(b: BattleState): { x: number; y: number } | null {
 export function updateCamera(b: BattleState): void {
   const v = b.view;
   const C = b.settings.camera;
-  if (!v.free) {
-    let target: number | null = null;
+  if (!v.free && !b.scene.tweens.isTweening(v)) {
+    let targetCx: number | null = null;
+    let targetZ: number | null = null;
     const fp = followPos(b);
-    if (b.state === 'flying' && fp && C.followShot) target = fp.x + W * C.followLead;
-    else if (b.state === 'settling' && b.settleSteps > b.tune.flow.homeSettleSteps) target = homeCx(b);
-    if (target !== null) {
-      const t = clampCx(b, target, v.z);
+    if (b.state === 'flying' && fp && C.followShot) {
+      targetCx = fp.x + W * C.followLead;
+    } else if (b.state === 'settling' && b.settleSteps > b.tune.flow.homeSettleSteps) {
+      targetCx = homeCx(b);
+      targetZ = homeZoom(b);
+    } else if (b.state === 'loading' || b.state === 'ready') {
+      targetCx = homeCx(b);
+      targetZ = homeZoom(b);
+    }
+    if (targetCx !== null) {
+      const t = clampCx(b, targetCx, v.z);
       v.cx += (t - v.cx) * C.followEase;
       if (Math.abs(v.cx - t) < 0.5) v.cx = t;
+    }
+    if (targetZ !== null) {
+      const tz = Phaser.Math.Clamp(targetZ, minZoom(b), C.maxZoom);
+      v.z += (tz - v.z) * C.followEase;
+      if (Math.abs(v.z - tz) < 0.005) v.z = tz;
     }
   }
   setView(b, v.z, v.cx);

@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.8.0 (Stages 3-6, private), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
+**Current build:** v1.9.0 (Stages 3-6, private), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -48,6 +48,8 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S2-new3 | Fall and impact damage for monsters | review | tuning.fallThreshold/fallK/debrisK |
 | S-merkle | Merkle-tree repo index (`tools/merkle.mjs`) | done | agy | 10-21 | seal, changed, verify, MERKLE.json/md |
 | S6-bugs1 | Three phone-test bugs (v1.7.0) | done | agy | 10-21 | next level stuck, weapon text overlap, sling/fort framing |
+| S6-loadout | Next level goes through Loadout screen | done | agy | 10-21 | results Next -> loadout, preselected weapons preserved, regress assertion updated |
+| S6-camera | Camera return to sling frame after shot | done | agy | 10-21 | ease to homeCx and homeZoom after shot/consumable/toggleView, regress check |
 
 ## Parallel lanes (once S2-03 is done)
 

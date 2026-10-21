@@ -76,7 +76,7 @@ export default class ResultsScene extends Phaser.Scene {
     const go = (key: string, payload?: object): void => { sfx.click(); goTo(this, key, payload); };
     let y = py + 148;
     if (d.won) {
-      if (hasNext) makeButton(this, W / 2, y, 128, 24, 'Next level', 'go', () => go('game', { level: next, loadout: profile.equipped.loadout?.length ? profile.equipped.loadout : d.loadout }), 3);
+      if (hasNext) makeButton(this, W / 2, y, 128, 24, 'Next level', 'go', () => go('loadout', { level: next }), 3);
       else makeButton(this, W / 2, y, 128, 24, 'Map', 'go', () => go('map'), 3);
       y += 28;
 
