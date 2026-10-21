@@ -1,14 +1,14 @@
 # Merkle Index
 
-Root hash: `4b9723dfddb37c89e2c9bb45a75a31dc7759a4592f50df37986098a377b5c8d7`
+Root hash: `339edb8e153ef3dca43d7ab9dadb8cc1f300ede2796058de15a29fe2504919b1`
 
 | Directory | Hash | Files | Purpose |
 |---|---|---|---|
-| `.` | `4b9723df` | 255 | MONSTER MASH: Slingshot Siege project root |
+| `.` | `339edb8e` | 254 | MONSTER MASH: Slingshot Siege project root |
 | `architecture` | `bdfe7a8d` | 5 | System design, module boundaries, data schemas, and agent workflow |
 | `catalogue` | `8baca4d1` | 3 | Four Realms source items (weapons, gear, consumables) for porting |
-| `docs` | `8a1e4542` | 98 | Project documentation, design briefs, status, and agent logs |
-| `docs/handoff` | `1368094b` | 83 | Agent coordination: status board, append-only logs, and task briefs |
+| `docs` | `d925a795` | 98 | Project documentation, design briefs, status, and agent logs |
+| `docs/handoff` | `f7afe737` | 83 | Agent coordination: status board, append-only logs, and task briefs |
 | `docs/handoff/shots` | `96008dfe` | 64 | - |
 | `docs/monster_mash` | `626828bb` | 9 | Design briefs, math models, platform reports, and review history |
 | `docs/release` | `17d9fc09` | 6 | - |

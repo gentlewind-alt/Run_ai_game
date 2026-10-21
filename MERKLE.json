@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "4b9723dfddb37c89e2c9bb45a75a31dc7759a4592f50df37986098a377b5c8d7",
+  "hash": "339edb8e153ef3dca43d7ab9dadb8cc1f300ede2796058de15a29fe2504919b1",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "8a1e4542071439d08d952e05fc7e1a23d412beaab6fc350a68416d9e4b4d8d79",
+      "hash": "d925a79511146d72455eefffdf7c9c2dc481c2577a8dde730e1a22471f7241eb",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "1368094b6287b5a1ff5f1d30774c0313098687ad8768d15ab568aba06798632e",
+          "hash": "f7afe7373b21a3d3b585238cb48f65b2ef1d30fbd65f56f63d014df07b90b1f8",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -218,8 +218,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "1fa660b6a094be094f46c322ccc073d956e83b2a4ab530aeb30a2d5923503437",
-              "size": 54621
+              "hash": "02a957aeca0c6977aa75b89f7b24e60b4195de11ff3b2c27d039070996f5b439",
+              "size": 54622
             },
             {
               "name": "ref_angry_birds_layout.png",
@@ -696,8 +696,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "c104250dbdc5fc2bc3b4273c91cf4320e525bbc49e91f40c13a6b7e748971d07",
-              "size": 7050
+              "hash": "30816f91e73110ae4abd064daebb3151316da16d726c2ab4af5e811d53785edf",
+              "size": 7051
             }
           ]
         },
@@ -1989,13 +1989,6 @@
       "type": "file",
       "hash": "ffad60fee349a7d6abe608adacb8217c594dc8f8ecde557f31bc3b367b689929",
       "size": 4535
-    },
-    {
-      "name": "regress_full.log",
-      "path": "regress_full.log",
-      "type": "file",
-      "hash": "d92f606e43114bc71a42c8a5a9e20e6ff3c6762826f7632372908d735902c3ca",
-      "size": 4790
     },
     {
       "name": "tools",

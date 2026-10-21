@@ -2,7 +2,7 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
-## 2026-10-21 · claude · v2.0.0 (private): responsive phone/tablet/desktop shell
+## 2026-10-21 · claude · v1.10.0 (private): responsive phone/tablet/desktop shell
 - Reviewed agy's S6-resp: 216x384 field unchanged; integer/smooth scaling, themed backdrop and frame, desktop wheel/pan/Space/Esc/R/M, live resize. Screenshots in `docs/handoff/shots/resp/`. Full regress passes (0 errors) but takes ~24 min; quick mode queued.
 - Next (owner-approved): Relic wave 1 (rarity, mini-bosses L4/L8, chests, pity shop, 6 weapons, 2 slingshots). Briefs `agy_task_relics*.md`.
 

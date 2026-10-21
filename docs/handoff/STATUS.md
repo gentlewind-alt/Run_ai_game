@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v2.0.0 (Stages 3-6, private), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
+**Current build:** v1.10.0 (Stages 3-6, private), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
