@@ -1,0 +1,14 @@
+# Task: responsive phone / tablet / desktop shell (phase 1) + feasibility note for phase 2
+
+Follow `docs/handoff/AGY_BRIEF.md` (design direction binding). Log entry first. Claim a new STATUS row `S6-resp`.
+
+Constraint (owner decision by Claude): the play field stays 216x384 portrait. Do NOT change `W`/`H`, level geometry, reach, or balance bands. Build a responsive shell around it:
+
+1. **Scaling.** Fit the field to any window with crisp pixels: integer scale (>=2x) when it fits without cropping, otherwise a smooth fit; never crop the field; `roundPixels` stays on; DPR cap per `game.config.json`. Works for 320x568, 375x812, 412x915, tablet 768x1024 and 1024x768 (landscape), desktop 1920x1080, ultrawide 2560x1080. No page scrollbars, no pull-to-refresh/overscroll, `touch-action: none` on the canvas, `100dvh` handling for mobile browser bars, safe-area insets respected (use `platform.safeArea()`).
+2. **Backdrop instead of bars.** Fill the area outside the field with a themed backdrop in `index.html`/CSS or a second canvas layer: dark dusk gradient with a subtle pixel-dither pattern in the Mash32 palette, and a soft frame/bevel around the field on tablet/desktop; on landscape show the realm name and tiny controls hint panel beside the field ("Drag to aim", "Wheel: zoom", "Esc: pause", "Space: ability"). Backdrop colour follows the active realm (hills/wood/keep) if cheap; never block input.
+3. **Desktop input.** Mouse wheel zooms (focus under cursor, via existing `zoomBy`), right/middle-drag pans (sets `view.free`), `Space` triggers the ability button, `Esc` pause (already), `R` restart from pause, `M` mute. Cursor: grab over sling. Pointer mapping must stay exact at every scale (verify `pointerWorld` and the UI camera after resize).
+4. **Live resize / rotation.** Window resize and orientation change during a battle and on every scene must not break camera framing, the pause overlay, Results panel or the iris cover; re-apply home framing if the view is not `free`.
+5. **Verification.** Extend `tools/audit_shots.mjs` or add `tools/responsive_shots.mjs`: screenshot Title, Map, Loadout, Battle and Results at all viewports above into `docs/handoff/shots/resp/`; assert in `tools/regress.mjs` that the canvas bounding box is fully inside the viewport, aspect 216:384 preserved, no scrollbars, a tap on the sling at each viewport produces the same world point, and a resize mid-battle keeps `|view.cx - homeCx| < 3` when not free. Review the screenshots yourself against 08_design_direction.md and fix ugly results.
+6. **Phase 2 feasibility note** (write in LOG.md only, no code): estimate effort and risk of letting the logical width vary (216..~288 for tablet, wider for landscape) with fixed height 384: which scenes hardcode `W`, what would change in the battle view (more visible fort = easier), and a recommendation.
+
+Run `npm run check`, `npm run build`, `npm run regress`, `node tools/merkle.mjs seal`. No commit or deploy.

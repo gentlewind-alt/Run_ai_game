@@ -117,6 +117,14 @@ export function updateAbilityBtn(b: BattleState, time: number): void {
 export function onDown(b: BattleState, p: Phaser.Input.Pointer, over: unknown[]): void {
   sfx.unlock();
   if (over.length || b.paused) return;
+  // Right or middle click drag initiates pan
+  if (p.button === 1 || p.button === 2) {
+    if (b.settings.features.zoom) {
+      b.view.panLast = p.x;
+      b.view.free = true;
+    }
+    return;
+  }
   if (b.targeting !== null) {
     const w = pointerWorld(b, p);
     if (targetTap(b, w.x, w.y)) return;
@@ -160,7 +168,7 @@ export function onMove(b: BattleState, p: Phaser.Input.Pointer): void {
     const d = Phaser.Math.Distance.Between(p1.x, p1.y, p2.x, p2.y);
     zoomBy(b, d / v.pinchPrev, (p1.x + p2.x) / 2);
     v.pinchPrev = d;
-  } else if (v.panLast !== null && p.isDown) {
+  } else if (v.panLast !== null && (p.isDown || b.scene.input.activePointer.isDown)) {
     b.scene.tweens.killTweensOf(v);
     v.cx = clampCx(b, v.cx - (p.x - v.panLast) / v.z, v.z);
     v.panLast = p.x;
@@ -265,5 +273,19 @@ export function drawOverlay(b: BattleState): void {
     g.fillStyle(C('0'), 1).fillRect(x - 1, y - 1, 16, 4);
     g.fillStyle(C('f'), 1).fillRect(x, y, 14, 2);
     g.fillStyle(C(e.hp / e.maxHp > 0.5 ? '5' : e.hp / e.maxHp > 0.25 ? '4' : '2'), 1).fillRect(x, y, Math.max(1, Math.round((14 * e.hp) / e.maxHp)), 2);
+  }
+}
+
+export function updateCursor(b: BattleState): void {
+  if (b.paused) {
+    b.scene.input.setDefaultCursor('default');
+    return;
+  }
+  if (b.state === 'aiming') {
+    b.scene.input.setDefaultCursor('grabbing');
+  } else if (b.state === 'ready' && screenDist(b, b.scene.input.activePointer, b.slingX, b.slingY) < b.tune.aimGrabRadius) {
+    b.scene.input.setDefaultCursor('grab');
+  } else {
+    b.scene.input.setDefaultCursor('default');
   }
 }

@@ -75,9 +75,16 @@ export function startBattle(b: BattleState): void {
   s.input.on('pointermove', (p: Phaser.Input.Pointer) => onMove(b, p));
   s.input.on('pointerup', () => onUp(b));
   s.input.on('pointerupoutside', () => onUp(b));
-  s.input.on('wheel', (_p: unknown, _o: unknown, _dx: number, dy: number) => zoomBy(b, dy > 0 ? 0.9 : 1.1, W / 2));
+  s.input.on('wheel', (p: Phaser.Input.Pointer, _o: unknown, _dx: number, dy: number) => {
+    if (b.paused || !b.settings.features.zoom) return;
+    const factor = dy > 0 ? 0.88 : 1.14;
+    zoomBy(b, factor, p.x);
+  });
   s.input.addPointer(1);
-  s.input.keyboard?.on('keydown-SPACE', () => activateAbility(b));
+  s.input.keyboard?.on('keydown-SPACE', (e: KeyboardEvent) => {
+    e?.preventDefault?.();
+    if (!b.paused) activateAbility(b);
+  });
   installArtifacts(b);
   kindFor(b.level.kind)?.onStart?.(b.ctx, b.level);
   b.events.emit('level:start', { levelId: b.levelId, kind: b.level.kind ?? 'siege' });

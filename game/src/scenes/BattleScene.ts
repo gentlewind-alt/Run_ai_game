@@ -1,16 +1,17 @@
 import Phaser from 'phaser';
-import { toggleView } from '../battle/camera';
+import { homeCx, homeZoom, setView, toggleView } from '../battle/camera';
 import { createBattle, buildBattle, startBattle } from '../battle/setup';
 import { update } from '../battle/loop';
-import { activateAbility, skipToReady } from '../battle/sling';
+import { activateAbility, skipToReady, updateCursor } from '../battle/sling';
 import type { BattleState } from '../battle/state';
 import { events } from '../core/events';
 import { irisOpen } from '../core/flow';
 import { snapshot } from '../debug/testHook';
 import { iconKey } from '../art/icons';
 import { music } from '../audio/music';
+import { sfx } from '../audio/sfx';
 import { pressConsumable } from '../battle/consumables';
-import { hasSeenHint, markHintSeen } from '../core/profile';
+import { hasSeenHint, markHintSeen, setMuted } from '../core/profile';
 import { goTo } from '../core/flow';
 import { platform } from '../platform';
 import { createHud, type Hud } from '../ui/hud';
@@ -64,6 +65,31 @@ export default class BattleScene extends Phaser.Scene {
     music.play(bgTheme);
     irisOpen(this, (fn) => b.inUi(fn));
     this.input.keyboard?.on('keydown-ESC', () => this.setPaused(!b.paused));
+    this.input.keyboard?.on('keydown-R', () => {
+      if (b.paused) {
+        b.paused = false;
+        this.hud.hidePause();
+        this.scene.restart({ level: this.levelId, loadout: b.loadout });
+      }
+    });
+    this.input.keyboard?.on('keydown-M', () => {
+      sfx.unlock();
+      const next = !sfx.muted;
+      setMuted(next);
+      sfx.setMuted(next);
+      this.hud.setMuted(next);
+    });
+    const onResize = (): void => {
+      if (!b.view.free && b.state !== 'won' && b.state !== 'lost') {
+        b.view.cx = homeCx(b);
+        b.view.z = homeZoom(b);
+        setView(b, b.view.z, b.view.cx);
+      }
+    };
+    this.scale.on(Phaser.Scale.Events.RESIZE, onResize);
+    this.events.once('shutdown', () => {
+      this.scale.off(Phaser.Scale.Events.RESIZE, onResize);
+    });
     if (!this.lifecycleWired) {
       this.lifecycleWired = true;
       platform.lifecycle.onPause(() => { if (this.scene.isActive('game')) this.setPaused(true); });
@@ -102,6 +128,7 @@ export default class BattleScene extends Phaser.Scene {
 
   update(_t: number, delta: number): void {
     update(this.b, delta, this.game.getTime());
+    updateCursor(this.b);
   }
 
   // ------------------------------------------------------------------ dev and test hooks

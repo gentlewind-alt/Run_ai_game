@@ -9,7 +9,25 @@
     <title>MONSTER MASH: Slingshot Siege</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="shell">
+      <div id="backdrop"></div>
+      <div id="app"></div>
+      <div id="desktop-hud" class="hidden" aria-hidden="true">
+        <div id="hud-realm-badge" class="hud-sticker">
+          <div class="hud-label">Realm</div>
+          <div id="hud-realm-name" class="hud-value">Goblin Hills</div>
+        </div>
+        <div id="hud-controls-panel" class="hud-sticker">
+          <div class="hud-title">Controls</div>
+          <div class="hud-row"><span class="key">Drag</span><span class="action">Aim</span></div>
+          <div class="hud-row"><span class="key">Wheel</span><span class="action">Zoom</span></div>
+          <div class="hud-row"><span class="key">Space</span><span class="action">Ability</span></div>
+          <div class="hud-row"><span class="key">Esc</span><span class="action">Pause</span></div>
+          <div class="hud-row"><span class="key">R</span><span class="action">Restart</span></div>
+          <div class="hud-row"><span class="key">M</span><span class="action">Mute</span></div>
+        </div>
+      </div>
+    </div>
 
     <div id="dialog-overlay" class="hidden">
       <div id="dialog-box">

@@ -1,4 +1,4 @@
-/* Global styles for the Phaser game */
+/* Global styles for Monster Mash */
 * {
   box-sizing: border-box;
 }
@@ -8,24 +8,153 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overscroll-behavior: none;
 }
 
 body {
-  background: #000000;
+  background: #111322;
   touch-action: none;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  font-family: monospace, sans-serif;
+}
+
+#shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  --realm-glow: rgba(41, 54, 111, 0.38);
+  --realm-tint: #16192b;
+}
+
+#backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  transition: background 0.35s ease;
+  background-color: #111322;
 }
 
 #app {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  display: block;
+}
+
+#app.beveled-frame {
+  box-shadow:
+    0 0 0 2px #1a1c2c,
+    0 0 0 3px rgba(244, 244, 244, 0.12),
+    0 12px 32px rgba(17, 19, 34, 0.8),
+    0 2px 8px rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
 }
 
 canvas {
   display: block;
+  touch-action: none;
+  width: 100% !important;
+  height: 100% !important;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Landscape Desktop HUD */
+#desktop-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+}
+
+#desktop-hud.hidden {
+  display: none !important;
+}
+
+.hud-sticker {
+  position: absolute;
+  background: #1a1c2c;
+  border: 2px solid #333c57;
+  border-top: 2px solid #566c86;
+  box-shadow: 0 4px 0 #111322, 0 8px 16px rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  padding: 6px 10px;
+  width: 120px;
+  color: #f4f4f4;
+  font-size: 8px;
+  line-height: 1.2;
+}
+
+#hud-realm-badge .hud-label {
+  color: #94b0c2;
+  font-size: 7px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+#hud-realm-badge .hud-value {
+  color: #ffcd75;
+  font-size: 8px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#hud-controls-panel .hud-title {
+  color: #ffcd75;
+  font-size: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  text-align: center;
+  border-bottom: 1px solid #333c57;
+  padding-bottom: 3px;
+}
+
+#hud-controls-panel .hud-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+#hud-controls-panel .hud-row:last-child {
+  margin-bottom: 0;
+}
+
+#hud-controls-panel .key {
+  background: #333c57;
+  color: #ffcd75;
+  border: 1px solid #1a1c2c;
+  border-radius: 2px;
+  padding: 1px 4px;
+  font-size: 7px;
+  font-weight: bold;
+  min-width: 32px;
+  text-align: center;
+}
+
+#hud-controls-panel .action {
+  color: #f4f4f4;
+  font-size: 7px;
 }
 
 /* HTML Dialog Styles */

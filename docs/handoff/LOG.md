@@ -2,6 +2,63 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · claude · v2.0.0 (private): responsive phone/tablet/desktop shell
+- Reviewed agy's S6-resp: 216x384 field unchanged; integer/smooth scaling, themed backdrop and frame, desktop wheel/pan/Space/Esc/R/M, live resize. Screenshots in `docs/handoff/shots/resp/`. Full regress passes (0 errors) but takes ~24 min; quick mode queued.
+- Next (owner-approved): Relic wave 1 (rarity, mini-bosses L4/L8, chests, pity shop, 6 weapons, 2 slingshots). Briefs `agy_task_relics*.md`.
+
+## 2026-10-21 · agy · S6-resp: Responsive phone / tablet / desktop shell (done)
+- **What:**
+  - Implemented card `S6-resp` for responsive phone / tablet / desktop shell (Phase 1).
+  - Preserved internal logical playfield at fixed 216x384 portrait without touching W/H constants, level geometry, reach, or balance bands.
+  - Responsive scaling & shell in `game/src/core/responsive.ts`:
+    - Generates 8x8 Bayer pixel-dither background texture procedurally matching Mash32 palette.
+    - Responsive scale computation: integer scale (>=2x) when it fits without cropping, smooth fit (<2x) for small viewports.
+    - Handles safe-area insets via `platform.safeArea()`.
+    - No page scrollbars, pull-to-refresh and overscroll disabled, `touch-action: none` on canvas, `100dvh` handling for mobile address bars. DPR cap per `game.config.json` (maxDpr: 1.5).
+    - Realm-reactive backdrop gradient tint (hills: emerald/moss, woods: violet/indigo, keep: ruby/crimson).
+    - Soft bevel frame around canvas on tablet and desktop (`.beveled-frame`).
+    - Landscape sticker panel beside field showing active realm name badge and controls hints ("Drag to aim", "Wheel: zoom", "Esc: pause", "Space: ability", "R: restart", "M: mute").
+  - Desktop input & shortcuts:
+    - Mouse wheel zoom with focus under cursor in `battle/setup.ts` (`zoomBy(b, factor, p.x)`).
+    - Right-click (button 2) and middle-click (button 1) drag-to-pan in `battle/sling.ts` (sets `b.view.free = true`).
+    - `Space` triggers active weapon ability (`onAbility`).
+    - `Esc` toggles pause menu.
+    - `R` restarts level from pause menu.
+    - `M` toggles audio mute globally (`platform.audio.setMuted`).
+    - Dynamic cursor states: `grab` / `grabbing` over slingshot band, `default` elsewhere.
+  - Live resize / orientation changes:
+    - `BattleScene` listens to `Phaser.Scale.Events.RESIZE` and window resize, preserving camera framing and re-applying home framing when `!b.view.free`.
+  - Phase 2 Feasibility Note (dynamic logical width 216..~288 with fixed height 384):
+    - *Scope & Code Impact*:
+      - Scenes hardcoding `W` (216): `TitleScene` (logo/button layout), `MapScene` (world bounds 3*W, realm headers, path nodes, level dots), `LoadoutScene` (header, 2-column card layout, fling button), `ShopScene` (tabs, card grids, balance counter), `BattleScene` & `hud.ts` (HUD tray slot spacing, ability button, pause button at W-18, score banner, iris wipes), `ResultsScene` (panel at W-32, center title, ghost dance positioning at W/2 +/- 68), `CreditsScene`, `core/flow.ts` (iris wipes).
+      - Camera framing: `battle/camera.ts` functions `homeCx`, `homeZoom`, `minZoom`, `panBounds` explicitly derive visible world width as `Vw = W / z`.
+    - *Battle & Gameplay Impact*:
+      - At 288x384 (4:3 tablet) or wider (landscape), visible width increases by 33% to 150%.
+      - The player would see both the slingshot and the fort simultaneously at standard zoom.
+      - Gameplay difficulty would drop noticeably because players would not need camera tracking/panning to spot target blocks or trace trajectories.
+      - Level boundaries (`worldW` = 600..700): wide landscape views would reveal arena edges unless ground and parallax sky layers are re-authored to 1000px+.
+    - *Effort & Risk*:
+      - Effort: High (~2-3 full days of refactoring UI anchoring, camera math, and level visual bounds).
+      - Risk: High. Introduces device-dependent game balance differences where tablet/desktop players have an unfair tactical advantage over mobile players.
+    - *Recommendation*: Keep Phase 1 architecture (fixed 216x384 logical playfield in responsive integer/smooth shell with themed backdrop). It guarantees 100% balance consistency across all devices, zero regression risk, and matches the authentic 16-bit arcade aesthetic.
+- **Checks:**
+  - `npm run check`: 0 errors, 1 warning (sandbox 99), 30-day daily check passes (100% deterministic), TypeScript passes.
+  - `npm run build`: built cleanly in production mode.
+  - `node tools/responsive_shots.mjs`: captured 35 screenshots (Title, Map, Loadout, Battle, Results across all 7 viewports: 320x568, 375x812, 412x915, 768x1024, 1024x768, 1920x1080, 2560x1080) in `docs/handoff/shots/resp/`. Verified visual fidelity against 08_design_direction.md.
+  - `npm run regress`: 9/9 test suites pass cleanly with exit code 0:
+    - 30-day daily generation & variety
+    - v1 save migration
+    - Levels 1-12 balance bands (0 one-shot wins)
+    - Next level transition (Bug 1: L1->L2, L2->L3 through loadout)
+    - Weapon card text / art clearance (Bug 2: 8/8 Loadout and 8/8 Shop cards)
+    - Slingshot & fort framing (Bug 3: 22-26% visible width across all levels)
+    - Camera return to sling frame after shot (L1, L3, L5, L12 return within 3s; free view & toggle reset & consumable reset pass)
+    - Responsive shell viewports assertion (all 7 resolutions inside viewport, 216:384 aspect preserved, no scrollbars, sling pointer mapping exact at (56, 262), mid-battle resize preserves home framing)
+    - 0 console errors and 0 uncaught exceptions recorded across all tests.
+  - `node tools/merkle.mjs seal`: sealed index.
+- **Deployed:** Not deployed (per instructions, no commit or deploy).
+
+
 ## 2026-10-21 · claude · v1.9.0 (private): Next opens Loadout, camera returns to sling after each shot
 - **Cause of camera bug:** v1.8.0 let the battle leave `settling` before the camera was home, and the camera only eased home while `settling`; fixed in `battle/camera.ts` (ease cx and zoom home in settling/loading/ready; view-all button resets a free view first). Regress covers L1, L3, L5, L12.
 - **Next level** goes through the Loadout screen again (equipped weapons preselected).

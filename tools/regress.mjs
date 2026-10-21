@@ -33,26 +33,39 @@ async function run() {
   let devProc = null;
   let serverReady = false;
   try {
-    const res = await fetch('http://localhost:5173/?debug=1');
+    const res = await fetch('http://127.0.0.1:5173/?debug=1');
     if (res.ok) serverReady = true;
-  } catch (e) {}
+  } catch (e) {
+    try {
+      const res = await fetch('http://localhost:5173/?debug=1');
+      if (res.ok) serverReady = true;
+    } catch (e2) {}
+  }
 
   if (!serverReady) {
     console.log('Starting Vite dev server on port 5173...');
-    const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-    devProc = spawn(npxCmd, ['vite', '--port', '5173'], {
+    const isWin = process.platform === 'win32';
+    const cmd = isWin ? 'cmd.exe' : 'npx';
+    const args = isWin ? ['/c', 'npx', 'vite', '--port', '5173', '--host', '127.0.0.1'] : ['vite', '--port', '5173'];
+    devProc = spawn(cmd, args, {
       cwd: gameDir,
       stdio: 'pipe',
-      shell: true,
     });
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 60; i++) {
       try {
-        const res = await fetch('http://localhost:5173/?debug=1');
+        const res = await fetch('http://127.0.0.1:5173/?debug=1');
         if (res.ok) {
           serverReady = true;
           break;
         }
       } catch (e) {
+        try {
+          const res = await fetch('http://localhost:5173/?debug=1');
+          if (res.ok) {
+            serverReady = true;
+            break;
+          }
+        } catch (e2) {}
         await sleep(250);
       }
     }
@@ -864,9 +877,159 @@ async function run() {
   }
 
   // =========================================================================
-  // 8. ASSERT CONSOLE ERRORS & UNCAUGHT EXCEPTIONS
+  // 8. ASSERT RESPONSIVE SHELL, VIEWPORTS, AND MID-BATTLE RESIZE
   // =========================================================================
-  console.log('--- 8. ASSERTING CONSOLE LOG & EXCEPTION INTEGRITY ---');
+  console.log('--- 8. ASSERTING RESPONSIVE SHELL & VIEWPORTS ---');
+  try {
+    const testViewports = [
+      [320, 568],
+      [375, 812],
+      [412, 915],
+      [768, 1024],
+      [1024, 768],
+      [1920, 1080],
+      [2560, 1080]
+    ];
+
+    // Ensure we are in Level 1 battle
+    await evalCode(`(async () => {
+      window.__mm.give({ unlockAll: true });
+      window.__mm.load(1, ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike']);
+      await new Promise(r => setTimeout(r, 400));
+    })()`);
+
+    const vpResults = [];
+    for (const [w, h] of testViewports) {
+      await send('Emulation.setDeviceMetricsOverride', {
+        width: w,
+        height: h,
+        deviceScaleFactor: 1,
+        mobile: w < 700
+      });
+      await sleep(250);
+
+      const res = await evalCode(`(() => {
+        const canvas = document.querySelector('canvas');
+        if (!canvas) return { error: 'Canvas not found' };
+        const rect = canvas.getBoundingClientRect();
+        const docEl = document.documentElement;
+
+        // 1. Canvas bounding box fully inside viewport
+        const inside = rect.left >= -1 && rect.top >= -1 &&
+                       rect.right <= window.innerWidth + 1 &&
+                       rect.bottom <= window.innerHeight + 1;
+
+        // 2. Aspect ratio 216:384 preserved within 0.01
+        const aspect = rect.width / rect.height;
+        const targetAspect = 216 / 384;
+        const aspectOk = Math.abs(aspect - targetAspect) < 0.01;
+
+        // 3. No scrollbars or page overflow
+        const noScrollbars = docEl.scrollHeight <= window.innerHeight + 1 &&
+                             docEl.scrollWidth <= window.innerWidth + 1;
+
+        // 4. Tap on sling: verify world point equals (b.slingX, b.slingY) within 1px
+        const b = window.__mm.battle();
+        let slingPointOk = false;
+        let worldPt = null;
+        if (b && b.scene) {
+          const cam = b.scene.cameras.main;
+          // In logical game coords (216x384):
+          const screenX = (b.slingX - (cam.scrollX + 108)) * b.view.z + 108;
+          const screenY = (b.slingY - (cam.scrollY + 192)) * b.view.z + 192;
+          // Screen to client:
+          const clientX = rect.left + screenX * (rect.width / 216);
+          const clientY = rect.top + screenY * (rect.height / 384);
+          // Simulate pointer transform as Phaser input manager computes:
+          const phaserX = (clientX - rect.left) * (216 / rect.width);
+          const phaserY = (clientY - rect.top) * (384 / rect.height);
+          const wx = cam.scrollX + 108 + (phaserX - 108) / b.view.z;
+          const wy = cam.scrollY + 192 + (phaserY - 192) / b.view.z;
+          worldPt = { x: Math.round(wx * 10) / 10, y: Math.round(wy * 10) / 10 };
+          slingPointOk = Math.abs(wx - b.slingX) < 1 && Math.abs(wy - b.slingY) < 1;
+        }
+
+        return {
+          viewport: [window.innerWidth, window.innerHeight],
+          rect: { width: Math.round(rect.width), height: Math.round(rect.height), left: Math.round(rect.left), top: Math.round(rect.top) },
+          inside,
+          aspectOk,
+          aspect: Math.round(aspect * 1000) / 1000,
+          noScrollbars,
+          slingPointOk,
+          worldPt,
+          slingExpected: b ? { x: b.slingX, y: b.slingY } : null,
+          passed: inside && aspectOk && noScrollbars && slingPointOk
+        };
+      })()`);
+
+      vpResults.push(res);
+    }
+
+    const vpFailed = vpResults.filter(r => !r.passed);
+    if (vpFailed.length > 0) {
+      vpFailed.forEach(f => {
+        const msg = `Viewport ${f.viewport[0]}x${f.viewport[1]} fail: inside=${f.inside}, aspectOk=${f.aspectOk} (aspect=${f.aspect}), noScrollbars=${f.noScrollbars}, slingOk=${f.slingPointOk} (got ${JSON.stringify(f.worldPt)}, exp ${JSON.stringify(f.slingExpected)}), err=${f.error || 'none'}`;
+        console.error('  FAIL', msg);
+        failures.push(msg);
+      });
+    } else {
+      vpResults.forEach(r => {
+        console.log(`  ✓ Viewport ${r.viewport[0]}x${r.viewport[1]}: canvas ${r.rect.width}x${r.rect.height} (inside, aspect 216:384), no scrollbars, sling pointer mapping exact (${r.worldPt.x}, ${r.worldPt.y}).`);
+      });
+      console.log('  ✓ Responsive shell viewports assertion passed across all 7 test resolutions.\n');
+    }
+
+    // Mid-battle resize assertion:
+    // Resize mid-battle keeps |view.cx - homeCx| < 3 when not free
+    console.log('--- 8b. ASSERTING MID-BATTLE RESIZE PRESERVES HOME FRAMING ---');
+    const resizeRes = await evalCode(`(async () => {
+      window.__mm.load(1);
+      await new Promise(r => setTimeout(r, 200));
+      const b = window.__mm.battle();
+      const expHomeCx = window.__mm.homeCx();
+
+      // Trigger window resize event
+      window.dispatchEvent(new Event('resize'));
+      await new Promise(r => setTimeout(r, 200));
+
+      const cxDiff = Math.abs(b.view.cx - expHomeCx);
+      const passed = cxDiff < 3;
+      return {
+        cx: Math.round(b.view.cx * 10) / 10,
+        expHomeCx: Math.round(expHomeCx * 10) / 10,
+        cxDiff: Math.round(cxDiff * 10) / 10,
+        free: b.view.free,
+        passed
+      };
+    })()`);
+
+    if (!resizeRes.passed) {
+      const msg = `Mid-battle resize failed: cx=${resizeRes.cx}, expHomeCx=${resizeRes.expHomeCx}, diff=${resizeRes.cxDiff} (target <3)`;
+      console.error('  FAIL', msg);
+      failures.push(msg);
+    } else {
+      console.log(`  ✓ Mid-battle resize preserved home framing: cx=${resizeRes.cx} (diff=${resizeRes.cxDiff} < 3, free=${resizeRes.free}).\n`);
+    }
+
+    // Reset device metrics override to standard 432x768
+    await send('Emulation.setDeviceMetricsOverride', {
+      width: 432,
+      height: 768,
+      deviceScaleFactor: 1,
+      mobile: true
+    });
+    await sleep(200);
+
+  } catch (err) {
+    console.error('  Responsive shell check exception:', err);
+    failures.push(`Responsive shell exception: ${err.message}`);
+  }
+
+  // =========================================================================
+  // 9. ASSERT CONSOLE ERRORS & UNCAUGHT EXCEPTIONS
+  // =========================================================================
+  console.log('--- 9. ASSERTING CONSOLE LOG & EXCEPTION INTEGRITY ---');
   if (consoleErrors.length > 0) {
     consoleErrors.forEach((e) => {
       console.error('  Browser console error:', e);

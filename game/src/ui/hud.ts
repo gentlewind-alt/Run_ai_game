@@ -25,6 +25,7 @@ export interface Hud {
   mash(mult: number): void;
   showPause(h: { resume: () => void; restart: () => void; map: () => void }): void;
   hidePause(): void;
+  setMuted(m: boolean): void;
 }
 
 export function createHud(
@@ -181,6 +182,9 @@ export function createHud(
     hidePause() {
       pauseObjs.forEach((p) => p.destroy());
       pauseObjs = [];
+    },
+    setMuted(m) {
+      muteBtn.setTexture(m ? 'spk_off' : 'spk_on');
     },
   };
 }
