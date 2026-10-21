@@ -1,0 +1,3 @@
+# Task: phone-readiness pass (finish what agy_task_wrapup.md step 4 left)
+
+Follow `docs/handoff/AGY_BRIEF.md`. Using `tools/audit_shots.mjs` and `window.__mm`, at 432x768: play levels 1-12 with the greedy solver; fail on any console error; measure median frame time on L12 and on a daily level (must be under 17 ms at normal CPU); load a v1 save fixture and confirm it migrates without losing coins or stars. Fix anything found. Record mindflash as resolved (data 60 steps = 1 s, matches description; the earlier 240 was a reporting error). Append a LOG.md entry with results, run `npm run check`, `npm run build`, `node tools/merkle.mjs seal`. Do not commit or deploy.

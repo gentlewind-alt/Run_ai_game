@@ -341,11 +341,11 @@ async function run() {
     const pSteps = b.consumables[mfIdx].params.steps;
     window.__mm.pressConsumable(mfIdx);
     const stockAfter = window.__mm.profile().owned.consumables['c_mindflash'];
-    const stuns = b.monsters.map(m => m.status.stun);
+    const stuns = b.ctx.monsters().map(m => m.status.stun);
     window.__mm.run(30);
-    const stunsMid = b.monsters.map(m => m.status.stun);
+    const stunsMid = b.ctx.monsters().map(m => m.status.stun);
     window.__mm.run(30);
-    const stunsEnd = b.monsters.map(m => m.status.stun);
+    const stunsEnd = b.ctx.monsters().map(m => m.status.stun);
     return {
       mfIdx,
       pSteps,
@@ -373,42 +373,55 @@ async function run() {
   console.log('✓ Mindflash verified: 60 fixed steps (1.0 s) stun, stock decrements, timers countdown to 0.\n');
 
   // -------------------------------------------------------------------------
-  // VERIFICATION 2: SAVE FIXTURE MIGRATION & SANITIZATION
+  // VERIFICATION 2: SAVE FIXTURE MIGRATION & SANITIZATION (Coins & Stars Preservation)
   // -------------------------------------------------------------------------
   console.log('--- VERIFYING V1 SAVE FIXTURE MIGRATION ---');
-  const saveResult = await evalCode(`(() => {
+  const saveResult = await evalCode(`(async () => {
     const v1Fixture = {
       version: 1,
       coins: 350,
       owned: { weapons: ['w_militia_blade', 'w_iron_cleaver'], artifacts: ['r_gale_eye'], consumables: { c_mindflash: 2 } },
       upgrades: { w_militia_blade: 2 },
-      stars: { '1': 3, '2': 2 },
+      stars: { '1': 3, '2': 2, '3': 3, '4': 1 },
       equipped: { loadout: ['w_militia_blade', 'w_iron_cleaver'], artifacts: ['r_gale_eye'] }
     };
     const sanitized = window.__mm.sanitizeSave(v1Fixture);
+    await window.__mm.platform().storage.set('save', JSON.stringify(v1Fixture));
+    const loadStatus = await window.__mm.loadSave();
+    const prof = window.__mm.profile();
     return {
-      version: sanitized.version,
-      coins: sanitized.coins,
-      weaponsCount: sanitized.owned.weapons.length,
-      artifactsCount: sanitized.owned.artifacts.length,
-      consumables: sanitized.owned.consumables,
-      cosmetics: sanitized.owned.cosmetics,
-      upgrades: sanitized.upgrades,
-      equipped: sanitized.equipped,
-      stars: sanitized.stars,
-      hasDaily: typeof sanitized.daily?.streak === 'number',
-      dailyStreak: sanitized.daily?.streak,
-      hasFlags: typeof sanitized.flags === 'object',
-      settingsMuted: sanitized.settings?.muted,
-      settingsMusicOn: sanitized.settings?.musicOn,
+      loadStatus,
+      sanitizedVersion: sanitized.version,
+      sanitizedCoins: sanitized.coins,
+      sanitizedStars: sanitized.stars,
+      loadedCoins: prof.coins,
+      loadedStars: prof.stars,
+      coinsPreserved: prof.coins === 350 && sanitized.coins === 350,
+      starsPreserved: prof.stars['1'] === 3 && prof.stars['2'] === 2 && prof.stars['3'] === 3 && prof.stars['4'] === 1 &&
+                      sanitized.stars['1'] === 3 && sanitized.stars['2'] === 2 && sanitized.stars['3'] === 3 && sanitized.stars['4'] === 1,
+      weaponsPreserved: prof.owned.weapons.length === 2 && prof.owned.weapons.includes('w_iron_cleaver'),
+      hasDaily: typeof prof.daily?.streak === 'number',
+      dailyStreak: prof.daily?.streak,
+      hasFlags: typeof prof.flags === 'object',
+      settingsMuted: prof.settings?.muted,
+      settingsMusicOn: prof.settings?.musicOn,
     };
   })()`);
 
   console.log('v1 Save Migration result:', JSON.stringify(saveResult, null, 2));
-  if (saveResult.version !== 1 || saveResult.coins !== 350 || !saveResult.hasDaily || !saveResult.hasFlags) {
-    throw new Error('v1 Save Migration failed sanitization check!');
+  if (saveResult.loadStatus !== 'loaded') {
+    throw new Error(`v1 Save Migration failed to load: status=${saveResult.loadStatus}`);
   }
-  console.log('✓ v1 Save fixture migration verified: all fields normalized and forward-compatible.\n');
+  if (!saveResult.coinsPreserved) {
+    throw new Error(`v1 Save Migration lost coins! coins=${saveResult.loadedCoins}, expected 350`);
+  }
+  if (!saveResult.starsPreserved) {
+    throw new Error(`v1 Save Migration lost stars! stars=${JSON.stringify(saveResult.loadedStars)}`);
+  }
+  if (!saveResult.weaponsPreserved || !saveResult.hasDaily || !saveResult.hasFlags) {
+    throw new Error('v1 Save Migration missing required normalized fields!');
+  }
+  console.log('✓ v1 Save fixture migration verified: coins (350) and stars preserved perfectly without loss.\n');
 
   // -------------------------------------------------------------------------
   // VERIFICATION 3: SOLVER PLAYTHROUGH LEVELS 1-12 AT 432x768
@@ -417,26 +430,31 @@ async function run() {
   const defaultLoadout = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun'];
   const solveSummary = [];
   for (let lvl = 1; lvl <= 12; lvl++) {
-    const res = await evalCode(`(() => {
-      const loadout = ${JSON.stringify(defaultLoadout)};
-      const r = window.__mm.solveStep(${lvl}, loadout, 12000);
-      return {
-        level: ${lvl},
-        done: r.done,
-        shotsCount: r.shots?.length || 0,
-        won: r.view?.won || false,
-        lost: r.view?.lost || false,
-        monstersLeft: r.view?.monsters,
-        score: r.view?.score || 0
-      };
-    })()`);
+    let res = null;
+    let attempts = 0;
+    while ((!res || !res.done) && attempts < 10) {
+      attempts++;
+      res = await evalCode(`(() => {
+        const loadout = ${JSON.stringify(defaultLoadout)};
+        const r = window.__mm.solveStep(${lvl}, loadout, 15000);
+        return {
+          level: ${lvl},
+          done: r.done,
+          shotsCount: r.shots?.length || 0,
+          won: r.view?.won || false,
+          lost: r.view?.lost || false,
+          monstersLeft: r.view?.monsters,
+          score: r.view?.score || 0
+        };
+      })()`);
+    }
     console.log(`  Level ${lvl}: done=${res.done}, shots=${res.shotsCount}, won=${res.won}, lost=${res.lost}, monstersLeft=${res.monstersLeft}, score=${res.score}`);
     solveSummary.push(res);
   }
   console.log('✓ Levels 1-12 solver pass completed.\n');
 
   // -------------------------------------------------------------------------
-  // VERIFICATION 4: FRAME TIME ON LEVEL 12 (BOSS)
+  // VERIFICATION 4: FRAME TIME ON LEVEL 12 (BOSS) AND DAILY LEVEL (< 17 ms)
   // -------------------------------------------------------------------------
   console.log('--- MEASURING FRAME TIME ON LEVEL 12 (BOSS) ---');
   await evalCode(`(() => {
@@ -444,7 +462,7 @@ async function run() {
   })()`);
   await sleep(400);
 
-  const perfResult = await evalCode(`new Promise((resolve) => {
+  const perfL12 = await evalCode(`new Promise((resolve) => {
     const times = [];
     let last = performance.now();
     let count = 0;
@@ -471,11 +489,50 @@ async function run() {
     requestAnimationFrame(loop);
   })`);
 
-  console.log(`Level 12 Frame Time: median=${perfResult.medianMs}ms (${perfResult.fps} FPS), 95th=${perfResult.p95Ms}ms, min=${perfResult.minMs}ms, max=${perfResult.maxMs}ms`);
-  if (perfResult.medianMs > 25) {
-    throw new Error(`Level 12 median frame time ${perfResult.medianMs}ms exceeded 25ms threshold!`);
+  console.log(`Level 12 Frame Time: median=${perfL12.medianMs}ms (${perfL12.fps} FPS), 95th=${perfL12.p95Ms}ms, min=${perfL12.minMs}ms, max=${perfL12.maxMs}ms`);
+  if (perfL12.medianMs >= 17) {
+    throw new Error(`Level 12 median frame time ${perfL12.medianMs}ms exceeded 17ms threshold!`);
   }
-  console.log(`✓ Level 12 performance PASSED: ${perfResult.medianMs}ms median (< 25ms budget).\n`);
+  console.log(`✓ Level 12 performance PASSED: ${perfL12.medianMs}ms median (< 17ms budget).\n`);
+
+  console.log('--- MEASURING FRAME TIME ON DAILY LEVEL ---');
+  await evalCode(`(() => {
+    window.__mm.load(0, ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun']);
+  })()`);
+  await sleep(400);
+
+  const perfDaily = await evalCode(`new Promise((resolve) => {
+    const times = [];
+    let last = performance.now();
+    let count = 0;
+    const loop = () => {
+      const now = performance.now();
+      times.push(now - last);
+      last = now;
+      count++;
+      if (count >= 120) {
+        times.sort((a, b) => a - b);
+        const median = times[Math.floor(times.length / 2)];
+        resolve({
+          frames: times.length,
+          medianMs: Math.round(median * 100) / 100,
+          p95Ms: Math.round(times[Math.floor(times.length * 0.95)] * 100) / 100,
+          minMs: Math.round(times[0] * 100) / 100,
+          maxMs: Math.round(times[times.length - 1] * 100) / 100,
+          fps: Math.round((1000 / median) * 10) / 10
+        });
+      } else {
+        requestAnimationFrame(loop);
+      }
+    };
+    requestAnimationFrame(loop);
+  })`);
+
+  console.log(`Daily Level Frame Time: median=${perfDaily.medianMs}ms (${perfDaily.fps} FPS), 95th=${perfDaily.p95Ms}ms, min=${perfDaily.minMs}ms, max=${perfDaily.maxMs}ms`);
+  if (perfDaily.medianMs >= 17) {
+    throw new Error(`Daily level median frame time ${perfDaily.medianMs}ms exceeded 17ms threshold!`);
+  }
+  console.log(`✓ Daily level performance PASSED: ${perfDaily.medianMs}ms median (< 17ms budget).\n`);
 
   // -------------------------------------------------------------------------
   // VERIFICATION 5: CONSOLE ERRORS & EXCEPTIONS CHECK

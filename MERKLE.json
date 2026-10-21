@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "2c3a227f33514f9d29df8d78f8e66f1ae9de1986368db22cd4734fb00f021caa",
+  "hash": "4db6e877da4b67ac9d32ac7cca719ec67e7e568c1fba5a44f7893a78388c6d7c",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "5025251e0c30c684ee3678f6422c06ccc6d8120a6bbb50b928633c509214ad1c",
+      "hash": "480869ca02f99fe393c6176a342ff068b4f7ebe443de39259a8b9dd2cc654632",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "651ec43caeeae8077c0accc1c9e3f91be51d8a8eeda903fbece5d4acdd6a1ef7",
+          "hash": "a347e81ac562bd8ee13b295cc1e434d361696667e8d36c82e1f31b0989f94a86",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -115,6 +115,13 @@
               "type": "file",
               "hash": "8f51abd4ec780cdc3a9138a485a54559caf2e15237b660bbe74de999c30657e9",
               "size": 1937
+            },
+            {
+              "name": "agy_task_phone.md",
+              "path": "docs/handoff/agy_task_phone.md",
+              "type": "file",
+              "hash": "cdc6d15a2b2e547b911a5e5f1c89c38602381e0ff0cc964225dc002d14933e10",
+              "size": 670
             },
             {
               "name": "agy_task_s3_finish.md",
@@ -148,98 +155,98 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "6ad4fbe59257e1b17282686375e7356a8b336098904a87a95bb92be94295c304",
-              "size": 25889
+              "hash": "772b65f17096567ab617ce947a4b2bbbb2773aef45268bbf35e7b0a4221114b7",
+              "size": 28357
             },
             {
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "2ee247a68c2087a575654b9df8bda50061c83d47fce694817f4910fa3afe41e6",
+              "hash": "1f2c5e4533c9ba54c00b8215c38a40562fc535396f7c85c0f2bab8359a4b0643",
               "children": [
                 {
                   "name": "01_title.png",
                   "path": "docs/handoff/shots/01_title.png",
                   "type": "file",
-                  "hash": "4d5c68a1d794643e43aadd1cc7f64d8eb83315989a9d223af977b926eab370f0",
-                  "size": 7838
+                  "hash": "6ec12f9b4a5076c88f922b93a6b09aa1ff33f53dbd991536897ebc820d281151",
+                  "size": 7985
                 },
                 {
                   "name": "02_map.png",
                   "path": "docs/handoff/shots/02_map.png",
                   "type": "file",
-                  "hash": "0dd356ddddb5ab997278093cdd5bbbd4ee2881d537a5010922157afc12c896d8",
-                  "size": 8003
+                  "hash": "1e6134d602f7131128d72f4c31ddb383bff16620f415c53cb2394539d13dd529",
+                  "size": 8169
                 },
                 {
                   "name": "03_loadout.png",
                   "path": "docs/handoff/shots/03_loadout.png",
                   "type": "file",
-                  "hash": "7df2dbc3642b111483881c54cf89746f7c04a7ac0ff9ac85a32fa7d94c2bf2c5",
-                  "size": 12259
+                  "hash": "e5933a017788cff34692854e5b74a40174b9e224938a0a8b579d1334dee72ce3",
+                  "size": 12241
                 },
                 {
                   "name": "04_shop_weapons.png",
                   "path": "docs/handoff/shots/04_shop_weapons.png",
                   "type": "file",
-                  "hash": "aadaac4a284cf33aa531f36587e4cbc28852352760c77aad9b703fc6dd66f394",
-                  "size": 8775
+                  "hash": "28ea439ba57761e6d42165b7634b3610235eb301fc0a5514bd1e9cc589070a29",
+                  "size": 8900
                 },
                 {
                   "name": "05_shop_artifacts.png",
                   "path": "docs/handoff/shots/05_shop_artifacts.png",
                   "type": "file",
-                  "hash": "a87c219da4297c96cb0ed14d2ccc810175025a842d9eed5aa6bd31f61a9d8e30",
-                  "size": 7830
+                  "hash": "b99e390dfaff23548ab570b877e89afbf25f19cbc9dfb02e024cab4e4ce246fd",
+                  "size": 7937
                 },
                 {
                   "name": "06_shop_items.png",
                   "path": "docs/handoff/shots/06_shop_items.png",
                   "type": "file",
-                  "hash": "ec5c08b051e37ec1ccf0df02fd89209cfb50850d4c0c5d7f188adb1bdfa7995d",
-                  "size": 7225
+                  "hash": "e358264ecc573f85b6caa72b65cb991aa9cf5701c912ad4a17d9f805df0622b6",
+                  "size": 7346
                 },
                 {
                   "name": "07_shop_forge.png",
                   "path": "docs/handoff/shots/07_shop_forge.png",
                   "type": "file",
-                  "hash": "a41804c7019dc4ec9e9f4de72881be5cc9d5bb6bbbe671d2e48e7bf1705a896d",
-                  "size": 12283
+                  "hash": "48ddcddf1646e00a1246ff6de1705840241a21374300711ef130599d56c4c716",
+                  "size": 12428
                 },
                 {
                   "name": "08_battle_hud.png",
                   "path": "docs/handoff/shots/08_battle_hud.png",
                   "type": "file",
-                  "hash": "5cf2d0a4fe8232d7dc6dd0804e7eefe74c7e70fe0a7ad8e1328dc0bdd8ee8851",
-                  "size": 9065
+                  "hash": "7708a1a3711fe5451cb38005a01c5776c8f2e100a0274c566fed459b502767df",
+                  "size": 9456
                 },
                 {
                   "name": "09_battle_pause.png",
                   "path": "docs/handoff/shots/09_battle_pause.png",
                   "type": "file",
-                  "hash": "7679392b43e4039b42bc0d6aee6ba0d1184382a1d84f019e6d26f79f2e8c9b2d",
-                  "size": 8398
+                  "hash": "b9baf209d4139a1b61d2883075e3d11c2038800f3504e5562d5008fc97d7353c",
+                  "size": 8754
                 },
                 {
                   "name": "10_results_win.png",
                   "path": "docs/handoff/shots/10_results_win.png",
                   "type": "file",
-                  "hash": "fbd4333c5462a3d6cc7d3687dc18dec1bfbac999eb7d6f3e9391e977a7393368",
-                  "size": 4963
+                  "hash": "caf37a1ea9bd37df39077eee441591b056cd59bd867b452a7fa045889c2ce7b2",
+                  "size": 5300
                 },
                 {
                   "name": "11_results_lose.png",
                   "path": "docs/handoff/shots/11_results_lose.png",
                   "type": "file",
-                  "hash": "67fa2c8eb97dd239df9e739f2a8b5c311ebc14d3eb7def6d35c74efbf0b41cf6",
+                  "hash": "47715b2f5261bcdbf07cd655cd19777211b5650f54ddb8f5809c57252fd44b36",
                   "size": 4738
                 },
                 {
                   "name": "12_boss_level_12.png",
                   "path": "docs/handoff/shots/12_boss_level_12.png",
                   "type": "file",
-                  "hash": "82df4b0d16bbc2b84fb3d4e722deb604be8009f05ebd1e14f26611fd859296c1",
-                  "size": 9449
+                  "hash": "873e7ad4b0c59c13e1917195d9143844c4bc426f55cec88b075553fad0e5eb77",
+                  "size": 9799
                 }
               ]
             },
@@ -247,8 +254,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "6490233caf29f6973236957f129bb8cb2988eb32ed9c9737acc4837be24f69ec",
-              "size": 6241
+              "hash": "9cb9cdcf6a9378b04305b39fccd79152e9c90d35eec062576c8e07d76f53bea6",
+              "size": 6272
             }
           ]
         },
@@ -1517,7 +1524,7 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "0e59688a928e8c29de20634ad6ff55956307ef0d7f7ecf3fb11c99d5a44fc113",
+      "hash": "2314b720cb1b9d4e8fe1c5d0e791445724d8b1b9c1e44d5c1c30ae637cd2a2b3",
       "children": [
         {
           "name": "agy_share.mjs",
@@ -1530,8 +1537,8 @@
           "name": "audit_shots.mjs",
           "path": "tools/audit_shots.mjs",
           "type": "file",
-          "hash": "ad8635cc65f0a0184cd2f3a90b55f6c8746703f39b753ff6816e28216afa594f",
-          "size": 17089
+          "hash": "b2880d7abedbec66dce981cf6ce34af3cb16c09f4d6076efb3060508f19925d5",
+          "size": 19659
         },
         {
           "name": "merkle.mjs",

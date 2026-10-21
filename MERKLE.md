@@ -1,15 +1,15 @@
 # Merkle Index
 
-Root hash: `2c3a227f33514f9d29df8d78f8e66f1ae9de1986368db22cd4734fb00f021caa`
+Root hash: `4db6e877da4b67ac9d32ac7cca719ec67e7e568c1fba5a44f7893a78388c6d7c`
 
 | Directory | Hash | Files | Purpose |
 |---|---|---|---|
-| `.` | `2c3a227f` | 183 | MONSTER MASH: Slingshot Siege project root |
+| `.` | `4db6e877` | 184 | MONSTER MASH: Slingshot Siege project root |
 | `architecture` | `4414d507` | 5 | System design, module boundaries, data schemas, and agent workflow |
 | `catalogue` | `8baca4d1` | 3 | Four Realms source items (weapons, gear, consumables) for porting |
-| `docs` | `5025251e` | 34 | Project documentation, design briefs, status, and agent logs |
-| `docs/handoff` | `651ec43c` | 20 | Agent coordination: status board, append-only logs, and task briefs |
-| `docs/handoff/shots` | `2ee247a6` | 12 | - |
+| `docs` | `480869ca` | 35 | Project documentation, design briefs, status, and agent logs |
+| `docs/handoff` | `a347e81a` | 21 | Agent coordination: status board, append-only logs, and task briefs |
+| `docs/handoff/shots` | `1f2c5e45` | 12 | - |
 | `docs/monster_mash` | `626828bb` | 9 | Design briefs, math models, platform reports, and review history |
 | `docs/release` | `3addcab6` | 5 | - |
 | `game` | `7d1fddb9` | 133 | Phaser 3 + Vite game client (RUN project template) |
@@ -31,4 +31,4 @@ Root hash: `2c3a227f33514f9d29df8d78f8e66f1ae9de1986368db22cd4734fb00f021caa`
 | `game/src/platform` | `d1e76685` | 4 | Platform abstraction layer and RUN SDK / local mock adapters |
 | `game/src/scenes` | `80ba2d74` | 8 | Phaser scenes: Boot, Title, Map, Battle, Loadout, Shop, Results |
 | `game/src/ui` | `a7b126e2` | 3 | UI widgets, HUD overlays, coin animations, and buttons |
-| `tools` | `0e59688a` | 4 | Repository maintenance, indexing, and verification tools |
+| `tools` | `2314b720` | 4 | Repository maintenance, indexing, and verification tools |

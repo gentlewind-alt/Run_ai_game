@@ -33,7 +33,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S5-02 | Theme pass: conga, dance, music | S3-01 | review | agy | 10-21 | 120 BPM beat sync, title conga line, dancing ghost sprites on win, procedural Web Audio chiptune music (cheerful + dusk) |
 | S5-03 | Rewarded ad: double coins | S3-01 | review | agy | 10-21 | rewarded ads behind features.ads, platform mock + rundot adapter (desktop-safe), double coins button in ResultsScene |
 | S5-04 | Gold Quiver + skins (RUN Bits) | S3-04 | review | agy | 10-21 | Gold Quiver + sling skins in shop.config.json & content.json, 5th Skins tab in ShopScene, prices set to 0 pending owner approval |
-| S5-05 | Feel + performance pass | S2-S4 | review | agy | 10-21 | roundPixels: true, 90-particle cap, MASH haptic feedback, 60 FPS verified under 4x CPU throttle on boss L12 & daily |
+| S5-05 | Feel + performance pass | S2-S4 | review | agy | 10-21 | roundPixels: true, 90-particle cap, MASH haptics, phone-readiness pass verified (432x768, L1-12 solved, L12 & daily <17ms median, v1 migration ok) |
 | S5-06 | Credits, README, thumbnail | | review | agy | 10-21 | CreditsScene, player README.md guide, 512x512 rendered store thumbnail.jpg/.png, 4 release screenshots & description |
 | S6-01 | Release checklist | S5 | todo | | | |
 | S6-02 | Go public | S6-01 | todo | | | OWNER APPROVAL, by 30 Oct |
