@@ -35,7 +35,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S5-04 | Gold Quiver + skins (RUN Bits) | S3-04 | review | agy | 10-21 | Gold Quiver + sling skins in shop.config.json & content.json, 5th Skins tab in ShopScene, prices set to 0 pending owner approval |
 | S5-05 | Feel + performance pass | S2-S4 | review | agy | 10-21 | roundPixels: true, 90-particle cap, MASH haptics, phone-readiness pass verified (432x768, L1-12 solved, L12 & daily <17ms median, v1 migration ok) |
 | S5-06 | Credits, README, thumbnail | | review | agy | 10-21 | CreditsScene, player README.md guide, 512x512 rendered store thumbnail.jpg/.png, 4 release screenshots & description |
-| S6-01 | Release checklist | S5 | todo | | | |
+| S6-01 | Release checklist + regression suite | S5 | review | agy | 10-21 | torc mult 1.6 restored, L12 stone roofs + maxHitDamage cap (272), tools/regress.mjs (L1-12, save migration, 30-day variety), 0 console errors |
 | S6-02 | Go public | S6-01 | todo | | | OWNER APPROVAL, by 30 Oct |
 | S6-03 | Jam entry form | S6-02 | todo | owner | | owner only |
 

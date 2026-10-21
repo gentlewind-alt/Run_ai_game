@@ -2,6 +2,34 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · agy · Stage 6: Torc restore + boss maxHitDamage, regression suite, daily variety (done)
+- **What:**
+  - **Torc & L12 Retune:**
+    - Restored `r_stormcaller_torc` multiplier back to its design value of `1.6` (`mult: 1.6`) in `game/public/data/content.json`.
+    - Added data-driven `maxHitDamage` cap in `ironWarlord.ts` (`onDamaged`) so no single event removes more than `maxHitDamage` (set to 272 in `content.json`, 40% of 680 HP).
+    - Lowered the roof mass on Level 12 in `level_12.json` and `build_levels.py`: replaced both lower roof (w:72, y:245) and upper roof (w:48, y:223) iron blocks with stone blocks.
+    - Set `iron_warlord` stats in `content.json`: `hp: 680`, `armour: 14`, `maxHitDamage: 272`.
+    - Verified L12 wins with 0 one-shot wins across all profiles and artifacts, with Torc winning in 2 shots (within band [2, 4]), and no-artifact winning in 3-4 shots. Torc remains effective across other levels (e.g. L10 clears in 4 shots).
+  - **Regression Suite (`tools/regress.mjs`):**
+    - Authored `tools/regress.mjs` and added `"regress": "node ../tools/regress.mjs"` to `game/package.json`.
+    - Created `game/scripts/balance_bands.json` defining per-level target shot bands (L1-3: 2, L4-12: 2-4/5 max).
+    - Drives headless Chrome via CDP to assert:
+      1. 30-day daily check: 100% deterministic, 0 consecutive shared fort archetypes, 0 consecutive shared monster mixes.
+      2. v1 save migration: cleanly migrates legacy save, preserving 350 coins, 1-4 stars, and weapons with modern fields normalized.
+      3. Levels 1-12 greedy solver: 100% wins, shots within balance bands (L1: 2, L2: 2, L3: 2, L4: 4, L5: 2, L6: 3, L7: 4, L8: 4, L9: 2, L10: 4, L11: 3, L12: 2), and 0 one-shot wins everywhere.
+      4. 0 console errors and 0 uncaught exceptions.
+    - Exits with status code 0 on full pass, non-zero on failure.
+    - Documented in `architecture/WORKFLOW.md`.
+  - **Daily Variety:**
+    - Enforced template rotation in `dailyLogic.js` (`TEMPLATE_BY_WEEKDAY = [0, 1, 2, 0, 2, 0, 1]`) and differentiated monster mixes, guaranteeing no consecutive days share fort archetype (`pillars`, `towers`, `bunker`) or monster mix.
+    - Updated `daily.ts` and `check-daily.mjs` to assert both archetype and monster mix variety across all 30 days.
+- **Checks:**
+  - `npm run check` in `game/` passes cleanly (0 errors, 1 sandbox warning, 30 days daily check 100% deterministic, tsc ok).
+  - `npm run build` in `game/` passes cleanly (production bundle built).
+  - `npm run regress` in `game/` passes cleanly (30-day check, v1 migration, levels 1-12 in band, 0 one-shot wins, 0 console errors).
+  - `node tools/merkle.mjs seal` executed; Merkle index updated cleanly.
+- **Deployed:** Not deployed (per Golden Rule #9; waiting for owner approval).
+
 ## 2026-10-21 · agy · L10/L12 retune, Gambler's Charm audit & since-goal agy share tracker complete (tune2)
 - **What:**
   - **L10 Retuning & Score Target:**

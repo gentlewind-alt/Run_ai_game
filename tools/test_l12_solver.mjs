@@ -40,6 +40,7 @@ async function main() {
     '--headless=new',
     '--remote-debugging-port=9222',
     '--disable-gpu',
+    '--disable-extensions',
     '--no-first-run',
     '--no-default-browser-check',
     `--user-data-dir=${TMP_PROFILE}`,
@@ -62,8 +63,9 @@ async function main() {
     try {
       const res = await fetch('http://localhost:9222/json');
       const list = await res.json();
-      if (list && list.length > 0) {
-        targetWs = list[0].webSocketDebuggerUrl;
+      const pageTarget = list.find((t) => t.type === 'page') || list[0];
+      if (pageTarget && pageTarget.webSocketDebuggerUrl) {
+        targetWs = pageTarget.webSocketDebuggerUrl;
         break;
       }
     } catch (e) {
@@ -209,6 +211,12 @@ async function main() {
     })()`);
     console.log(`Artifact ${a.padEnd(20)}: sweep 1-shot wins=${swA.oneShotWins}, bestScore=${swA.best.score} | solve shots=${solA.shots?.length}, won=${solA.view?.won}, score=${solA.view?.score}`);
     console.log(`  Shots:`, JSON.stringify(solA.shots));
+    if (a === 'r_echo_stone' && solA.shots?.length) {
+      for (let s = 1; s <= solA.shots.length; s++) {
+        const v = await evalCode(`window.__mm.play(12, ${JSON.stringify(l12Loadout)}, ${JSON.stringify(solA.shots.slice(0, s))})`);
+        console.log(`  Echo shot ${s} result: won=${v.won}, monstersLeft=${v.monsters}, ents=`, JSON.stringify(v.ents?.filter(e => e.kind === 'monster')));
+      }
+    }
   }
 
   // Level 10 test

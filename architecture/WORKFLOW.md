@@ -42,11 +42,22 @@ Use `tools/merkle.mjs` to keep the repo index synchronized across agents:
 
 A card is `done` when:
 1. `npm run check` and `npm run build` pass.
-2. Its "Done when" checks in STAGES.md pass. Say how you checked them.
-3. The game still goes from load to a win and a loss, with no console errors.
-4. Data changes have schema updates, and code has no new balance literals.
-5. STATUS.md is set to `done` (or `review` if a human or the cloud session should look first). LOG.md has an entry.
-6. If you can deploy: deploy, and put the URL and version in LOG.md.
+2. `npm run regress` passes (0 errors, levels 1-12 within balance bands, 0 one-shot wins, v1 save migration, 30-day daily variety).
+3. Its "Done when" checks in STAGES.md pass. Say how you checked them.
+4. The game still goes from load to a win and a loss, with no console errors.
+5. Data changes have schema updates, and code has no new balance literals.
+6. STATUS.md is set to `done` (or `review` if a human or the cloud session should look first). LOG.md has an entry.
+7. If you can deploy: deploy, and put the URL and version in LOG.md.
+
+## Regression suite (`tools/regress.mjs`)
+
+Run `npm run regress` (in `game/`) to execute the automated end-to-end regression test suite in headless Chrome via CDP:
+1. **30-Day Daily Check:** verifies 30 days of daily level generation for 100% determinism, schema conformance, and no consecutive sharing of fort archetypes or monster mixes.
+2. **v1 Save Migration:** asserts sanitization and migration of legacy v1 saves (preserving all coins, stars, weapons, with modern fields normalized).
+3. **Campaign Levels 1-12 Solver & Balance Bands:** asserts that the greedy solver wins each level (1-12) within its authored balance band in `game/scripts/balance_bands.json` (L1-3: 2 shots, L4-12: 3-4/5 max), with 0 one-shot wins.
+4. **Console Integrity:** asserts 0 console errors and 0 uncaught exceptions across all scene transitions and level runs.
+
+The script exits with code 0 on full pass, or non-zero on any failure.
 
 ## LOG.md entry template (newest at the top)
 

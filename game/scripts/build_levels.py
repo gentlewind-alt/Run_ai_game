@@ -201,9 +201,9 @@ P12 = 280
 b12 = [
     blk('stone', 150, P12 - 14, 10, 28),
     blk('iron', 205, P12 - 16, 12, 32), blk('iron', 265, P12 - 16, 12, 32),
-    blk('iron', 235, P12 - 35, 72, 6),
+    blk('stone', 235, P12 - 35, 72, 6),
     blk('stone', 215, P12 - 46, 8, 16), blk('stone', 255, P12 - 46, 8, 16),
-    blk('iron', 235, P12 - 57, 48, 6)
+    blk('stone', 235, P12 - 57, 48, 6)
 ]
 write(12, 'Iron Throne', 'iron_keep', 'boss', 648,
       ['Wait for the visor to open for 2x.', 'Boulders shake the ground. Stay steady.'],

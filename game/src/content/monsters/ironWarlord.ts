@@ -39,13 +39,20 @@ export const ironWarlord: MonsterBehavior = {
   },
 
   onDamaged(ctx, m, amount) {
+    let dmg = amount;
     if (m.params.visorOpen === 1) {
       const mult = Number(m.params.visorMult ?? 2);
       ctx.fx.word(m.body.position.x, m.body.position.y - 24, 'WEAK POINT! 2x');
-      return amount * mult;
+      dmg = amount * mult;
+    } else {
+      const armour = Number(m.params.armour ?? m.params.armor ?? 0);
+      dmg = Math.max(1, amount - armour);
     }
-    const armour = Number(m.params.armour ?? m.params.armor ?? 0);
-    return Math.max(1, amount - armour);
+    const maxHit = Number(m.params.maxHitDamage ?? 0);
+    if (maxHit > 0 && dmg > maxHit) {
+      dmg = maxHit;
+    }
+    return dmg;
   },
 
   onDeath(ctx, m) {

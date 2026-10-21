@@ -50,7 +50,13 @@ export function generateDailyLevel(epochMs) {
   const blocks = [];
   const monsters = [];
 
-  const template = weekday % 3;
+  // Template archetypes: 0 = pillars, 1 = towers, 2 = bunker
+  // Rotation ensuring no two consecutive weekdays share the same fort archetype:
+  // Sun(0): pillars, Mon(1): towers, Tue(2): bunker, Wed(3): pillars, Thu(4): bunker, Fri(5): pillars, Sat(6): towers
+  const TEMPLATE_BY_WEEKDAY = [0, 1, 2, 0, 2, 0, 1];
+  const ARCHETYPES = ['pillars', 'towers', 'bunker'];
+  const template = TEMPLATE_BY_WEEKDAY[weekday];
+  const archetype = ARCHETYPES[template];
   const cx = 230 + Math.round((rng.next() - 0.5) * 20);
 
   if (template === 0) {
@@ -74,6 +80,11 @@ export function generateDailyLevel(epochMs) {
       monsters.push({ t: 'orc_brute', x: cx, y: baseY - 14 });
       monsters.push({ t: 'dark_elf_hexer', x: cx, y: baseY - ph - 6 - 8 });
       monsters.push({ t: 'goblin_bomber', x: cx, y: baseY - ph - 6 - ph2 - 6 - 8 });
+    } else if (weekday === 5) {
+      monsters.push({ t: 'skeleton_runner', x: cx - 18, y: baseY - 8, dir: 1, speed: 0.8 });
+      monsters.push({ t: 'goblin_grunt', x: cx + 18, y: baseY - 8 });
+      monsters.push({ t: 'dark_elf_archer', x: cx, y: baseY - ph - 6 - 8 });
+      monsters.push({ t: 'imp', x: cx, y: baseY - ph - 6 - ph2 - 6 - 8 });
     } else {
       monsters.push({ t: 'goblin_grunt', x: cx, y: baseY - 8 });
       monsters.push({ t: 'dark_elf_archer', x: cx - 16, y: baseY - ph - 6 - 8 });
@@ -145,6 +156,7 @@ export function generateDailyLevel(epochMs) {
     shots: 4,
     hints: ['Aim for structure joints.', 'One daily attempt per day.'],
     scoreTarget,
+    _archetype: archetype,
     terrain,
     blocks,
     monsters,

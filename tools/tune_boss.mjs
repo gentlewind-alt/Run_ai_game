@@ -3,9 +3,10 @@ import path from 'path';
 import os from 'os';
 
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const TMP_PROFILE = path.join(os.tmpdir(), 'mm_chrome_profile_tune_boss');
+const TMP_PROFILE = path.join(os.tmpdir(), 'mm_chrome_profile_test12');
 
 async function main() {
+  console.log('Ensuring Vite server is running...');
   let devProc = null;
   let serverReady = false;
   try {
@@ -14,6 +15,7 @@ async function main() {
   } catch (e) {}
 
   if (!serverReady) {
+    console.log('Launching Vite dev server on port 5173...');
     devProc = spawn('npx.cmd', ['vite', '--port', '5173'], {
       cwd: path.resolve('game'),
       stdio: 'pipe',
@@ -33,10 +35,12 @@ async function main() {
     if (!serverReady) throw new Error('Vite dev server failed to start');
   }
 
+  console.log('Vite server ready, launching Chrome...');
   const chrome = spawn(CHROME_PATH, [
     '--headless=new',
     '--remote-debugging-port=9222',
     '--disable-gpu',
+    '--disable-extensions',
     '--no-first-run',
     '--no-default-browser-check',
     `--user-data-dir=${TMP_PROFILE}`,
@@ -59,8 +63,9 @@ async function main() {
     try {
       const res = await fetch('http://localhost:9222/json');
       const list = await res.json();
-      if (list && list.length > 0) {
-        targetWs = list[0].webSocketDebuggerUrl;
+      const pageTarget = list.find((t) => t.type === 'page') || list[0];
+      if (pageTarget && pageTarget.webSocketDebuggerUrl) {
+        targetWs = pageTarget.webSocketDebuggerUrl;
         break;
       }
     } catch (e) {
@@ -108,13 +113,6 @@ async function main() {
 
   await send('Page.enable');
   await send('Runtime.enable');
-  await send('Emulation.setDeviceMetricsOverride', {
-    width: 432,
-    height: 768,
-    deviceScaleFactor: 1,
-    mobile: true,
-  });
-
   await send('Page.navigate', { url: 'http://localhost:5173/?debug=1' });
 
   for (let i = 0; i < 50; i++) {
@@ -122,57 +120,34 @@ async function main() {
     await new Promise((r) => setTimeout(r, 100));
   }
 
-  for (let i = 0; i < 60; i++) {
-    const res = await evalCode(`Boolean(window.__game && window.__game.scene && window.__game.scene.scenes.length > 0)`);
-    if (res === true) break;
-    await new Promise((r) => setTimeout(r, 250));
-  }
-
-  for (let i = 0; i < 60; i++) {
-    let res = false;
+  let ready = false;
+  for (let i = 0; i < 100; i++) {
     try {
-      res = await evalCode(`Boolean(window.__mm && typeof window.__mm.platform === 'function' && typeof window.__mm.solveStep === 'function')`);
+      const res = await evalCode(`Boolean(window.__game && window.__mm && typeof window.__mm.load === 'function' && typeof window.__mm.solveStep === 'function')`);
+      if (res === true) {
+        ready = true;
+        break;
+      }
     } catch (e) {}
-    if (res === true) break;
     await new Promise((r) => setTimeout(r, 250));
   }
+  if (!ready) throw new Error('__mm not ready');
 
   console.log('Game ready with __mm.');
 
-  // Set up save fixture as in audit_shots
-  await evalCode(`(async () => {
-    const v1Fixture = {
-      version: 1,
-      coins: 350,
-      owned: { weapons: ['w_militia_blade', 'w_iron_cleaver'], artifacts: ['r_gale_eye'], consumables: { c_mindflash: 2 } },
-      upgrades: { w_militia_blade: 2 },
-      stars: { '1': 3, '2': 2, '3': 3, '4': 1 },
-      equipped: { loadout: ['w_militia_blade', 'w_iron_cleaver'], artifacts: ['r_gale_eye'] }
-    };
-    await window.__mm.platform().storage.set('save', JSON.stringify(v1Fixture));
-    await window.__mm.loadSave();
-  })()`);
-
-  const defaultLoadout = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun'];
-
-  console.log('\n=== TESTING HP & ARMOUR WITH STONE ROOFS ON L12 ===');
+  console.log('\n=== TESTING HP & ARMOUR COMBINATIONS ON L12 ===');
   const l12Loadout = ['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube'];
   const testArtifacts = ['none', 'r_gale_eye', 'r_echo_stone', 'r_lodestone_bracer', 'r_analyst_lens', 'r_stormcaller_torc'];
 
   const candidates = [
-    { hp: 700, armour: 12 },
-    { hp: 750, armour: 12 },
-    { hp: 800, armour: 12 },
-    { hp: 700, armour: 14 },
-    { hp: 750, armour: 14 },
-    { hp: 800, armour: 14 },
-    { hp: 700, armour: 16 },
-    { hp: 750, armour: 16 },
-    { hp: 800, armour: 16 },
+    { hp: 760, armour: 14, maxHit: 304 },
+    { hp: 800, armour: 14, maxHit: 320 },
+    { hp: 820, armour: 14, maxHit: 328 },
+    { hp: 850, armour: 14, maxHit: 340 },
   ];
 
   for (const c of candidates) {
-    console.log(`\n--- Candidate: HP ${c.hp}, Armour ${c.armour} ---`);
+    console.log(`\n--- Candidate: HP ${c.hp}, Armour ${c.armour}, maxHit ${c.maxHit} ---`);
     let pass = true;
     for (const art of testArtifacts) {
       const res = await evalCode(`(async () => {
@@ -181,6 +156,7 @@ async function main() {
         const bDef = b.content.monsters.find(m => m.id === 'iron_warlord');
         bDef.hp = ${c.hp};
         bDef.params.armour = ${c.armour};
+        bDef.params.maxHitDamage = ${c.maxHit};
         bDef.params.initialDelay = 180;
         bDef.params.visorOpenDuration = 24;
 
@@ -204,24 +180,20 @@ async function main() {
           oneShotWins: sw.oneShotWins
         };
       })()`);
-      console.log(`  Art: ${art.padEnd(20)} -> shots: ${res.shots}, won: ${res.won}, score: ${res.score}, sweepScore: ${res.sweepScore}`);
-      if (!res.won || res.shots < 3 || res.shots > 4) {
+      console.log(`  Art: ${art.padEnd(20)} -> shots: ${res.shots}, won: ${res.won}, 1shotWins: ${res.oneShotWins}, score: ${res.score}`);
+      if (!res.won || res.shots < 3 || res.shots > 4 || res.oneShotWins !== 0) {
         pass = false;
         break;
       }
     }
     if (pass) {
-      console.log(`\n >>>>>> PERFECT CANDIDATE FOUND! HP ${c.hp}, Armour ${c.armour} passes all artifacts in 3-4 shots! <<<<<<\n`);
+      console.log(`\n >>>>>> PERFECT CANDIDATE FOUND! HP ${c.hp}, Armour ${c.armour}, maxHit ${c.maxHit} passes all artifacts in 3-4 shots with 0 1-shot wins! <<<<<<\n`);
       break;
     }
   }
 
   ws.close();
   cleanup();
-  process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main().catch(console.error);

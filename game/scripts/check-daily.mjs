@@ -77,6 +77,7 @@ console.log('Generating and validating 30 days of Daily Mash levels...');
 const start = Date.UTC(2026, 9, 1, 12, 0, 0);
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
+const generated = [];
 for (let i = 0; i < 30; i++) {
   const t = start + i * MS_PER_DAY;
   const levelA = generateDailyLevel(t);
@@ -89,6 +90,22 @@ for (let i = 0; i < 30; i++) {
 
   // Schema check
   validate(levelSchema, levelA, '$', levelSchema, `Day ${i} (${levelA.name})`);
+
+  // Daily variety check: assert no two consecutive days share the same fort archetype and monster mix
+  if (i > 0) {
+    const prevLevel = generated[i - 1];
+    const prevArch = prevLevel._archetype;
+    const currArch = levelA._archetype;
+    if (prevArch && currArch && prevArch === currArch) {
+      err(`Day ${i} (${levelA.name}): shares fort archetype "${currArch}" with Day ${i - 1} (${prevLevel.name})`);
+    }
+    const prevMix = prevLevel.monsters.map((m) => m.t).sort().join(',');
+    const currMix = levelA.monsters.map((m) => m.t).sort().join(',');
+    if (prevMix === currMix) {
+      err(`Day ${i} (${levelA.name}): shares monster mix [${currMix}] with Day ${i - 1} (${prevLevel.name})`);
+    }
+  }
+  generated.push(levelA);
 }
 
 if (errors.length > 0) {

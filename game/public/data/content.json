@@ -406,7 +406,7 @@
       "effect": "Every 5th hit calls a radiant lightning bolt on the target.",
       "params": {
         "everyHits": 5,
-        "mult": 0.3
+        "mult": 1.6
       }
     },
     {
@@ -592,7 +592,7 @@
     {
       "id": "iron_warlord",
       "name": "Iron Warlord",
-      "hp": 1070,
+      "hp": 680,
       "weak": "void",
       "resist": "physical",
       "behavior": "iron_warlord",
@@ -602,7 +602,8 @@
       "score": 2500,
       "note": "Boss. Visor weak point takes 2x. Throws boulders at your side of the map, which only adds visual shake.",
       "params": {
-        "armour": 26,
+        "armour": 14,
+        "maxHitDamage": 272,
         "initialDelay": 180,
         "visorOpenEvery": 220,
         "visorOpenDuration": 24,

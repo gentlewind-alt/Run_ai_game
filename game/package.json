@@ -13,6 +13,7 @@
     "check:data": "node scripts/check-data.mjs",
     "check:daily": "node scripts/check-daily.mjs",
     "check": "node scripts/check-data.mjs && node scripts/check-daily.mjs && tsc --noEmit",
+    "regress": "node ../tools/regress.mjs",
     "agy:share": "node ../tools/agy_share.mjs",
     "merkle:seal": "node ../tools/merkle.mjs seal",
     "merkle:changed": "node ../tools/merkle.mjs changed",
