@@ -5,7 +5,7 @@ import type { Rng } from '../core/rng';
 import type { DamageRules, Level, MonsterDef, Params, Tuning, WeaponDef } from '../data/types';
 import type { MonsterBehavior } from '../content/monsters/types';
 
-export type Kind = 'block' | 'monster';
+export type Kind = 'block' | 'monster' | 'chest';
 export type StatusId = 'burn' | 'slow' | 'curse' | 'stun' | 'chain';
 export type BattlePhase = 'intro' | 'loading' | 'ready' | 'aiming' | 'flying' | 'settling' | 'won' | 'lost';
 export type DamageTag = 'weak' | 'resist' | 'norm';

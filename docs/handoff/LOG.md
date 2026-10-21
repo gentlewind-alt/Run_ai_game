@@ -2,6 +2,76 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · claude · Relic framework reviewed (not deployed)
+- Reviewed agy's S7 relic work: `check`, `build`, `regress:quick` (90 s) pass cleanly; rarity borders, mini-bosses (L4 Goblin Chief, L8 Dark Elf Matron), chests L3/L5/L7, Relic Market and save migration v2 delivered with screenshots in `docs/handoff/shots/relics/`. Weapons shown are placeholders until the six relic weapons land. Not deployed (stub weapons).
+- Defect: long names clip ("Steersong Arr"); folded into the landscape brief. Concurrent test runs collide (shared Chrome/Vite), run one at a time.
+- Order: landscape conversion first, then relic weapon wave 1.
+
+## 2026-10-21 · agy · S8-landscape: Convert game from portrait 216x384 to LANDSCAPE (16:9) (claimed)
+- Claimed card S8-landscape per `docs/handoff/agy_task_landscape.md`.
+- Plan:
+  1. Measure apex heights of steep shots (angle 75, power 1, all weapons incl. Blast Tube lob) and tallest forts (L5, L6, L9, L12) under candidate resolutions 384x216 vs 480x270 to select logical field size.
+  2. Record measurement table in LOG.md.
+  3. Set W and H in `game/src/config/constants.ts` and replace hardcoded 216/384 values across scenes and systems.
+  4. Update `game.config.json` and `game.config.prod.json` orientation to `"landscape"`. Test `rundot predeploy`.
+  5. Re-layout scenes for landscape: Title, Map, Loadout, Shop, Results, Pause, Credits, boss HUD bar, consumable tray, mini-hints, unlock toast.
+  6. Re-tune Battle framing & camera (`tuning.homeSlingFrac`, `tuning.homeMarginRight`, `tuning.homeZoomMin`, `tuning.homeLeft`, `groundFrac`, `zoomOutRise`), parallax/backgrounds in `art/backgrounds.ts` and terrain.
+  7. Update responsive shell in `core/responsive.ts` for landscape integer/fit scaling and full-screen styled "Rotate your device" overlay for portrait mode.
+  8. Update `tools/responsive_shots.mjs` matrix and assertions; generate landscape screenshots into `docs/handoff/shots/land/`.
+  9. Run checks, `npm run regress:quick`, `npm run regress`, update docs (`ARCHITECTURE.md`, `AGENTS.md`, `04_platform_report.md`), seal Merkle index.
+
+
+## 2026-10-21 · agy · S7-01..S7-03: Relic framework fix & completion (done)
+- **What:**
+  - Resolved all 3 regression test issues per `docs/handoff/agy_task_relics1_fix.md`:
+    1. **Pity market & chest coin fallback:**
+       - In `game/src/core/profile.ts:buyWeapon`: Removed `!DEBUG &&` bypass so boss pity weapons require strictly 3+ losses in debug/test mode as well (`losses < 3` returns `'locked'`). Refusal for insufficient coins returns `'coins'` correctly.
+       - In `tools/regress.mjs`: Updated assertion 2b to check `b3.coins === coinsBefore + 150` on chest destruction fallback when relic weapon is already owned (matching in-battle coin accumulation).
+    2. **Level 4 balance & Goblin Chief tuning:**
+       - In `game/public/data/content.json`: Tuned `goblin_chief` (HP 70, armour 6, `resist: null`).
+       - Regenerated `level_04.json` via `game/scripts/build_levels.py`.
+       - Greedy solver now clears Level 4 consistently in 4 shots (within band [2, 4], 0 one-shot wins).
+    3. **Card overlap assertion update:**
+       - In `tools/regress.mjs`: Updated Section 5 check to verify 0 overlaps across all rendered cards dynamically (`loadoutCardsChecked: 8`, `shopCardsChecked: 14`) without the stale 8-card constraint now that locked relic cards are rendered.
+  - **Delivered visual & functional elements:**
+    - Rarity colors (Mash32 palette: rare blue `C('a')`, legendary gold `C('4')`) on card frames across Loadout, Shop, and Results toast.
+    - Max 1 legendary loadout rule enforced in `LoadoutScene` and `profile.setLoadout`.
+    - Legendary abilities feature `charges: 1` pip indicator in HUD ability button.
+    - Results screen "RELIC FOUND!" animated sticker toast with rarity stroke and fanfare.
+    - Top HUD boss HP bar showing boss name and real-time HP for Goblin Chief (L4), Dark Elf Matron (L8), and Iron Warlord (L12).
+    - Breakable treasure chests in skill-shot positions in L3, L5, L7.
+    - Relic Market tab in Shop gated behind `features.relics` with loss progress counters (`0/3`..`3/3`).
+    - Save migration v1 -> v2 with `stats.bossLosses`.
+  - **Artifacts:**
+    - Captured 7 evidence screenshots in `docs/handoff/shots/relics/` via `tools/relic_shots.mjs`:
+      - `01_loadout_rare_legendary.png`: Loadout displaying rare and legendary border styling.
+      - `02_shop_relic_market_locked.png`: Shop Relic Market tab with locked silhouettes and loss counter hints.
+      - `03_shop_relic_market_unlocked.png`: Shop Relic Market with unlocked pity item available for 1500 coins.
+      - `04_l4_boss_hud.png`: Goblin Chief boss HP bar and arena in Level 4.
+      - `05_l8_boss_hud.png`: Dark Elf Matron boss HP bar and arena in Level 8.
+      - `06_chest_break.png`: Breakable chest impact, wood/gold particles, and "+150 coins!" / relic toast.
+      - `07_relic_found_toast.png`: Results scene "RELIC FOUND!" sticker panel celebration.
+    - Added `"relic:shots": "node tools/relic_shots.mjs"` script to `package.json`.
+- **Checks:**
+  - `npm --prefix game run check`: 0 errors, 1 warning (sandbox 99), 30-day daily check passes (100% deterministic), TypeScript passes.
+  - `npm --prefix game run build`: 0 errors, production bundle built cleanly in `dist/`.
+  - `npm run regress:quick`: passes in ~64s with 0 errors across all 9 sections.
+  - `npm run regress` (full suite): all 12 campaign levels in balance bands (0 one-shot wins), 7 responsive viewports, camera returns, save migration, and 0 console errors pass cleanly in 2.81 min.
+  - `node tools/merkle.mjs seal`: sealed repo index (266 files).
+- **Deployed:** Not deployed (per AGENTS.md rule 8 / brief, no commit or deploy).
+
+
+## 2026-10-21 · agy · S7-01..S7-03: Relic framework (wave 1, part 1) (claimed)
+- Claimed cards S7-01..S7-03 per `docs/handoff/agy_task_relics1.md`.
+- Plan:
+  1. Profile and speed up `tools/regress.mjs`, add `npm run regress:quick` (target <4 min; levels 1, 4, 8, 12, phone-test bug assertions, camera return, single viewport 432x768, save fixtures). Cut obvious waste in full regress while preserving all assertions.
+  2. Implement Rarity & Loadout rules: `rare` and `legendary` in Mash32 palette, max 1 legendary per loadout, legendary abilities `charges: 1`, rarity-based forge multipliers (1.5x rare, 2.5x legendary).
+  3. Implement Unlock sources: `unlock` field in `content.json` (`boss`, `chest`, `shop`), save migration with `profile.stats.bossLosses`, silhouette hints in shop, Results unlock toast.
+  4. Mini-bosses: `goblin_chief` (L4) and `dark_elf_matron` (L8) + L12 Iron Warlord reward; sprite art, boss HP bar, level re-tuning via `scripts/build_levels.py`.
+  5. Treasure chests: `chests` in level loader + schema, 14x12 breakable sprite, HP ~40, reward relic or 150 coins fallback; placed in L3, L5, L7.
+  6. Pity shop: Relic Market tab behind `features.relics`, unlockable after 3 losses on a boss level.
+  7. Checks: update tests, run `npm run check`, `npm run build`, `npm run regress`, seal Merkle index.
+
 ## 2026-10-21 · claude · v1.10.0 (private): responsive phone/tablet/desktop shell
 - Reviewed agy's S6-resp: 216x384 field unchanged; integer/smooth scaling, themed backdrop and frame, desktop wheel/pan/Space/Esc/R/M, live resize. Screenshots in `docs/handoff/shots/resp/`. Full regress passes (0 errors) but takes ~24 min; quick mode queued.
 - Next (owner-approved): Relic wave 1 (rarity, mini-bosses L4/L8, chests, pity shop, 6 weapons, 2 slingshots). Briefs `agy_task_relics*.md`.

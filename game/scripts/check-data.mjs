@@ -124,7 +124,7 @@ if (content) {
   if (new Set(realmLevels).size !== realmLevels.length) err('content.json', 'a level number appears in two realms');
 
   for (const w of content.weapons ?? []) {
-    const m = /^level (\d+)$/.exec(w.unlock ?? '');
+    const m = typeof w.unlock === 'string' ? /^level (\d+)$/.exec(w.unlock) : null;
     if (m && !realmLevels.includes(Number(m[1]))) warn('content.json', `${w.id} unlocks at level ${m[1]}, which no realm contains`);
   }
   const cm = content.damageRules?.comboMultipliers;

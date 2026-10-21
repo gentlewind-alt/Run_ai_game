@@ -260,6 +260,58 @@ function warlord(hurt: boolean, open = false): Px {
   return p.outline();
 }
 
+function chief(hurt: boolean): Px {
+  const p = new Px(24, 24);
+  const skin: Tone = ['5', '6', 'n'];
+  const armor: Tone = ['d', 'e', 'm'];
+  p.line(1, 6, 4, 9, skin[0]); p.line(1, 7, 4, 10, skin[1]);
+  p.line(22, 6, 19, 9, skin[0]); p.line(22, 7, 19, 10, skin[2]);
+  p.rectT(7, 19, 4, 4, DARK); p.rectT(13, 19, 4, 4, DARK);
+  p.rectT(5, 12, 14, 8, armor);
+  p.rect(5, 17, 14, 2, 'g'); p.rect(10, 17, 4, 2, '4');
+  p.rectT(2, 13, 3, 6, skin); p.rectT(19, 13, 3, 6, skin);
+  p.rectT(6, 6, 12, 8, skin);
+  p.rectT(5, 2, 14, 5, STEEL);
+  p.rect(11, 0, 2, 3, '4');
+  p.line(5, 7, 18, 7, 'c');
+  p.rect(8, 9, 2, 2, hurt ? '0' : 'c'); p.rect(14, 9, 2, 2, hurt ? '0' : 'c');
+  p.set(9, 9, '0'); p.set(14, 9, '0');
+  p.rect(10, 12, 4, 1, hurt ? '2' : '0');
+  p.set(9, 11, 'c'); p.set(14, 11, 'c');
+  return p.outline();
+}
+
+function matron(hurt: boolean): Px {
+  const p = new Px(24, 24);
+  const robe: Tone = ['u', 'r', '1'];
+  p.rectT(4, 12, 16, 10, robe);
+  p.rect(3, 20, 18, 3, '1');
+  p.rect(6, 14, 12, 2, '4');
+  p.rect(11, 14, 2, 2, '3');
+  p.rectT(6, 4, 12, 9, robe);
+  p.line(8, 1, 15, 1, '4');
+  p.set(11, 0, '4'); p.set(12, 0, '4');
+  p.set(11, 2, '3');
+  p.rect(8, 7, 8, 4, '1');
+  p.rect(9, 8, 2, 2, hurt ? '2' : 'c'); p.rect(13, 8, 2, 2, hurt ? '2' : 'c');
+  p.set(10, 8, hurt ? '0' : '4'); p.set(13, 8, hurt ? '0' : '4');
+  p.rectT(20, 6, 2, 17, WOOD);
+  p.disc(21, 5, 2.2, ['4', '3', '2']);
+  return p.outline();
+}
+
+function chestSprite(): Px {
+  const p = new Px(14, 12);
+  p.rectT(1, 1, 12, 10, WOOD);
+  p.rect(2, 2, 1, 8, 'e');
+  p.rect(11, 2, 1, 8, 'e');
+  p.line(1, 5, 12, 5, '0');
+  p.rect(5, 4, 4, 4, '4');
+  p.rect(6, 5, 2, 2, '3');
+  p.set(6, 6, '0');
+  return p.outline();
+}
+
 // ---------------------------------------------------------------- weapons (16x16, pointing up)
 
 function weaponSprite(id: string): Px {
@@ -300,6 +352,39 @@ function weaponSprite(id: string): Px {
       p.set(6, 4, 'c'); p.set(9, 4, 'c');
       p.disc(8, 4, 1.8, ['4', '3', '2']);
       break;
+    case 'w_comet_fists':
+      p.rectT(3, 6, 4, 7, STEEL); p.rect(3, 4, 4, 2, '4'); p.rect(4, 2, 2, 2, '3');
+      p.rectT(9, 6, 4, 7, STEEL); p.rect(9, 4, 4, 2, '4'); p.rect(10, 2, 2, 2, '3');
+      p.rect(3, 13, 4, 2, '2'); p.rect(9, 13, 4, 2, '2');
+      break;
+    case 'w_bulwark_disc':
+      for (let y = 1; y < 15; y++) {
+        for (let x = 1; x < 15; x++) {
+          const d = Math.hypot(x + 0.5 - 8, y + 0.5 - 8);
+          if (d <= 6.5) p.set(x, y, d <= 2 ? '4' : d <= 4.5 ? 'c' : 'd');
+        }
+      }
+      p.rect(7, 3, 2, 10, '4'); p.rect(3, 7, 10, 2, '4');
+      break;
+    case 'w_skyforge_maul':
+      p.rectT(7, 7, 2, 9, WOOD); p.rect(6, 14, 4, 2, STEEL[1]);
+      p.rectT(2, 2, 12, 6, STEEL); p.rect(5, 4, 6, 2, '4'); p.set(7, 3, '3'); p.set(8, 3, '3');
+      break;
+    case 'w_steersong_arrow':
+      p.rectT(7, 3, 2, 10, WOOD);
+      p.set(7, 0, 'c'); p.rect(6, 1, 4, 2, 'a'); p.set(7, 1, 'b');
+      p.rect(5, 12, 2, 3, 'c'); p.rect(9, 12, 2, 3, 'c');
+      break;
+    case 'w_silkline_shooters':
+      p.rectT(7, 3, 2, 12, WOOD);
+      p.line(2, 5, 13, 5, 'd'); p.set(2, 6, 'c'); p.set(13, 6, 'c');
+      p.disc(8, 8, 2.2, ['1', 'r', 'u']); p.set(8, 8, 'c');
+      break;
+    case 'w_kinetic_palms':
+      p.rectT(4, 5, 8, 8, STEEL);
+      p.rect(4, 1, 1, 3, 'c'); p.rect(6, 0, 1, 4, 'c'); p.rect(8, 0, 1, 4, 'c'); p.rect(10, 1, 1, 3, 'c');
+      p.disc(8, 9, 1.8, ['4', '3', '2']);
+      break;
     default:
       break;
   }
@@ -320,7 +405,7 @@ const ICONS: Record<string, string[]> = {
 export interface MonsterArt {
   w: number; // physics body width
   h: number; // physics body height
-  size: 16 | 32;
+  size: 16 | 24 | 32;
 }
 
 export const MONSTER_ART: Record<string, MonsterArt> = {
@@ -333,11 +418,15 @@ export const MONSTER_ART: Record<string, MonsterArt> = {
   orc_brute: { w: 22, h: 28, size: 32 },
   troll: { w: 24, h: 28, size: 32 },
   iron_warlord: { w: 26, h: 30, size: 32 },
+  goblin_chief: { w: 18, h: 21, size: 24 },
+  dark_elf_matron: { w: 17, h: 20, size: 24 },
 };
 
 export const WEAPON_IDS = [
   'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun',
   'w_hunters_pike', 'w_hunters_boomerang', 'w_blast_tube', 'w_horned_scepter',
+  'w_comet_fists', 'w_bulwark_disc', 'w_skyforge_maul',
+  'w_steersong_arrow', 'w_silkline_shooters', 'w_kinetic_palms',
 ];
 
 export const weaponTexture = (id: string): string => `wpn_${id}`;
@@ -507,6 +596,11 @@ export function registerArt(scene: Phaser.Scene): void {
   addTexture(scene, 'iron_warlord', warlord(false, false));
   addTexture(scene, 'iron_warlord_open', warlord(false, true));
   addTexture(scene, 'iron_warlord_hurt', warlord(true, false));
+  addTexture(scene, 'goblin_chief', chief(false));
+  addTexture(scene, 'goblin_chief_hurt', chief(true));
+  addTexture(scene, 'dark_elf_matron', matron(false));
+  addTexture(scene, 'dark_elf_matron_hurt', matron(true));
+  addTexture(scene, 'chest', chestSprite());
   // goblin hurt frame (eyes squint) lives in sprites.ts via GOBLIN_HURT; reuse it for the redrawn goblin
   for (const id of WEAPON_IDS) {
     if (id === 'w_militia_blade') gridTexture(scene, weaponTexture(id), BLADE);

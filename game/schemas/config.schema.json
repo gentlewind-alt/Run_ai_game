@@ -76,7 +76,8 @@
         "iap": { "type": "boolean" },
         "tutorial": { "type": "boolean" },
         "music": { "type": "boolean" },
-        "zoom": { "type": "boolean" }
+        "zoom": { "type": "boolean" },
+        "relics": { "type": "boolean" }
       }
     },
     "debug": {

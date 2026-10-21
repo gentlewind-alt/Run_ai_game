@@ -65,6 +65,7 @@
         "upgradeDamagePerStep": { "type": "number", "minimum": 0 },
         "upgradeCostMultiplier": { "type": "number", "minimum": 1 },
         "upgradeBaseCost": { "type": "number", "minimum": 0 },
+        "forgeRarityMultiplier": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } },
         "maxUpgradeLevel": { "type": "integer", "minimum": 0, "maximum": 20 },
         "impactFactorMin": { "type": "number", "minimum": 0 },
         "impactFactorMax": { "type": "number", "minimum": 0 },
@@ -80,7 +81,8 @@
         "leftoverShotCoins": { "type": "number", "minimum": 0 },
         "starScoreFactor": { "type": "number", "minimum": 0 },
         "dailyStreakRewardDay": { "type": "integer", "minimum": 1 },
-        "dailyStreakRewardCoins": { "type": "number", "minimum": 0 }
+        "dailyStreakRewardCoins": { "type": "number", "minimum": 0 },
+        "relicMarketPrice": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } }
       }
     },
     "weapon": {
@@ -95,7 +97,16 @@
         "element": { "$ref": "#/$defs/element" },
         "rarity": { "$ref": "#/$defs/rarity" },
         "baseDamage": { "type": "number", "exclusiveMinimum": 0 },
-        "unlock": { "type": "string", "description": "'start' or 'level N'." , "pattern": "^(start|level [0-9]+)$" },
+        "unlock": {
+          "type": ["string", "object"],
+          "description": "'start', 'level N', or { boss, chest, shop }.",
+          "properties": {
+            "boss": { "type": "string" },
+            "chest": { "type": "string" },
+            "shop": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
         "price": { "type": "number", "minimum": 0 },
         "launch": { "type": "string" },
         "tap": { "type": "string" },
@@ -119,7 +130,8 @@
           "additionalProperties": false,
           "properties": {
             "mode": { "enum": ["button", "impact", "both", "none"] },
-            "label": { "type": "string", "maxLength": 6 }
+            "label": { "type": "string", "maxLength": 6 },
+            "charges": { "type": "integer", "minimum": 1 }
           }
         },
         "params": { "$ref": "#/$defs/params" }

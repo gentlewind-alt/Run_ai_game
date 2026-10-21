@@ -8,7 +8,13 @@ const BACKUP = 'save.bak';
 const DEBOUNCE_MS = 500;
 
 /** Upgrades a blob one version at a time: migrations[n] turns version n into n + 1. Add one with every schema bump. */
-const migrations: Record<number, (s: Record<string, unknown>) => Record<string, unknown>> = {};
+const migrations: Record<number, (s: Record<string, unknown>) => Record<string, unknown>> = {
+  1: (s) => ({
+    ...s,
+    version: 2,
+    stats: isObj(s.stats) ? s.stats : { bossLosses: {} },
+  }),
+};
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const num = (v: unknown, d: number): number => (typeof v === 'number' && Number.isFinite(v) ? v : d);
@@ -27,6 +33,8 @@ export function sanitize(raw: Record<string, unknown>): Profile {
   const st = isObj(raw.settings) ? raw.settings : {};
   const flags: Record<string, boolean> = {};
   if (isObj(raw.flags)) for (const [k, v] of Object.entries(raw.flags)) if (typeof v === 'boolean') flags[k] = v;
+  const statsObj = isObj(raw.stats) ? raw.stats : {};
+  const bossLosses = numMap(statsObj.bossLosses);
   const weapons = strs(owned.weapons);
   return {
     version: SAVE_VERSION,
@@ -48,6 +56,9 @@ export function sanitize(raw: Record<string, unknown>): Profile {
       rewardsClaimed: isObj(raw.daily) ? strs(raw.daily.rewardsClaimed) : [],
     },
     flags,
+    stats: {
+      bossLosses,
+    },
     settings: { muted: typeof st.muted === 'boolean' ? st.muted : false, musicOn: typeof st.musicOn === 'boolean' ? st.musicOn : true },
   };
 }

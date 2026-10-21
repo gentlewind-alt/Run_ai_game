@@ -2,24 +2,28 @@
 export type Element = 'physical' | 'hellfire' | 'radiant' | 'void';
 export type Params = Record<string, number>;
 export type AbilityMode = 'button' | 'impact' | 'both' | 'none';
+export type WeaponUnlock = string | { boss?: string; chest?: string; shop?: boolean };
 
 export interface WeaponDef {
   id: string;
   name: string;
+  archetype?: string;
   element: Element;
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
   baseDamage: number;
-  unlock: string;
+  unlock: WeaponUnlock;
   price?: number;
   enabled?: boolean;
   launch?: string;
   tap?: string;
   physics: { radius: number; density: number; spin: number; gravity?: number; align?: boolean; friction?: number; restitution?: number; frictionAir?: number };
-  ability: { mode: AbilityMode; label: string };
+  ability: { mode: AbilityMode; label: string; charges?: number };
   params: Params;
 }
 
 export interface MonsterDef {
   id: string;
+  name?: string;
   hp: number;
   weak: Element | null;
   resist: Element | null;
@@ -84,6 +88,7 @@ export interface DamageRules {
   upgradeDamagePerStep: number;
   upgradeCostMultiplier: number;
   upgradeBaseCost: number;
+  forgeRarityMultiplier?: Record<string, number>;
   maxUpgradeLevel: number;
 }
 
@@ -97,6 +102,7 @@ export interface Economy {
   secondArtifactAfterLevel: number;
   dailyStreakRewardDay?: number;
   dailyStreakRewardCoins?: number;
+  relicMarketPrice?: Record<string, number>;
 }
 
 export interface ArtifactDef { id: string; name: string; rarity?: string; price: number; effect: string; params?: Record<string, number | string | boolean> }
@@ -118,6 +124,7 @@ export interface Content {
 
 export interface LevelMonster { t: string; x: number; y: number; dir?: number; speed?: number; delay?: number; path?: number[][] }
 export interface LevelBlock { m: string; x: number; y: number; w: number; h: number }
+export interface LevelChest { id: string; x: number; y: number; hp: number; reward: string }
 export interface Level {
   id: number;
   name: string;
@@ -136,6 +143,7 @@ export interface Level {
   overrides?: Record<string, Record<string, unknown>>;
   blocks: LevelBlock[];
   monsters: LevelMonster[];
+  chests?: LevelChest[];
 }
 
 export interface Config {

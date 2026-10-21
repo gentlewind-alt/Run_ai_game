@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { C } from '../art/palette';
+import { C, rarityColor, rarityStroke } from '../art/palette';
 import { text } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
@@ -7,6 +7,7 @@ import { goTo } from '../core/flow';
 import { addCoins, lastResult, levelUnlocked, profile } from '../core/profile';
 import { beatBob, beatPhase } from '../audio/beat';
 import { setText } from '../art/font5x7';
+import { weaponTexture } from '../art/textures';
 import { data } from '../data/load';
 import { platform } from '../platform';
 import { makeButton, panel } from '../ui/widgets';
@@ -19,6 +20,7 @@ export interface ResultsData {
   score: number;
   target: number;
   loadout: string[];
+  relicUnlocked?: string;
 }
 
 /** Launched over a paused battle: stars, score, coins, then Next, Retry or Map. */
@@ -120,6 +122,55 @@ export default class ResultsScene extends Phaser.Scene {
       y += 26;
       makeButton(this, W / 2, y, 128, 22, 'Map', 'plain', () => go('map'), 3);
     }
+
+    if (d.relicUnlocked) {
+      this.showRelicUnlockToast(d.relicUnlocked);
+    }
+  }
+
+  private showRelicUnlockToast(relicId: string): void {
+    const w = data.content.weapons.find((x) => x.id === relicId);
+    if (!w) return;
+
+    const group: (Phaser.GameObjects.GameObject | { destroy(): void })[] = [];
+    const darkBg = this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.7).setDepth(20).setInteractive();
+    group.push(darkBg);
+
+    const py = H / 2 - 80;
+    const p = panel(this, W / 2 - 85, py, 170, 160, '0', rarityStroke(w.rarity ?? 'legendary'), 'f', 21);
+    group.push(p);
+
+    const t1 = text(this, W / 2, py + 16, 'RELIC FOUND!', rarityColor(w.rarity), 2, C('0')).setDepth(22);
+    group.push(t1);
+
+    const ico = this.add.image(W / 2, py + 48, weaponTexture(w.id)).setScale(2.5).setDepth(22);
+    group.push(ico);
+
+    const t2 = text(this, W / 2, py + 74, w.name, rarityColor(w.rarity), 1, C('0')).setDepth(22);
+    group.push(t2);
+
+    const t3 = text(this, W / 2, py + 88, (w.rarity ?? 'rare').toUpperCase(), C('d'), 1).setDepth(22);
+    group.push(t3);
+
+    const eff = (w.tap || w.launch || '').slice(0, 30);
+    const t4 = text(this, W / 2, py + 104, eff, C('c'), 1).setDepth(22);
+    group.push(t4);
+
+    const btn = makeButton(this, W / 2, py + 132, 90, 22, 'Claim', 'go', () => {
+      sfx.click();
+      group.forEach((g) => g.destroy());
+    }, 22);
+    group.push(btn.box);
+
+    sfx.unlock();
+    this.tweens.add({
+      targets: ico,
+      scale: 3.2,
+      duration: 260,
+      ease: 'Back.out',
+      yoyo: true,
+      repeat: 1,
+    });
   }
 
   private async drawDailyResults(d: ResultsData): Promise<void> {

@@ -17,7 +17,7 @@ import { onDown, onMove, onUp, activateAbility, buildQueue, loadNext, setWeapon 
 import { buildWorld, populate } from './world';
 import type { BattleState, BattleUi } from './state';
 
-const noUi: BattleUi = { setAbilityLabel() {}, showAbility() {}, setEscaped() {}, setTargeting() {}, consumableUsed() {} };
+const noUi: BattleUi = { setAbilityLabel() {}, showAbility() {}, setEscaped() {}, setTargeting() {}, consumableUsed() {}, setBossHp() {} };
 
 /** The state for one battle. Scene objects (graphics, sprites, cameras) are filled in by `buildBattle`. */
 export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[]): BattleState {

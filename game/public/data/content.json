@@ -20,6 +20,8 @@
       "stone": 4,
       "iron": 6,
       "crystal": 15,
+      "goblin_chief": 100,
+      "dark_elf_matron": 150,
       "orc_brute": 15,
       "troll": 20,
       "iron_warlord": 100
@@ -27,6 +29,8 @@
     "points": {
       "goblin_grunt": 100,
       "goblin_bomber": 150,
+      "goblin_chief": 800,
+      "dark_elf_matron": 1200,
       "skeleton_runner": 120,
       "dark_elf_archer": 150,
       "dark_elf_hexer": 180,
@@ -75,6 +79,12 @@
     "elementResist": 0.6,
     "upgradeDamagePerStep": 0.08,
     "upgradeCostMultiplier": 1.6,
+    "forgeRarityMultiplier": {
+      "common": 1,
+      "uncommon": 1,
+      "rare": 1.5,
+      "legendary": 2.5
+    },
     "maxUpgradeLevel": 5,
     "comboWindowSeconds": 2,
     "comboMultipliers": [
@@ -324,6 +334,172 @@
         "radius": 34,
         "curseSteps": 240
       }
+    },
+    {
+      "id": "w_comet_fists",
+      "name": "Comet Fists",
+      "archetype": "fists",
+      "element": "physical",
+      "rarity": "legendary",
+      "baseDamage": 30,
+      "unlock": {
+        "boss": "goblin_chief"
+      },
+      "price": 1500,
+      "launch": "Heavy flaming fists with blazing comet trails.",
+      "tap": "Comet strike: explosive impact upon activation.",
+      "physics": {
+        "radius": 5,
+        "density": 0.04,
+        "spin": 0.3,
+        "gravity": 1.1
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Comet",
+        "charges": 1
+      },
+      "params": {
+        "behavior": "w_militia_blade"
+      }
+    },
+    {
+      "id": "w_bulwark_disc",
+      "name": "Bulwark Disc",
+      "archetype": "disc",
+      "element": "radiant",
+      "rarity": "legendary",
+      "baseDamage": 28,
+      "unlock": {
+        "boss": "dark_elf_matron"
+      },
+      "price": 1500,
+      "launch": "Spinning radiant bulwark disc that carves through lines.",
+      "tap": "Bulwark burst: radiant wave on command.",
+      "physics": {
+        "radius": 5,
+        "density": 0.035,
+        "spin": 0.35,
+        "gravity": 0.9
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Bulwrk",
+        "charges": 1
+      },
+      "params": {
+        "behavior": "w_militia_blade"
+      }
+    },
+    {
+      "id": "w_skyforge_maul",
+      "name": "Skyforge Maul",
+      "archetype": "hammer",
+      "element": "hellfire",
+      "rarity": "legendary",
+      "baseDamage": 36,
+      "unlock": {
+        "boss": "iron_warlord"
+      },
+      "price": 1500,
+      "launch": "Colossal forged maul with crushing downward weight.",
+      "tap": "Skyforge slam: seismic shockwave.",
+      "physics": {
+        "radius": 6,
+        "density": 0.06,
+        "spin": 0.1,
+        "gravity": 1.4
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Forge",
+        "charges": 1
+      },
+      "params": {
+        "behavior": "w_militia_blade"
+      }
+    },
+    {
+      "id": "w_steersong_arrow",
+      "name": "Steersong Arrow",
+      "archetype": "bow",
+      "element": "radiant",
+      "rarity": "rare",
+      "baseDamage": 22,
+      "unlock": {
+        "chest": "c_l3"
+      },
+      "price": 600,
+      "launch": "Slender singing arrow that soars with low drag.",
+      "tap": "Steersong grace: precision thrust.",
+      "physics": {
+        "radius": 3,
+        "density": 0.02,
+        "spin": 0,
+        "gravity": 0.75,
+        "align": true
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Steer"
+      },
+      "params": {
+        "behavior": "w_militia_blade"
+      }
+    },
+    {
+      "id": "w_silkline_shooters",
+      "name": "Silkline Shooters",
+      "archetype": "crossbow",
+      "element": "void",
+      "rarity": "rare",
+      "baseDamage": 24,
+      "unlock": {
+        "chest": "c_l5"
+      },
+      "price": 600,
+      "launch": "Dual silk-bound darts that pierce air with eerie calm.",
+      "tap": "Silkline snip: rapid cutting pass.",
+      "physics": {
+        "radius": 4,
+        "density": 0.025,
+        "spin": 0.15,
+        "gravity": 0.85
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Silk"
+      },
+      "params": {
+        "behavior": "w_militia_blade"
+      }
+    },
+    {
+      "id": "w_kinetic_palms",
+      "name": "Kinetic Palms",
+      "archetype": "gauntlet",
+      "element": "physical",
+      "rarity": "rare",
+      "baseDamage": 20,
+      "unlock": {
+        "chest": "c_l7"
+      },
+      "price": 600,
+      "launch": "Kinetic discharge that transfers momentum on contact.",
+      "tap": "Kinetic pulse: shockwave dispersal.",
+      "physics": {
+        "radius": 4,
+        "density": 0.03,
+        "spin": 0.25,
+        "gravity": 1.0
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Kinetc"
+      },
+      "params": {
+        "behavior": "w_militia_blade"
+      }
     }
   ],
   "stretchWeapons": [
@@ -512,6 +688,23 @@
       }
     },
     {
+      "id": "goblin_chief",
+      "name": "Goblin Chief",
+      "hp": 70,
+      "weak": "hellfire",
+      "resist": null,
+      "boss": true,
+      "coins": 100,
+      "score": 800,
+      "note": "Scaled-up grunt with helmet and armour 6. Stomps every 4 s.",
+      "behavior": "goblin_chief",
+      "density": 0.003,
+      "params": {
+        "armour": 6,
+        "stompEvery": 240
+      }
+    },
+    {
       "id": "dark_elf_archer",
       "name": "Dark Elf Archer",
       "hp": 35,
@@ -537,6 +730,24 @@
       "params": {
         "shield": 50,
         "radius": 48
+      }
+    },
+    {
+      "id": "dark_elf_matron",
+      "name": "Dark Elf Matron",
+      "hp": 120,
+      "weak": "radiant",
+      "resist": "void",
+      "boss": true,
+      "coins": 150,
+      "score": 1200,
+      "note": "Scaled-up hexer. Periodic shield aura blocks damage for 2 s.",
+      "behavior": "dark_elf_matron",
+      "density": 0.0025,
+      "params": {
+        "shieldEvery": 360,
+        "shieldDuration": 120,
+        "shieldRadius": 48
       }
     },
     {
@@ -656,7 +867,8 @@
       "monsters": [
         "goblin_grunt",
         "goblin_bomber",
-        "skeleton_runner"
+        "skeleton_runner",
+        "goblin_chief"
       ],
       "palette": "green and warm brown",
       "name": "Goblin Hills",
@@ -674,7 +886,8 @@
         "dark_elf_archer",
         "dark_elf_hexer",
         "imp",
-        "goblin_grunt"
+        "goblin_grunt",
+        "dark_elf_matron"
       ],
       "palette": "purple, teal, deep blue",
       "name": "Dark Elf Wood",
@@ -733,6 +946,9 @@
     "artifactSlots": 1,
     "secondArtifactAfterLevel": 8,
     "dailyStreakRewardDay": 7,
-    "dailyStreakRewardCoins": 500
+    "dailyStreakRewardCoins": 500,
+    "relicMarketPrice": {
+      "legendary": 1500
+    }
   }
 }

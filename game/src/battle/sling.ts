@@ -99,6 +99,12 @@ export function updateQueue(b: BattleState, time: number): void {
 export function activateAbility(b: BattleState): void {
   const mode = b.wdef.ability.mode;
   if (b.state !== 'flying' || !b.proj || b.proj.tapped || mode === 'impact' || mode === 'none') return;
+  if (b.wdef.ability.charges !== undefined) {
+    b.abilityCharges = b.abilityCharges ?? {};
+    const cur = b.abilityCharges[b.wdef.id] ?? b.wdef.ability.charges;
+    if (cur <= 0) return;
+    b.abilityCharges[b.wdef.id] = cur - 1;
+  }
   const p = b.proj;
   p.tapped = true;
   const { x, y } = p.body.position;
@@ -108,8 +114,15 @@ export function activateAbility(b: BattleState): void {
 
 export function updateAbilityBtn(b: BattleState, time: number): void {
   const inAir = b.state === 'flying' && !!b.proj && b.wdef.ability.mode !== 'impact' && b.wdef.ability.mode !== 'none';
-  const ready = inAir && !b.proj!.tapped;
-  b.ui.showAbility(inAir, ready, ready ? 1 + 0.07 * beatPulse(time) : 1);
+  if (b.wdef.ability.charges !== undefined) {
+    b.abilityCharges = b.abilityCharges ?? {};
+    const left = b.abilityCharges[b.wdef.id] ?? b.wdef.ability.charges;
+    const ready = inAir && !b.proj!.tapped && left > 0;
+    b.ui.showAbility(inAir, ready, ready ? 1 + 0.07 * beatPulse(time) : 1, { left, max: b.wdef.ability.charges });
+  } else {
+    const ready = inAir && !b.proj!.tapped;
+    b.ui.showAbility(inAir, ready, ready ? 1 + 0.07 * beatPulse(time) : 1);
+  }
 }
 
 // ------------------------------------------------------------------ input

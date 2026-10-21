@@ -2,11 +2,11 @@
   "id": 4,
   "name": "Hill fort",
   "realm": "goblin_hills",
-  "kind": "siege",
+  "kind": "boss",
   "worldW": 600,
   "shots": 4,
   "hints": [
-    "Kill 3 in 2 seconds for a MASH combo."
+    "Defeat the Goblin Chief!"
   ],
   "scoreTarget": 1200,
   "escapeLimit": 1,
@@ -107,9 +107,9 @@
   ],
   "monsters": [
     {
-      "t": "goblin_bomber",
+      "t": "goblin_chief",
       "x": 209,
-      "y": 281.0
+      "y": 277.5
     },
     {
       "t": "goblin_bomber",

@@ -26,6 +26,10 @@ def mon(t, x, y, **kw):
     return d
 
 
+def chst(id, x, y, reward, hp=40):
+    return {'id': id, 'x': round(x, 1), 'y': round(y, 1), 'hp': hp, 'reward': reward}
+
+
 def stand(top, h=14):
     """Centre y of a monster of body height h standing on a surface at `top`."""
     return top - h / 2
@@ -44,7 +48,7 @@ def tower(cx, base, w=44, tiers=1, pillar='stone', ph=30, floor='wood'):
     return blocks, y
 
 
-def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target, **extra):
+def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target, chests=None, **extra):
     d = {
         'id': n, 'name': name, 'realm': realm, 'kind': kind, 'worldW': worldW, 'shots': 4, 'hints': hints,
         'scoreTarget': target,
@@ -53,11 +57,13 @@ def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target
     d['terrain'] = terrain
     d['blocks'] = blocks
     d['monsters'] = monsters
+    if chests:
+        d['chests'] = chests
     os.makedirs(OUT, exist_ok=True)
     path = os.path.join(OUT, 'level_%02d.json' % n)
     with open(path, 'w', newline='\n') as f:
         json.dump(d, f, indent=2)
-    print('wrote', os.path.normpath(path), '-', len(blocks), 'blocks', len(monsters), 'monsters')
+    print('wrote', os.path.normpath(path), '-', len(blocks), 'blocks', len(monsters), 'monsters', len(chests or []), 'chests')
 
 
 # ---------------------------------------------------------------- Goblin Hills
@@ -80,24 +86,25 @@ write(2, 'Bomb squad', 'goblin_hills', 'siege', 432, ['Press the ability button 
 # 3 Run, skeleton, run: a fort close in, runners that sprint uphill to a door on the far side.
 b3, top3 = tower(213, GROUND, 44, 1, 'stone', 28)
 b3 += [blk('wood', 204, top3 - 10, 6, 20), blk('wood', 222, top3 - 10, 6, 20), blk('wood', 213, top3 - 23, 32, 6)]
+c3 = [chst('c_l3', 350, 292, 'w_steersong_arrow', 40)]
 write(3, 'Run, skeleton, run', 'goblin_hills', 'runner', 540, ['Stop the runners before the door.'],
       [[0, 320], [100, 320], [126, 308], [152, 308], [178, 320], [300, 320], [336, 298], [430, 298], [466, 320], [540, 320]],
       b3,
       [mon('goblin_grunt', 213, stand(GROUND)), mon('goblin_grunt', 213, stand(top3 - 26)), mon('goblin_grunt', 225, stand(top3 - 10)),
        mon('skeleton_runner', 252, stand(GROUND), dir=1, speed=1.0, delay=0.5), mon('skeleton_runner', 268, stand(GROUND), dir=1, speed=0.85, delay=0.8),
        mon('skeleton_runner', 284, stand(GROUND), dir=1, speed=0.7, delay=1.1)],
-      1700, escapeLimit=1, exit={'x': 520, 'y': GROUND - 13})
+      1700, chests=c3, escapeLimit=1, exit={'x': 520, 'y': GROUND - 13})
 
-# 4 Hill fort: a plateau fort with bombers in the bays, grunts on top, runners waiting beyond the slope.
+# 4 Hill fort: a plateau fort with chief in the bay, grunts on top, runners waiting beyond the slope.
 P4 = 288
 b4 = [blk('stone', x, P4 - 14, 12, 28) for x in (192, 226, 260)]
 b4 += [blk('wood', 226, P4 - 31, 84, 6)]
 b4 += [blk('wood', x, P4 - 44, 6, 20) for x in (204, 226, 248)]
 b4 += [blk('wood', 226, P4 - 57, 52, 6), blk('stone', 208, P4 - 66, 12, 12)]
-write(4, 'Hill fort', 'goblin_hills', 'siege', 600, ['Kill 3 in 2 seconds for a MASH combo.'],
+write(4, 'Hill fort', 'goblin_hills', 'boss', 600, ['Defeat the Goblin Chief!'],
       [[0, 320], [140, 320], [176, P4], [270, P4], [300, 320], [600, 320]],
       b4,
-      [mon('goblin_bomber', 209, stand(P4)), mon('goblin_bomber', 243, stand(P4)), mon('goblin_grunt', 226, stand(P4 - 60)),
+      [mon('goblin_chief', 209, stand(P4, 21)), mon('goblin_bomber', 243, stand(P4)), mon('goblin_grunt', 226, stand(P4 - 60)),
        mon('goblin_grunt', 242, stand(P4 - 60)), mon('goblin_grunt', 120, stand(GROUND)),
        mon('skeleton_runner', 312, stand(GROUND), dir=1, speed=0.8, delay=0.8), mon('skeleton_runner', 330, stand(GROUND), dir=1, speed=0.7, delay=1.2)],
       1200, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13})
@@ -109,12 +116,13 @@ write(4, 'Hill fort', 'goblin_hills', 'siege', 600, ['Kill 3 in 2 seconds for a 
 PA, PIT, PB = 296, 336, 296
 tA, topA = tower(162, PA, 44, 2, 'stone', 28)
 tB, topB = tower(298, PB, 48, 1, 'stone', 30)
+c5 = [chst('c_l5', 328, 290, 'w_silkline_shooters', 40)]
 write(5, 'Moonlit towers', 'dark_elf_wood', 'siege', 432, ['Archers hide high. Lob over the pit.'],
       [[0, 320], [110, 320], [128, PA], [196, PA], [214, PIT], [250, PIT], [268, PB], [336, PB], [356, 320], [432, 320]],
       tA + tB,
       [mon('dark_elf_archer', 162, stand(topA)), mon('dark_elf_hexer', 162, stand(PA - 34)), mon('goblin_grunt', 162, stand(PA)),
        mon('dark_elf_archer', 298, stand(topB)), mon('dark_elf_hexer', 298, stand(PB))],
-      1100)
+      1100, chests=c5)
 
 # 6 Imp swarm: a ridge hides the fort, so shots have to lob. Imps weave above the peak and the fort.
 tC, topC = tower(300, GROUND, 44, 2, 'wood', 28)
@@ -129,21 +137,22 @@ write(6, 'Imp swarm', 'dark_elf_wood', 'siege', 432, ['A ridge blocks flat shots
 # 7 Hexer court: a stone screen in front of a shielded stage. Two hexers cover a guard and an archer.
 P7 = 300
 tD, topD = tower(275, P7, 52, 2, 'stone', 28)
+c7 = [chst('c_l7', 325, 294, 'w_kinetic_palms', 40)]
 write(7, 'Hexer court', 'dark_elf_wood', 'siege', 432, ['Hurt the hexer to drop its shields.'],
       [[0, 320], [110, 320], [150, P7], [336, P7], [356, 320], [432, 320]],
       tD + [blk('stone', 180, P7 - 24, 12, 48)],
       [mon('dark_elf_hexer', 230, stand(P7)), mon('goblin_grunt', 255, stand(P7)), mon('dark_elf_hexer', 275, stand(P7 - 34)),
        mon('dark_elf_archer', 275, stand(topD)), mon('dark_elf_archer', 320, stand(P7)),
        mon('imp', 265, 205)],
-      1100)
+      1100, chests=c7)
 
 # 8 Elf bastion: a stepped cliff, a two-tier keep on the upper step, a lower outpost. Everything at once.
 P8a, P8b = 300, 268
 tE, topE = tower(275, P8b, 56, 2, 'stone', 28)
-write(8, 'Elf bastion', 'dark_elf_wood', 'siege', 432, ['Break the cliff keep. Mind the shields.'],
+write(8, 'Elf bastion', 'dark_elf_wood', 'boss', 432, ['Defeat the Dark Elf Matron.'],
       [[0, 320], [110, 320], [126, P8a], [196, P8a], [220, P8b], [336, P8b], [356, 320], [432, 320]],
       tE + [blk('stone', 160, P8a - 20, 12, 40), blk('wood', 160, P8a - 46, 12, 12), blk('wood', 324, P8b - 14, 8, 28), blk('wood', 324, P8b - 31, 24, 6)],
-      [mon('dark_elf_archer', 275, stand(topE)), mon('dark_elf_hexer', 275, stand(P8b - 34)), mon('goblin_grunt', 275, stand(P8b)),
+      [mon('dark_elf_matron', 275, stand(P8b, 20)), mon('dark_elf_archer', 275, stand(topE)), mon('goblin_grunt', 275, stand(P8b - 34)),
        mon('dark_elf_hexer', 324, stand(P8b)), mon('dark_elf_archer', 190, stand(P8a)), mon('imp', 235, 195)],
       1350)
 
@@ -215,4 +224,3 @@ write(12, 'Iron Throne', 'iron_keep', 'boss', 648,
       850,
       shots=5,
       loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube'])
-

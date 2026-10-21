@@ -5,7 +5,7 @@ import { activateAbility, launchFrom, skipToReady } from '../battle/sling';
 import { homeCx, homeZoom, toggleView } from '../battle/camera';
 import { pressConsumable, targetTap } from '../battle/consumables';
 import type { BattleState } from '../battle/state';
-import { addCoins, applyDebug, profile, recordDailyResult } from '../core/profile';
+import { addCoins, applyDebug, profile, recordDailyResult, setLoadout, buyWeapon, recordResult } from '../core/profile';
 import { sanitize, loadSave } from '../core/save';
 import { generateDailyLevel, getDailySeed } from '../content/levelKinds/daily';
 import { platform } from '../platform';
@@ -178,6 +178,9 @@ export function installTestHook(game: Phaser.Game): void {
     platform: () => platform,
     setMockTimeOffset: (ms: number) => setMockTimeOffset(ms),
     recordDaily: (score: number, dateStr: string) => recordDailyResult(score, dateStr),
+    setLoadout: (ids: string[]) => setLoadout(ids),
+    buyWeapon: (id: string) => buyWeapon(id),
+    recordResult: (r: any) => recordResult(r),
     dailySeed: (ms?: number) => getDailySeed(ms ?? Date.now()),
     dailyLevel: (ms?: number) => generateDailyLevel(ms ?? Date.now()),
     sanitizeSave: (raw: Record<string, unknown>) => sanitize(raw),

@@ -33,6 +33,9 @@ export function update(b: BattleState, delta: number, nowMs: number): void {
   updateQueue(b, nowMs);
   updateAbilityBtn(b, nowMs);
   syncSprites(b, nowMs);
+  const boss = b.ents.find((e) => !e.dead && e.kind === 'monster' && e.def?.boss);
+  if (boss) b.ui.setBossHp(boss.hp, boss.maxHp, boss.def?.name ?? boss.type);
+  else if (b.level.kind === 'boss' || b.ents.some((e) => e.kind === 'monster' && e.def?.boss)) b.ui.setBossHp(0, 1);
   drawOverlay(b);
 }
 
@@ -90,7 +93,7 @@ function syncSprites(b: BattleState, time: number): void {
   for (const e of b.ents) {
     if (e.dead) continue;
     const bp = e.body.position;
-    if (e.kind === 'block') {
+    if (e.kind === 'block' || e.kind === 'chest') {
       e.sprite.setPosition(bp.x, bp.y).setRotation(e.body.angle);
       continue;
     }
@@ -101,7 +104,7 @@ function syncSprites(b: BattleState, time: number): void {
     e.sprite.setTexture(tex);
     e.sprite.setPosition(bp.x, bp.y + e.h / 2 - e.size / 2 + 1 + (running ? -Math.abs(Math.sin(b.steps / 4)) * 2 : 0));
     e.sprite.setRotation(e.body.angle);
-    const amp = e.size === 32 ? 0.03 : 0.05;
+    const amp = e.size >= 24 ? 0.03 : 0.05;
     e.sprite.setScale(running ? 1 : 1 + amp * beat, running ? 1 : 1 - amp * 1.4 * beat);
     if (e.flash > 0) e.sprite.setTintFill(0xffffff);
     else if (e.status.chain > 0) e.sprite.setTint(0xb8c0c8);

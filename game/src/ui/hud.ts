@@ -44,6 +44,8 @@ export function createHud(
   let escTxt: Phaser.GameObjects.Image | undefined;
   let muteBtn!: Phaser.GameObjects.Image;
   let ability!: Btn;
+  let pipCircle: Phaser.GameObjects.Arc | undefined;
+  let bossBar: { container: Phaser.GameObjects.Container; nameTxt: Phaser.GameObjects.Image; fill: Phaser.GameObjects.Rectangle; bg: Phaser.GameObjects.Rectangle } | undefined;
   let targetTxt: Phaser.GameObjects.Image | undefined;
   const tray: { box: Phaser.GameObjects.Rectangle; icon: Phaser.GameObjects.Image }[] = [];
   let pauseObjs: Phaser.GameObjects.GameObject[] = [];
@@ -106,10 +108,43 @@ export function createHud(
 
   const ui: BattleUi = {
     setAbilityLabel: (label) => ability.setLabel(label),
-    showAbility: (inAir, ready, scale) => {
+    showAbility: (inAir, ready, scale, charges) => {
       ability.box.setVisible(inAir);
+      if (charges !== undefined) {
+        if (!pipCircle) {
+          pipCircle = host.inUi(() => scene.add.circle(W - 10, H - 40, 3, C('4')).setStrokeStyle(1, C('0')).setDepth(12));
+        }
+        pipCircle.setVisible(inAir);
+        pipCircle.setFillStyle(charges.left > 0 ? C('4') : C('f'));
+        pipCircle.setScale(scale);
+        if (charges.left <= 0) ready = false;
+      } else {
+        pipCircle?.setVisible(false);
+      }
       ability.setEnabled(ready);
       ability.box.setScale(scale);
+    },
+    setBossHp: (hp, maxHp, name) => {
+      if (hp <= 0) {
+        bossBar?.container.setVisible(false);
+        return;
+      }
+      if (!bossBar) {
+        host.inUi(() => {
+          const container = scene.add.container(W / 2, top + 5).setDepth(15);
+          const bg = scene.add.rectangle(0, 10, 104, 6, C('0')).setStrokeStyle(1, C('4'));
+          const fill = scene.add.rectangle(-50, 10, 100, 4, C('2')).setOrigin(0, 0.5);
+          const nameTxt = text(scene, 0, 1, name ?? 'Boss', C('4'), 1, C('0')).setOrigin(0.5, 0.5);
+          container.add([bg, fill, nameTxt]);
+          bossBar = { container, nameTxt, fill, bg };
+        });
+      }
+      if (bossBar) {
+        bossBar.container.setVisible(true);
+        if (name && bossBar.nameTxt) setText(bossBar.nameTxt, scene, name, C('4'));
+        const frac = Math.max(0, Math.min(1, hp / maxHp));
+        bossBar.fill.width = Math.max(1, Math.round(100 * frac));
+      }
     },
     setEscaped: (escaped, limit) => {
       if (escTxt) setText(escTxt, scene, `Escaped ${escaped} of ${limit}`, escaped > limit ? C('2') : C('d'));

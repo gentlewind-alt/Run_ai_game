@@ -51,6 +51,10 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S6-loadout | Next level goes through Loadout screen | done | agy | 10-21 | results Next -> loadout, preselected weapons preserved, regress assertion updated |
 | S6-camera | Camera return to sling frame after shot | done | agy | 10-21 | ease to homeCx and homeZoom after shot/consumable/toggleView, regress check |
 | S6-resp | Responsive phone / tablet / desktop shell (phase 1) | review | agy | 10-21 | scaling, backdrop, desktop controls, live resize, 35 shots, 7-viewport regress |
+| S7-01 | Relic framework: rarity, loadout rules, unlock sources, toast, save migration | review | agy | 10-21 | wave 1 part 1; 1-legendary rule, charges pip, rarity colors, toast, save v2 migration verified |
+| S7-02 | Mini-bosses (L4 goblin chief, L8 dark elf matron), boss HP bar, L12 warlord reward | review | agy | 10-21 | wave 1 part 1; L4 & L8 bosses, HP bars, L4 tuned to 4 shots in band [2,4] |
+| S7-03 | Treasure chests (L3, L5, L7) & pity shop (Relic Market) | review | agy | 10-21 | wave 1 part 1; chests grant relic or 150 coins fallback, pity unlocks at >= 3 boss losses |
+| S8-landscape | Convert game from portrait 216x384 to LANDSCAPE (16:9) | doing | agy | 10-21 | per docs/handoff/agy_task_landscape.md |
 
 ## Parallel lanes (once S2-03 is done)
 

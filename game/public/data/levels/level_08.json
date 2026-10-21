@@ -2,11 +2,11 @@
   "id": 8,
   "name": "Elf bastion",
   "realm": "dark_elf_wood",
-  "kind": "siege",
+  "kind": "boss",
   "worldW": 432,
   "shots": 4,
   "hints": [
-    "Break the cliff keep. Mind the shields."
+    "Defeat the Dark Elf Matron."
   ],
   "scoreTarget": 1350,
   "terrain": [
@@ -117,19 +117,19 @@
   ],
   "monsters": [
     {
+      "t": "dark_elf_matron",
+      "x": 275,
+      "y": 258.0
+    },
+    {
       "t": "dark_elf_archer",
       "x": 275,
       "y": 193.0
     },
     {
-      "t": "dark_elf_hexer",
-      "x": 275,
-      "y": 227.0
-    },
-    {
       "t": "goblin_grunt",
       "x": 275,
-      "y": 261.0
+      "y": 227.0
     },
     {
       "t": "dark_elf_hexer",

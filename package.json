@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "regress": "node tools/regress.mjs",
+    "regress:quick": "node tools/regress.mjs --quick",
+    "relic:shots": "node tools/relic_shots.mjs",
     "agy:share": "node tools/agy_share.mjs",
     "merkle:seal": "node tools/merkle.mjs seal",
     "merkle:changed": "node tools/merkle.mjs changed",

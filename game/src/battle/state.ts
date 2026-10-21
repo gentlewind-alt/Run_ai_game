@@ -15,7 +15,8 @@ export interface Particle { s: Phaser.GameObjects.Image; vx: number; vy: number;
 /** What the battle needs from the HUD (implemented in ui/hud.ts). Keeps battle/ free of ui/ imports. */
 export interface BattleUi {
   setAbilityLabel(label: string): void;
-  showAbility(inAir: boolean, ready: boolean, scale: number): void;
+  showAbility(inAir: boolean, ready: boolean, scale: number, charges?: { left: number; max: number }): void;
+  setBossHp(hp: number, maxHp: number, name?: string): void;
   setEscaped(escaped: number, limit: number): void;
   setTargeting(on: boolean, label?: string): void;
   consumableUsed(i: number): void;
@@ -57,6 +58,8 @@ export interface BattleState {
   consumables: ConsumableSlot[];
   targeting: number | null; // index of an armed targeted consumable
   paused: boolean;
+  abilityCharges?: Record<string, number>;
+  relicUnlocked?: string;
 
   ents: Ent[];
   actors: Actor[];

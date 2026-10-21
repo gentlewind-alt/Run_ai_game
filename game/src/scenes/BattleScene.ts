@@ -104,7 +104,9 @@ export default class BattleScene extends Phaser.Scene {
     events.on('combo', (e) => this.hud.mash(e.mult));
     const results = (won: boolean, why: 'shots' | 'escaped', stars: number): void => {
       this.scene.pause();
-      this.scene.launch('results', { levelId: this.levelId, won, why, stars, score: b.score, target: b.level.scoreTarget ?? 0, loadout: b.loadout });
+      this.scene.launch('results', {
+        levelId: this.levelId, won, why, stars, score: b.score, target: b.level.scoreTarget ?? 0, loadout: b.loadout, relicUnlocked: b.relicUnlocked,
+      });
     };
     events.on('level:won', (e) => results(true, 'shots', e.stars));
     events.on('level:lost', (e) => results(false, e.reason, 0));

@@ -12,7 +12,7 @@ export const debugLevel = query.get('sandbox') === '1' ? 99 : null;
 /** `?level=N` (with ?debug=1) jumps straight into that level. */
 export const startLevelParam = Number(query.get('level')) || 0;
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const GOLD_QUIVER = 'gold_quiver'; // cosmetic id that adds a fifth weapon slot (S5-04)
 
 export interface DailyInfo {
@@ -20,6 +20,10 @@ export interface DailyInfo {
   streak: number;
   best: number;
   rewardsClaimed: string[];
+}
+
+export interface ProfileStats {
+  bossLosses: Record<string, number>;
 }
 
 export interface Profile {
@@ -32,6 +36,7 @@ export interface Profile {
   best: Record<string, number>;
   daily: DailyInfo;
   flags: Record<string, boolean>;
+  stats: ProfileStats;
   settings: { muted: boolean; musicOn: boolean };
 }
 
@@ -44,6 +49,7 @@ export interface ResultInfo {
   earned: number; // coins collected in the battle
   credited: number; // coins actually added to the profile
   firstClear: boolean;
+  relicUnlocked?: string;
 }
 
 const DEFAULT_ECONOMY: Economy = {
@@ -65,6 +71,7 @@ export function freshProfile(): Profile {
     best: {},
     daily: { streak: 0, best: 0, rewardsClaimed: [] },
     flags: {},
+    stats: { bossLosses: {} },
     settings: { muted: false, musicOn: true },
   };
 }
@@ -117,7 +124,8 @@ export const equipSlingSkin = (id?: string): void => {
 export const consumableCount = (id: string): number => profile.owned.consumables[id] ?? 0;
 
 /** "start" or "level N": a weapon can be bought once the player has reached level N. */
-export function weaponUnlockLevel(unlock: string): number {
+export function weaponUnlockLevel(unlock: unknown): number {
+  if (typeof unlock !== 'string') return 999;
   return unlock === 'start' ? 1 : Number(unlock.replace(/\D/g, '')) || 1;
 }
 
@@ -144,8 +152,22 @@ export function buyWeapon(id: string): BuyResult {
   const def = data.content.weapons.find((w) => w.id === id);
   if (!def) return 'locked';
   if (owns('weapons', id)) return 'owned';
-  if (!DEBUG && weaponUnlockLevel(def.unlock) > reachedLevel()) return 'locked';
-  if (!spendCoins(def.price ?? 0)) return 'coins';
+  let price = def.price ?? 0;
+  if (typeof def.unlock === 'object') {
+    if (def.unlock.boss) {
+      const bossLvl = def.unlock.boss === 'goblin_chief' ? 4 : def.unlock.boss === 'dark_elf_matron' ? 8 : 12;
+      const losses = profile.stats.bossLosses[String(bossLvl)] ?? 0;
+      if (losses < 3) return 'locked';
+      price = economy().relicMarketPrice?.[def.rarity ?? 'legendary'] ?? 1500;
+    } else if (def.unlock.shop) {
+      price = def.price ?? 0;
+    } else {
+      if (!DEBUG) return 'locked';
+    }
+  } else if (!DEBUG && weaponUnlockLevel(def.unlock) > reachedLevel()) {
+    return 'locked';
+  }
+  if (!spendCoins(price)) return 'coins';
   profile.owned.weapons.push(id);
   changed('owned');
   return 'ok';
@@ -184,7 +206,9 @@ export function useConsumable(id: string): boolean {
 export function upgradeCost(id: string): number | null {
   const R = data.content.damageRules;
   const lv = weaponLevel(id);
-  return lv >= R.maxUpgradeLevel ? null : Math.round(R.upgradeBaseCost * Math.pow(R.upgradeCostMultiplier, lv));
+  const w = data.content.weapons.find((x) => x.id === id);
+  const rarityMult = (R.forgeRarityMultiplier as Record<string, number> | undefined)?.[w?.rarity ?? ''] ?? (w?.rarity === 'rare' ? 1.5 : w?.rarity === 'legendary' ? 2.5 : 1);
+  return lv >= R.maxUpgradeLevel ? null : Math.round(R.upgradeBaseCost * rarityMult * Math.pow(R.upgradeCostMultiplier, lv));
 }
 
 export function upgradeWeapon(id: string): 'ok' | 'coins' | 'max' | 'unowned' {
@@ -203,7 +227,17 @@ export const upgradeMult = (id: string): number => 1 + data.content.damageRules.
 // ------------------------------------------------------------------ loadout and settings
 
 export function setLoadout(ids: string[]): void {
-  profile.equipped.loadout = ids.slice();
+  let hasLegendary = false;
+  const filtered: string[] = [];
+  for (const id of ids) {
+    const w = data.content.weapons.find((x) => x.id === id);
+    if (w?.rarity === 'legendary') {
+      if (hasLegendary) continue;
+      hasLegendary = true;
+    }
+    filtered.push(id);
+  }
+  profile.equipped.loadout = filtered;
   changed('equipped');
 }
 
@@ -281,9 +315,21 @@ export function recordResult(r: { levelId: number; won: boolean; stars: number; 
   if (r.won) {
     profile.stars[key] = Math.max(prev, r.stars);
     profile.best[key] = Math.max(profile.best[key] ?? 0, r.score);
+    if (first) {
+      delete profile.stats.bossLosses[key];
+      changed('stats');
+    }
     if (r.levelId === 0) {
       const dateStr = r.dateStr ?? getDailySeed(Date.now()).dateStr;
       recordDailyResult(r.score, dateStr);
+    }
+  } else {
+    const lvl = data.levels[r.levelId];
+    const isBossLvl = r.levelId === 4 || r.levelId === 8 || r.levelId === 12 || lvl?.kind === 'boss' ||
+      (lvl?.monsters ?? []).some((m) => data.content?.monsters?.find((def) => def.id === m.t)?.boss);
+    if (isBossLvl) {
+      profile.stats.bossLosses[key] = (profile.stats.bossLosses[key] ?? 0) + 1;
+      changed('stats');
     }
   }
   profile.coins += credited;

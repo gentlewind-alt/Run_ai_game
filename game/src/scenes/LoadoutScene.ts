@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { C } from '../art/palette';
+import { C, rarityColor, rarityStroke } from '../art/palette';
 import { text, textBlock } from '../art/font5x7';
 import { iconKey } from '../art/icons';
 import { pixText } from '../art/pix';
@@ -44,10 +44,11 @@ export default class LoadoutScene extends Phaser.Scene {
     owned.forEach((w, i) => {
       const x = 6 + (i % 2) * 105;
       const y = 42 + Math.floor(i / 2) * 39;
-      panel(this, x, y, 99, 36, '8', '9', 'f', 1);
-      this.add.rectangle(x + 15, y + 18, 24, 30, C('0')).setStrokeStyle(1, C('8')).setDepth(2);
+      const stroke = rarityStroke(w.rarity);
+      panel(this, x, y, 99, 36, '8', stroke, 'f', 1);
+      this.add.rectangle(x + 15, y + 18, 24, 30, C('0')).setStrokeStyle(1, C(stroke)).setDepth(2);
       this.add.image(x + 15, y + 18, weaponTexture(w.id)).setScale(1.2).setDepth(2);
-      text(this, x + 31, y + 10, shortWeaponName(w.id, w.name), C('c')).setOrigin(0, 0.5).setDepth(2);
+      text(this, x + 31, y + 10, shortWeaponName(w.id, w.name), rarityColor(w.rarity)).setOrigin(0, 0.5).setDepth(2);
       this.add.image(x + 35, y + 25, `el_${w.element}`).setDepth(2);
       pixText(this, x + 41, y + 25, String(Math.round(w.baseDamage * upgradeMult(w.id))), C('4')).setOrigin(0, 0.5).setDepth(2);
       text(this, x + 94, y + 25, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5).setDepth(2);
@@ -68,9 +69,24 @@ export default class LoadoutScene extends Phaser.Scene {
       pixText(this, sx - 12, 240, String(i + 1), C('4'));
     }
 
-    // prefill from the last loadout, else the owned weapons in order
+    // prefill from the last loadout (max 1 legendary), else the owned weapons in order
     const last = profile.equipped.loadout.filter((id) => owns('weapons', id));
-    this.slots = Array.from({ length: n }, (_, i) => last[i] ?? owned[i % owned.length].id);
+    let hasLegendary = false;
+    const sanitizedLast = last.filter((id) => {
+      const w = data.content.weapons.find((x) => x.id === id);
+      if (w?.rarity === 'legendary') {
+        if (hasLegendary) return false;
+        hasLegendary = true;
+      }
+      return true;
+    });
+    this.slots = Array.from({ length: n }, (_, i) => sanitizedLast[i] ?? null);
+    for (let i = 0; i < n; i++) {
+      if (this.slots[i] === null) {
+        const fallback = owned.find((ow) => ow.rarity !== 'legendary' && !this.slots.includes(ow.id)) ?? owned.find((ow) => ow.rarity !== 'legendary') ?? owned[0];
+        if (fallback) this.slots[i] = fallback.id;
+      }
+    }
 
     this.artifactRow();
     this.itemRow();
@@ -95,6 +111,22 @@ export default class LoadoutScene extends Phaser.Scene {
   }
 
   private addToSlot(id: string): void {
+    const w = data.content.weapons.find((x) => x.id === id);
+    if (w?.rarity === 'legendary') {
+      const alreadyHasLegendary = this.slots.some((s) => {
+        if (!s) return false;
+        return data.content.weapons.find((x) => x.id === s)?.rarity === 'legendary';
+      });
+      if (alreadyHasLegendary) {
+        sfx.hit(0.5);
+        this.info.forEach((i) => i.destroy());
+        this.info = [
+          text(this, W / 2, 198, 'Max 1 Legendary!', C('4'), 1, C('0')),
+          ...textBlock(this, W / 2, 212, 'You may only equip one Legendary weapon at a time.', C('c'), 200),
+        ];
+        return;
+      }
+    }
     const i = this.slots.findIndex((s) => s === null);
     if (i < 0) return;
     sfx.click();

@@ -8,3 +8,17 @@ export const PAL: number[] = [
 
 export const C = (ch: string): number => PAL[parseInt(ch, 32)];
 export const css = (c: number): string => '#' + c.toString(16).padStart(6, '0');
+
+export function rarityStroke(rarity?: string): string {
+  if (rarity === 'legendary') return '4';
+  if (rarity === 'rare') return 'a';
+  if (rarity === 'uncommon') return '6';
+  return '9';
+}
+
+export function rarityColor(rarity?: string): number {
+  if (rarity === 'legendary') return C('4');
+  if (rarity === 'rare') return C('a');
+  if (rarity === 'uncommon') return C('6');
+  return C('c');
+}

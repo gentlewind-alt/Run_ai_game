@@ -42,6 +42,21 @@
       "description": "Per-level overrides merged over content.json (e.g. {\"tuning\": {\"launchK\": 0.3}}).",
       "additionalProperties": { "type": "object" }
     },
+    "chests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "x", "y", "hp", "reward"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "hp": { "type": "number", "exclusiveMinimum": 0 },
+          "reward": { "type": "string" }
+        }
+      }
+    },
     "blocks": {
       "type": "array",
       "items": {

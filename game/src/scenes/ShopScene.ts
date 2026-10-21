@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { C } from '../art/palette';
+import { C, rarityColor, rarityStroke } from '../art/palette';
 import { setText, text, textBlock } from '../art/font5x7';
 import { iconKey } from '../art/icons';
 import { pixText } from '../art/pix';
@@ -18,16 +18,28 @@ import { platform } from '../platform';
 import { coinCounter } from '../ui/coins';
 import { makeButton, panel, type Btn } from '../ui/widgets';
 
-type Tab = 'weapons' | 'artifacts' | 'items' | 'forge' | 'skins';
+type Tab = 'weapons' | 'relics' | 'artifacts' | 'items' | 'forge' | 'skins';
 const TABS: { id: Tab; label: string; w: number }[] = [
-  { id: 'weapons', label: 'Weapons', w: 42 },
-  { id: 'artifacts', label: 'Artifacts', w: 46 },
-  { id: 'items', label: 'Items', w: 34 },
-  { id: 'forge', label: 'Forge', w: 34 },
-  { id: 'skins', label: 'Skins', w: 34 },
+  { id: 'weapons', label: 'Weapons', w: 38 },
+  { id: 'relics', label: 'Relics', w: 32 },
+  { id: 'artifacts', label: 'Artifacts', w: 38 },
+  { id: 'items', label: 'Items', w: 28 },
+  { id: 'forge', label: 'Forge', w: 28 },
+  { id: 'skins', label: 'Skins', w: 28 },
 ];
 
-interface Item { id: string; name: string; desc: string[]; price: number; icon: string; scale: number; state: 'buy' | 'owned' | 'locked' | 'full'; note: string }
+interface Item {
+  id: string;
+  name: string;
+  desc: string[];
+  price: number;
+  icon: string;
+  scale: number;
+  state: 'buy' | 'owned' | 'locked' | 'full';
+  note: string;
+  rarity?: string;
+  isSilhouette?: boolean;
+}
 
 /** Weapons, artifacts and items for coins, and the forge for upgrades. Prices and unlocks come from content.json. */
 export default class ShopScene extends Phaser.Scene {
@@ -58,38 +70,114 @@ export default class ShopScene extends Phaser.Scene {
     this.tabBtns.forEach((b) => b.box.destroy());
     this.tabBtns = [];
     const showSkins = data.config.features?.iap !== false && (data.config.features as Record<string, boolean>)?.skins !== false;
-    const tabs = TABS.filter((t) => t.id !== 'skins' || showSkins);
+    const showRelics = data.config.features?.relics !== false;
+    const tabs = TABS.filter((t) => (t.id !== 'skins' || showSkins) && (t.id !== 'relics' || showRelics));
     if (this.tab === 'skins' && !showSkins) this.tab = 'weapons';
-    let x = showSkins ? 6 : 24;
+    if (this.tab === 'relics' && !showRelics) this.tab = 'weapons';
+    let x = 6;
     tabs.forEach((t) => {
       const b = makeButton(this, x + t.w / 2, 36, t.w, 18, t.label, t.id === this.tab ? 'go' : 'plain', () => { sfx.click(); this.tab = t.id; this.selected = null; this.render(); }, 6);
       this.tabBtns.push(b);
-      x += t.w + 4;
+      x += t.w + 3;
     });
     if (this.tab === 'forge') this.renderForge();
     else this.renderGrid();
   }
 
-  // ------------------------------------------------------------------ grid tabs (weapons, artifacts, items)
+  // ------------------------------------------------------------------ grid tabs (weapons, relics, artifacts, items)
 
   private items(): Item[] {
     const c = data.content;
     if (this.tab === 'weapons') {
       return c.weapons.filter((w) => w.enabled !== false).map((w) => {
-        const lock = weaponUnlockLevel(w.unlock);
         const owned = owns('weapons', w.id);
+        const rarity = w.rarity ?? 'common';
+        if (typeof w.unlock === 'object') {
+          if (w.unlock.boss) {
+            const bName = w.unlock.boss === 'goblin_chief' ? 'Goblin Chief' : w.unlock.boss === 'dark_elf_matron' ? 'Dark Elf Matron' : 'Iron Warlord';
+            const bLvl = w.unlock.boss === 'goblin_chief' ? 4 : w.unlock.boss === 'dark_elf_matron' ? 8 : 12;
+            const losses = profile.stats?.bossLosses?.[String(bLvl)] ?? 0;
+            const pityPrice = (economy().relicMarketPrice as Record<string, number> | undefined)?.[rarity] ?? 1500;
+            if (owned) {
+              return {
+                id: w.id, name: shortWeaponName(w.id, w.name), price: pityPrice, icon: weaponTexture(w.id), scale: 2, rarity,
+                desc: [`Damage ${Math.round(w.baseDamage)}, ${w.element}.`, w.launch ?? '', w.tap ?? ''].filter(Boolean),
+                state: 'owned', note: 'Owned',
+              };
+            }
+            if (losses >= 3) {
+              return {
+                id: w.id, name: shortWeaponName(w.id, w.name), price: pityPrice, icon: weaponTexture(w.id), scale: 2, rarity,
+                desc: [`Damage ${Math.round(w.baseDamage)}, ${w.element}.`, `Pity market unlock (${losses} losses on L${bLvl}).`, w.launch ?? '', w.tap ?? ''].filter(Boolean),
+                state: 'buy', note: 'Pity',
+              };
+            }
+            return {
+              id: w.id, name: shortWeaponName(w.id, w.name), price: pityPrice, icon: weaponTexture(w.id), scale: 2, rarity, isSilhouette: true,
+              desc: [`Defeat the ${bName} on Level ${bLvl} to unlock, or lose 3 times for the pity shop (${losses}/3).`],
+              state: 'locked', note: `Defeat ${bName}`,
+            };
+          }
+          if (w.unlock.chest) {
+            const cLvl = w.unlock.chest.includes('03') ? 3 : w.unlock.chest.includes('05') ? 5 : 7;
+            if (owned) {
+              return {
+                id: w.id, name: shortWeaponName(w.id, w.name), price: 0, icon: weaponTexture(w.id), scale: 2, rarity,
+                desc: [`Damage ${Math.round(w.baseDamage)}, ${w.element}.`, w.launch ?? '', w.tap ?? ''].filter(Boolean),
+                state: 'owned', note: 'Owned',
+              };
+            }
+            return {
+              id: w.id, name: shortWeaponName(w.id, w.name), price: 0, icon: weaponTexture(w.id), scale: 2, rarity, isSilhouette: true,
+              desc: [`Break the hidden chest in Level ${cLvl} to claim this relic.`],
+              state: 'locked', note: `L${cLvl} chest`,
+            };
+          }
+        }
+        const lock = weaponUnlockLevel(w.unlock);
         const locked = !owned && !DEBUG && lock > reachedLevel();
         return {
-          id: w.id, name: shortWeaponName(w.id, w.name), price: w.price ?? 0, icon: weaponTexture(w.id), scale: 2,
+          id: w.id, name: shortWeaponName(w.id, w.name), price: w.price ?? 0, icon: weaponTexture(w.id), scale: 2, rarity,
           desc: [`Damage ${Math.round(w.baseDamage)}, ${w.element}.`, w.launch ?? '', w.tap ?? ''].filter(Boolean),
           state: owned ? 'owned' : locked ? 'locked' : 'buy', note: locked ? `Reach level ${lock}` : '',
+        };
+      });
+    }
+    if (this.tab === 'relics') {
+      const bossRelics = c.weapons.filter((w) => typeof w.unlock === 'object' && w.unlock.boss);
+      return bossRelics.map((w) => {
+        const u = w.unlock as { boss: string };
+        const bName = u.boss === 'goblin_chief' ? 'Goblin Chief' : u.boss === 'dark_elf_matron' ? 'Dark Elf Matron' : 'Iron Warlord';
+        const bLvl = u.boss === 'goblin_chief' ? 4 : u.boss === 'dark_elf_matron' ? 8 : 12;
+        const losses = profile.stats?.bossLosses?.[String(bLvl)] ?? 0;
+        const rarity = w.rarity ?? 'legendary';
+        const pityPrice = (economy().relicMarketPrice as Record<string, number> | undefined)?.[rarity] ?? 1500;
+        const owned = owns('weapons', w.id);
+        if (owned) {
+          return {
+            id: w.id, name: shortWeaponName(w.id, w.name), price: pityPrice, icon: weaponTexture(w.id), scale: 2, rarity,
+            desc: [w.name, `Damage ${Math.round(w.baseDamage)}, ${w.element}.`, w.launch ?? '', w.tap ?? ''].filter(Boolean),
+            state: 'owned', note: 'Owned',
+          };
+        }
+        if (losses >= 3) {
+          return {
+            id: w.id, name: shortWeaponName(w.id, w.name), price: pityPrice, icon: weaponTexture(w.id), scale: 2, rarity,
+            desc: [w.name, `Relic Market pity unlocked! (${losses} losses on Level ${bLvl})`, w.launch ?? '', w.tap ?? ''].filter(Boolean),
+            state: 'buy', note: 'Pity unlock',
+          };
+        }
+        return {
+          id: w.id, name: shortWeaponName(w.id, w.name), price: pityPrice, icon: weaponTexture(w.id), scale: 2, rarity, isSilhouette: true,
+          desc: [w.name, `Lose 3 times on Level ${bLvl} to unlock pity: ${losses}/3`, `Or defeat the ${bName}.`],
+          state: 'locked', note: `Lose 3 times: ${losses}/3`,
         };
       });
     }
     if (this.tab === 'artifacts') {
       return c.artifacts.map((a) => ({
         id: a.id, name: shortItemName(a.id, a.name.replace('Gamblers', "Gambler's")), price: a.price, icon: iconKey(a.id), scale: 2, desc: [a.name, a.effect],
-        state: owns('artifacts', a.id) ? 'owned' : 'buy', note: '',
+        state: owns('artifacts', a.id) ? 'owned' : 'buy', note: '', rarity: a.rarity,
       }));
     }
     const cap = economy().maxConsumableStack;
@@ -128,11 +216,17 @@ export default class ShopScene extends Phaser.Scene {
       const x = 6 + (i % 2) * 105;
       const y = 52 + Math.floor(i / 2) * 43;
       const sel = it.id === this.selected;
-      const g = panel(this, x, y, cardW, cardH, sel ? '9' : '8', sel ? 'a' : '9', 'f', 1);
+      const baseStroke = it.rarity ? rarityStroke(it.rarity) : '9';
+      const stroke = sel ? 'a' : baseStroke;
+      const g = panel(this, x, y, cardW, cardH, sel ? '9' : '8', stroke, 'f', 1);
       if (sel) g.lineStyle(1, C('4'), 1).strokeRect(x - 1, y - 1, cardW + 2, cardH + 2);
-      const iconBox = this.add.rectangle(x + 15, y + 20, 24, 32, C('0')).setStrokeStyle(1, C('8')).setDepth(2);
+      const iconBox = this.add.rectangle(x + 15, y + 20, 24, 32, C('0')).setStrokeStyle(1, C(baseStroke)).setDepth(2);
       const icon = this.add.image(x + 15, y + 20, it.icon).setScale(it.scale === 2 ? 1.2 : it.scale).setDepth(2);
-      const name = text(this, x + 31, y + 11, it.name, it.state === 'locked' ? C('e') : C('c')).setOrigin(0, 0.5).setDepth(2);
+      if (it.state === 'locked' && (it.isSilhouette || it.id.startsWith('w_'))) {
+        icon.setTint(0x1a1c2c).setAlpha(0.6);
+      }
+      const nameColor = it.state === 'locked' ? C('e') : it.rarity ? rarityColor(it.rarity) : C('c');
+      const name = text(this, x + 31, y + 11, it.name, nameColor).setOrigin(0, 0.5).setDepth(2);
       const parts: Phaser.GameObjects.GameObject[] = [g, iconBox, icon, name];
       if (this.tab === 'skins') {
         parts.push(text(this, x + 31, y + 28, it.note, it.note === 'Equipped' ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
@@ -140,7 +234,7 @@ export default class ShopScene extends Phaser.Scene {
         parts.push(text(this, x + 31, y + 28, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
       } else if (it.state === 'locked') {
         parts.push(this.add.image(x + 35, y + 28, 'icon_lock').setDepth(2), text(this, x + 42, y + 28, it.note.replace('Reach level', 'Level'), C('e')).setOrigin(0, 0.5).setDepth(2));
-        icon.setAlpha(0.4);
+        if (!it.isSilhouette) icon.setAlpha(0.4);
       } else {
         parts.push(this.add.image(x + 35, y + 28, 'icon_coin').setDepth(2), pixText(this, x + 42, y + 28, String(it.price), profile.coins >= it.price ? C('4') : C('3')).setOrigin(0, 0.5).setDepth(2));
         if (this.tab === 'items') parts.push(text(this, x + cardW - 5, y + 28, `x${consumableCount(it.id)}`, C('b')).setOrigin(1, 0.5).setDepth(2));
@@ -214,7 +308,7 @@ export default class ShopScene extends Phaser.Scene {
       });
       return;
     }
-    const r = this.tab === 'weapons' ? buyWeapon(it.id) : this.tab === 'artifacts' ? buyArtifact(it.id) : buyConsumable(it.id);
+    const r = (this.tab === 'weapons' || this.tab === 'relics') ? buyWeapon(it.id) : this.tab === 'artifacts' ? buyArtifact(it.id) : buyConsumable(it.id);
     if (r === 'ok') {
       sfx.coin();
       this.render();

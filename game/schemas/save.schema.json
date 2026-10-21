@@ -39,6 +39,12 @@
       }
     },
     "flags": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Tutorial hints seen, one-time popups." },
+    "stats": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "bossLosses": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } }
+      }
+    },
     "settings": {
       "type": "object", "additionalProperties": false,
       "properties": { "muted": { "type": "boolean" }, "musicOn": { "type": "boolean" } }

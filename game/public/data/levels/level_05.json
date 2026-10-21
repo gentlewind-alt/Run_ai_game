@@ -142,5 +142,14 @@
       "x": 298,
       "y": 289.0
     }
+  ],
+  "chests": [
+    {
+      "id": "c_l5",
+      "x": 328,
+      "y": 290,
+      "hp": 40,
+      "reward": "w_silkline_shooters"
+    }
   ]
 }

@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { pixText } from '../art/pix';
 import { sfx } from '../audio/sfx';
-import { upgradeMult } from '../core/profile';
+import { profile, upgradeMult } from '../core/profile';
 import { weaponDef } from '../data/lookup';
 import { blockKey } from '../art/textures';
 import { artifactMult } from './artifacts';
@@ -187,28 +187,57 @@ function kill(b: BattleState, t: Ent): void {
   discard(b, t);
   const colors = t.kind === 'monster'
     ? ['5', '6', '4', '2']
-    : t.type === 'wood'
-      ? ['g', 'i', 'h']
-      : t.type === 'iron'
-        ? ['c', 'd', 'e', 'f']
-        : t.type === 'crystal'
-          ? ['b', 'c', '4', 'a']
-          : ['k', 'l', 'm'];
+    : t.kind === 'chest'
+      ? ['g', 'h', 'i', '4', 'c']
+      : t.type === 'wood'
+        ? ['g', 'i', 'h']
+        : t.type === 'iron'
+          ? ['c', 'd', 'e', 'f']
+          : t.type === 'crystal'
+            ? ['b', 'c', '4', 'a']
+            : ['k', 'l', 'm'];
   burst(b, px, py, colors, 14);
   sfx.crunch();
   b.hitStop = Math.max(b.hitStop, b.tune.hitStopFrames);
   const coins = b.tune.coins;
-  addCoins(b, t.kind === 'monster' ? coins[t.type] ?? coins.monster : coins[t.type] ?? coins.stone);
-  sfx.coin();
+
+  if (t.kind === 'chest') {
+    sfx.unlock();
+    const rewardId = String(t.params?.reward ?? '');
+    if (rewardId) {
+      if (!profile.owned.weapons.includes(rewardId)) {
+        profile.owned.weapons.push(rewardId);
+        b.relicUnlocked = rewardId;
+        popWord(b, px, py - 14, 'Relic found!');
+      } else {
+        addCoins(b, 150);
+        popWord(b, px, py - 14, '+150 coins!');
+      }
+    }
+  } else {
+    addCoins(b, t.kind === 'monster' ? coins[t.type] ?? coins.monster : coins[t.type] ?? coins.stone);
+    sfx.coin();
+  }
   b.events.emit('kill', { target: t, x: px, y: py });
 
   if (t.kind === 'monster') {
+    if (t.def?.boss) {
+      const bossRelic = b.content.weapons.find(
+        (w) => typeof w.unlock === 'object' && w.unlock.boss === t.type
+      );
+      if (bossRelic && !profile.owned.weapons.includes(bossRelic.id)) {
+        profile.owned.weapons.push(bossRelic.id);
+        b.relicUnlocked = bossRelic.id;
+        popWord(b, px, py - 20, 'RELIC FOUND!');
+        sfx.unlock();
+      }
+    }
     popWord(b, px, py - 12, 'splat!');
     registerKill(b);
     addScore(b, Math.round((b.tune.points[t.type] ?? 100) * comboMult(b)), px, py);
     announce(b);
     t.behavior?.onDeath?.(b.ctx, t);
-  } else {
+  } else if (t.kind !== 'chest') {
     addScore(b, b.tune.points[t.type] ?? 10, px, py - 6, true);
   }
   // Sleeping bodies don't wake when a support is removed.
