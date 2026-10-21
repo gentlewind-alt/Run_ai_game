@@ -1,0 +1,5 @@
+# Task: S6-01 release checklist (everything except the owner-only steps)
+
+Follow `docs/handoff/AGY_BRIEF.md`. Do card S6-01 in `architecture/STAGES.md` exactly: work every item that does not need the owner. Claim the row as `doing | agy`, `review` when done. Write the LOG.md entry first, update at the end.
+
+Specifically: run `npm run check`, `npm run build`, `npm run regress`, `rundot predeploy` (path `$LOCALAPPDATA/Programs/Rundot/rundot.exe`; predeploy only, DO NOT run `rundot deploy`, `set-public`, `upload-server-config`, or anything that changes the live game); confirm `game.config.json`/rundot config, store thumbnail, description, credits and README are present and consistent with the shipped features (ads/skins flags off, prices 0); verify no secrets, no `dist`/`node_modules` tracked (`git ls-files`); write `docs/release/CHECKLIST.md` with a row per item (done / needs owner / blocked) and the exact owner commands for the remaining steps in order (deploy, upload shop config after prices, set-public by 30 Oct, jam form). Fix any defect found. Finish with `node tools/merkle.mjs seal`. No commit.

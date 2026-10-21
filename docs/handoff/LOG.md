@@ -2,6 +2,43 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · claude · Deployed v1.6.0 (private), then v1.7.0 with release flags
+- **v1.6.0:** Stage 4-6 build, `features.ads` and `features.iap` still true (ad button and Skins tab visible, skins priced 0).
+- **v1.7.0:** after agy's S6-01 pass: `ads` and `iap` false, Skins tab hidden when off, `game.config.json` tracked. Same private share URL.
+- **Owner steps in order:** see `docs/release/CHECKLIST.md`.
+
+## 2026-10-21 · agy · Stage 6: Release checklist & verification complete (S6-01 in review)
+- **What:**
+  - Audited and verified full release readiness for MONSTER MASH: Slingshot Siege (Card S6-01).
+  - Authored release checklist matrix and step-by-step owner deployment guide in `docs/release/CHECKLIST.md`.
+  - Config & Flag consistency:
+    - Updated `game/public/data/config.json` with release flags: core features enabled (`map`, `shop`, `forge`, `artifacts`, `consumables`, `combo`, `daily`, `leaderboard`, `share`, `tutorial`, `music`, `zoom`); unapproved/unpriced features safely disabled (`ads: false`, `iap: false`).
+    - Updated `game/src/scenes/ShopScene.ts` to dynamically hide the `Skins` tab and symmetrically center the remaining 4 tabs when `features.iap === false` or `features.skins === false`.
+    - Created `game/game.config.json` matching `game/game.config.prod.json` (gameId `83DTzRcGtCh99lCAuhBn`, portrait orientation, 1.5 maxDpr, fullscreen enabled).
+    - Verified `game/rundot/shop.config.json` items (`gold_quiver`, `skin_bone`, `skin_iron`) have prices configured as 0 pending owner review.
+    - Verified `game/rundot/leaderboard.config.json` is set to `requiresToken: false` for open score submission.
+  - Store & Marketing Assets:
+    - Verified 512x512 rendered store icon at `game/public/thumbnail.jpg` and `game/public/thumbnail.png`.
+    - Verified 2-sentence description pitch in `docs/release/DESCRIPTION.txt`.
+    - Verified 4 release screenshots in `docs/release/`.
+    - Verified `CreditsScene` accessible from Title and Map scenes.
+    - Verified player guide in root `README.md` and `game/README.md`.
+  - Repo hygiene:
+    - Confirmed with `git ls-files` that 0 secrets/keys, no `dist/`, and no `node_modules/` are tracked.
+- **Checks:**
+  - `npm run check` in `game/` passes cleanly (0 errors, 1 sandbox warning, 30 days daily check 100% deterministic, tsc ok).
+  - `npm run build` in `game/` passes cleanly (Vite production bundle built, 440 kB gzip chunked).
+  - `rundot predeploy` in `game/` passes cleanly (All 20 checks passed with 0 defects).
+  - `npm run regress` in `game/` passes cleanly (30-day daily variety, v1 save migration, campaign levels 1-12 in balance band with 0 one-shot wins, 0 console errors/exceptions).
+- **Deployed:** Not deployed (per Golden Rule #9; awaiting owner command).
+- **Owner actions:**
+  - See `docs/release/CHECKLIST.md` for exact commands in order:
+    1. Deploy: `rundot deploy`
+    2. Upload shop config after prices: `rundot game upload-server-config rundot/shop.config.json`
+    3. Make public by Thu 30 Oct: `rundot game set-public`
+    4. Jam entry form submission in Creator Hub before Mon 2 Nov 12:00 PT
+
+
 ## 2026-10-21 · agy · Stage 6: Torc restore + boss maxHitDamage, regression suite, daily variety (done)
 - **What:**
   - **Torc & L12 Retune:**

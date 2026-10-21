@@ -57,8 +57,11 @@ export default class ShopScene extends Phaser.Scene {
     this.toastTxt = undefined;
     this.tabBtns.forEach((b) => b.box.destroy());
     this.tabBtns = [];
-    let x = 6;
-    TABS.forEach((t) => {
+    const showSkins = data.config.features?.iap !== false && (data.config.features as Record<string, boolean>)?.skins !== false;
+    const tabs = TABS.filter((t) => t.id !== 'skins' || showSkins);
+    if (this.tab === 'skins' && !showSkins) this.tab = 'weapons';
+    let x = showSkins ? 6 : 24;
+    tabs.forEach((t) => {
       const b = makeButton(this, x + t.w / 2, 36, t.w, 18, t.label, t.id === this.tab ? 'go' : 'plain', () => { sfx.click(); this.tab = t.id; this.selected = null; this.render(); }, 6);
       this.tabBtns.push(b);
       x += t.w + 4;

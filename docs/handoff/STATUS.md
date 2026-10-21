@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.5.0 (Stage 3, in review), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
+**Current build:** v1.7.0 (Stages 3-6, private), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -35,7 +35,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S5-04 | Gold Quiver + skins (RUN Bits) | S3-04 | review | agy | 10-21 | Gold Quiver + sling skins in shop.config.json & content.json, 5th Skins tab in ShopScene, prices set to 0 pending owner approval |
 | S5-05 | Feel + performance pass | S2-S4 | review | agy | 10-21 | roundPixels: true, 90-particle cap, MASH haptics, phone-readiness pass verified (432x768, L1-12 solved, L12 & daily <17ms median, v1 migration ok) |
 | S5-06 | Credits, README, thumbnail | | review | agy | 10-21 | CreditsScene, player README.md guide, 512x512 rendered store thumbnail.jpg/.png, 4 release screenshots & description |
-| S6-01 | Release checklist + regression suite | S5 | review | agy | 10-21 | torc mult 1.6 restored, L12 stone roofs + maxHitDamage cap (272), tools/regress.mjs (L1-12, save migration, 30-day variety), 0 console errors |
+| S6-01 | Release checklist + regression suite | S5 | review | agy | 10-21 | release verification matrix & CHECKLIST.md complete, check/build/regress/predeploy 20/20 pass, 0 console errors |
 | S6-02 | Go public | S6-01 | todo | | | OWNER APPROVAL, by 30 Oct |
 | S6-03 | Jam entry form | S6-02 | todo | owner | | owner only |
 

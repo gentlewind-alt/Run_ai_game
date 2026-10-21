@@ -14,7 +14,7 @@
   "features": {
     "map": true, "shop": true, "forge": true, "artifacts": true, "consumables": true,
     "combo": true, "daily": true, "leaderboard": true, "share": true,
-    "ads": true, "iap": true, "tutorial": true, "music": true, "zoom": true
+    "ads": false, "iap": false, "tutorial": true, "music": true, "zoom": true
   },
   "debug": { "urlOverrides": true, "testHook": true }
 }
