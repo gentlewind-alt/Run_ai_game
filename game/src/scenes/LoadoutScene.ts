@@ -45,11 +45,12 @@ export default class LoadoutScene extends Phaser.Scene {
       const x = 6 + (i % 2) * 105;
       const y = 42 + Math.floor(i / 2) * 39;
       panel(this, x, y, 99, 36, '8', '9', 'f', 1);
-      this.add.image(x + 18, y + 18, weaponTexture(w.id)).setScale(2).setDepth(2);
-      text(this, x + 36, y + 10, shortWeaponName(w.id, w.name), C('c')).setOrigin(0, 0.5).setDepth(2);
-      this.add.image(x + 40, y + 26, `el_${w.element}`).setDepth(2);
-      pixText(this, x + 48, y + 26, String(Math.round(w.baseDamage * upgradeMult(w.id))), C('4')).setOrigin(0, 0.5).setDepth(2);
-      text(this, x + 94, y + 26, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5).setDepth(2);
+      this.add.rectangle(x + 15, y + 18, 24, 30, C('0')).setStrokeStyle(1, C('8')).setDepth(2);
+      this.add.image(x + 15, y + 18, weaponTexture(w.id)).setScale(1.2).setDepth(2);
+      text(this, x + 31, y + 10, shortWeaponName(w.id, w.name), C('c')).setOrigin(0, 0.5).setDepth(2);
+      this.add.image(x + 35, y + 25, `el_${w.element}`).setDepth(2);
+      pixText(this, x + 41, y + 25, String(Math.round(w.baseDamage * upgradeMult(w.id))), C('4')).setOrigin(0, 0.5).setDepth(2);
+      text(this, x + 94, y + 25, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5).setDepth(2);
       const hit = this.add.rectangle(x + 49, y + 18, 99, 36, 0xffffff, 0).setDepth(3).setInteractive();
       hit.on('pointerdown', () => { sfx.unlock(); this.addToSlot(w.id); this.describe(w.id); });
     });

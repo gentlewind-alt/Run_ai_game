@@ -21,7 +21,9 @@ export function minZoom(b: BattleState): number {
 
 export function clampCx(b: BattleState, cx: number, z: number): number {
   const half = W / z / 2;
-  return W / z >= b.worldW ? b.worldW / 2 : Phaser.Math.Clamp(cx, half, b.worldW - half);
+  const minCx = b.tune.homeLeft !== undefined ? Math.min(half, b.tune.homeLeft + half) : half;
+  const maxCx = Math.max(minCx, b.worldW - half);
+  return Phaser.Math.Clamp(cx, minCx, maxCx);
 }
 
 /** Zoom is about the screen centre. Zoomed in the view is bottom-aligned so the ground stays on screen. */
@@ -89,13 +91,22 @@ export function updateCamera(b: BattleState): void {
 
 /** Default framing: the sling near the left edge and every monster in view, down to a minimum zoom. */
 export function homeZoom(b: BattleState): number {
-  if (b.worldW <= W) return 1;
-  const maxX = Math.max(...b.level.monsters.map((m) => m.x));
-  return Phaser.Math.Clamp(W / (maxX + 28 - b.tune.homeLeft), b.tune.homeZoomMin, 1);
+  if (b.level.homeZoom) return b.level.homeZoom;
+  const monsters = b.level.monsters ?? [];
+  const blocks = b.level.blocks ?? [];
+  const monsterMaxX = monsters.length ? Math.max(...monsters.map((m) => m.x)) : b.slingX + 100;
+  const blockMaxX = blocks.length ? Math.max(...blocks.map((blk) => blk.x + (blk.w || 0) / 2)) : 0;
+  const maxX = Math.max(monsterMaxX, blockMaxX);
+  const marginR = b.tune.homeMarginRight ?? 36;
+  const slingFrac = b.tune.homeSlingFrac ?? 0.24;
+  const reqVw = (maxX + marginR - b.slingX) / (1 - slingFrac);
+  return Phaser.Math.Clamp(W / reqVw, b.tune.homeZoomMin, 1);
 }
 
 export function homeCx(b: BattleState): number {
-  return b.tune.homeLeft + W / homeZoom(b) / 2;
+  const z = homeZoom(b);
+  const slingFrac = b.tune.homeSlingFrac ?? 0.24;
+  return b.slingX + (0.5 - slingFrac) * (W / z);
 }
 
 export function atHome(b: BattleState): boolean {

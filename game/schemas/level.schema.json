@@ -14,6 +14,7 @@
     "realm": { "type": "string" },
     "kind": { "enum": ["siege", "runner", "boss", "daily", "tutorial"] },
     "worldW": { "type": "integer", "minimum": 216, "maximum": 1296 },
+    "homeZoom": { "type": "number", "minimum": 0.1, "maximum": 2, "description": "Optional authored home zoom override for the level." },
     "shots": { "type": "integer", "minimum": 1, "maximum": 8, "description": "Number of shots when the player brings their own loadout." },
     "loadout": {
       "description": "Fixed weapon queue for this level (tutorials, boss). Omit to use the player's loadout.",

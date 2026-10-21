@@ -3,8 +3,10 @@
   "tuning": {
     "_note": "Feel/balance numbers read by the game. Edit here, not in code.",
     "launchK": 0.27,
-    "homeZoomMin": 0.62,
-    "homeLeft": 20,
+    "homeZoomMin": 0.5,
+    "homeLeft": -50,
+    "homeMarginRight": 36,
+    "homeSlingFrac": 0.24,
     "maxPull": 30,
     "debrisK": 9,
     "blockDebrisFactor": 0.5,
@@ -363,7 +365,7 @@
       "effect": "The ability also releases a wind burst that knocks monsters and light blocks back.",
       "params": {
         "radius": 46,
-        "strength": 3.0
+        "strength": 3
       }
     },
     {

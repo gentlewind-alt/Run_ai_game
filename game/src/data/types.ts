@@ -48,6 +48,8 @@ export interface Tuning {
   stretchSoundMs: number;
   homeZoomMin: number;
   homeLeft: number;
+  homeMarginRight?: number;
+  homeSlingFrac?: number;
   aimGrabRadius: number;
   minPull: number;
   debrisMinSpeed: number;
@@ -122,6 +124,7 @@ export interface Level {
   realm?: string;
   kind?: string;
   worldW: number;
+  homeZoom?: number;
   shots?: number;
   loadout?: string[];
   scoreTarget?: number;

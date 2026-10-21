@@ -372,9 +372,252 @@ async function run() {
   }
 
   // =========================================================================
-  // 4. ASSERT CONSOLE ERRORS & UNCAUGHT EXCEPTIONS
+  // 4. PHONE-TEST BUG 1: NEXT LEVEL FLOW ASSERTION
   // =========================================================================
-  console.log('\n--- 4. ASSERTING CONSOLE LOG & EXCEPTION INTEGRITY ---');
+  console.log('\n--- 4. ASSERTING NEXT LEVEL TRANSITION (BUG 1) ---');
+  try {
+    const b1Res = await evalCode(`(async () => {
+      const results = [];
+      const g = window.__game;
+
+      for (const [currLvl, nextLvl] of [[1, 2], [2, 3]]) {
+        window.__mm.profile().stars[String(currLvl)] = 3;
+        window.__mm.profile().stars[currLvl] = 3;
+
+        for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'boot') g.scene.stop(s.scene.key);
+        g.scene.start('game', { level: currLvl });
+        await new Promise(r => setTimeout(r, 400));
+        
+        const gameScene = g.scene.getScene('game');
+        gameScene.scene.pause();
+        gameScene.scene.launch('results', {
+          levelId: currLvl,
+          won: true,
+          why: 'shots',
+          stars: 3,
+          score: 1500,
+          target: 1000,
+          loadout: ['w_militia_blade']
+        });
+        await new Promise(r => setTimeout(r, 400));
+
+        const resultsScene = g.scene.getScene('results');
+        if (!resultsScene || !resultsScene.scene.isActive()) {
+          results.push({ currLvl, nextLvl, error: 'ResultsScene not active' });
+          continue;
+        }
+
+        const nextBtnBox = resultsScene.children.list.find(c => 
+          c.type === 'Container' && c.input && c.input.enabled && c.width === 128 && c.height === 26
+        );
+        if (!nextBtnBox) {
+          results.push({ currLvl, nextLvl, error: 'Next level button not found' });
+          continue;
+        }
+
+        nextBtnBox.emit('pointerdown');
+        nextBtnBox.emit('pointerup');
+        await new Promise(r => setTimeout(r, 800));
+
+        const newGame = g.scene.getScene('game');
+        const isActive = newGame && newGame.scene.isActive();
+        const newLevelId = newGame ? newGame.levelId : null;
+        const bState = newGame && newGame.b ? newGame.b.state : null;
+
+        results.push({
+          currLvl,
+          nextLvl,
+          isActive,
+          newLevelId,
+          bState,
+          passed: isActive && newLevelId === nextLvl && (bState === 'ready' || bState === 'intro')
+        });
+      }
+
+      return results;
+    })()`);
+
+    const failed = b1Res.filter(r => !r.passed);
+    if (failed.length > 0) {
+      failed.forEach(f => {
+        const msg = `Next level stuck: L${f.currLvl} -> L${f.nextLvl} failed (active=${f.isActive}, id=${f.newLevelId}, state=${f.bState}, err=${f.error})`;
+        console.error('  FAIL', msg);
+        failures.push(msg);
+      });
+    } else {
+      console.log('  ✓ Bug 1 assertion passed: L1 win -> Next -> active L2, L2 win -> Next -> active L3 fresh.\n');
+    }
+  } catch (err) {
+    console.error('  Bug 1 check exception:', err);
+    failures.push(`Bug 1 exception: ${err.message}`);
+  }
+
+  // =========================================================================
+  // 5. PHONE-TEST BUG 2: WEAPON CARD TEXT OVERLAP ASSERTION
+  // =========================================================================
+  console.log('--- 5. ASSERTING WEAPON CARD TEXT / ART CLEARANCE (BUG 2) ---');
+  try {
+    const b2Res = await evalCode(`(async () => {
+      window.__mm.give({ unlockAll: true });
+      const g = window.__game;
+
+      for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'boot') g.scene.stop(s.scene.key);
+      g.scene.start('loadout', { level: 1 });
+      await new Promise(r => setTimeout(r, 400));
+
+      const loadoutScene = g.scene.getScene('loadout');
+      const images = loadoutScene.children.list.filter(c => c.type === 'Image' && c.texture && c.texture.key.startsWith('wpn_') && c.y >= 42 && c.y <= 180);
+      const texts = loadoutScene.children.list.filter(c => (c.type === 'Text' || c.type === 'BitmapText' || c.type === 'Image') && c.y >= 42 && c.y <= 180);
+
+      const loadoutOverlaps = [];
+      for (const icon of images) {
+        const cardTexts = texts.filter(t => t !== icon && Math.abs(t.y - icon.y) < 20 && t.x >= icon.x - 20 && t.x <= icon.x + 90);
+        for (const t of cardTexts) {
+          const iconBoxRight = icon.x + 12;
+          const textLeft = t.originX === 1 ? t.x - t.width : t.x;
+          if (textLeft < iconBoxRight) {
+            loadoutOverlaps.push({ icon: icon.texture.key, text: t.text || t.texture?.key, textLeft, iconBoxRight });
+          }
+        }
+      }
+
+      for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'boot') g.scene.stop(s.scene.key);
+      g.scene.start('shop');
+      await new Promise(r => setTimeout(r, 400));
+
+      const shopScene = g.scene.getScene('shop');
+      const shopList = shopScene.body ? shopScene.body.list : shopScene.children.list;
+      const shopImages = shopList.filter(c => c.type === 'Image' && c.texture && c.texture.key.startsWith('wpn_'));
+      const shopTexts = shopList.filter(c => c.type === 'Text' || c.type === 'BitmapText' || c.type === 'Image');
+      const shopOverlaps = [];
+      for (const icon of shopImages) {
+        const cardTexts = shopTexts.filter(t => t !== icon && Math.abs(t.y - icon.y) < 20 && t.x >= icon.x - 20 && t.x <= icon.x + 90);
+        for (const t of cardTexts) {
+          const iconBoxRight = icon.x + 12;
+          const textLeft = t.originX === 1 ? t.x - t.width : t.x;
+          if (textLeft < iconBoxRight) {
+            shopOverlaps.push({ icon: icon.texture.key, text: t.text || t.texture?.key, textLeft, iconBoxRight });
+          }
+        }
+      }
+
+      return {
+        loadoutCardsChecked: images.length,
+        loadoutOverlaps,
+        shopCardsChecked: shopImages.length,
+        shopOverlaps,
+        passed: loadoutOverlaps.length === 0 && shopOverlaps.length === 0 && images.length === 8 && shopImages.length === 8
+      };
+    })()`);
+
+    if (!b2Res.passed) {
+      const msg = `Weapon card overlaps detected: loadoutOverlaps=${b2Res.loadoutOverlaps.length}, shopOverlaps=${b2Res.shopOverlaps.length}, loadoutCards=${b2Res.loadoutCardsChecked}, shopCards=${b2Res.shopCardsChecked}`;
+      console.error('  FAIL', msg);
+      failures.push(msg);
+    } else {
+      console.log('  ✓ Bug 2 assertion passed: 8/8 Loadout cards & 8/8 Shop cards have 0 overlaps; art sits in fixed box with text starting after.\n');
+    }
+  } catch (err) {
+    console.error('  Bug 2 check exception:', err);
+    failures.push(`Bug 2 exception: ${err.message}`);
+  }
+
+  // =========================================================================
+  // 6. PHONE-TEST BUG 3: SLINGSHOT & FORT FRAMING ASSERTION
+  // =========================================================================
+  console.log('--- 6. ASSERTING SLINGSHOT & FORT FRAMING (BUG 3) ---');
+  try {
+    const b3Res = await evalCode(`(async () => {
+      const checks = [];
+      const W = 216;
+
+      for (let lvl = 1; lvl <= 12; lvl++) {
+        window.__mm.load(lvl);
+        const b = window.__mm.battle();
+        const z = b.view.z;
+        const cx = b.view.cx;
+        const Vw = W / z;
+        const leftEdge = cx - Vw / 2;
+        const rightEdge = cx + Vw / 2;
+        const slingScreenX = (b.slingX - leftEdge) * z;
+        const slingFrac = slingScreenX / W;
+
+        const monsters = b.level.monsters ?? [];
+        const blocks = b.level.blocks ?? [];
+        const monsterMaxX = monsters.length ? Math.max(...monsters.map((m) => m.x)) : b.slingX;
+        const blockMaxX = blocks.length ? Math.max(...blocks.map((blk) => blk.x + (blk.w || 0) / 2)) : 0;
+        const maxX = Math.max(monsterMaxX, blockMaxX);
+        const rightMargin = rightEdge - maxX;
+        const leftGroundVisible = 0 - leftEdge;
+
+        const slingFracOk = slingFrac >= 0.22 && slingFrac <= 0.26;
+        const rightMarginOk = rightMargin > 0;
+        const leftGroundOk = leftGroundVisible > 0;
+
+        checks.push({
+          lvl,
+          slingFrac: Math.round(slingFrac * 1000) / 1000,
+          rightMargin: Math.round(rightMargin * 10) / 10,
+          leftGroundVisible: Math.round(leftGroundVisible * 10) / 10,
+          passed: slingFracOk && rightMarginOk && leftGroundOk
+        });
+      }
+
+      window.__mm.load(0);
+      const b = window.__mm.battle();
+      const z = b.view.z;
+      const cx = b.view.cx;
+      const Vw = W / z;
+      const leftEdge = cx - Vw / 2;
+      const rightEdge = cx + Vw / 2;
+      const slingScreenX = (b.slingX - leftEdge) * z;
+      const slingFrac = slingScreenX / W;
+
+      const monsters = b.level.monsters ?? [];
+      const blocks = b.level.blocks ?? [];
+      const monsterMaxX = monsters.length ? Math.max(...monsters.map((m) => m.x)) : b.slingX;
+      const blockMaxX = blocks.length ? Math.max(...blocks.map((blk) => blk.x + (blk.w || 0) / 2)) : 0;
+      const maxX = Math.max(monsterMaxX, blockMaxX);
+      const rightMargin = rightEdge - maxX;
+      const leftGroundVisible = 0 - leftEdge;
+
+      const slingFracOk = slingFrac >= 0.22 && slingFrac <= 0.26;
+      const rightMarginOk = rightMargin > 0;
+      const leftGroundOk = leftGroundVisible > 0;
+
+      checks.push({
+        lvl: 'daily',
+        slingFrac: Math.round(slingFrac * 1000) / 1000,
+        rightMargin: Math.round(rightMargin * 10) / 10,
+        leftGroundVisible: Math.round(leftGroundVisible * 10) / 10,
+        passed: slingFracOk && rightMarginOk && leftGroundOk
+      });
+
+      return {
+        checks,
+        allPassed: checks.every(c => c.passed)
+      };
+    })()`);
+
+    if (!b3Res.allPassed) {
+      const failed = b3Res.checks.filter(c => !c.passed);
+      failed.forEach(f => {
+        const msg = `Level ${f.lvl} framing fail: slingFrac=${(f.slingFrac * 100).toFixed(1)}% (target 22-26%), rightMargin=${f.rightMargin}px, leftGround=${f.leftGroundVisible}px`;
+        console.error('  FAIL', msg);
+        failures.push(msg);
+      });
+    } else {
+      console.log('  ✓ Bug 3 assertion passed: Levels 1-12 and Daily have sling in 22-26% visible width, right fort margin > 0, and open ground visible beyond both ends.\n');
+    }
+  } catch (err) {
+    console.error('  Bug 3 check exception:', err);
+    failures.push(`Bug 3 exception: ${err.message}`);
+  }
+
+  // =========================================================================
+  // 7. ASSERT CONSOLE ERRORS & UNCAUGHT EXCEPTIONS
+  // =========================================================================
+  console.log('--- 7. ASSERTING CONSOLE LOG & EXCEPTION INTEGRITY ---');
   if (consoleErrors.length > 0) {
     consoleErrors.forEach((e) => {
       console.error('  Browser console error:', e);

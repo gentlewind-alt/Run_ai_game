@@ -1,6 +1,5 @@
 // Win and lose: all monsters dead, out of shots, too many runners escaped. Only this module moves the battle to won/lost.
 import { sfx } from '../audio/sfx';
-import { atHome } from './camera';
 import { groundAt } from './terrain';
 import { discard } from './damage';
 import { popWord } from './fx';
@@ -41,7 +40,7 @@ export function step(b: BattleState): void {
   if (b.state === 'settling') {
     b.settleSteps++;
     const calm = alive.every((e) => e.body.speed < F.settleCalmSpeed || e.params.selfMoving === 1);
-    if (((calm && b.settleSteps > F.settleMinSteps) || b.settleSteps > F.settleMaxSteps) && atHome(b)) {
+    if ((calm && b.settleSteps > F.settleMinSteps) || b.settleSteps > F.settleMaxSteps) {
       if (b.shotIdx < b.loadout.length) loadNext(b);
       else finish(b, false, 'shots');
     }

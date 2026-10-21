@@ -2,6 +2,55 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · claude · Reviewed agy bug fixes, deployed v1.8.0 (private)
+- **Checks:** `check`, `build`, `regress` pass (new assertions: Next advances L1->L2->L3, no weapon-card overlaps, sling at 22-26% of view).
+- **Watch:** Next level now starts the battle directly with the equipped loadout instead of opening the Loadout screen. agy removed `atHome` from the settling transition in `rules.ts`, which changed timing: L10 now clears in 2 shots (was 4), still inside its band; re-tune L10 if it feels easy.
+
+## 2026-10-21 · agy · Phone-test bugs v1.7.0 (done)
+- **What:**
+  - Resolved all 3 phone-test bugs specified in `docs/handoff/agy_task_bugs1.md`:
+    1. **Bug 1: Next level stuck:**
+       - Identified cause: when `BattleScene` launches `ResultsScene`, it paused itself. `ResultsScene` then called `goTo(this, 'game', { level: next })`, but `core/flow.ts:goTo` only stopped active scenes (`mgr.getScenes(true)`), skipping the paused `BattleScene`. Phaser refused to restart/relaunch the paused scene, leaving stale state until Map re-entry.
+       - Fixed `game/src/core/flow.ts:goTo` to iterate `mgr.scenes` so paused scenes (like `BattleScene`) are stopped cleanly before the target scene starts.
+       - Updated `game/src/scenes/ResultsScene.ts` Next button handler to cleanly start `game` with `{ level: next, equipped: ... }`, plus verified Retry and Map flows.
+       - Added CDP regression assertion to `tools/regress.mjs`: simulates Level 1 win -> clicks Next button -> asserts active `BattleScene` transitions to `levelId: 2` with fresh battle state; repeats for Level 2 win -> clicks Next -> asserts `levelId: 3`. Passed.
+    2. **Bug 2: Weapon text overlaps weapon art:**
+       - Fixed card layouts in `game/src/scenes/LoadoutScene.ts` and `game/src/scenes/ShopScene.ts`.
+       - Enclosed weapon icon in a fixed left bounding box (`w: 24, h: 30/32` at `x+15`) scaled proportionally (1.2x max 16px).
+       - In Loadout cards: weapon name begins strictly at `x+31`, element label at `x+35`, damage at `x+41`, ability text right-aligned at `x+94`. Names use `shortWeaponName`.
+       - In Shop cards: weapon name starts strictly at `x+31`, status/price starts at `x+35` and `x+42`.
+       - Verified all 8 weapons across Loadout and Shop; captured before/after screenshots in `docs/handoff/shots/`.
+       - Added regression check in `tools/regress.mjs` verifying 0 overlaps across all 8 Loadout cards and 8 Shop weapon cards. Passed.
+    3. **Bug 3: Slingshot and fort framing:**
+       - Implemented Angry Birds framing matching `docs/handoff/ref_angry_birds_layout.png`: sling at 22-26% visible width from left edge, fort centred in remaining space with right margin, ground visible past both ends.
+       - Strictly data-driven (no code literals):
+         - `game/schemas/content.schema.json` & `game/src/data/types.ts`: added `homeMarginRight?: number;` and `homeSlingFrac?: number;` to `TuningData`.
+         - `game/schemas/level.schema.json`: added `homeZoom?: number;` to level definition.
+         - `game/public/data/content.json`: `homeZoomMin: 0.5`, `homeLeft: -50`, `homeMarginRight: 36`, `homeSlingFrac: 0.24`.
+         - `game/src/battle/camera.ts`:
+           - `clampCx`: allows camera left edge down to `tuning.homeLeft` (`-50`), showing open ground to the left of the slingshot.
+           - `homeZoom`: computes visible width required to show fort with `homeMarginRight` (36px) and sling at `homeSlingFrac` (0.24), clamped to `tuning.homeZoomMin` (or level override `level.homeZoom`).
+           - `homeCx`: positioned at `b.slingX + (0.5 - slingFrac) * (W / z)`, placing the sling at exactly 24.0% of the visible viewport width across all levels.
+       - Decoupled camera easing from gameplay physics in `game/src/battle/rules.ts` (removed `&& atHome(b)` from settling step transition per Golden Rules 3 & 6), ensuring physics determinism is independent of camera distance.
+       - Captured 432x768 screenshots of all 12 levels and daily to `docs/handoff/shots/`:
+         - `shot_level_01.png` - `shot_level_12.png`
+         - `shot_daily.png`
+       - Added regression assertion in `tools/regress.mjs`: verifies sling screen fraction (24.0% across all levels, in [0.22, 0.26]), positive right margin (36px), and visible open ground beyond left level boundary (>0px). Passed.
+- **Checks:**
+  - `npm run check` in `game/`: 0 errors, 1 sandbox warning, 30-day daily check passes (100% deterministic), TypeScript passes.
+  - `npm run build` in `game/`: production bundle built cleanly in 1.2s.
+  - `npm run regress` in `game/`: 7/7 test suites pass cleanly with exit code 0:
+    - 30-day daily variety (0 shared fort archetypes, 0 shared monster mixes)
+    - v1 save migration
+    - Levels 1-12 balance bands (L1: 2, L2: 2, L3: 2, L4: 4, L5: 2, L6: 3, L7: 4, L8: 4, L9: 2, L10: 2, L11: 3, L12: 2 shots; 0 one-shot wins)
+    - Next level transition (Bug 1: L1->L2, L2->L3 fresh)
+    - Weapon card text / art clearance (Bug 2: 8/8 Loadout and 8/8 Shop cards have 0 overlaps)
+    - Slingshot & fort framing (Bug 3: Levels 1-12 and Daily within 22-26% fraction and visible ground margins)
+    - 0 console errors and 0 uncaught exceptions across all browser tests.
+  - `node tools/merkle.mjs seal`: executed; updated Merkle tree index.
+- **Deployed:** Not deployed (no commit or deploy per instructions).
+
+
 ## 2026-10-21 · claude · Deployed v1.6.0 (private), then v1.7.0 with release flags
 - **v1.6.0:** Stage 4-6 build, `features.ads` and `features.iap` still true (ad button and Skins tab visible, skins priced 0).
 - **v1.7.0:** after agy's S6-01 pass: `ads` and `iap` false, Skins tab hidden when off, `game.config.json` tracked. Same private share URL.

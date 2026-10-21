@@ -42,6 +42,10 @@
         "debrisK": { "type": "number", "minimum": 0 },
         "hitStopFrames": { "type": "integer", "minimum": 0, "maximum": 20 },
         "stretchSoundMs": { "type": "number", "minimum": 0 },
+        "homeZoomMin": { "type": "number", "minimum": 0.1, "maximum": 2 },
+        "homeLeft": { "type": "number" },
+        "homeMarginRight": { "type": "number", "minimum": 0 },
+        "homeSlingFrac": { "type": "number", "minimum": 0.1, "maximum": 0.5 },
         "coins": {
           "type": "object",
           "additionalProperties": { "type": "number", "minimum": 0 },

@@ -130,18 +130,19 @@ export default class ShopScene extends Phaser.Scene {
       const sel = it.id === this.selected;
       const g = panel(this, x, y, cardW, cardH, sel ? '9' : '8', sel ? 'a' : '9', 'f', 1);
       if (sel) g.lineStyle(1, C('4'), 1).strokeRect(x - 1, y - 1, cardW + 2, cardH + 2);
-      const icon = this.add.image(x + 18, y + 20, it.icon).setScale(it.scale).setDepth(2);
-      const name = text(this, x + 36, y + 11, it.name, it.state === 'locked' ? C('e') : C('c')).setOrigin(0, 0.5).setDepth(2);
-      const parts: Phaser.GameObjects.GameObject[] = [g, icon, name];
+      const iconBox = this.add.rectangle(x + 15, y + 20, 24, 32, C('0')).setStrokeStyle(1, C('8')).setDepth(2);
+      const icon = this.add.image(x + 15, y + 20, it.icon).setScale(it.scale === 2 ? 1.2 : it.scale).setDepth(2);
+      const name = text(this, x + 31, y + 11, it.name, it.state === 'locked' ? C('e') : C('c')).setOrigin(0, 0.5).setDepth(2);
+      const parts: Phaser.GameObjects.GameObject[] = [g, iconBox, icon, name];
       if (this.tab === 'skins') {
-        parts.push(text(this, x + 36, y + 28, it.note, it.note === 'Equipped' ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
+        parts.push(text(this, x + 31, y + 28, it.note, it.note === 'Equipped' ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
       } else if (it.state === 'owned') {
-        parts.push(text(this, x + 36, y + 28, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
+        parts.push(text(this, x + 31, y + 28, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
       } else if (it.state === 'locked') {
-        parts.push(this.add.image(x + 40, y + 28, 'icon_lock').setDepth(2), text(this, x + 48, y + 28, it.note.replace('Reach level', 'Level'), C('e')).setOrigin(0, 0.5).setDepth(2));
+        parts.push(this.add.image(x + 35, y + 28, 'icon_lock').setDepth(2), text(this, x + 42, y + 28, it.note.replace('Reach level', 'Level'), C('e')).setOrigin(0, 0.5).setDepth(2));
         icon.setAlpha(0.4);
       } else {
-        parts.push(this.add.image(x + 40, y + 28, 'icon_coin').setDepth(2), pixText(this, x + 47, y + 28, String(it.price), profile.coins >= it.price ? C('4') : C('3')).setOrigin(0, 0.5).setDepth(2));
+        parts.push(this.add.image(x + 35, y + 28, 'icon_coin').setDepth(2), pixText(this, x + 42, y + 28, String(it.price), profile.coins >= it.price ? C('4') : C('3')).setOrigin(0, 0.5).setDepth(2));
         if (this.tab === 'items') parts.push(text(this, x + cardW - 5, y + 28, `x${consumableCount(it.id)}`, C('b')).setOrigin(1, 0.5).setDepth(2));
       }
       const hit = this.add.rectangle(x + cardW / 2, y + cardH / 2, cardW, cardH, 0xffffff, 0).setDepth(3).setInteractive();

@@ -52,7 +52,11 @@ export function irisOpen(scene: Phaser.Scene, wrap?: Wrap): void {
 export function goTo(from: Phaser.Scene, key: string, data?: object): void {
   iris(from, R_MAX, 0, () => {
     const mgr = from.scene.manager;
-    for (const s of mgr.getScenes(true)) if (s !== from) mgr.stop(s.scene.key);
+    for (const s of mgr.scenes) {
+      if (s !== from && s.scene.key !== 'boot') {
+        mgr.stop(s.scene.key);
+      }
+    }
     from.scene.start(key, data);
   });
 }
