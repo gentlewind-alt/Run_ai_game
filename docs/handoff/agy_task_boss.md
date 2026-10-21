@@ -1,0 +1,3 @@
+# Task: make the L12 boss fair but hard
+
+Follow `docs/handoff/AGY_BRIEF.md`. The phone pass showed the greedy solver beats level 12 (Iron Warlord) in 1 shot. Target: 3-4 shots, no one-shot wins, boss HP/armour tuned in data (`content.json` monster row and `scripts/build_levels.py`, never literals in code), visor weak point still rewarding (2x) but timed so one lucky hit cannot clear it. Re-run `__mm.sweep` and `__mm.solveStep` (also with artifacts equipped from `profile.equipped.artifacts`) and check L10 (5 shots) is not harsher than L12. Reset scoreTarget to about 70% of the best sweep score. Log before/after in LOG.md, `npm run check`, `npm run build`, `node tools/merkle.mjs seal`. No commit or deploy.

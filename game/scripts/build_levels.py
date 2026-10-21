@@ -177,7 +177,8 @@ write(10, 'Iron foundry', 'iron_keep', 'siege', 648, ['Void weakens iron and bru
       b10,
       [mon('orc_brute', 150, stand(P10a, 28)), mon('troll', 228, stand(PIT10, 28)), mon('goblin_grunt', 228, stand(PIT10 - 38)),
        mon('dark_elf_hexer', 312.5, stand(P10b)), mon('dark_elf_archer', 312.5, stand(P10b - 36))],
-      1050)
+      1050,
+      shots=5)
 
 # 11 Furnace bastion: multi-tier fortress with heavy iron footings, shielded defenders, and sprinting runners.
 P11a, P11b = 300, 268
@@ -210,7 +211,7 @@ write(12, 'Iron Throne', 'iron_keep', 'boss', 648,
       b12,
       [mon('iron_warlord', 235, stand(P12, 30)),
        mon('dark_elf_hexer', 150, stand(P12)),
-       mon('goblin_grunt', 235, stand(P12 - 38))],
+       mon('goblin_grunt', 235, stand(P12 - 60))],
       2500,
       shots=5,
       loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube'])

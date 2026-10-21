@@ -2,6 +2,11 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · agy+claude · L12 boss retune (partial)
+- **What:** agy raised Iron Warlord HP 600->850, added flat armour 26, visor opens after a 180-step delay for 24 of every 220 steps. Scratch tools removed; `tools/tune_boss.mjs` and `tools/test_l12_solver.mjs` kept.
+- **Checks:** `npm run check`, `npm run build` pass. Solver beats L12 in 2 shots with 0 one-shot wins (target was 3-4, so still a little easy). With the Gambler's Charm the greedy solver loses in 5 shots (solver weakness, charm is variance-heavy).
+- **Open:** L10 changed in the same pass; with `r_gale_eye` the solver now does not win in 4 shots (earlier it won in 5). Re-measure L10 before tuning scoreTargets; agy stopped before logging.
+
 ## 2026-10-21 · agy · Phone-readiness pass & verification complete (S5-05)
 - **What:**
   - **Phone-readiness pass (`tools/audit_shots.mjs` at 432x768):**

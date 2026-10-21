@@ -8,6 +8,7 @@ export const ironWarlord: MonsterBehavior = {
   },
 
   onUpdate(ctx, m) {
+    const initialDelay = Number(m.params.initialDelay ?? 0);
     const openEvery = Number(m.params.visorOpenEvery ?? 180);
     const openDur = Number(m.params.visorOpenDuration ?? 60);
     const boulderEvery = Number(m.params.boulderEvery ?? 240);
@@ -15,8 +16,11 @@ export const ironWarlord: MonsterBehavior = {
     const timer = Number(m.params.timer ?? 0) + 1;
     m.params.timer = timer;
 
-    const cycle = timer % openEvery;
-    const isOpen = cycle >= (openEvery - openDur);
+    let isOpen = false;
+    if (timer >= initialDelay) {
+      const cycle = (timer - initialDelay) % openEvery;
+      isOpen = cycle < openDur;
+    }
     const wasOpen = m.params.visorOpen === 1;
     m.params.visorOpen = isOpen ? 1 : 0;
 
@@ -40,7 +44,8 @@ export const ironWarlord: MonsterBehavior = {
       ctx.fx.word(m.body.position.x, m.body.position.y - 24, 'WEAK POINT! 2x');
       return amount * mult;
     }
-    return amount;
+    const armour = Number(m.params.armour ?? m.params.armor ?? 0);
+    return Math.max(1, amount - armour);
   },
 
   onDeath(ctx, m) {

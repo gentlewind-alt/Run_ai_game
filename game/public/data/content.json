@@ -592,7 +592,7 @@
     {
       "id": "iron_warlord",
       "name": "Iron Warlord",
-      "hp": 600,
+      "hp": 850,
       "weak": "void",
       "resist": "physical",
       "behavior": "iron_warlord",
@@ -602,8 +602,10 @@
       "score": 2500,
       "note": "Boss. Visor weak point takes 2x. Throws boulders at your side of the map, which only adds visual shake.",
       "params": {
-        "visorOpenEvery": 180,
-        "visorOpenDuration": 60,
+        "armour": 26,
+        "initialDelay": 180,
+        "visorOpenEvery": 220,
+        "visorOpenDuration": 24,
         "visorMult": 2,
         "boulderEvery": 240
       }
