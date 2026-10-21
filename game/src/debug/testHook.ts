@@ -11,26 +11,14 @@ import { generateDailyLevel, getDailySeed } from '../content/levelKinds/daily';
 import { platform } from '../platform';
 import { setMockTimeOffset } from '../platform/mock';
 import { data } from '../data/load';
+import { events } from '../core/events';
+
+import { snapshot, type BattleView } from '../battle/snapshot';
 
 const DT = 1000 / 60;
 
 export interface Shot { angleDeg: number; power: number; abilityAfterSteps?: number }
-
-export interface BattleView {
-  state: string; shotsLeft: number; monsters: number; blocks: number; score: number; coins: number; chain: number; escaped: number;
-  steps: number; won: boolean; lost: boolean; projSteps: number;
-  ents?: { type: string; kind: string; dead: boolean; hp: number; x: number; y: number }[];
-}
-
-export function snapshot(b: BattleState): BattleView {
-  const alive = b.ents.filter((e) => !e.dead);
-  return {
-    state: b.state, shotsLeft: b.loadout.length - b.shotIdx, monsters: alive.filter((e) => e.kind === 'monster').length,
-    blocks: alive.filter((e) => e.kind === 'block').length, score: b.score, coins: b.coins, chain: b.chain, escaped: b.escaped, steps: b.steps,
-    won: b.state === 'won', lost: b.state === 'lost', projSteps: b.proj ? b.proj.steps : -1,
-    ents: b.ents.map((e) => ({ type: e.type, kind: e.kind, dead: e.dead, hp: e.hp, x: e.body.position.x, y: e.body.position.y })),
-  };
-}
+export { snapshot, type BattleView };
 
 export function installTestHook(game: Phaser.Game): void {
   let T = 5e6;
@@ -185,5 +173,6 @@ export function installTestHook(game: Phaser.Game): void {
     dailyLevel: (ms?: number) => generateDailyLevel(ms ?? Date.now()),
     sanitizeSave: (raw: Record<string, unknown>) => sanitize(raw),
     loadSave: () => loadSave(),
+    eventListenerCount: (name?: string) => events.listenerCount(name),
   };
 }

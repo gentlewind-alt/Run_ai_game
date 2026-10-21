@@ -2,7 +2,7 @@
 import type Phaser from 'phaser';
 import type { EventBus } from '../core/events';
 import type { Rng } from '../core/rng';
-import type { DamageRules, Level, MonsterDef, Params, Tuning, WeaponDef } from '../data/types';
+import type { DamageRules, Level, MonsterDef, Tuning, WeaponDef } from '../data/types';
 import type { MonsterBehavior } from '../content/monsters/types';
 
 export type Kind = 'block' | 'monster' | 'chest';
@@ -48,7 +48,8 @@ export interface Ent {
   fireT: number;
   delay: number; // seconds a runner waits before it starts (level data)
   runFrom?: number; // step a runner starts running, set once the battle is live
-  params: Params; // from the monster's data row
+  params: Record<string, any>; // from the monster's data row
+  reward?: string; // reward id for treasure chests
   behavior?: MonsterBehavior;
   def?: MonsterDef;
 }
@@ -78,6 +79,7 @@ export interface Proj {
 
 /** Anything that lives for a while and updates each physics step (bolts, arrows, pellets). */
 export interface Actor {
+  body?: any;
   pos?: () => { x: number; y: number };
   update(): boolean; // return true when finished
   destroy(): void;

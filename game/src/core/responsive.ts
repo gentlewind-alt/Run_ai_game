@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { H, W } from '../config/constants';
 import { events } from './events';
 import { platform } from '../platform';
+import type BattleScene from '../scenes/BattleScene';
 
 export type RealmTheme = 'hills' | 'wood' | 'keep' | 'menu';
 
@@ -132,7 +133,13 @@ export function calculateResponsiveScale(viewportW: number, viewportH: number): 
   return { displayW, displayH, scale, isInteger, offsetX, offsetY };
 }
 
+let cleanupResponsive: (() => void) | null = null;
+
 export function initResponsive(game: Phaser.Game): () => void {
+  if (cleanupResponsive) {
+    cleanupResponsive();
+    cleanupResponsive = null;
+  }
   const backdrop = document.getElementById('backdrop');
   const app = document.getElementById('app');
   const hud = document.getElementById('desktop-hud');
@@ -168,7 +175,7 @@ export function initResponsive(game: Phaser.Game): () => void {
           hud.style.display = 'none';
         }
         // Pause active battle while in portrait
-        const gameScene = game.scene.getScene('game') as any;
+        const gameScene = game.scene.getScene('game') as BattleScene | null;
         if (gameScene && game.scene.isActive('game')) {
           const b = gameScene.getBattle?.();
           if (b && b.state !== 'won' && b.state !== 'lost' && !b.paused) {
@@ -275,7 +282,7 @@ export function initResponsive(game: Phaser.Game): () => void {
   // Initial layout application
   applyLayout();
 
-  return () => {
+  cleanupResponsive = () => {
     unLevel();
     window.removeEventListener('resize', applyLayout);
     window.removeEventListener('orientationchange', applyLayout);
@@ -284,4 +291,5 @@ export function initResponsive(game: Phaser.Game): () => void {
     }
     game.canvas?.removeEventListener('contextmenu', preventContext);
   };
+  return cleanupResponsive;
 }

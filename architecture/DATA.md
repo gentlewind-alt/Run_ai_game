@@ -9,7 +9,7 @@ All game numbers live in `game/public/data/`. Schemas in `game/schemas/` are the
 | `content.json` | `content.schema.json` | balance (`tuning`, `damageRules`, `economy`) and entities (`weapons`, `monsters`, `materials`, `artifacts`, `consumables`, `realms`, `cosmetics`) | exists |
 | `config.json` | `config.schema.json` | engine and product settings: `levels` (ids of the files in `levels/`), display, world, physics, camera, `features` flags, debug | exists |
 | `levels/level_NN.json` | `level.schema.json` | one level each: blocks, monsters, world width, loadout, targets. A new file must also be added to `config.levels` (`check-data` fails if they differ) | exists |
-| save (in `appStorage`, key `save`) | `save.schema.json` | the player's progress | create in S3-02 |
+| save (in `appStorage`, key `save`) | `save.schema.json` | the player's progress: `coins`, `stars`, `owned{weapons,artifacts,consumables}`, `equipped{loadout,artifacts}`, `stats{games,wins,losses,streak,lastDaily,bossLosses}` (`bossLosses`: map of boss level id to consecutive losses driving relic pity unlocking), and `settings` | exists |
 
 Where does a new number go?
 - It changes how the game **feels or balances** (damage, HP, launch power, coins, durations): `content.json`.
@@ -25,7 +25,7 @@ Where does a new number go?
   - Gameplay durations are **steps at 60 Hz** unless the key ends in `Seconds` or `Ms`.
   - Speeds are px per step. Angles in level files are degrees.
 - **Elements:** `physical`, `hellfire`, `radiant`, `void`. Multipliers are `damageRules.elementWeak` (1.5) and `elementResist` (0.6). A monster's or material's `weak` or `resist` may be `null`.
-- **Rarity:** `common`, `uncommon`, `rare`, `epic`, `legendary`, `mythic` (white, green, blue, purple, orange, red).
+- **Rarity:** `common`, `uncommon`, `rare`, `legendary` (white, green, blue, orange). Dictates visual card/frame styling and pity prices. Weapons enforce a loadout restriction: at most 1 legendary weapon equipped in a loadout.
 - **Comments:** any key starting with `_` is a comment and ignored by the game and the checker (`"_note": "..."`).
 - **Text fields** (`launch`, `tap`, `effect`, `note`) are player-facing or designer-facing descriptions. They never drive behaviour; `params` and code do.
 - **New fields:** add them to the schema in the same commit, or the checker reports `unknown field`. That error is how typos get caught.
@@ -34,10 +34,10 @@ Where does a new number go?
 
 | Section | Read by | Notes |
 |---|---|---|
-| `tuning` | sling, damage, coins, status, flow | `launchK`, `maxPull`, `aimGrabRadius`, `minPull`, `debrisK`, `blockDebrisFactor`, `debrisMinSpeed`, `projMinSpeed`, `hitCooldownSteps`, `minImpactDamage`, `impactBase`, `fallThreshold`, `fallK`, `explosionFalloff`, `explosionPush`, `explosionHitStop`, `hitStopFrames`, `mashHitStop`, `mashAt`, `stretchSoundMs`, `homeZoomMin`, `homeLeft`, `coins{}`, `points{}`, `shotBonus*`. `status{burnDamage, burnTickSteps, curseMult, slowSpeedMult}` and `flow{...}` (when a shot counts as over, settle timings, win delay) are objects |
+| `tuning` | sling, damage, coins, status, flow, camera | `launchK`, `maxPull`, `aimGrabRadius`, `minPull`, `chestHp`, `debrisK`, `blockDebrisFactor`, `debrisMinSpeed`, `projMinSpeed`, `hitCooldownSteps`, `minImpactDamage`, `impactBase`, `fallThreshold`, `fallK`, `explosionFalloff`, `explosionPush`, `explosionHitStop`, `hitStopFrames`, `mashHitStop`, `mashAt`, `stretchSoundMs`, `homeZoomMin`, `homeLeft`, `homeSlingFrac` (0.16, sling position fraction in viewport), `homeMarginRight` (rightmost fort padding), `coins{}` (including `chestFallback: 150`), `points{}`, `shotBonus*`. `status{burnDamage, burnTickSteps, curseMult, slowSpeedMult}` and `flow{...}` are objects |
 | `damageRules` | `battle/damage.ts`, forge | formula in ARCHITECTURE.md section 7. `upgradeBaseCost` (50) goes in here when the forge is built |
-| `economy` | score, results, shop, loadout | `startCoins`, `replayCoinFactor`, `lossCoinFactor`, `maxConsumableStack`, `loadoutSize`, `artifactSlots`, `secondArtifactAfterLevel`, `dailyStreakRewardDay`, `dailyStreakRewardCoins` |
-| `weapons[]` | weapon registry, shop, loadout | `physics{radius,density,spin,gravity,align}`, `ability{mode,label}` and `params{}` (every number the behaviour file reads). `params.behavior` reuses another weapon's code |
+| `economy` | score, results, shop, loadout | `startCoins`, `replayCoinFactor`, `lossCoinFactor`, `maxConsumableStack`, `loadoutSize`, `artifactSlots`, `secondArtifactAfterLevel`, `relicPityLosses` (default 3), `relicMarketPrice{common, rare, legendary}`, `dailyStreakRewardDay`, `dailyStreakRewardCoins` |
+| `weapons[]` | weapon registry, shop, loadout | `physics{radius,density,spin,gravity,align}`, `ability{mode,label,charges}` (`charges`: allowed activations per shot), `rarity`, `unlock` (`'default'` or `{ boss?: string, chest?: string, shop?: boolean, level?: number }`), and `params{}` (every number the behaviour file reads). `params.behavior` reuses another weapon's code |
 | `stretchWeapons[]`, `stretchArtifacts[]` | nobody | parked ideas; move a row into the main list to build it |
 | `monsters[]` | monster registry, world | `behavior` defaults to the monster id, then `basic`. `density` defaults to 0.001. `boss` (boolean) marks boss monsters (e.g. Iron Warlord; reduces chain duration). `params` holds the behaviour's numbers (`regenPerSec`, `blastRadius`, `shield`...); `selfMoving: 1` marks monsters that never "settle" (imp, runner). `size{w,h}` currently comes from `art/textures.ts` `MONSTER_ART` |
 | `materials[]` | world, damage | `density` and `friction` default to the values in `battle/world.ts` |
@@ -70,6 +70,7 @@ Minimal level:
 - `terrain`: optional polyline `[[x, y], ...]` defining the ground height profile from left to right (y grows downward; flat outside the first and last point; default flat ground at `config.world.groundY`).
 - Monsters in level files specify `t` (monster id), `x`, `y`. Runner monsters (e.g. `skeleton_runner`) also support `dir` (`1` right, `-1` left, default 1), `speed` (px per fixed step, default 0.8), `delay` (seconds before starting), and optional waypoint `path`.
 - Runner levels need `exit` (door coordinates `{x, y}`) and runners. `escapeLimit` defaults to 0.
+- `chests`: optional array `[ { "id": "chest_3", "x": 210, "y": 312, "hp": 40, "reward": "w_steersong_arrow" } ]` placing breakable chests. Destroying a chest awards the relic weapon in `reward` (or `tuning.coins.chestFallback` coins if already owned).
 - The Daily Mash generator builds a level object in memory with `id: 0` and `kind: "daily"`. It must pass the same schema; the generator's unit test validates it.
 - Add `"$schema"` at the top of each file to get editor autocomplete. The checker ignores it.
 

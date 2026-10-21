@@ -65,7 +65,14 @@ export function sanitize(raw: Record<string, unknown>): Profile {
 
 /** Reads the save at boot. A corrupt blob is copied to a backup key and the player starts fresh; the game never crashes. */
 export async function loadSave(): Promise<'fresh' | 'loaded' | 'recovered'> {
-  const raw = await platform.storage.get(KEY);
+  let raw: string | null = null;
+  try {
+    raw = await platform.storage.get(KEY);
+  } catch (e) {
+    platform.log(`storage get failed, starting fresh: ${String(e)}`);
+    setProfile(freshProfile());
+    return 'recovered';
+  }
   if (!raw) return 'fresh';
   try {
     let blob: unknown = JSON.parse(raw);
@@ -81,7 +88,11 @@ export async function loadSave(): Promise<'fresh' | 'loaded' | 'recovered'> {
     return 'loaded';
   } catch (err) {
     platform.log(`save unreadable, backed up and starting fresh: ${String(err)}`);
-    await platform.storage.set(BACKUP, raw);
+    try {
+      await platform.storage.set(BACKUP, raw);
+    } catch {
+      // backup best-effort
+    }
     setProfile(freshProfile());
     return 'recovered';
   }
@@ -96,7 +107,11 @@ export async function flushSave(): Promise<void> {
     timer = undefined;
   }
   if (DEBUG) return;
-  await platform.storage.set(KEY, JSON.stringify(profile));
+  try {
+    await platform.storage.set(KEY, JSON.stringify(profile));
+  } catch (e) {
+    platform.log(`flushSave failed: ${String(e)}`);
+  }
 }
 
 export function scheduleSave(): void {

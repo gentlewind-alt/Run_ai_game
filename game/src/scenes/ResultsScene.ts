@@ -10,6 +10,7 @@ import { setText } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { data } from '../data/load';
 import { platform } from '../platform';
+import type { Row } from '../platform/types';
 import { makeButton, panel } from '../ui/widgets';
 
 export interface ResultsData {
@@ -99,29 +100,42 @@ export default class ResultsScene extends Phaser.Scene {
       if (data.config.features?.share !== false) {
         const shareBtn = makeButton(this, W / 2 - 64, y2, 116, 22, 'Share', 'ability', async () => {
           sfx.click();
-          await platform.share(`I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: String(d.levelId) });
+          try {
+            await platform.share(`I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: String(d.levelId) });
+          } catch {
+            // share error boundary
+          }
           shareBtn.setLabel('Shared!');
         }, 3);
       }
 
       if (r && r.credited > 0 && data.config.features?.ads !== false) {
-        void platform.ads.rewardedReady().then((ready) => {
-          if (!ready || !this.scene.isActive()) return;
-          const adBtn = makeButton(this, W / 2 + 64, y2, 116, 22, '2x coins (Ad)', 'go', async () => {
-            sfx.click();
-            adBtn.setEnabled(false);
-            const earned = await platform.ads.showRewarded();
-            if (earned) {
-              addCoins(r.credited);
-              sfx.coin();
-              adBtn.setLabel('Doubled!');
-              if (coinsTxt) setText(coinsTxt, this, `+${r.credited * 2} coins!`, C('4'));
-              platform.track('rewarded_ad_complete', { coins: r.credited });
-            } else {
-              adBtn.setEnabled(true);
-            }
-          }, 3);
-        });
+        void (async () => {
+          try {
+            const ready = await platform.ads.rewardedReady();
+            if (!ready || !this.scene.isActive()) return;
+            const adBtn = makeButton(this, W / 2 + 64, y2, 116, 22, '2x coins (Ad)', 'go', async () => {
+              sfx.click();
+              adBtn.setEnabled(false);
+              try {
+                const earned = await platform.ads.showRewarded();
+                if (earned) {
+                  addCoins(r.credited);
+                  sfx.coin();
+                  adBtn.setLabel('Doubled!');
+                  if (coinsTxt) setText(coinsTxt, this, `+${r.credited * 2} coins!`, C('4'));
+                  platform.track('rewarded_ad_complete', { coins: r.credited });
+                } else {
+                  adBtn.setEnabled(true);
+                }
+              } catch {
+                adBtn.setEnabled(true);
+              }
+            }, 3);
+          } catch {
+            // ad ready check error boundary
+          }
+        })();
       }
 
       if (hasNext) {
@@ -220,8 +234,15 @@ export default class ResultsScene extends Phaser.Scene {
     panel(this, rx, py, rightW, h, '0', 'f', 'f', 2);
     text(this, rx + rightW / 2, py + 12, 'Daily Leaderboard', C('4'), 1, C('0')).setDepth(3);
 
-    const rows = await platform.leaderboard.top('daily', 10);
-    const myRank = await platform.leaderboard.myRank('daily');
+    let rows: Row[] = [];
+    let myRank: Row | null = null;
+    try {
+      rows = await platform.leaderboard.top('daily', 10);
+      myRank = await platform.leaderboard.myRank('daily');
+    } catch {
+      rows = [];
+      myRank = null;
+    }
 
     rows.forEach((r, i) => {
       const isMe = r.name === 'You';

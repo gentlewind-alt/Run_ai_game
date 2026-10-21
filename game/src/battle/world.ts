@@ -6,7 +6,7 @@ import { buildTerrain, groundAt } from './terrain';
 import { profile } from '../core/profile';
 import { data } from '../data/load';
 import { materialDef, monsterDef } from '../data/lookup';
-import type { LevelMonster, Params } from '../data/types';
+import type { LevelMonster } from '../data/types';
 import type Phaser from 'phaser';
 import type { Ent, Kind } from './BattleCtx';
 import type { BattleState } from './state';
@@ -46,14 +46,16 @@ function addBlock(b: BattleState, mat: string, x: number, y: number, w: number, 
   b.ents.push(makeEnt(b, 'block', mat, body, sprite, def.hp, def.weak ?? null, null, w, h, 16, {}));
 }
 
-function addChest(b: BattleState, chest: { id: string; x: number; y: number; hp: number; reward: string }): void {
+function addChest(b: BattleState, chest: { id: string; x: number; y: number; hp?: number; reward: string }): void {
   const w = 14;
   const h = 12;
   const body: any = b.scene.matter.add.rectangle(chest.x, chest.y, w, h, {
     density: DEFAULT_DENSITY * 1.5, friction: 0.8, frictionStatic: 1, restitution: 0.05, label: 'chest',
   });
   const sprite = b.scene.add.image(chest.x, chest.y, 'chest').setDepth(2);
-  const e = makeEnt(b, 'chest', chest.id, body, sprite, chest.hp ?? 40, 'physical', null, w, h, 16, { reward: chest.reward as unknown as number });
+  const hp = chest.hp ?? b.tune.chestHp ?? 40;
+  const e = makeEnt(b, 'chest', chest.id, body, sprite, hp, 'physical', null, w, h, 16, { reward: chest.reward });
+  e.reward = chest.reward;
   b.ents.push(e);
 }
 
@@ -76,7 +78,7 @@ function addMonster(b: BattleState, m: LevelMonster): void {
 
 function makeEnt(
   b: BattleState, kind: Kind, type: string, body: any, sprite: Phaser.GameObjects.Image, hp: number,
-  weak: string | null, resist: string | null, w: number, h: number, size: number, params: Params,
+  weak: string | null, resist: string | null, w: number, h: number, size: number, params: Record<string, any>,
 ): Ent {
   const e: Ent = {
     kind, type, body, sprite, hp, maxHp: hp, weak, resist, w, h, size, cool: 0, hurt: 0, flash: 0, dead: false,

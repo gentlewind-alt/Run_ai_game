@@ -32,6 +32,8 @@ game/src/
     rng.ts                   seeded RNG (mulberry32); Math.random only for cosmetic particles
     save.ts                  load/save/migrate the player save via platform.storage
     profile.ts               in-memory player state (coins, owned, upgrades, stars) + mutators that emit events
+    economy.ts               shop purchases, relic pricing, pity unlocking, transaction helpers
+    responsive.ts            viewport shell (480x270 16:9), safe-area margins, rotate-device overlay
     flow.ts                  scene transitions (goTo('map'), goTo('battle', {levelId}))
   platform/
     index.ts                 exports `platform`: the RUN adapter when hosted, the mock otherwise
@@ -40,15 +42,16 @@ game/src/
     types.ts                 Platform interface (section 8)
   battle/
     BattleCtx.ts             the interface content code uses (section 4)
-    world.ts                 builds blocks/monsters from level JSON; worldW, ground, walls
+    world.ts                 builds blocks/monsters from level JSON; worldW, ground, walls, chests
     loop.ts                  fixed-step accumulator, hit-stop, step order (section 3)
     sling.ts                 aim input, pull, launch, dotted preview, weapon queue
-    camera.ts                intro pan, follow, pinch/pan/zoom, view-all
+    camera.ts                intro pan, follow, pinch/pan/zoom, view-all, home framing
     damage.ts                damage pipeline + modifiers (section 7)
     status.ts                status effects (burn, slow, stun, curse, shield, chain, poison)
     combo.ts                 MASH combo counter and banner trigger
     score.ts                 score, stars, coins earned this level
     rules.ts                 win/lose checks (all monsters dead, out of shots, runners escaped)
+    snapshot.ts              deterministic battle view snapshot helper for tests
   content/
     weapons/index.ts         WEAPONS registry; one file per weapon: blade.ts, cleaver.ts...
     monsters/index.ts        MONSTERS behaviour registry; basic.ts, runner.ts, bomber.ts...
@@ -59,22 +62,25 @@ game/src/
     palette.ts               Mash32 palette, C('x') lookup
     pix.ts                   pixel text, grid -> texture
     sprites/                 one file per entity: goblin_grunt.ts exports frames
-    textures.ts              builds every texture at boot from sprites/ + rarity palette swaps
+    textures.ts              builds weapon/item textures at boot from sprites/ + rarity palette swaps
+    monsterTextures.ts       procedural monster and boss drawing routines
     backgrounds.ts           realm background generators keyed by realm.background
   audio/
     sfx.ts                   named WebAudio sounds
     music.ts                 chiptune loops from note arrays
   ui/
     widgets.ts               button, panel, icon button, counter (pixel style, 44px touch targets)
+    cards.ts                 shared item card layout helper for Loadout and Shop
     hud.ts                   battle HUD on the UI camera
   scenes/
     BootScene.ts             load data + save, build textures, then Title
     TitleScene.ts            conga line, play button
     MapScene.ts              realms, level nodes, stars, daily countdown
-    LoadoutScene.ts          pick weapons, artifacts, consumables
+    LoadoutScene.ts          pick weapons, artifacts, consumables (max 1 legendary)
     BattleScene.ts           thin orchestrator: wires battle/* + content/* + hud
-    ResultsScene.ts          stars, coins, share, double-coins ad
-    ShopScene.ts             shop + forge tabs
+    ResultsScene.ts          stars, coins, share, double-coins ad, relic claim toast
+    ShopScene.ts             shop + forge tabs, relic market & pity offers
+    CreditsScene.ts          credits roll and acknowledgements
   debug/
     testHook.ts              window.__mm API for scripted tests (section 10)
     overrides.ts             ?debug=1&tune.launchK=0.3 URL overrides

@@ -2,7 +2,7 @@
 export type Element = 'physical' | 'hellfire' | 'radiant' | 'void';
 export type Params = Record<string, number>;
 export type AbilityMode = 'button' | 'impact' | 'both' | 'none';
-export type WeaponUnlock = string | { boss?: string; chest?: string; shop?: boolean };
+export type WeaponUnlock = string | { boss?: string; chest?: string; shop?: boolean; level?: number };
 
 export interface WeaponDef {
   id: string;
@@ -30,6 +30,7 @@ export interface MonsterDef {
   behavior?: string;
   density?: number;
   boss?: boolean;
+  flying?: boolean;
   params?: Params;
 }
 
@@ -54,6 +55,7 @@ export interface Tuning {
   homeLeft: number;
   homeMarginRight?: number;
   homeSlingFrac?: number;
+  chestHp?: number;
   aimGrabRadius: number;
   minPull: number;
   debrisMinSpeed: number;
@@ -102,12 +104,13 @@ export interface Economy {
   secondArtifactAfterLevel: number;
   dailyStreakRewardDay?: number;
   dailyStreakRewardCoins?: number;
+  relicPityLosses?: number;
   relicMarketPrice?: Record<string, number>;
 }
 
 export interface ArtifactDef { id: string; name: string; rarity?: string; price: number; effect: string; params?: Record<string, number | string | boolean> }
 export interface ConsumableDef { id: string; name: string; price: number; effect: string; targeted?: boolean; params?: Record<string, number | string | boolean> }
-export interface CosmeticDef { id: string; name: string; kind: 'sling_skin' | 'trail' | 'banner'; priceCoins?: number; priceBits?: number; reward?: string }
+export interface CosmeticDef { id: string; name: string; kind: 'sling_skin' | 'trail' | 'banner' | 'slot'; slot?: boolean; priceCoins?: number; priceBits?: number; reward?: string }
 
 export interface Content {
   tuning: Tuning;
@@ -130,6 +133,7 @@ export interface Level {
   name: string;
   realm?: string;
   kind?: string;
+  _archetype?: string;
   worldW: number;
   homeZoom?: number;
   shots?: number;

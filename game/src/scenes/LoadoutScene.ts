@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { C, rarityColor, rarityStroke } from '../art/palette';
+import { C } from '../art/palette';
 import { text, textBlock } from '../art/font5x7';
 import { iconKey } from '../art/icons';
 import { pixText } from '../art/pix';
@@ -10,7 +10,8 @@ import { goTo, irisOpen } from '../core/flow';
 import { artifactSlots, consumableCount, loadoutSize, owns, profile, setArtifacts, setLoadout, upgradeMult } from '../core/profile';
 import { data } from '../data/load';
 import { levelDef, shortWeaponName } from '../data/lookup';
-import { makeButton, panel } from '../ui/widgets';
+import { makeButton } from '../ui/widgets';
+import { createItemCard } from '../ui/cards';
 
 const PAGE_SIZE = 10;
 
@@ -112,28 +113,22 @@ export default class LoadoutScene extends Phaser.Scene {
     const pageItems = owned.slice(startIdx, startIdx + PAGE_SIZE);
 
     const cardW = 122;
-    const cardH = 38;
 
     pageItems.forEach((w, idx) => {
       const col = idx % 2;
       const row = Math.floor(idx / 2);
       const x = 8 + col * 128;
       const y = 30 + row * 42;
-      const stroke = rarityStroke(w.rarity);
-      const p = panel(this, x, y, cardW, cardH, '8', stroke, 'f', 1);
-      const iconBox = this.add.rectangle(x + 15, y + 19, 24, 30, C('0')).setStrokeStyle(1, C(stroke)).setDepth(2);
-      const icon = this.add.image(x + 15, y + 19, weaponTexture(w.id)).setScale(1.2).setDepth(2);
+      const card = createItemCard({
+        scene: this, x, y, w: cardW, icon: weaponTexture(w.id), name: shortWeaponName(w.id, w.name),
+        rarity: w.rarity, onClick: () => { sfx.unlock(); this.addToSlot(w.id); this.describe(w.id); },
+      });
 
-      const nameStr = shortWeaponName(w.id, w.name);
-      const nameTxt = text(this, x + 31, y + 10, nameStr, rarityColor(w.rarity)).setOrigin(0, 0.5).setDepth(2);
       const elIcon = this.add.image(x + 35, y + 26, `el_${w.element}`).setDepth(2);
       const dmgTxt = pixText(this, x + 42, y + 26, String(Math.round(w.baseDamage * upgradeMult(w.id))), C('4')).setOrigin(0, 0.5).setDepth(2);
       const abTxt = text(this, x + cardW - 6, y + 26, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5).setDepth(2);
 
-      const hit = this.add.rectangle(x + cardW / 2, y + cardH / 2, cardW, cardH, 0xffffff, 0).setDepth(3).setInteractive();
-      hit.on('pointerdown', () => { sfx.unlock(); this.addToSlot(w.id); this.describe(w.id); });
-
-      this.gridObjs.push(p, iconBox, icon, nameTxt, elIcon, dmgTxt, abTxt, hit);
+      this.gridObjs.push(...card.objects, elIcon, dmgTxt, abTxt);
     });
 
     // Pagination controls if owned > 10

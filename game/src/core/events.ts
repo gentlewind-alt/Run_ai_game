@@ -43,6 +43,13 @@ export class EventBus {
     this.inBattle = false;
     for (const [k, v] of this.map) this.map.set(k, v.filter((l) => !l.battle));
   }
+
+  listenerCount(name?: string): number {
+    if (name) return (this.map.get(name) ?? []).length;
+    let sum = 0;
+    for (const list of this.map.values()) sum += list.length;
+    return sum;
+  }
 }
 
 export const events = new EventBus();

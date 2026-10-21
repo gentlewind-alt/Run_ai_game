@@ -6,7 +6,8 @@ import { MONSTER_ART } from '../art/textures';
 import { beatBob, beatPhase } from '../audio/beat';
 import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
-import { W } from '../config/constants';
+import { H, W } from '../config/constants';
+import { monsterDef } from '../data/lookup';
 import { goTo, irisOpen } from '../core/flow';
 import { makeButton } from '../ui/widgets';
 
@@ -17,14 +18,14 @@ const SPACING = 36;
 export default class TitleScene extends Phaser.Scene {
   private letters: { img: Phaser.GameObjects.Image; y: number; phase: number }[] = [];
   private line: { img: Phaser.GameObjects.Image; id: string; i: number }[] = [];
-  private ground = 236;
+  private ground = Math.round(H * 0.874);
 
   constructor() {
     super('title');
   }
 
   create(): void {
-    this.ground = 236;
+    this.ground = Math.round(H * 0.874);
     buildBackground(this, W, this.ground, 'hills');
 
     const word = (str: string, centerX: number, y: number, scale: number, color: number, shade: number): void => {
@@ -36,7 +37,7 @@ export default class TitleScene extends Phaser.Scene {
         x += widths[i];
       });
     };
-    const logoX = 165;
+    const logoX = Math.round(W * 0.34);
     word('MONSTER', logoX, 48, 3, C('c'), C('0'));
     word('MASH', logoX, 94, 6, C('4'), C('q'));
     text(this, logoX, 138, 'Slingshot Siege', C('c'), 1, C('0')).setDepth(5);
@@ -47,7 +48,7 @@ export default class TitleScene extends Phaser.Scene {
       this.line.push({ img, id, i });
     });
 
-    const btnX = 365;
+    const btnX = Math.round(W * 0.76);
     makeButton(this, btnX, 85, 130, 32, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
     makeButton(this, btnX, 132, 110, 26, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
 
@@ -68,7 +69,7 @@ export default class TitleScene extends Phaser.Scene {
       const size = art?.size ?? 16;
       const x = ((time / 1000) * 24 - m.i * SPACING) % span;
       const hop = Math.abs(Math.sin(Math.PI * phase + m.i * 0.7));
-      const fly = m.id === 'imp' ? 26 : 0;
+      const fly = monsterDef(m.id)?.flying ? 26 : 0;
       m.img.setPosition(x < 0 ? x + span - 20 : x - 20, this.ground - size / 2 + 1 - hop * 5 - fly);
       m.img.setScale(1 + (1 - hop) * 0.05, 1 - (1 - hop) * 0.07);
     }

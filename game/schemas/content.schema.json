@@ -46,6 +46,7 @@
         "homeLeft": { "type": "number" },
         "homeMarginRight": { "type": "number", "minimum": 0 },
         "homeSlingFrac": { "type": "number", "minimum": 0.1, "maximum": 0.5 },
+        "chestHp": { "type": "number", "minimum": 1, "description": "Default HP for breakable treasure chests." },
         "coins": {
           "type": "object",
           "additionalProperties": { "type": "number", "minimum": 0 },
@@ -82,6 +83,7 @@
         "starScoreFactor": { "type": "number", "minimum": 0 },
         "dailyStreakRewardDay": { "type": "integer", "minimum": 1 },
         "dailyStreakRewardCoins": { "type": "number", "minimum": 0 },
+        "relicPityLosses": { "type": "integer", "minimum": 1, "description": "Boss losses required to unlock boss relic in relic market." },
         "relicMarketPrice": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } }
       }
     },
@@ -103,7 +105,8 @@
           "properties": {
             "boss": { "type": "string" },
             "chest": { "type": "string" },
-            "shop": { "type": "boolean" }
+            "shop": { "type": "boolean" },
+            "level": { "type": "integer", "minimum": 1 }
           },
           "additionalProperties": false
         },
@@ -193,6 +196,7 @@
         "coins": { "type": "number", "minimum": 0 },
         "score": { "type": "number", "minimum": 0 },
         "boss": { "type": "boolean" },
+        "flying": { "type": "boolean", "description": "True if monster flies above the ground." },
         "note": { "type": "string" },
         "params": { "$ref": "#/$defs/params" }
       }
@@ -235,7 +239,8 @@
       "properties": {
         "id": { "type": "string", "pattern": "^s_[a-z0-9_]+$" },
         "name": { "type": "string" },
-        "kind": { "enum": ["sling_skin", "trail", "banner"] },
+        "kind": { "enum": ["sling_skin", "trail", "banner", "slot"] },
+        "slot": { "type": "boolean", "description": "True if cosmetic grants an extra weapon slot." },
         "priceCoins": { "type": "number", "minimum": 0 },
         "priceBits": { "type": "number", "minimum": 0, "description": "RUN Bits price; needs the iap feature and a shop.config.json entry." },
         "reward": { "type": "string", "description": "e.g. 'daily_streak_7'." }

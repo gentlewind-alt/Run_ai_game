@@ -6,14 +6,13 @@ import { activateAbility, skipToReady, updateCursor } from '../battle/sling';
 import type { BattleState } from '../battle/state';
 import { events } from '../core/events';
 import { irisOpen } from '../core/flow';
-import { snapshot } from '../debug/testHook';
+import { snapshot } from '../battle/snapshot';
 import { iconKey } from '../art/icons';
 import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { pressConsumable } from '../battle/consumables';
 import { hasSeenHint, markHintSeen, setMuted } from '../core/profile';
 import { goTo } from '../core/flow';
-import { platform } from '../platform';
 import { createHud, type Hud } from '../ui/hud';
 
 const DEFAULT_LOADOUT = ['w_militia_blade', 'w_militia_blade', 'w_militia_blade', 'w_militia_blade'];
@@ -24,7 +23,6 @@ export default class BattleScene extends Phaser.Scene {
   private hud!: Hud;
   private levelId = 1;
   private loadout: string[] = [];
-  private lifecycleWired = false;
 
   constructor() {
     super('game');
@@ -37,7 +35,6 @@ export default class BattleScene extends Phaser.Scene {
 
   create(): void {
     events.beginBattle();
-    this.events.once('shutdown', () => events.clearBattle());
     const b = (this.b = createBattle(this, this.levelId, this.loadout));
     buildBattle(b);
 
@@ -87,13 +84,14 @@ export default class BattleScene extends Phaser.Scene {
       }
     };
     this.scale.on(Phaser.Scale.Events.RESIZE, onResize);
+
     this.events.once('shutdown', () => {
+      this.hud?.hidePause();
+      this.input.keyboard?.removeAllListeners();
+      this.input.removeAllListeners();
       this.scale.off(Phaser.Scale.Events.RESIZE, onResize);
+      events.clearBattle();
     });
-    if (!this.lifecycleWired) {
-      this.lifecycleWired = true;
-      platform.lifecycle.onPause(() => { if (this.scene.isActive('game')) this.setPaused(true); });
-    }
 
     if ((import.meta as any).env?.DEV) (window as any).__scene = this;
   }

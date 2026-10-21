@@ -7,6 +7,7 @@
     "homeLeft": -40,
     "homeMarginRight": 40,
     "homeSlingFrac": 0.16,
+    "chestHp": 40,
     "maxPull": 30,
     "debrisK": 9,
     "blockDebrisFactor": 0.5,
@@ -20,6 +21,7 @@
       "stone": 4,
       "iron": 6,
       "crystal": 15,
+      "chestFallback": 150,
       "goblin_chief": 100,
       "dark_elf_matron": 150,
       "orc_brute": 15,
@@ -343,7 +345,8 @@
       "rarity": "legendary",
       "baseDamage": 30,
       "unlock": {
-        "boss": "goblin_chief"
+        "boss": "goblin_chief",
+        "level": 4
       },
       "price": 1500,
       "launch": "Heavy flaming fists with blazing comet trails.",
@@ -371,7 +374,8 @@
       "rarity": "legendary",
       "baseDamage": 28,
       "unlock": {
-        "boss": "dark_elf_matron"
+        "boss": "dark_elf_matron",
+        "level": 8
       },
       "price": 1500,
       "launch": "Spinning radiant bulwark disc that carves through lines.",
@@ -399,7 +403,8 @@
       "rarity": "legendary",
       "baseDamage": 36,
       "unlock": {
-        "boss": "iron_warlord"
+        "boss": "iron_warlord",
+        "level": 12
       },
       "price": 1500,
       "launch": "Colossal forged maul with crushing downward weight.",
@@ -427,7 +432,8 @@
       "rarity": "rare",
       "baseDamage": 22,
       "unlock": {
-        "chest": "c_l3"
+        "chest": "c_l3",
+        "level": 3
       },
       "price": 600,
       "launch": "Slender singing arrow that soars with low drag.",
@@ -455,7 +461,8 @@
       "rarity": "rare",
       "baseDamage": 24,
       "unlock": {
-        "chest": "c_l5"
+        "chest": "c_l5",
+        "level": 5
       },
       "price": 600,
       "launch": "Dual silk-bound darts that pierce air with eerie calm.",
@@ -482,7 +489,8 @@
       "rarity": "rare",
       "baseDamage": 20,
       "unlock": {
-        "chest": "c_l7"
+        "chest": "c_l7",
+        "level": 7
       },
       "price": 600,
       "launch": "Kinetic discharge that transfers momentum on contact.",
@@ -778,6 +786,7 @@
       "hp": 15,
       "weak": "radiant",
       "resist": "hellfire",
+      "flying": true,
       "note": "Flies in a sine path. Hard to hit.",
       "behavior": "imp",
       "density": 0.0008,
@@ -917,7 +926,8 @@
     {
       "id": "s_gold_quiver",
       "name": "Gold Quiver",
-      "kind": "sling_skin",
+      "kind": "slot",
+      "slot": true,
       "priceCoins": 0,
       "priceBits": 0
     },
@@ -947,7 +957,10 @@
     "secondArtifactAfterLevel": 8,
     "dailyStreakRewardDay": 7,
     "dailyStreakRewardCoins": 500,
+    "relicPityLosses": 3,
     "relicMarketPrice": {
+      "common": 300,
+      "rare": 800,
       "legendary": 1500
     }
   }

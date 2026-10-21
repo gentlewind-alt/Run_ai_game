@@ -59,19 +59,24 @@ export default class MapScene extends Phaser.Scene {
       this.drawDaily(PANEL_Y0);
     }
 
-    makeButton(this, 70, H - 16, 76, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
-    makeButton(this, 240, H - 16, 76, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
-    makeButton(this, 410, H - 16, 76, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
+    makeButton(this, Math.round(W * 0.15), H - 16, 76, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
+    makeButton(this, W / 2, H - 16, 76, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
+    makeButton(this, Math.round(W * 0.85), H - 16, 76, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
     irisOpen(this);
   }
 
   private async drawDaily(y0: number): Promise<void> {
-    const x = 348;
+    const x = W - 132;
     const w = 124;
     const h = 202;
     panel(this, x, y0, w, h, '8', '9', 'f', 1);
 
-    const nowMs = await platform.serverTime();
+    let nowMs = Date.now();
+    try {
+      nowMs = await platform.serverTime();
+    } catch {
+      nowMs = Date.now();
+    }
     this.cachedServerTime = nowMs;
     const { dateStr } = getDailySeed(nowMs);
     const dInfo = profile.daily;

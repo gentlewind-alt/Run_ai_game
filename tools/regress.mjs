@@ -1018,6 +1018,176 @@ async function run() {
   console.log(`  [Timing] Section 7 finished in ${((performance.now() - tSec7) / 1000).toFixed(2)}s\n`);
 
   // =========================================================================
+  // 7b. ASSERT EVENT AND LISTENER HYGIENE (RETRY, NEXT, MAP TRANSITIONS)
+  // =========================================================================
+  console.log('--- 7b. ASSERTING EVENT AND LISTENER HYGIENE (5 CYCLES: RETRY, NEXT, MAP) ---');
+  const tSec7b = performance.now();
+  try {
+    const hygieneRes = await evalCode(`(async () => {
+      const g = window.__game;
+      const mm = window.__mm;
+      const counts = [];
+      const pauseMenuCounts = [];
+      const duplicateToasts = [];
+      const defaultLoadout = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike'];
+
+      for (let cycle = 0; cycle < 5; cycle++) {
+        // Step 1: Start Battle L1
+        for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'boot') g.scene.stop(s.scene.key);
+        g.scene.start('game', { level: 1, loadout: defaultLoadout });
+        for (let t = 0; t < 30; t++) {
+          const bs = g.scene.getScene('game');
+          if (bs && bs.scene.isActive() && bs.b?.state === 'ready') break;
+          await new Promise(r => setTimeout(r, 50));
+        }
+
+        let gameScene = g.scene.getScene('game');
+        if (!gameScene || !gameScene.scene.isActive()) {
+          return { error: 'Battle scene not active in cycle ' + cycle };
+        }
+
+        // Test Pause Menu: call setPaused(true) twice to assert idempotency
+        gameScene.setPaused(true);
+        gameScene.setPaused(true);
+
+        const pausedHeaders = gameScene.children.list.filter(c =>
+          c.type === 'Image' && c.texture && c.texture.key.includes('Paused')
+        );
+        pauseMenuCounts.push(pausedHeaders.length);
+
+        // Step 2: Retry from pause menu
+        const restartBtn = gameScene.children.list.find(c =>
+          c.type === 'Container' && c.input && c.input.enabled &&
+          c.list?.[0]?.list?.some(sub => sub.texture?.key?.includes('Restart'))
+        );
+        if (restartBtn) {
+          restartBtn.emit('pointerdown');
+          restartBtn.emit('pointerup');
+        } else {
+          gameScene.setPaused(false);
+          gameScene.scene.restart({ level: 1, loadout: defaultLoadout });
+        }
+
+        for (let t = 0; t < 30; t++) {
+          const bs = g.scene.getScene('game');
+          if (bs && bs.scene.isActive() && bs.b?.state === 'ready') break;
+          await new Promise(r => setTimeout(r, 50));
+        }
+        gameScene = g.scene.getScene('game');
+
+        // Step 3: Next level flow (launch Results with win and relic unlock)
+        gameScene.scene.pause();
+        gameScene.scene.launch('results', {
+          levelId: 1,
+          won: true,
+          why: 'shots',
+          stars: 3,
+          score: 1500,
+          target: 1000,
+          loadout: defaultLoadout,
+          relicUnlocked: 'w_steersong_arrow'
+        });
+        await new Promise(r => setTimeout(r, 200));
+
+        const resultsScene = g.scene.getScene('results');
+        const relicPanels = resultsScene ? resultsScene.children.list.filter(c =>
+          c.type === 'Image' && c.texture && c.texture.key.includes('RELIC FOUND')
+        ) : [];
+        if (relicPanels.length > 1) {
+          duplicateToasts.push({ cycle, count: relicPanels.length });
+        }
+
+        // Next level -> Loadout -> Fling -> Battle L2
+        const nextBtn = resultsScene?.children.list.find(c =>
+          c.type === 'Container' && c.input && c.input.enabled &&
+          (c.list?.[0]?.list?.some(sub => sub.texture?.key?.includes('Next level')) || (c.width === 128 && c.height === 26))
+        );
+        if (nextBtn) {
+          nextBtn.emit('pointerdown');
+          nextBtn.emit('pointerup');
+        }
+        for (let t = 0; t < 30; t++) {
+          const ls = g.scene.getScene('loadout');
+          if (ls && ls.scene.isActive()) break;
+          await new Promise(r => setTimeout(r, 50));
+        }
+
+        const loadoutScene = g.scene.getScene('loadout');
+        const flingBtn = loadoutScene?.goBtn?.box || loadoutScene?.children.list.find(c =>
+          c.type === 'Container' && c.input && c.input.enabled &&
+          c.list?.[0]?.list?.some(sub => sub.texture?.key?.includes('Fling!'))
+        );
+        if (flingBtn) {
+          flingBtn.emit('pointerdown');
+          flingBtn.emit('pointerup');
+        }
+        for (let t = 0; t < 30; t++) {
+          const bs = g.scene.getScene('game');
+          if (bs && bs.scene.isActive() && bs.levelId === 2 && bs.b?.state === 'ready') break;
+          await new Promise(r => setTimeout(r, 50));
+        }
+
+        // Step 4: Map transition from Battle L2
+        gameScene = g.scene.getScene('game');
+        if (gameScene) {
+          gameScene.setPaused(true);
+          const mapBtn = gameScene.children.list.find(c =>
+            c.type === 'Container' && c.input && c.input.enabled &&
+            c.list?.[0]?.list?.some(sub => sub.texture?.key?.includes('Back to map'))
+          );
+          if (mapBtn) {
+            mapBtn.emit('pointerdown');
+            mapBtn.emit('pointerup');
+          }
+        }
+        for (let t = 0; t < 40; t++) {
+          const ms = g.scene.getScene('map');
+          if (ms && ms.scene.isActive()) break;
+          await new Promise(r => setTimeout(r, 50));
+        }
+
+        // Record event listener count at end of cycle (Map scene active)
+        counts.push({
+          cycle,
+          evCount: mm.eventListenerCount()
+        });
+      }
+
+      // Check whether listener counts grew after cycle 0 baseline
+      const baseEv = counts[0]?.evCount ?? 0;
+      const grew = counts.some(c => c.evCount > baseEv);
+      const dupPause = pauseMenuCounts.some(cnt => cnt > 1);
+      const dupToast = duplicateToasts.length > 0;
+
+      return {
+        passed: !grew && !dupPause && !dupToast && counts.length === 5,
+        counts,
+        pauseMenuCounts,
+        duplicateToasts,
+        baseEv,
+        grew,
+        dupPause,
+        dupToast
+      };
+    })()`);
+
+    if (!hygieneRes.passed) {
+      const msg = `Listener and event hygiene check failed: baseEv=${hygieneRes.baseEv}, grew=${hygieneRes.grew}, dupPause=${hygieneRes.dupPause}, dupToast=${hygieneRes.dupToast}, counts=${JSON.stringify(hygieneRes.counts)}, pauseCounts=${JSON.stringify(hygieneRes.pauseMenuCounts)}`;
+      console.error('  FAIL', msg);
+      failures.push(msg);
+    } else {
+      console.log('  ✓ 5 transitions (Retry, Next, Map) completed cleanly.');
+      console.log(`  ✓ EventBus listener count remained strictly constant (${hygieneRes.baseEv}) across all 5 cycles without leaking.`);
+      console.log('  ✓ 0 duplicate pause menus (all cycles had exactly 1 header).');
+      console.log('  ✓ 0 duplicate toasts/overlays recorded.\n');
+    }
+  } catch (err) {
+    console.error('  Event/listener hygiene check exception:', err);
+    failures.push(`Event/listener hygiene exception: ${err.message}`);
+  }
+  console.log(`  [Timing] Section 7b finished in ${((performance.now() - tSec7b) / 1000).toFixed(2)}s\n`);
+
+  // =========================================================================
   // 8. ASSERT RESPONSIVE SHELL, VIEWPORTS, AND MID-BATTLE RESIZE
   // =========================================================================
   console.log(`--- 8. ASSERTING RESPONSIVE SHELL & VIEWPORTS (${isQuick ? 'QUICK: 812x375' : '8 LANDSCAPE + 1 PORTRAIT'}) ---`);

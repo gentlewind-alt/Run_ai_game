@@ -14,7 +14,7 @@ export function setGravity(body: any, f: number): void {
 export function applyCustomGravity(b: BattleState): void {
   const bodies: any[] = [];
   if (b.proj) bodies.push(b.proj.body);
-  for (const a of b.actors) if ((a as any).body) bodies.push((a as any).body);
+  for (const a of b.actors) if (a.body) bodies.push(a.body);
   for (const body of bodies) {
     if (body.ignoreGravity || body.gScale === undefined || body.gScale === 1) continue;
     MatterLib.Body.applyForce(body, body.position, { x: 0, y: body.mass * (body.gScale - 1) * 0.001 });
@@ -53,5 +53,5 @@ export function spawnPellet(b: BattleState, o: PelletOpts): void {
       sprite.destroy();
     },
     body,
-  } as any);
+  });
 }

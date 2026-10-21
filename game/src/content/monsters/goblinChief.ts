@@ -7,10 +7,10 @@ export const goblinChief: MonsterBehavior = {
   },
 
   onUpdate(ctx, m) {
-    const stompEvery = Number(m.params.stompEvery ?? 240); // 4 seconds at 60 Hz
+    const stompEvery = Number(m.params.stompEvery || 0);
     const timer = Number(m.params.stompTimer ?? 0) + 1;
 
-    if (timer >= stompEvery) {
+    if (stompEvery > 0 && timer >= stompEvery) {
       m.params.stompTimer = 0;
       ctx.fx.word(m.body.position.x, m.body.position.y - 18, 'STOMP!');
       ctx.fx.shake(0.008);
@@ -20,7 +20,7 @@ export const goblinChief: MonsterBehavior = {
   },
 
   onDamaged(_ctx, m, amount) {
-    const armour = Number(m.params.armour ?? m.params.armor ?? 8);
+    const armour = Number(m.params.armour ?? m.params.armor ?? 0);
     return Math.max(1, amount - armour);
   },
 

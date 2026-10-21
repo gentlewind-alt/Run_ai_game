@@ -15,7 +15,7 @@ export function check30DaysDailyVariety(startEpochMs = Date.UTC(2026, 9, 1, 12, 
   for (let i = 0; i < 30; i++) {
     const t = startEpochMs + i * MS_PER_DAY;
     const level = generateDailyLevel(t);
-    const archetype = (level as any)._archetype ?? '';
+    const archetype = level._archetype ?? '';
     const mix = level.monsters.map((m) => m.t).sort().join(',');
 
     if (i > 0) {

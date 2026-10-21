@@ -203,15 +203,16 @@ function kill(b: BattleState, t: Ent): void {
 
   if (t.kind === 'chest') {
     sfx.unlock();
-    const rewardId = String(t.params?.reward ?? '');
+    const rewardId = t.reward || String(t.params?.reward ?? '');
     if (rewardId) {
       if (!profile.owned.weapons.includes(rewardId)) {
         profile.owned.weapons.push(rewardId);
         b.relicUnlocked = rewardId;
         popWord(b, px, py - 14, 'Relic found!');
       } else {
-        addCoins(b, 150);
-        popWord(b, px, py - 14, '+150 coins!');
+        const fallbackCoins = b.tune.coins.chestFallback ?? 150;
+        addCoins(b, fallbackCoins);
+        popWord(b, px, py - 14, `+${fallbackCoins} coins!`);
       }
     }
   } else {

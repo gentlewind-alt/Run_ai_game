@@ -55,6 +55,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S7-02 | Mini-bosses (L4 goblin chief, L8 dark elf matron), boss HP bar, L12 warlord reward | review | agy | 10-21 | wave 1 part 1; L4 & L8 bosses, HP bars, L4 tuned to 4 shots in band [2,4] |
 | S7-03 | Treasure chests (L3, L5, L7) & pity shop (Relic Market) | review | agy | 10-21 | wave 1 part 1; chests grant relic or 150 coins fallback, pity unlocks at >= 3 boss losses |
 | S8-landscape | Convert game from portrait 216x384 to LANDSCAPE (16:9) | review | agy | 10-21 | 480x270 measured & built; all scenes re-laid, rotate overlay, full regress passes |
+| S8-refine | Code-quality review and refinement pass | done | agy | 10-21 | Golden rules 1&2, listener hygiene, split modules, boundary errs, types, docs |
 
 ## Parallel lanes (once S2-03 is done)
 

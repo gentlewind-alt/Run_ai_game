@@ -68,6 +68,12 @@ async function bootstrap(): Promise<void> {
 
     const game = new Phaser.Game(config);
     initResponsive(game);
+    platform.lifecycle.onPause(() => {
+      const battle = game.scene.getScene('game') as { setPaused?(on: boolean): void; scene?: { isActive(): boolean } } | null;
+      if (battle?.scene?.isActive?.()) {
+        battle.setPaused?.(true);
+      }
+    });
     window.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.code === 'KeyM' && !e.repeat) {
         sfx.unlock();
