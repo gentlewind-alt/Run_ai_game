@@ -570,7 +570,7 @@ async function run() {
         }
 
         const headerImg = loadoutScene.children.list.find(c => 
-          c.type === 'Image' && c.y === 12 && c.texture && c.texture.key.includes('Level ' + nextLvl + ':')
+          c.type === 'Image' && (c.y === 12 || Math.abs(c.y - 12) <= 3) && c.texture && c.texture.key.includes('Level ' + nextLvl + ':')
         );
         let headerText = '';
         if (headerImg && headerImg.texture) {
@@ -680,17 +680,22 @@ async function run() {
       await new Promise(r => setTimeout(r, 400));
 
       const loadoutScene = g.scene.getScene('loadout');
-      const images = loadoutScene.children.list.filter(c => c.type === 'Image' && c.texture && c.texture.key.startsWith('wpn_') && c.y >= 42 && c.y <= 180);
-      const texts = loadoutScene.children.list.filter(c => (c.type === 'Text' || c.type === 'BitmapText' || c.type === 'Image') && c.y >= 42 && c.y <= 180);
+      const images = loadoutScene.children.list.filter(c => c.type === 'Image' && c.texture && c.texture.key.startsWith('wpn_') && c.x < 260 && c.y >= 30 && c.y <= 240);
+      const texts = loadoutScene.children.list.filter(c => (c.type === 'Text' || c.type === 'BitmapText' || c.type === 'Image') && c.y >= 30 && c.y <= 240);
 
       const loadoutOverlaps = [];
+      const loadoutBoundsExceeded = [];
       for (const icon of images) {
-        const cardTexts = texts.filter(t => t !== icon && Math.abs(t.y - icon.y) < 20 && t.x >= icon.x - 20 && t.x <= icon.x + 90);
+        const cardTexts = texts.filter(t => t !== icon && Math.abs(t.y - icon.y) < 20 && t.x >= icon.x - 20 && t.x <= icon.x + 115);
         for (const t of cardTexts) {
           const iconBoxRight = icon.x + 12;
           const textLeft = t.originX === 1 ? t.x - t.width : t.x;
+          const textRight = t.originX === 1 ? t.x : t.x + t.width;
           if (textLeft < iconBoxRight) {
             loadoutOverlaps.push({ icon: icon.texture.key, text: t.text || t.texture?.key, textLeft, iconBoxRight });
+          }
+          if (textRight > icon.x + 114) {
+            loadoutBoundsExceeded.push({ icon: icon.texture.key, text: t.text || t.texture?.key, textRight, maxRight: icon.x + 114 });
           }
         }
       }
@@ -704,13 +709,18 @@ async function run() {
       const shopImages = shopList.filter(c => c.type === 'Image' && c.texture && c.texture.key.startsWith('wpn_'));
       const shopTexts = shopList.filter(c => c.type === 'Text' || c.type === 'BitmapText' || c.type === 'Image');
       const shopOverlaps = [];
+      const shopBoundsExceeded = [];
       for (const icon of shopImages) {
-        const cardTexts = shopTexts.filter(t => t !== icon && Math.abs(t.y - icon.y) < 20 && t.x >= icon.x - 20 && t.x <= icon.x + 90);
+        const cardTexts = shopTexts.filter(t => t !== icon && Math.abs(t.y - icon.y) < 20 && t.x >= icon.x - 20 && t.x <= icon.x + 100);
         for (const t of cardTexts) {
           const iconBoxRight = icon.x + 12;
           const textLeft = t.originX === 1 ? t.x - t.width : t.x;
+          const textRight = t.originX === 1 ? t.x : t.x + t.width;
           if (textLeft < iconBoxRight) {
             shopOverlaps.push({ icon: icon.texture.key, text: t.text || t.texture?.key, textLeft, iconBoxRight });
+          }
+          if (textRight > icon.x + 100) {
+            shopBoundsExceeded.push({ icon: icon.texture.key, text: t.text || t.texture?.key, textRight, maxRight: icon.x + 100 });
           }
         }
       }
@@ -718,18 +728,22 @@ async function run() {
       return {
         loadoutCardsChecked: images.length,
         loadoutOverlaps,
+        loadoutBoundsExceeded,
         shopCardsChecked: shopImages.length,
         shopOverlaps,
-        passed: loadoutOverlaps.length === 0 && shopOverlaps.length === 0 && images.length > 0 && shopImages.length > 0
+        shopBoundsExceeded,
+        passed: loadoutOverlaps.length === 0 && shopOverlaps.length === 0 &&
+                loadoutBoundsExceeded.length === 0 && shopBoundsExceeded.length === 0 &&
+                images.length > 0 && shopImages.length > 0
       };
     })()`);
 
     if (!b2Res.passed) {
-      const msg = `Weapon card overlaps detected: loadoutOverlaps=${b2Res.loadoutOverlaps.length}, shopOverlaps=${b2Res.shopOverlaps.length}, loadoutCards=${b2Res.loadoutCardsChecked}, shopCards=${b2Res.shopCardsChecked}`;
+      const msg = `Weapon card checks failed: loadoutOverlaps=${b2Res.loadoutOverlaps.length}, shopOverlaps=${b2Res.shopOverlaps.length}, loadoutBoundsExceeded=${b2Res.loadoutBoundsExceeded?.length ?? 0}, shopBoundsExceeded=${b2Res.shopBoundsExceeded?.length ?? 0}`;
       console.error('  FAIL', msg);
       failures.push(msg);
     } else {
-      console.log(`  ✓ Bug 2 assertion passed: ${b2Res.loadoutCardsChecked} Loadout cards & ${b2Res.shopCardsChecked} Shop cards have 0 overlaps; art sits in fixed box with text starting after.\n`);
+      console.log(`  ✓ Bug 2 assertion passed: ${b2Res.loadoutCardsChecked} Loadout cards & ${b2Res.shopCardsChecked} Shop cards have 0 overlaps and 0 bounds overflows.\n`);
     }
   } catch (err) {
     console.error('  Bug 2 check exception:', err);
@@ -746,7 +760,7 @@ async function run() {
   try {
     const b3Res = await evalCode(`(async () => {
       const checks = [];
-      const W = 216;
+      const W = 480;
       const lvls = ${JSON.stringify(framingLevels)};
 
       for (const lvl of lvls) {
@@ -768,7 +782,7 @@ async function run() {
         const rightMargin = rightEdge - maxX;
         const leftGroundVisible = 0 - leftEdge;
 
-        const slingFracOk = slingFrac >= 0.22 && slingFrac <= 0.26;
+        const slingFracOk = slingFrac >= 0.14 && slingFrac <= 0.18;
         const rightMarginOk = rightMargin > 0;
         const leftGroundOk = leftGroundVisible > 0;
 
@@ -799,7 +813,7 @@ async function run() {
       const rightMargin = rightEdge - maxX;
       const leftGroundVisible = 0 - leftEdge;
 
-      const slingFracOk = slingFrac >= 0.22 && slingFrac <= 0.26;
+      const slingFracOk = slingFrac >= 0.14 && slingFrac <= 0.18;
       const rightMarginOk = rightMargin > 0;
       const leftGroundOk = leftGroundVisible > 0;
 
@@ -820,12 +834,12 @@ async function run() {
     if (!b3Res.allPassed) {
       const failed = b3Res.checks.filter(c => !c.passed);
       failed.forEach(f => {
-        const msg = `Level ${f.lvl} framing fail: slingFrac=${(f.slingFrac * 100).toFixed(1)}% (target 22-26%), rightMargin=${f.rightMargin}px, leftGround=${f.leftGroundVisible}px`;
+        const msg = `Level ${f.lvl} framing fail: slingFrac=${(f.slingFrac * 100).toFixed(1)}% (target 14-18%), rightMargin=${f.rightMargin}px, leftGround=${f.leftGroundVisible}px`;
         console.error('  FAIL', msg);
         failures.push(msg);
       });
     } else {
-      console.log(`  ✓ Bug 3 assertion passed: Levels ${isQuick ? '1, 4, 8, 12' : '1-12'} and Daily have sling in 22-26% visible width, right fort margin > 0, and open ground visible beyond both ends.\n`);
+      console.log(`  ✓ Bug 3 assertion passed: Levels ${isQuick ? '1, 4, 8, 12' : '1-12'} and Daily have sling in 14-18% visible width, right fort margin > 0, and open ground visible beyond both ends.\n`);
     }
   } catch (err) {
     console.error('  Bug 3 check exception:', err);
@@ -843,7 +857,7 @@ async function run() {
     const camRes = await evalCode(`(async () => {
       const results = [];
       const testLevels = ${JSON.stringify(testCamLevels)};
-      const W = 216;
+      const W = 480;
 
       for (const lvl of testLevels) {
         window.__mm.load(lvl);
@@ -903,7 +917,7 @@ async function run() {
           const leftEdge = finalCx - Vw / 2;
           const slingScreenX = (b.slingX - leftEdge) * finalZ;
           finalFrac = slingScreenX / W;
-          fracOk = finalFrac >= 0.22 && finalFrac <= 0.26;
+          fracOk = finalFrac >= 0.14 && finalFrac <= 0.18;
 
           if (cxDiff < 3 && zDiff < 0.02 && fracOk) {
             easedHome = true;
@@ -983,7 +997,7 @@ async function run() {
       failed.forEach(f => {
         const msg = f.lvl === 'free_and_consumable_checks'
           ? `Free & consumable camera checks fail: freePreserved=${f.freePreserved}, toggleResetOk=${f.toggleResetOk}, freeCleared=${f.freeClearedOnSpend}, consumableHomeOk=${f.consumableHomeOk}`
-          : `Level ${f.lvl} camera return fail: reachedReady=${f.reachedReady}, easedHome=${f.easedHome}, cxDiff=${f.cxDiff} (target <3), zDiff=${f.zDiff} (target <0.02), slingFrac=${(f.slingFrac * 100).toFixed(1)}% (target 22-26%), err=${f.error || 'none'}`;
+          : `Level ${f.lvl} camera return fail: reachedReady=${f.reachedReady}, easedHome=${f.easedHome}, cxDiff=${f.cxDiff} (target <3), zDiff=${f.zDiff} (target <0.02), slingFrac=${(f.slingFrac * 100).toFixed(1)}% (target 14-18%), err=${f.error || 'none'}`;
         console.error('  FAIL', msg);
         failures.push(msg);
       });
@@ -1006,20 +1020,44 @@ async function run() {
   // =========================================================================
   // 8. ASSERT RESPONSIVE SHELL, VIEWPORTS, AND MID-BATTLE RESIZE
   // =========================================================================
-  console.log(`--- 8. ASSERTING RESPONSIVE SHELL & VIEWPORTS (${isQuick ? 'QUICK: 432x768' : '7 VIEWPORTS'}) ---`);
+  console.log(`--- 8. ASSERTING RESPONSIVE SHELL & VIEWPORTS (${isQuick ? 'QUICK: 812x375' : '8 LANDSCAPE + 1 PORTRAIT'}) ---`);
   const tSec8 = performance.now();
   try {
     const testViewports = isQuick ? [
-      [432, 768]
+      [812, 375]
     ] : [
-      [320, 568],
-      [375, 812],
-      [412, 915],
-      [768, 1024],
+      [568, 320],
+      [667, 375],
+      [812, 375],
+      [915, 412],
       [1024, 768],
+      [1180, 820],
       [1920, 1080],
       [2560, 1080]
     ];
+
+    // Check portrait mode: assert Rotate Device overlay shows and app is hidden
+    await send('Emulation.setDeviceMetricsOverride', {
+      width: 375,
+      height: 812,
+      deviceScaleFactor: 1,
+      mobile: true
+    });
+    await sleep(200);
+    const portraitRes = await evalCode(`(() => {
+      const overlay = document.getElementById('rotate-overlay');
+      const app = document.getElementById('app');
+      const visible = overlay && !overlay.classList.contains('hidden');
+      const appHidden = app && app.style.display === 'none';
+      return { visible, appHidden, passed: Boolean(visible && appHidden) };
+    })()`);
+    if (!portraitRes?.passed) {
+      const msg = `Portrait 375x812 rotate overlay check failed: visible=${portraitRes?.visible}, appHidden=${portraitRes?.appHidden}`;
+      console.error('  FAIL', msg);
+      failures.push(msg);
+    } else {
+      console.log('  ✓ Portrait 375x812: full-screen Rotate Device overlay active and canvas hidden.');
+    }
 
     // Ensure we are in Level 1 battle
     await evalCode(`(async () => {
@@ -1049,9 +1087,9 @@ async function run() {
                        rect.right <= window.innerWidth + 1 &&
                        rect.bottom <= window.innerHeight + 1;
 
-        // 2. Aspect ratio 216:384 preserved within 0.01
+        // 2. Aspect ratio 480:270 (16:9) preserved within 0.01
         const aspect = rect.width / rect.height;
-        const targetAspect = 216 / 384;
+        const targetAspect = 480 / 270;
         const aspectOk = Math.abs(aspect - targetAspect) < 0.01;
 
         // 3. No scrollbars or page overflow
@@ -1064,17 +1102,17 @@ async function run() {
         let worldPt = null;
         if (b && b.scene) {
           const cam = b.scene.cameras.main;
-          // In logical game coords (216x384):
-          const screenX = (b.slingX - (cam.scrollX + 108)) * b.view.z + 108;
-          const screenY = (b.slingY - (cam.scrollY + 192)) * b.view.z + 192;
+          // In logical game coords (480x270):
+          const screenX = (b.slingX - (cam.scrollX + 240)) * b.view.z + 240;
+          const screenY = (b.slingY - (cam.scrollY + 135)) * b.view.z + 135;
           // Screen to client:
-          const clientX = rect.left + screenX * (rect.width / 216);
-          const clientY = rect.top + screenY * (rect.height / 384);
+          const clientX = rect.left + screenX * (rect.width / 480);
+          const clientY = rect.top + screenY * (rect.height / 270);
           // Simulate pointer transform as Phaser input manager computes:
-          const phaserX = (clientX - rect.left) * (216 / rect.width);
-          const phaserY = (clientY - rect.top) * (384 / rect.height);
-          const wx = cam.scrollX + 108 + (phaserX - 108) / b.view.z;
-          const wy = cam.scrollY + 192 + (phaserY - 192) / b.view.z;
+          const phaserX = (clientX - rect.left) * (480 / rect.width);
+          const phaserY = (clientY - rect.top) * (270 / rect.height);
+          const wx = cam.scrollX + 240 + (phaserX - 240) / b.view.z;
+          const wy = cam.scrollY + 135 + (phaserY - 135) / b.view.z;
           worldPt = { x: Math.round(wx * 10) / 10, y: Math.round(wy * 10) / 10 };
           slingPointOk = Math.abs(wx - b.slingX) < 1 && Math.abs(wy - b.slingY) < 1;
         }
@@ -1105,9 +1143,9 @@ async function run() {
       });
     } else {
       vpResults.forEach(r => {
-        console.log(`  ✓ Viewport ${r.viewport[0]}x${r.viewport[1]}: canvas ${r.rect.width}x${r.rect.height} (inside, aspect 216:384), no scrollbars, sling pointer mapping exact (${r.worldPt.x}, ${r.worldPt.y}).`);
+        console.log(`  ✓ Viewport ${r.viewport[0]}x${r.viewport[1]}: canvas ${r.rect.width}x${r.rect.height} (inside, aspect 16:9), no scrollbars, sling pointer mapping exact (${r.worldPt.x}, ${r.worldPt.y}).`);
       });
-      console.log(`  ✓ Responsive shell viewports assertion passed across ${isQuick ? 'test resolution' : 'all 7 test resolutions'}.\n`);
+      console.log(`  ✓ Responsive shell viewports assertion passed across ${isQuick ? 'quick resolution' : 'all 8 landscape resolutions'}.\n`);
     }
 
     // Mid-battle resize assertion:
@@ -1142,10 +1180,10 @@ async function run() {
       console.log(`  ✓ Mid-battle resize preserved home framing: cx=${resizeRes.cx} (diff=${resizeRes.cxDiff} < 3, free=${resizeRes.free}).\n`);
     }
 
-    // Reset device metrics override to standard 432x768
+    // Reset device metrics override to standard landscape 812x375
     await send('Emulation.setDeviceMetricsOverride', {
-      width: 432,
-      height: 768,
+      width: 812,
+      height: 375,
       deviceScaleFactor: 1,
       mobile: true
     });

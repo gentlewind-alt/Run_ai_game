@@ -23,7 +23,7 @@ export interface ResultsData {
   relicUnlocked?: string;
 }
 
-/** Launched over a paused battle: stars, score, coins, then Next, Retry or Map. */
+/** Results overlay: stars, score, coins, and Next / Retry / Map. */
 export default class ResultsScene extends Phaser.Scene {
   private ghosts: Phaser.GameObjects.Image[] = [];
 
@@ -33,7 +33,7 @@ export default class ResultsScene extends Phaser.Scene {
 
   create(d: ResultsData): void {
     this.ghosts = [];
-    this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.7);
+    this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.72);
 
     if (d.levelId === 0) {
       this.drawDailyResults(d);
@@ -41,17 +41,21 @@ export default class ResultsScene extends Phaser.Scene {
     }
 
     const r = lastResult;
-    const py = 50;
-    panel(this, 16, py, W - 32, 276, '8', '9', 'f', 1);
+    const py = 18;
+    const pw = 360;
+    const px = (W - pw) / 2;
+    panel(this, px, py, pw, 234, '8', '9', 'f', 1);
+
     const titleStr = d.won ? 'Level cleared!' : d.why === 'escaped' ? 'Runners escaped!' : 'Out of shots';
     const titleScale = d.won ? 2 : d.why === 'escaped' ? 1.5 : 2;
-    text(this, W / 2, py + 16, titleStr, d.won ? C('4') : C('3'), titleScale, C('0')).setDepth(2);
+    text(this, W / 2, py + 18, titleStr, d.won ? C('4') : C('3'), titleScale, C('0')).setDepth(2);
+
     if (d.won) {
-      const g1 = this.add.image(W / 2 - 68, py + 52, 'ghost_dance_1').setScale(1.5).setDepth(4);
-      const g2 = this.add.image(W / 2 + 68, py + 52, 'ghost_dance_2').setScale(1.5).setDepth(4);
+      const g1 = this.add.image(W / 2 - 76, py + 48, 'ghost_dance_1').setScale(1.4).setDepth(4);
+      const g2 = this.add.image(W / 2 + 76, py + 48, 'ghost_dance_2').setScale(1.4).setDepth(4);
       this.ghosts = [g1, g2];
       for (let i = 0; i < 3; i++) {
-        const star = this.add.image(W / 2 - 24 + i * 24, py + 52, 'star_off').setScale(2).setDepth(2);
+        const star = this.add.image(W / 2 - 24 + i * 24, py + 48, 'star_off').setScale(2).setDepth(2);
         if (i < d.stars) {
           star.setTexture('star_on').setScale(0.1);
           this.tweens.add({
@@ -60,41 +64,57 @@ export default class ResultsScene extends Phaser.Scene {
           });
         }
       }
-      text(this, W / 2, py + 84, `Score ${d.score}`, C('c'), 1, C('0')).setDepth(2);
-      if (d.target > 0) text(this, W / 2, py + 98, d.stars === 3 ? 'Score target beaten' : `Beat ${d.target} for the third star`, C('d')).setDepth(2);
+      text(this, W / 2, py + 74, `Score ${d.score}`, C('c'), 1, C('0')).setDepth(2);
+      if (d.target > 0) {
+        text(this, W / 2, py + 88, d.stars === 3 ? 'Score target beaten' : `Beat ${d.target} for third star`, C('d')).setDepth(2);
+      }
     } else {
-      text(this, W / 2, py + 54, d.why === 'escaped' ? 'Stop the runners early.' : 'Try a different order.', C('c')).setDepth(2);
-      text(this, W / 2, py + 70, `Score ${d.score}`, C('d')).setDepth(2);
+      text(this, W / 2, py + 48, d.why === 'escaped' ? 'Stop the runners early.' : 'Try a different order.', C('c')).setDepth(2);
+      text(this, W / 2, py + 64, `Score ${d.score}`, C('d')).setDepth(2);
     }
+
     let coinsTxt: Phaser.GameObjects.Image | undefined;
     if (r) {
-      this.add.image(W / 2 - 34, py + 116, 'icon_coin').setDepth(2);
-      coinsTxt = text(this, W / 2 - 26, py + 116, `+${r.credited} coins`, C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
-      text(this, W / 2, py + 130, r.credited < r.earned ? (d.won ? 'Replays pay less' : 'Losses pay a quarter') : `Total ${profile.coins}`, C('d')).setDepth(2);
+      this.add.image(W / 2 - 34, py + 104, 'icon_coin').setDepth(2);
+      coinsTxt = text(this, W / 2 - 26, py + 104, `+${r.credited} coins`, C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
+      text(this, W / 2, py + 117, r.credited < r.earned ? (d.won ? 'Replays pay less' : 'Losses pay a quarter') : `Total ${profile.coins}`, C('d')).setDepth(2);
     }
 
     const next = d.levelId + 1;
     const hasNext = d.won && !!data.levels[next] && levelUnlocked(next);
     const go = (key: string, payload?: object): void => { sfx.click(); goTo(this, key, payload); };
-    let y = py + 148;
+
     if (d.won) {
-      if (hasNext) makeButton(this, W / 2, y, 128, 24, 'Next level', 'go', () => go('loadout', { level: next }), 3);
-      else makeButton(this, W / 2, y, 128, 24, 'Map', 'go', () => go('map'), 3);
-      y += 28;
+      const y1 = py + 145;
+      const y2 = py + 176;
+      const y3 = py + 205;
+
+      if (hasNext) {
+        makeButton(this, W / 2 - 64, y1, 116, 24, 'Next level', 'go', () => go('loadout', { level: next }), 3);
+      } else {
+        makeButton(this, W / 2 - 64, y1, 116, 24, 'Map', 'go', () => go('map'), 3);
+      }
+      makeButton(this, W / 2 + 64, y1, 116, 24, 'Retry', 'plain', () => go('game', { level: d.levelId, loadout: d.loadout }), 3);
+
+      if (data.config.features?.share !== false) {
+        const shareBtn = makeButton(this, W / 2 - 64, y2, 116, 22, 'Share', 'ability', async () => {
+          sfx.click();
+          await platform.share(`I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: String(d.levelId) });
+          shareBtn.setLabel('Shared!');
+        }, 3);
+      }
 
       if (r && r.credited > 0 && data.config.features?.ads !== false) {
-        const adY = y;
-        y += 26;
         void platform.ads.rewardedReady().then((ready) => {
           if (!ready || !this.scene.isActive()) return;
-          const adBtn = makeButton(this, W / 2, adY, 128, 22, '2x coins (Ad)', 'go', async () => {
+          const adBtn = makeButton(this, W / 2 + 64, y2, 116, 22, '2x coins (Ad)', 'go', async () => {
             sfx.click();
             adBtn.setEnabled(false);
             const earned = await platform.ads.showRewarded();
             if (earned) {
               addCoins(r.credited);
               sfx.coin();
-              adBtn.setLabel('Coins doubled!');
+              adBtn.setLabel('Doubled!');
               if (coinsTxt) setText(coinsTxt, this, `+${r.credited * 2} coins!`, C('4'));
               platform.track('rewarded_ad_complete', { coins: r.credited });
             } else {
@@ -104,23 +124,15 @@ export default class ResultsScene extends Phaser.Scene {
         });
       }
 
-      makeButton(this, W / 2, y, 128, 22, 'Retry', 'plain', () => go('game', { level: d.levelId, loadout: d.loadout }), 3);
-      y += 26;
-      if (data.config.features?.share !== false) {
-        const shareBtn = makeButton(this, W / 2, y, 128, 22, 'Share', 'ability', async () => {
-          sfx.click();
-          await platform.share(`I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: String(d.levelId) });
-          shareBtn.setLabel('Shared!');
-        }, 3);
-        y += 26;
+      if (hasNext) {
+        makeButton(this, W / 2, y3, 90, 20, 'Map', 'plain', () => go('map'), 3);
       }
-      if (hasNext) makeButton(this, W / 2, y, 128, 22, 'Map', 'plain', () => go('map'), 3);
     } else {
-      makeButton(this, W / 2, y, 128, 26, 'Try again', 'go', () => go('game', { level: d.levelId, loadout: d.loadout }), 3);
-      y += 30;
-      makeButton(this, W / 2, y, 128, 22, 'Change loadout', 'plain', () => go('loadout', { level: d.levelId }), 3);
-      y += 26;
-      makeButton(this, W / 2, y, 128, 22, 'Map', 'plain', () => go('map'), 3);
+      const y1 = py + 148;
+      const y2 = py + 182;
+      makeButton(this, W / 2 - 64, y1, 116, 26, 'Try again', 'go', () => go('game', { level: d.levelId, loadout: d.loadout }), 3);
+      makeButton(this, W / 2 + 64, y1, 116, 24, 'Change loadout', 'plain', () => go('loadout', { level: d.levelId }), 3);
+      makeButton(this, W / 2, y2, 90, 22, 'Map', 'plain', () => go('map'), 3);
     }
 
     if (d.relicUnlocked) {
@@ -133,30 +145,30 @@ export default class ResultsScene extends Phaser.Scene {
     if (!w) return;
 
     const group: (Phaser.GameObjects.GameObject | { destroy(): void })[] = [];
-    const darkBg = this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.7).setDepth(20).setInteractive();
+    const darkBg = this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.76).setDepth(20).setInteractive();
     group.push(darkBg);
 
-    const py = H / 2 - 80;
-    const p = panel(this, W / 2 - 85, py, 170, 160, '0', rarityStroke(w.rarity ?? 'legendary'), 'f', 21);
+    const py = H / 2 - 95;
+    const p = panel(this, W / 2 - 90, py, 180, 190, '0', rarityStroke(w.rarity ?? 'legendary'), 'f', 21);
     group.push(p);
 
-    const t1 = text(this, W / 2, py + 16, 'RELIC FOUND!', rarityColor(w.rarity), 2, C('0')).setDepth(22);
+    const t1 = text(this, W / 2, py + 18, 'RELIC FOUND!', rarityColor(w.rarity), 2, C('0')).setDepth(22);
     group.push(t1);
 
-    const ico = this.add.image(W / 2, py + 48, weaponTexture(w.id)).setScale(2.5).setDepth(22);
+    const ico = this.add.image(W / 2, py + 56, weaponTexture(w.id)).setScale(2.5).setDepth(22);
     group.push(ico);
 
-    const t2 = text(this, W / 2, py + 74, w.name, rarityColor(w.rarity), 1, C('0')).setDepth(22);
+    const t2 = text(this, W / 2, py + 86, w.name, rarityColor(w.rarity), 1, C('0')).setDepth(22);
     group.push(t2);
 
-    const t3 = text(this, W / 2, py + 88, (w.rarity ?? 'rare').toUpperCase(), C('d'), 1).setDepth(22);
+    const t3 = text(this, W / 2, py + 102, (w.rarity ?? 'rare').toUpperCase(), C('d'), 1).setDepth(22);
     group.push(t3);
 
-    const eff = (w.tap || w.launch || '').slice(0, 30);
-    const t4 = text(this, W / 2, py + 104, eff, C('c'), 1).setDepth(22);
+    const eff = (w.tap || w.launch || '').slice(0, 32);
+    const t4 = text(this, W / 2, py + 120, eff, C('c'), 1).setDepth(22);
     group.push(t4);
 
-    const btn = makeButton(this, W / 2, py + 132, 90, 22, 'Claim', 'go', () => {
+    const btn = makeButton(this, W / 2, py + 156, 100, 24, 'Claim', 'go', () => {
       sfx.click();
       group.forEach((g) => g.destroy());
     }, 22);
@@ -175,46 +187,51 @@ export default class ResultsScene extends Phaser.Scene {
 
   private async drawDailyResults(d: ResultsData): Promise<void> {
     const py = 16;
-    panel(this, 12, py, W - 24, 352, '8', '9', 'f', 1);
+    const leftW = 200;
+    const rightW = 236;
+    const h = 238;
 
-    text(this, W / 2, py + 14, d.won ? 'Daily Cleared!' : 'Daily Attempt', d.won ? C('4') : C('3'), 2, C('0')).setDepth(2);
-    text(this, W / 2, py + 30, `Score ${d.score}  •  Streak ${profile.daily.streak}d`, C('c'), 1, C('0')).setDepth(2);
+    // Left summary panel
+    panel(this, 16, py, leftW, h, '8', '9', 'f', 1);
+    text(this, 16 + leftW / 2, py + 16, d.won ? 'Daily Cleared!' : 'Daily Attempt', d.won ? C('4') : C('3'), 2, C('0')).setDepth(2);
+    text(this, 16 + leftW / 2, py + 36, `Score ${d.score}`, C('c'), 1, C('0')).setDepth(2);
+    text(this, 16 + leftW / 2, py + 50, `Streak: ${profile.daily.streak}d`, C('4'), 1, C('0')).setDepth(2);
     if (profile.daily.streak % 7 === 0 && profile.daily.streak > 0) {
-      text(this, W / 2, py + 42, 'Day 7 Streak Reward: +500 Coins!', C('4'), 1, C('0')).setDepth(2);
+      text(this, 16 + leftW / 2, py + 66, 'Day 7 Bonus: +500 Coins!', C('4'), 1, C('0')).setDepth(2);
     }
 
     if (d.won) {
       await platform.leaderboard.submit('daily', d.score);
     }
 
-    const lby = py + 48;
-    panel(this, 18, lby, W - 36, 238, '0', 'f', 'f', 2);
-    text(this, W / 2, lby + 10, 'Daily Leaderboard', C('4'), 1, C('0')).setDepth(3);
+    const shareBtn = makeButton(this, 16 + leftW / 2, py + 140, 120, 26, 'Share', 'ability', async () => {
+      sfx.click();
+      await platform.share(`I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: 'daily' });
+      shareBtn.setLabel('Shared!');
+    }, 4);
+
+    makeButton(this, 16 + leftW / 2, py + 180, 120, 24, 'Map', 'go', () => {
+      sfx.click();
+      goTo(this, 'map');
+    }, 4);
+
+    // Right leaderboard panel
+    const rx = 228;
+    panel(this, rx, py, rightW, h, '0', 'f', 'f', 2);
+    text(this, rx + rightW / 2, py + 12, 'Daily Leaderboard', C('4'), 1, C('0')).setDepth(3);
 
     const rows = await platform.leaderboard.top('daily', 10);
     const myRank = await platform.leaderboard.myRank('daily');
 
     rows.forEach((r, i) => {
       const isMe = r.name === 'You';
-      const ry = lby + 26 + i * 18;
-      text(this, 26, ry, `#${r.rank} ${r.name.slice(0, 13)}`, isMe ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(3);
-      text(this, W - 26, ry, String(r.score), isMe ? C('4') : C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
+      const ry = py + 30 + i * 17;
+      text(this, rx + 10, ry, `#${r.rank} ${r.name.slice(0, 13)}`, isMe ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(3);
+      text(this, rx + rightW - 10, ry, String(r.score), isMe ? C('4') : C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
     });
 
     const rankStr = myRank ? `Your rank: #${myRank.rank} (Best ${myRank.score})` : `Your score: ${d.score}`;
-    text(this, W / 2, lby + 222, rankStr, C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(3);
-
-    const by = py + 308;
-    const shareBtn = makeButton(this, W / 2 - 44, by, 76, 26, 'Share', 'ability', async () => {
-      sfx.click();
-      await platform.share(`I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: 'daily' });
-      shareBtn.setLabel('Shared!');
-    }, 4);
-
-    makeButton(this, W / 2 + 44, by, 76, 26, 'Map', 'go', () => {
-      sfx.click();
-      goTo(this, 'map');
-    }, 4);
+    text(this, rx + rightW / 2, py + 220, rankStr, C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(3);
   }
 
   update(time: number): void {
@@ -223,8 +240,8 @@ export default class ResultsScene extends Phaser.Scene {
       const bob = Math.abs(beatBob(time, 0)) * 4;
       const tex1 = p < 0.5 ? 'ghost_dance_1' : 'ghost_dance_2';
       const tex2 = p < 0.5 ? 'ghost_dance_2' : 'ghost_dance_1';
-      this.ghosts[0].setTexture(tex1).setY(102 - bob);
-      this.ghosts[1].setTexture(tex2).setY(102 - bob);
+      this.ghosts[0].setTexture(tex1).setY(66 - bob);
+      this.ghosts[1].setTexture(tex2).setY(66 - bob);
     }
   }
 }

@@ -156,6 +156,33 @@ export function initResponsive(game: Phaser.Game): () => void {
     const vpW = window.visualViewport ? window.visualViewport.width : window.innerWidth;
     const vpH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
+    const isPortrait = vpW < vpH;
+    const rotateEl = document.getElementById('rotate-overlay');
+    if (rotateEl) {
+      if (isPortrait) {
+        rotateEl.classList.remove('hidden');
+        rotateEl.setAttribute('aria-hidden', 'false');
+        app.style.display = 'none';
+        if (hud) {
+          hud.classList.add('hidden');
+          hud.style.display = 'none';
+        }
+        // Pause active battle while in portrait
+        const gameScene = game.scene.getScene('game') as any;
+        if (gameScene && game.scene.isActive('game')) {
+          const b = gameScene.getBattle?.();
+          if (b && b.state !== 'won' && b.state !== 'lost' && !b.paused) {
+            gameScene.pauseBattle?.();
+          }
+        }
+        return;
+      } else {
+        rotateEl.classList.add('hidden');
+        rotateEl.setAttribute('aria-hidden', 'true');
+        app.style.display = 'block';
+      }
+    }
+
     const { displayW, displayH, isInteger, offsetX, offsetY } = calculateResponsiveScale(vpW, vpH);
 
     app.style.width = `${displayW}px`;
@@ -171,23 +198,21 @@ export function initResponsive(game: Phaser.Game): () => void {
       app.classList.remove('beveled-frame');
     }
 
-    // Landscape hint and realm badge
-    const isLandscape = vpW > vpH && vpW >= 540;
+    // Desktop controls hint only if there is ample room on the sides (ultrawide / wide desktop)
+    const rightSpace = vpW - (offsetX + displayW);
+    const leftSpace = offsetX;
+    const panelW = 120;
+    const hasSideRoom = rightSpace >= panelW + 20 || leftSpace >= panelW + 20;
+
     if (hud) {
-      if (isLandscape) {
+      if (hasSideRoom && vpW >= 700) {
         hud.classList.remove('hidden');
         hud.style.display = 'block';
-
-        // Position HUD beside the field
-        const rightSpace = vpW - (offsetX + displayW);
-        const leftSpace = offsetX;
-        const panelW = 120;
 
         const realmBadge = document.getElementById('hud-realm-badge');
         const controlsPanel = document.getElementById('hud-controls-panel');
 
         if (leftSpace >= panelW + 20 && rightSpace >= panelW + 20) {
-          // Room on both sides: Realm on left, Controls on right
           if (realmBadge) {
             realmBadge.style.left = `${Math.max(12, Math.round(offsetX - panelW - 14))}px`;
             realmBadge.style.top = `${Math.round(offsetY + 20)}px`;
@@ -199,7 +224,6 @@ export function initResponsive(game: Phaser.Game): () => void {
             controlsPanel.style.right = 'auto';
           }
         } else if (rightSpace >= panelW + 16) {
-          // Room on right: Stack both on right
           if (realmBadge) {
             realmBadge.style.left = `${Math.round(offsetX + displayW + 14)}px`;
             realmBadge.style.top = `${Math.round(offsetY + 14)}px`;
@@ -211,7 +235,6 @@ export function initResponsive(game: Phaser.Game): () => void {
             controlsPanel.style.right = 'auto';
           }
         } else if (leftSpace >= panelW + 16) {
-          // Room on left: Stack both on left
           if (realmBadge) {
             realmBadge.style.left = `${Math.max(10, Math.round(offsetX - panelW - 14))}px`;
             realmBadge.style.top = `${Math.round(offsetY + 14)}px`;

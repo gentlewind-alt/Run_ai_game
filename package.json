@@ -5,6 +5,7 @@
   "scripts": {
     "regress": "node tools/regress.mjs",
     "regress:quick": "node tools/regress.mjs --quick",
+    "land:shots": "node tools/responsive_shots.mjs",
     "relic:shots": "node tools/relic_shots.mjs",
     "agy:share": "node tools/agy_share.mjs",
     "merkle:seal": "node tools/merkle.mjs seal",

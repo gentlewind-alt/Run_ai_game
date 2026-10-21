@@ -13,18 +13,19 @@ import { platform } from '../platform';
 import { coinCounter } from '../ui/coins';
 import { makeButton, panel, type Btn } from '../ui/widgets';
 
-const PANEL_H = 88;
+const PANEL_W = 330;
+const PANEL_H = 64;
 const PANEL_Y0 = 26;
-const PANEL_GAP = 3;
+const PANEL_GAP = 5;
 
-/** Realm lighting: sky bands top to bottom, then the ground strip. Each realm has its own light, not just its own tint. */
+/** Realm lighting: sky bands top to bottom, then the ground strip. */
 const LIGHT: Record<string, { sky: string[]; ground: string; edge: string; dots: string; dotCount: number }> = {
-  hills: { sky: ['9', 'a', 'b'], ground: 'n', edge: '6', dots: 'c', dotCount: 5 }, // daylight, clouds
-  wood: { sky: ['1', '8', '7'], ground: 'o', edge: '7', dots: 'b', dotCount: 12 }, // dusk, cyan fireflies
-  keep: { sky: ['f', 'q', '3'], ground: 'm', edge: 'e', dots: '4', dotCount: 10 }, // fire glow, embers
+  hills: { sky: ['9', 'a', 'b'], ground: 'n', edge: '6', dots: 'c', dotCount: 8 },
+  wood: { sky: ['1', '8', '7'], ground: 'o', edge: '7', dots: 'b', dotCount: 14 },
+  keep: { sky: ['f', 'q', '3'], ground: 'm', edge: 'e', dots: '4', dotCount: 12 },
 };
 
-/** Level nodes in three realm strips, lit by realm. A fresh player sees one open node. */
+/** Level nodes in three realm strips, lit by realm, with Daily card to the side. */
 export default class MapScene extends Phaser.Scene {
   private pulse: { box: Phaser.GameObjects.Container }[] = [];
   private dailyCountdownText?: Phaser.GameObjects.Image;
@@ -38,11 +39,12 @@ export default class MapScene extends Phaser.Scene {
   create(): void {
     this.pulse = [];
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
-    coinCounter(this, 6, 13);
+    coinCounter(this, 12, 13);
+
     const realms = data.content.realms;
     const total = realms.reduce((n, r) => n + r.levels.filter((id) => data.levels[id]).length * 3, 0);
     const got = realms.reduce((n, r) => n + r.levels.reduce((m, id) => m + starsFor(id), 0), 0);
-    text(this, W - 6, 13, `Stars ${got} of ${total}`, C('4'), 1, C('0')).setOrigin(1, 0.5);
+    text(this, W - 12, 13, `Stars ${got} of ${total}`, C('4'), 1, C('0')).setOrigin(1, 0.5);
 
     realms.forEach((realm, ri) => {
       const y0 = PANEL_Y0 + ri * (PANEL_H + PANEL_GAP);
@@ -54,19 +56,19 @@ export default class MapScene extends Phaser.Scene {
     });
 
     if (data.config.features?.daily !== false) {
-      this.drawDaily(302);
+      this.drawDaily(PANEL_Y0);
     }
 
-    makeButton(this, 38, H - 16, 60, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
-    makeButton(this, W / 2, H - 16, 64, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
-    makeButton(this, W - 38, H - 16, 60, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
+    makeButton(this, 70, H - 16, 76, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
+    makeButton(this, 240, H - 16, 76, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
+    makeButton(this, 410, H - 16, 76, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
     irisOpen(this);
   }
 
   private async drawDaily(y0: number): Promise<void> {
-    const x = 6;
-    const w = W - 12;
-    const h = 40;
+    const x = 348;
+    const w = 124;
+    const h = 202;
     panel(this, x, y0, w, h, '8', '9', 'f', 1);
 
     const nowMs = await platform.serverTime();
@@ -75,20 +77,24 @@ export default class MapScene extends Phaser.Scene {
     const dInfo = profile.daily;
     const doneToday = dInfo.lastDay === dateStr;
 
-    text(this, x + 8, y0 + 10, 'Daily Mash', C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
+    const cx = x + w / 2;
+    text(this, cx, y0 + 16, 'Daily Mash', C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
+    text(this, cx, y0 + 32, dateStr, C('c'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
+
     const streakStr = dInfo.streak > 0 ? `Streak ${dInfo.streak}d` : 'Streak 0d';
-    text(this, x + 8, y0 + 22, streakStr, C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
+    text(this, cx, y0 + 52, streakStr, C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
+
     if (dInfo.streak === 6) {
-      text(this, x + 8, y0 + 32, 'Day 7: +500c bonus!', C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
+      text(this, cx, y0 + 70, 'Day 7: +500c bonus!', C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
     } else if (dInfo.best > 0) {
-      text(this, x + 8, y0 + 32, `Best ${dInfo.best}`, C('d'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
+      text(this, cx, y0 + 70, `Best ${dInfo.best}`, C('d'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
     }
 
     if (doneToday) {
-      text(this, x + w - 8, y0 + 12, 'Done today', C('6'), 1, C('0')).setOrigin(1, 0.5).setDepth(2);
-      this.dailyCountdownText = text(this, x + w - 8, y0 + 26, this.formatCountdown(nowMs), C('b'), 1, C('0')).setOrigin(1, 0.5).setDepth(2);
+      text(this, cx, y0 + 116, 'Done today', C('6'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
+      this.dailyCountdownText = text(this, cx, y0 + 134, this.formatCountdown(nowMs), C('b'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
     } else {
-      makeButton(this, x + w - 34, y0 + 20, 56, 24, 'Play', 'ability', () => {
+      makeButton(this, cx, y0 + 128, 88, 28, 'Play', 'ability', () => {
         sfx.click();
         const lvl = generateDailyLevel(nowMs);
         setDailyLevel(lvl);
@@ -116,32 +122,34 @@ export default class MapScene extends Phaser.Scene {
   }
 
   private drawRealm(y0: number, light: (typeof LIGHT)[string], name: string, open: boolean, prev: string): void {
-    const x = 6;
-    const w = W - 12;
+    const x = 8;
+    const w = PANEL_W;
     panel(this, x, y0, w, PANEL_H, light.sky[0], light.sky[0], light.sky[0]);
     const g = this.add.graphics();
     const band = (c: string, from: number, h: number): void => { g.fillStyle(C(c), 1).fillRect(x, y0 + from, w, h); };
-    band(light.sky[0], 0, 28);
-    band(light.sky[1], 28, 28);
-    band(light.sky[2], 56, 20);
+    band(light.sky[0], 0, 20);
+    band(light.sky[1], 20, 20);
+    band(light.sky[2], 40, 14);
     g.fillStyle(C(light.sky[1]), 1);
-    for (let i = 0; i < w; i += 2) g.fillRect(x + i, y0 + 27, 1, 1);
+    for (let i = 0; i < w; i += 2) g.fillRect(x + i, y0 + 19, 1, 1);
     g.fillStyle(C(light.sky[2]), 1);
-    for (let i = 1; i < w; i += 2) g.fillRect(x + i, y0 + 55, 1, 1);
-    band(light.ground, PANEL_H - 12, 12);
-    band(light.edge, PANEL_H - 12, 2);
+    for (let i = 1; i < w; i += 2) g.fillRect(x + i, y0 + 39, 1, 1);
+    band(light.ground, PANEL_H - 10, 10);
+    band(light.edge, PANEL_H - 10, 2);
     g.fillStyle(C(light.dots), 1);
-    for (let i = 0; i < light.dotCount; i++) g.fillRect(x + 8 + ((i * 53) % (w - 16)), y0 + 6 + ((i * 29) % 40), light.dots === 'c' ? 6 : 1, light.dots === 'c' ? 2 : 1);
-    text(this, x + 6, y0 + 8, name, C('c'), 1, C('0')).setOrigin(0, 0.5);
+    for (let i = 0; i < light.dotCount; i++) {
+      g.fillRect(x + 8 + ((i * 47) % (w - 16)), y0 + 4 + ((i * 23) % 32), light.dots === 'c' ? 6 : 1, light.dots === 'c' ? 2 : 1);
+    }
+    text(this, x + 8, y0 + 8, name, C('c'), 1, C('0')).setOrigin(0, 0.5);
     if (!open) {
       this.add.rectangle(x + w / 2, y0 + PANEL_H / 2, w, PANEL_H, C('0'), 0.55);
-      text(this, W / 2, y0 + PANEL_H - 7, prev ? `Clear ${prev} to enter` : 'Locked', C('c'), 1, C('0')).setDepth(8);
+      text(this, x + w / 2, y0 + PANEL_H / 2, prev ? `Clear ${prev} to enter` : 'Locked', C('c'), 1, C('0')).setDepth(8);
     }
   }
 
   private node(id: number, k: number, y0: number, open: boolean): void {
-    const x = 28 + k * 53;
-    const y = y0 + 42 + (k % 2 === 0 ? 5 : -5);
+    const x = 50 + k * 74;
+    const y = y0 + 34 + (k % 2 === 0 ? 3 : -3);
     const built = !!data.levels[id];
     const unlocked = open && levelUnlocked(id);
     const cleared = starsFor(id) > 0;
@@ -149,10 +157,12 @@ export default class MapScene extends Phaser.Scene {
       const g = this.add.graphics();
       g.fillStyle(C('c'), 0.8);
       const dir = k % 2 === 0 ? -1 : 1;
-      for (let i = 1; i < 6; i++) g.fillRect(Math.round(x + 14 + (i * 25) / 6), Math.round(y + (dir * (i * 10)) / 6), 2, 2);
+      for (let i = 1; i < 7; i++) {
+        g.fillRect(Math.round(x + 14 + (i * 46) / 7), Math.round(y + (dir * (i * 6)) / 7), 2, 2);
+      }
     }
     const kind = cleared ? 'go' : unlocked && id === reachedLevel() ? 'ability' : unlocked ? 'go' : 'plain';
-    const btn: Btn = makeButton(this, x, y, 26, 22, built && unlocked ? String(id) : '', kind, () => {
+    const btn: Btn = makeButton(this, x, y, 28, 22, built && unlocked ? String(id) : '', kind, () => {
       if (!built || !unlocked) return;
       sfx.click();
       goTo(this, 'loadout', { level: id });

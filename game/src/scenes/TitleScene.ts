@@ -7,7 +7,6 @@ import { beatBob, beatPhase } from '../audio/beat';
 import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { W } from '../config/constants';
-import { getSettings } from '../config/settings';
 import { goTo, irisOpen } from '../core/flow';
 import { makeButton } from '../ui/widgets';
 
@@ -18,37 +17,40 @@ const SPACING = 36;
 export default class TitleScene extends Phaser.Scene {
   private letters: { img: Phaser.GameObjects.Image; y: number; phase: number }[] = [];
   private line: { img: Phaser.GameObjects.Image; id: string; i: number }[] = [];
-  private ground = 320;
+  private ground = 236;
 
   constructor() {
     super('title');
   }
 
   create(): void {
-    this.ground = getSettings().world.groundY;
+    this.ground = 236;
     buildBackground(this, W, this.ground, 'hills');
 
-    const word = (str: string, y: number, scale: number, color: number, shade: number): void => {
+    const word = (str: string, centerX: number, y: number, scale: number, color: number, shade: number): void => {
       const widths = [...str].map((ch) => textWidth(ch) * scale + scale);
-      let x = (W - widths.reduce((a, b) => a + b, 0)) / 2;
+      let x = centerX - widths.reduce((a, b) => a + b, 0) / 2;
       [...str].forEach((ch, i) => {
         const img = text(this, x + widths[i] / 2, y, ch, color, scale, shade).setDepth(5);
         this.letters.push({ img, y, phase: this.letters.length * 0.55 });
         x += widths[i];
       });
     };
-    word('MONSTER', 58, 3, C('c'), C('0'));
-    word('MASH', 98, 6, C('4'), C('q'));
-    text(this, W / 2, 132, 'Slingshot Siege', C('c'), 1, C('0')).setDepth(5);
+    const logoX = 165;
+    word('MONSTER', logoX, 48, 3, C('c'), C('0'));
+    word('MASH', logoX, 94, 6, C('4'), C('q'));
+    text(this, logoX, 138, 'Slingshot Siege', C('c'), 1, C('0')).setDepth(5);
+    text(this, logoX, 162, 'Fling real weapons. Mash the monsters.', C('d'), 1, C('0')).setDepth(6);
 
     CONGA.forEach((id, i) => {
       const img = this.add.image(0, 0, id).setDepth(4);
       this.line.push({ img, id, i });
     });
 
-    makeButton(this, W / 2, 190, 120, 28, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
-    makeButton(this, W / 2, 224, 88, 22, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
-    text(this, W / 2, 256, 'Fling real weapons. Mash the monsters.', C('d'), 1, C('0')).setDepth(6);
+    const btnX = 365;
+    makeButton(this, btnX, 85, 130, 32, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
+    makeButton(this, btnX, 132, 110, 26, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
+
     this.input.once('pointerdown', () => {
       sfx.unlock();
       music.updateVolume();

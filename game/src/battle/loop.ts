@@ -68,7 +68,7 @@ function stepLogic(b: BattleState): void {
     if (b.proj === p) {
       const speed = Math.hypot(body.velocity.x, body.velocity.y);
       p.slow = speed < 0.3 ? p.slow + 1 : 0;
-      const out = body.position.x > b.worldW + 40 || body.position.x < -40 || body.position.y > H + 40;
+      const out = body.position.x > b.worldW + 40 || body.position.x < -40 || body.position.y > Math.max(H, b.groundY) + 60;
       if (out || p.slow > F.projectileSlowSteps || p.steps > F.projectileMaxSteps) endProj(b, p);
     }
   }

@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.10.0 (Stages 3-6, private), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
+**Current build:** v1.11.0 (landscape 480x270) (Stages 3-6, private), private, game id `83DTzRcGtCh99lCAuhBn`. The URL is in `docs/handoff/LOG.md`.
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -54,7 +54,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S7-01 | Relic framework: rarity, loadout rules, unlock sources, toast, save migration | review | agy | 10-21 | wave 1 part 1; 1-legendary rule, charges pip, rarity colors, toast, save v2 migration verified |
 | S7-02 | Mini-bosses (L4 goblin chief, L8 dark elf matron), boss HP bar, L12 warlord reward | review | agy | 10-21 | wave 1 part 1; L4 & L8 bosses, HP bars, L4 tuned to 4 shots in band [2,4] |
 | S7-03 | Treasure chests (L3, L5, L7) & pity shop (Relic Market) | review | agy | 10-21 | wave 1 part 1; chests grant relic or 150 coins fallback, pity unlocks at >= 3 boss losses |
-| S8-landscape | Convert game from portrait 216x384 to LANDSCAPE (16:9) | doing | agy | 10-21 | per docs/handoff/agy_task_landscape.md |
+| S8-landscape | Convert game from portrait 216x384 to LANDSCAPE (16:9) | review | agy | 10-21 | 480x270 measured & built; all scenes re-laid, rotate overlay, full regress passes |
 
 ## Parallel lanes (once S2-03 is done)
 

@@ -128,6 +128,10 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
+  pauseBattle(): void {
+    this.setPaused(true);
+  }
+
   update(_t: number, delta: number): void {
     update(this.b, delta, this.game.getTime());
     updateCursor(this.b);

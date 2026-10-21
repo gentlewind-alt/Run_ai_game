@@ -22,7 +22,8 @@ export function minZoom(b: BattleState): number {
 export function clampCx(b: BattleState, cx: number, z: number): number {
   const half = W / z / 2;
   const minCx = b.tune.homeLeft !== undefined ? Math.min(half, b.tune.homeLeft + half) : half;
-  const maxCx = Math.max(minCx, b.worldW - half);
+  const hcx = homeCx(b);
+  const maxCx = Math.max(minCx, b.worldW - half, hcx);
   return Phaser.Math.Clamp(cx, minCx, maxCx);
 }
 
@@ -36,7 +37,7 @@ export function setView(b: BattleState, z: number, cx: number): void {
   cam.scrollX = b.view.cx - W / 2;
   // zoomed in the ground stays at the bottom; zoomed out it rises so the battlefield sits in the middle of the screen
   const groundScreen = H * (C.groundFrac - Math.max(0, 1 - b.view.z) * C.zoomOutRise);
-  const cy = b.view.z >= 1 ? H - H / b.view.z / 2 : b.groundY - (groundScreen - H / 2) / b.view.z;
+  const cy = b.groundY - (groundScreen - H / 2) / b.view.z;
   cam.scrollY = cy - H / 2;
 }
 

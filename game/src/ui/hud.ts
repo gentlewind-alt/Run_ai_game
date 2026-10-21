@@ -51,11 +51,13 @@ export function createHud(
   let pauseObjs: Phaser.GameObjects.GameObject[] = [];
 
   host.inUi(() => {
-    coinsTxt = text(scene, 4, top + 5, 'Coins 0', C('4')).setOrigin(0, 0.5).setDepth(10);
-    scoreTxt = text(scene, 4, top + 17, 'Score 0', C('c')).setOrigin(0, 0.5).setDepth(10);
-    if (o.escapeLimit !== undefined) escTxt = text(scene, 4, top + 29, `Escaped 0 of ${o.escapeLimit}`, C('d')).setOrigin(0, 0.5).setDepth(10);
+    coinsTxt = text(scene, 8, top + 6, 'Coins 0', C('4')).setOrigin(0, 0.5).setDepth(10);
+    scoreTxt = text(scene, 8, top + 18, 'Score 0', C('c')).setOrigin(0, 0.5).setDepth(10);
+    if (o.escapeLimit !== undefined) {
+      escTxt = text(scene, 8, top + 30, `Escaped 0 of ${o.escapeLimit}`, C('d')).setOrigin(0, 0.5).setDepth(10);
+    }
 
-    muteBtn = scene.add.image(W - 10, top + 4, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
+    muteBtn = scene.add.image(W - 14, top + 6, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
     muteBtn.setInteractive(new Phaser.Geom.Rectangle(-6, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
     muteBtn.on('pointerdown', () => {
       sfx.unlock();
@@ -64,32 +66,34 @@ export function createHud(
       muteBtn.setTexture(sfx.muted ? 'spk_off' : 'spk_on');
       sfx.click();
     });
-    const pauseBtn = scene.add.image(W - 30, top + 4, 'pause_icon').setDepth(10);
+
+    const pauseBtn = scene.add.image(W - 38, top + 6, 'pause_icon').setDepth(10);
     pauseBtn.setInteractive(new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
     pauseBtn.on('pointerdown', () => { sfx.unlock(); sfx.click(); o.onPause(); });
+
     if (o.showZoom) {
-      const zoomBtn = scene.add.image(W - 50, top + 4, 'zoom_icon').setDepth(10);
+      const zoomBtn = scene.add.image(W - 62, top + 6, 'zoom_icon').setDepth(10);
       zoomBtn.setInteractive(new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
       zoomBtn.on('pointerdown', () => { sfx.unlock(); sfx.click(); o.onToggleView(); });
     }
 
-    ability = makeButton(scene, W - 30, H - 28, 52, 32, o.abilityLabel, 'ability', o.onAbility);
+    ability = makeButton(scene, W - 40, H - 28, 62, 34, o.abilityLabel, 'ability', o.onAbility);
     ability.box.setVisible(false);
 
-    // item tray along the bottom edge, one icon per consumable you own
+    // Consumable tray bottom-left row
     o.consumables.forEach((c, i) => {
-      const x = 17 + i * 31;
-      const box = scene.add.rectangle(x, H - 17, 26, 26, C('0')).setStrokeStyle(1, C('d')).setDepth(10).setInteractive();
-      const icon = scene.add.image(x, H - 17, c.icon).setDepth(11);
+      const x = 20 + i * 32;
+      const box = scene.add.rectangle(x, H - 18, 26, 26, C('0')).setStrokeStyle(1, C('d')).setDepth(10).setInteractive();
+      const icon = scene.add.image(x, H - 18, c.icon).setDepth(11);
       box.on('pointerdown', () => { sfx.unlock(); o.onUse(i); });
       tray.push({ box, icon });
     });
 
     if (o.hint) {
-      const bubbleW = Math.min(196, W - 20);
+      const bubbleW = Math.min(260, W - 40);
       const bubbleH = 34;
       const bx = (W - bubbleW) / 2;
-      const by = top + 34;
+      const by = top + 26;
       const bubblePanel = panel(scene, bx, by, bubbleW, bubbleH, '8', '9', 'f', 10);
       const face = scene.add.image(bx + 14, by + bubbleH / 2, 'goblin_grunt').setScale(1.1).setDepth(11);
       const textLines = textBlock(scene, bx + 27, by + 10, o.hint, C('c'), bubbleW - 32, C('0'));
@@ -112,7 +116,7 @@ export function createHud(
       ability.box.setVisible(inAir);
       if (charges !== undefined) {
         if (!pipCircle) {
-          pipCircle = host.inUi(() => scene.add.circle(W - 10, H - 40, 3, C('4')).setStrokeStyle(1, C('0')).setDepth(12));
+          pipCircle = host.inUi(() => scene.add.circle(W - 18, H - 40, 3, C('4')).setStrokeStyle(1, C('0')).setDepth(12));
         }
         pipCircle.setVisible(inAir);
         pipCircle.setFillStyle(charges.left > 0 ? C('4') : C('f'));
@@ -131,9 +135,9 @@ export function createHud(
       }
       if (!bossBar) {
         host.inUi(() => {
-          const container = scene.add.container(W / 2, top + 5).setDepth(15);
-          const bg = scene.add.rectangle(0, 10, 104, 6, C('0')).setStrokeStyle(1, C('4'));
-          const fill = scene.add.rectangle(-50, 10, 100, 4, C('2')).setOrigin(0, 0.5);
+          const container = scene.add.container(W / 2, top + 6).setDepth(15);
+          const bg = scene.add.rectangle(0, 10, 130, 7, C('0')).setStrokeStyle(1, C('4'));
+          const fill = scene.add.rectangle(-63, 10, 126, 5, C('2')).setOrigin(0, 0.5);
           const nameTxt = text(scene, 0, 1, name ?? 'Boss', C('4'), 1, C('0')).setOrigin(0.5, 0.5);
           container.add([bg, fill, nameTxt]);
           bossBar = { container, nameTxt, fill, bg };
@@ -143,7 +147,7 @@ export function createHud(
         bossBar.container.setVisible(true);
         if (name && bossBar.nameTxt) setText(bossBar.nameTxt, scene, name, C('4'));
         const frac = Math.max(0, Math.min(1, hp / maxHp));
-        bossBar.fill.width = Math.max(1, Math.round(100 * frac));
+        bossBar.fill.width = Math.max(1, Math.round(126 * frac));
       }
     },
     setEscaped: (escaped, limit) => {
@@ -154,7 +158,7 @@ export function createHud(
       targetTxt = undefined;
       tray.forEach((t) => t.box.setStrokeStyle(1, C('d')));
       if (on && label) {
-        targetTxt = host.inUi(() => text(scene, W / 2, H - 56, label, C('4'), 1, C('0')).setDepth(12));
+        targetTxt = host.inUi(() => text(scene, W / 2, H - 42, label, C('4'), 1, C('0')).setDepth(12));
         scene.tweens.add({ targets: targetTxt, alpha: 0.4, duration: 360, yoyo: true, repeat: -1 });
       }
     },
@@ -181,10 +185,10 @@ export function createHud(
         sfx.win();
         const [t, m] = host.inUi(() => [
           text(scene, W / 2, -20, 'MASH!', C('4'), 5, C('q')).setDepth(30),
-          text(scene, W / 2, 124, `x${mult} combo`, C('c'), 1, C('0')).setDepth(30).setAlpha(0),
+          text(scene, W / 2, 108, `x${mult} combo`, C('c'), 1, C('0')).setDepth(30).setAlpha(0),
         ]);
         scene.tweens.add({
-          targets: t, y: 96, duration: 220, ease: 'Back.out',
+          targets: t, y: 78, duration: 220, ease: 'Back.out',
           onComplete: () => {
             scene.tweens.add({ targets: m, alpha: 1, duration: 120 });
             scene.tweens.add({ targets: [t, m], alpha: 0, delay: 800, duration: 300, onComplete: () => { t.destroy(); m.destroy(); } });
@@ -196,11 +200,11 @@ export function createHud(
     showPause(h) {
       if (pauseObjs.length) return;
       host.inUi(() => {
-        const dim = scene.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.72).setDepth(40).setInteractive();
-        const g = panel(scene, 28, 110, W - 56, 164, '8', '9', 'f', 41);
-        const title = text(scene, W / 2, 128, 'Paused', C('4'), 2, C('0')).setDepth(42);
+        const dim = scene.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.74).setDepth(40).setInteractive();
+        const g = panel(scene, W / 2 - 90, 35, 180, 195, '8', '9', 'f', 41);
+        const title = text(scene, W / 2, 54, 'Paused', C('4'), 2, C('0')).setDepth(42);
         const soundLabel = (): string => (profile.settings.muted ? 'Sound is off' : 'Sound is on');
-        const sound = makeButton(scene, W / 2, 196, 120, 22, soundLabel(), 'plain', () => {
+        const sound = makeButton(scene, W / 2, 148, 126, 22, soundLabel(), 'plain', () => {
           setMuted(!profile.settings.muted);
           sfx.setMuted(profile.settings.muted);
           muteBtn.setTexture(sfx.muted ? 'spk_off' : 'spk_on');
@@ -208,9 +212,9 @@ export function createHud(
         }, 42);
         pauseObjs = [
           dim, g, title, sound.box,
-          makeButton(scene, W / 2, 158, 120, 26, 'Resume', 'go', () => { sfx.click(); h.resume(); }, 42).box,
-          makeButton(scene, W / 2, 222, 120, 22, 'Restart', 'plain', () => { sfx.click(); h.restart(); }, 42).box,
-          makeButton(scene, W / 2, 248, 120, 22, 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
+          makeButton(scene, W / 2, 88, 126, 26, 'Resume', 'go', () => { sfx.click(); h.resume(); }, 42).box,
+          makeButton(scene, W / 2, 120, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart(); }, 42).box,
+          makeButton(scene, W / 2, 176, 126, 22, 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
         ];
       });
     },

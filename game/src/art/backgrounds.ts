@@ -77,21 +77,25 @@ export function buildBackground(scene: Phaser.Scene, worldW: number, groundY: nu
   const S = styleFor(realm);
   const WW = worldW;
   const LW = WW + 700;
+  const BH = Math.max(H, groundY + 120);
+  const groundH = Math.max(70, BH - groundY + 3);
   const k = (n: string): string => `${n}_${realm}_${WW}`;
 
   // flat sky bands with a thin ordered dither where they meet
+  const edge0 = Math.round(groundY * 0.32);
+  const edge1 = Math.round(groundY * 0.65);
   const band = (y: number, x: number, edge: number, a: string, b: string): string => {
     const d = (y - edge) / 7 + 0.5;
     return d <= 0 ? a : d >= 1 ? b : d > SKY_BAYER[(y % 4) * 4 + (x % 4)] / 16 ? b : a;
   };
-  pixelTexture(scene, k('par_sky'), LW, H, (x, y) => (y < (S.edges[0] + S.edges[1]) / 2 ? band(y, x, S.edges[0], S.sky[0], S.sky[1]) : band(y, x, S.edges[1], S.sky[1], S.sky[2])));
+  pixelTexture(scene, k('par_sky'), LW, BH, (x, y) => (y < (edge0 + edge1) / 2 ? band(y, x, edge0, S.sky[0], S.sky[1]) : band(y, x, edge1, S.sky[1], S.sky[2])));
   {
     const tex = scene.textures.get(k('par_sky'));
     const ctx = (tex.getSourceImage() as HTMLCanvasElement).getContext('2d')!;
     if (S.clouds) {
       ctx.fillStyle = css(C('c'));
       for (let cx = 10; cx < LW; cx += 118) {
-        const cy = 30 + hash(cx) * 90;
+        const cy = 20 + hash(cx) * (groundY * 0.35);
         ctx.fillRect(cx, cy, 28, 6);
         ctx.fillRect(cx + 8, cy - 6, 14, 6);
         ctx.fillRect(cx + 4, cy + 6, 18, 2);
@@ -100,20 +104,20 @@ export function buildBackground(scene: Phaser.Scene, worldW: number, groundY: nu
     if (S.stars) {
       for (let i = 0; i < LW / 9; i++) {
         const sx = Math.floor(hash(i) * LW);
-        const sy = Math.floor(hash(i + 99) * (S.edges[1] - 20));
+        const sy = Math.floor(hash(i + 99) * (edge1 - 20));
         ctx.fillStyle = css(C(hash(i + 5) > 0.8 ? 'b' : 'c'));
         ctx.fillRect(sx, sy, 1, 1);
       }
     }
     if (S.moon) {
-      const mx = 330;
+      const mx = Math.round(LW * 0.55);
       ctx.fillStyle = css(C('t'));
       ctx.beginPath();
-      ctx.arc(mx, 48, 15, 0, Math.PI * 2);
+      ctx.arc(mx, Math.round(groundY * 0.18), 15, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = css(C('1'));
       ctx.beginPath();
-      ctx.arc(mx + 6, 44, 13, 0, Math.PI * 2);
+      ctx.arc(mx + 6, Math.round(groundY * 0.18) - 4, 13, 0, Math.PI * 2);
       ctx.fill();
     }
     (tex as Phaser.Textures.CanvasTexture).refresh();
@@ -124,15 +128,15 @@ export function buildBackground(scene: Phaser.Scene, worldW: number, groundY: nu
   const far = ridge(110, 34, 70, 1, 23);
   const mid = ridge(70, 24, 52, 2, 17);
   const near = ridge(38, 15, 33, 4, 11);
-  pixelTexture(scene, k('par_far'), LW, H, (x, y) => {
+  pixelTexture(scene, k('par_far'), LW, BH, (x, y) => {
     const r = far(x);
     return y < r ? null : y < r + 2 ? S.far[1] : S.far[0];
   });
-  pixelTexture(scene, k('par_mid'), LW, H, (x, y) => {
+  pixelTexture(scene, k('par_mid'), LW, BH, (x, y) => {
     const r = mid(x);
     return y < r ? null : y < r + 2 ? S.mid[1] : S.mid[0];
   });
-  pixelTexture(scene, k('par_near'), LW, H, (x, y) => {
+  pixelTexture(scene, k('par_near'), LW, BH, (x, y) => {
     const r = near(x);
     if (y >= r) return y < r + 2 ? S.near[1] : S.near[0];
     const T = S.trees;
@@ -163,7 +167,7 @@ export function buildBackground(scene: Phaser.Scene, worldW: number, groundY: nu
     return null;
   });
   if (ground) {
-    pixelTexture(scene, k('ground'), LW, H - groundY + 3, (x, y) => {
+    pixelTexture(scene, k('ground'), LW, groundH, (x, y) => {
       if (y === 0) return x % 7 === 0 ? S.grass[1] : S.grass[0];
       if (y === 1) return S.grass[1];
       if (y === 2) return S.grass[2];
@@ -177,7 +181,7 @@ export function buildBackground(scene: Phaser.Scene, worldW: number, groundY: nu
     scene.add.image(-350, y, k(name)).setOrigin(0).setScrollFactor(f, 1).setDepth(depth);
   };
   scene.add.rectangle(WW / 2, -300, WW + 1400, 700, C(S.sky[0])).setDepth(-5).setScrollFactor(0.05, 1);
-  scene.add.rectangle(WW / 2, H + 300, WW + 1400, 600, C(S.dirt)).setDepth(-5);
+  scene.add.rectangle(WW / 2, groundY + groundH + 300, WW + 1400, 600, C(S.dirt)).setDepth(-5);
   layer('par_sky', 0.05, -4);
   layer('par_far', 0.25, -3);
   layer('par_mid', 0.5, -2);

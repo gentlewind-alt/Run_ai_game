@@ -11,7 +11,7 @@ Source: SDK 5.28.1 docs shipped in `game/node_modules/@series-inc/rundot-game-sd
 
 ## Screen
 - Orientation is reported at runtime (`system.getDevice().orientation`, `viewportSize`). Docs and skills push **portrait-first** (`rundot-polish-feel`). Host UI sits inside the viewport; use `system.getSafeArea()` (read after init, not at module top level).
-- Decision: **portrait, internal 216x384**, as the brief allows. Same art. Needs a phone check.
+- Decision: **landscape, internal 480x270 (16:9)** (owner decision S8-landscape). Measured high-lob apex and fort heights confirmed 480x270 framing with open sky. Full-screen Rotate Device overlay for portrait viewports.
 
 ## Features
 | Brief feature | RUN support | Plan |

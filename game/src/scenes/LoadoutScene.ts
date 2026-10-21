@@ -12,7 +12,9 @@ import { data } from '../data/load';
 import { levelDef, shortWeaponName } from '../data/lookup';
 import { makeButton, panel } from '../ui/widgets';
 
-/** Before each level: pick weapons in firing order, one artifact (two after level 8), and see your items. */
+const PAGE_SIZE = 10;
+
+/** Before each level: pick weapons in firing order, artifacts, items, and fling into battle. */
 export default class LoadoutScene extends Phaser.Scene {
   private level = 1;
   private slots: (string | null)[] = [];
@@ -21,6 +23,8 @@ export default class LoadoutScene extends Phaser.Scene {
   private equipped: string[] = [];
   private info: Phaser.GameObjects.Image[] = [];
   private goBtn?: ReturnType<typeof makeButton>;
+  private gridObjs: Phaser.GameObjects.GameObject[] = [];
+  private page = 0;
 
   constructor() {
     super('loadout');
@@ -34,42 +38,35 @@ export default class LoadoutScene extends Phaser.Scene {
     this.slotImgs = [];
     this.artifactBoxes = [];
     this.info = [];
+    this.gridObjs = [];
+    this.page = 0;
+
     const lvl = levelDef(this.level);
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
-    text(this, W / 2, 12, `Level ${this.level}: ${lvl.name}`, C('4'), 1, C('0'));
-    textBlock(this, W / 2, 26, lvl.hints?.[0] ?? '', C('d'), 200);
 
-    // owned weapons, two columns
-    const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
-    owned.forEach((w, i) => {
-      const x = 6 + (i % 2) * 105;
-      const y = 42 + Math.floor(i / 2) * 39;
-      const stroke = rarityStroke(w.rarity);
-      panel(this, x, y, 99, 36, '8', stroke, 'f', 1);
-      this.add.rectangle(x + 15, y + 18, 24, 30, C('0')).setStrokeStyle(1, C(stroke)).setDepth(2);
-      this.add.image(x + 15, y + 18, weaponTexture(w.id)).setScale(1.2).setDepth(2);
-      text(this, x + 31, y + 10, shortWeaponName(w.id, w.name), rarityColor(w.rarity)).setOrigin(0, 0.5).setDepth(2);
-      this.add.image(x + 35, y + 25, `el_${w.element}`).setDepth(2);
-      pixText(this, x + 41, y + 25, String(Math.round(w.baseDamage * upgradeMult(w.id))), C('4')).setOrigin(0, 0.5).setDepth(2);
-      text(this, x + 94, y + 25, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5).setDepth(2);
-      const hit = this.add.rectangle(x + 49, y + 18, 99, 36, 0xffffff, 0).setDepth(3).setInteractive();
-      hit.on('pointerdown', () => { sfx.unlock(); this.addToSlot(w.id); this.describe(w.id); });
-    });
+    // Divider between grid and loadout panel
+    this.add.rectangle(264, H / 2, 2, H - 20, C('0'), 0.4);
 
-    this.describe(null);
-
-    // slots
-    const n = loadoutSize();
-    const gap = Math.min(42, (W - 12) / n);
-    for (let i = 0; i < n; i++) {
-      const sx = W / 2 + (i - (n - 1) / 2) * gap;
-      const box = this.add.rectangle(sx, 252, 32, 32, C('0')).setStrokeStyle(1, C('d')).setInteractive();
-      box.on('pointerdown', () => { sfx.click(); this.slots[i] = null; this.refresh(); });
-      this.slotImgs.push(this.add.image(sx, 252, 'px').setVisible(false).setScale(2));
-      pixText(this, sx - 12, 240, String(i + 1), C('4'));
+    // Right side: Header & level info
+    text(this, 370, 12, `Level ${this.level}: ${lvl.name}`, C('4'), 1, C('0'));
+    if (lvl.hints?.[0]) {
+      textBlock(this, 370, 26, lvl.hints[0], C('d'), 196);
     }
 
-    // prefill from the last loadout (max 1 legendary), else the owned weapons in order
+    // Right side: 4 Firing Slots
+    const n = loadoutSize();
+    const gap = 44;
+    for (let i = 0; i < n; i++) {
+      const sx = 370 + (i - (n - 1) / 2) * gap;
+      const sy = 62;
+      const box = this.add.rectangle(sx, sy, 34, 34, C('0')).setStrokeStyle(1, C('d')).setInteractive();
+      box.on('pointerdown', () => { sfx.click(); this.slots[i] = null; this.refresh(); });
+      this.slotImgs.push(this.add.image(sx, sy, 'px').setVisible(false).setScale(2));
+      pixText(this, sx - 12, sy - 12, String(i + 1), C('4'));
+    }
+
+    // Prefill slots from last loadout or available owned weapons
+    const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
     const last = profile.equipped.loadout.filter((id) => owns('weapons', id));
     let hasLegendary = false;
     const sanitizedLast = last.filter((id) => {
@@ -83,31 +80,102 @@ export default class LoadoutScene extends Phaser.Scene {
     this.slots = Array.from({ length: n }, (_, i) => sanitizedLast[i] ?? null);
     for (let i = 0; i < n; i++) {
       if (this.slots[i] === null) {
-        const fallback = owned.find((ow) => ow.rarity !== 'legendary' && !this.slots.includes(ow.id)) ?? owned.find((ow) => ow.rarity !== 'legendary') ?? owned[0];
+        const fallback = owned.find((ow) => ow.rarity !== 'legendary' && !this.slots.includes(ow.id)) ??
+                         owned.find((ow) => ow.rarity !== 'legendary') ?? owned[0];
         if (fallback) this.slots[i] = fallback.id;
       }
     }
 
+    // Right side: Artifacts, Items, Buttons
     this.artifactRow();
     this.itemRow();
 
-    makeButton(this, 38, H - 16, 64, 24, 'Back', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
-    this.goBtn = makeButton(this, W - 82, H - 16, 130, 26, 'Fling!', 'go', () => this.start(), 6);
+    makeButton(this, 305, H - 20, 64, 24, 'Back', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
+    this.goBtn = makeButton(this, 415, H - 20, 110, 26, 'Fling!', 'go', () => this.start(), 6);
+
+    // Left side: Weapon Grid
+    this.renderWeaponGrid();
+    this.describe(null);
+
     this.refresh();
     irisOpen(this);
+  }
+
+  private renderWeaponGrid(): void {
+    this.gridObjs.forEach((o) => o.destroy());
+    this.gridObjs = [];
+
+    const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
+    const maxPage = Math.max(0, Math.ceil(owned.length / PAGE_SIZE) - 1);
+    this.page = Math.min(this.page, maxPage);
+    const startIdx = this.page * PAGE_SIZE;
+    const pageItems = owned.slice(startIdx, startIdx + PAGE_SIZE);
+
+    const cardW = 122;
+    const cardH = 38;
+
+    pageItems.forEach((w, idx) => {
+      const col = idx % 2;
+      const row = Math.floor(idx / 2);
+      const x = 8 + col * 128;
+      const y = 30 + row * 42;
+      const stroke = rarityStroke(w.rarity);
+      const p = panel(this, x, y, cardW, cardH, '8', stroke, 'f', 1);
+      const iconBox = this.add.rectangle(x + 15, y + 19, 24, 30, C('0')).setStrokeStyle(1, C(stroke)).setDepth(2);
+      const icon = this.add.image(x + 15, y + 19, weaponTexture(w.id)).setScale(1.2).setDepth(2);
+
+      const nameStr = shortWeaponName(w.id, w.name);
+      const nameTxt = text(this, x + 31, y + 10, nameStr, rarityColor(w.rarity)).setOrigin(0, 0.5).setDepth(2);
+      const elIcon = this.add.image(x + 35, y + 26, `el_${w.element}`).setDepth(2);
+      const dmgTxt = pixText(this, x + 42, y + 26, String(Math.round(w.baseDamage * upgradeMult(w.id))), C('4')).setOrigin(0, 0.5).setDepth(2);
+      const abTxt = text(this, x + cardW - 6, y + 26, w.ability?.label ?? '', C('b')).setOrigin(1, 0.5).setDepth(2);
+
+      const hit = this.add.rectangle(x + cardW / 2, y + cardH / 2, cardW, cardH, 0xffffff, 0).setDepth(3).setInteractive();
+      hit.on('pointerdown', () => { sfx.unlock(); this.addToSlot(w.id); this.describe(w.id); });
+
+      this.gridObjs.push(p, iconBox, icon, nameTxt, elIcon, dmgTxt, abTxt, hit);
+    });
+
+    // Pagination controls if owned > 10
+    if (owned.length > PAGE_SIZE) {
+      const py = 246;
+      if (this.page > 0) {
+        const prev = makeButton(this, 50, py, 40, 20, '<', 'plain', () => {
+          sfx.click();
+          this.page--;
+          this.renderWeaponGrid();
+        }, 5);
+        this.gridObjs.push(prev.box);
+      }
+      const pageTxt = text(this, 132, py, `${this.page + 1}/${maxPage + 1}`, C('c'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(5);
+      this.gridObjs.push(pageTxt);
+      if (this.page < maxPage) {
+        const next = makeButton(this, 214, py, 40, 20, '>', 'plain', () => {
+          sfx.click();
+          this.page++;
+          this.renderWeaponGrid();
+        }, 5);
+        this.gridObjs.push(next.box);
+      }
+    }
   }
 
   private describe(id: string | null): void {
     this.info.forEach((i) => i.destroy());
     this.info = [];
+    const infoX = 370;
     if (!id) {
-      this.info.push(text(this, W / 2, 204, 'Tap weapons to fill the slots below.', C('d'), 1, C('0')));
+      this.info.push(text(this, infoX, 106, 'Tap weapons to fill slots.', C('d'), 1, C('0')));
       return;
     }
     const w = data.content.weapons.find((x) => x.id === id)!;
-    this.info.push(text(this, W / 2, 198, w.name, C('4'), 1, C('0')));
-    this.info.push(...textBlock(this, W / 2, 210, w.launch ?? '', C('c'), 200));
-    this.info.push(...textBlock(this, W / 2, 226, w.tap ?? '', C('b'), 200));
+    this.info.push(text(this, infoX, 98, w.name, C('4'), 1, C('0')));
+    if (w.launch) {
+      this.info.push(...textBlock(this, infoX, 112, w.launch, C('c'), 196));
+    }
+    if (w.tap) {
+      this.info.push(...textBlock(this, infoX, 130, w.tap, C('b'), 196));
+    }
   }
 
   private addToSlot(id: string): void {
@@ -121,8 +189,8 @@ export default class LoadoutScene extends Phaser.Scene {
         sfx.hit(0.5);
         this.info.forEach((i) => i.destroy());
         this.info = [
-          text(this, W / 2, 198, 'Max 1 Legendary!', C('4'), 1, C('0')),
-          ...textBlock(this, W / 2, 212, 'You may only equip one Legendary weapon at a time.', C('c'), 200),
+          text(this, 370, 98, 'Max 1 Legendary!', C('4'), 1, C('0')),
+          ...textBlock(this, 370, 114, 'You may only equip one Legendary weapon at a time.', C('c'), 196),
         ];
         return;
       }
@@ -137,16 +205,16 @@ export default class LoadoutScene extends Phaser.Scene {
   private artifactRow(): void {
     const arts = data.content.artifacts.filter((a) => owns('artifacts', a.id));
     const slots = artifactSlots();
-    text(this, 6, 287, 'Artifact', C('d')).setOrigin(0, 0.5);
+    text(this, 274, 168, 'Artifact', C('d')).setOrigin(0, 0.5);
     if (arts.length === 0) {
-      text(this, 62, 287, 'None yet. The shop sells them.', C('e')).setOrigin(0, 0.5);
+      text(this, 330, 168, 'None yet (from shop)', C('e')).setOrigin(0, 0.5);
       return;
     }
     this.equipped = profile.equipped.artifacts.filter((id) => owns('artifacts', id)).slice(0, slots);
     arts.forEach((a, i) => {
-      const x = 76 + i * 23;
-      const box = this.add.rectangle(x, 287, 22, 22, C('0')).setStrokeStyle(1, C('d')).setInteractive();
-      this.add.image(x, 287, iconKey(a.id)).setDepth(2);
+      const x = 336 + i * 26;
+      const box = this.add.rectangle(x, 168, 22, 22, C('0')).setStrokeStyle(1, C('d')).setInteractive();
+      this.add.image(x, 168, iconKey(a.id)).setDepth(2);
       box.on('pointerdown', () => {
         sfx.click();
         this.equipped = this.equipped.includes(a.id) ? this.equipped.filter((x2) => x2 !== a.id) : [...this.equipped, a.id].slice(-slots);
@@ -160,20 +228,20 @@ export default class LoadoutScene extends Phaser.Scene {
   private describeArtifact(id: string): void {
     const a = data.content.artifacts.find((x) => x.id === id)!;
     this.info.forEach((i) => i.destroy());
-    this.info = [text(this, W / 2, 198, a.name, C('4'), 1, C('0')), ...textBlock(this, W / 2, 212, a.effect, C('c'), 200)];
+    this.info = [text(this, 370, 98, a.name, C('4'), 1, C('0')), ...textBlock(this, 370, 114, a.effect, C('c'), 196)];
   }
 
   private itemRow(): void {
     const items = data.content.consumables.filter((c) => consumableCount(c.id) > 0);
-    text(this, 6, 318, 'Items', C('d')).setOrigin(0, 0.5);
+    text(this, 274, 198, 'Items', C('d')).setOrigin(0, 0.5);
     if (items.length === 0) {
-      text(this, 72, 318, 'None yet. One use each per level.', C('e')).setOrigin(0, 0.5);
+      text(this, 330, 198, 'None yet (1 use each)', C('e')).setOrigin(0, 0.5);
       return;
     }
     items.forEach((c, i) => {
-      const x = 76 + i * 32;
-      this.add.image(x, 318, iconKey(c.id)).setDepth(2);
-      text(this, x + 9, 318, `x${consumableCount(c.id)}`, C('b')).setOrigin(0, 0.5);
+      const x = 336 + i * 34;
+      this.add.image(x, 198, iconKey(c.id)).setDepth(2);
+      text(this, x + 10, 198, `x${consumableCount(c.id)}`, C('b')).setOrigin(0, 0.5);
     });
   }
 

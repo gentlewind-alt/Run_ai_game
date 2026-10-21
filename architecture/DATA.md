@@ -21,7 +21,7 @@ Where does a new number go?
 
 - **IDs.** Lower snake case. Prefixes: weapons `w_`, artifacts (relics) `r_`, consumables `c_`, cosmetics `s_`. Monsters, materials and realms have no prefix. IDs from `catalogue/` keep their catalogue id. An id is never renamed once it ships, because saves reference it. Use `"enabled": false` to retire one.
 - **Units.**
-  - Distances are world px in the 216x384 portrait space; y grows downward; the ground top is `config.world.groundY` (320).
+  - Distances are world px in the 480x270 landscape space; y grows downward; the ground top is `config.world.groundY` (320).
   - Gameplay durations are **steps at 60 Hz** unless the key ends in `Seconds` or `Ms`.
   - Speeds are px per step. Angles in level files are degrees.
 - **Elements:** `physical`, `hellfire`, `radiant`, `void`. Multipliers are `damageRules.elementWeak` (1.5) and `elementResist` (0.6). A monster's or material's `weak` or `resist` may be `null`.
@@ -79,7 +79,7 @@ Minimal level:
 {
   "$schema": "../../schemas/config.schema.json",
   "version": 1,
-  "_note": "Engine and product settings. Balance numbers live in content.json. The viewport is the constant W x H (216 x 384) in src/config/constants.ts.",
+  "_note": "Engine and product settings. Balance numbers live in content.json. The viewport is the constant W x H (480 x 270) in src/config/constants.ts.",
   "levels": [1, 2, 3, 4, 99],
   "display": { "pixelArt": true, "maxParticles": 90 },
   "world": { "groundY": 320, "slingX": 56, "slingY": 262 },

@@ -1,6 +1,5 @@
 // Draws the ground profile of a level as a pixel texture: a grass lip following the surface, then layered dirt.
 import Phaser from 'phaser';
-import { H } from '../config/constants';
 import { pixelTexture, styleFor } from './backgrounds';
 
 /** `surface(x)` gives the ground height at world x. The texture covers x0..x1 and the rows from `top` down to the screen bottom. */
@@ -9,7 +8,7 @@ export function terrainTexture(
 ): void {
   const S = styleFor(realm);
   const w = Math.ceil(x1 - x0);
-  const h = Math.ceil(H - top + 4);
+  const h = Math.ceil(Math.max(120, 384 - top + 4));
   pixelTexture(scene, key, w, h, (px, py) => {
     const wx = x0 + px;
     const sy = Math.round(surface(wx)) - top;

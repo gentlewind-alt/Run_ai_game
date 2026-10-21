@@ -22,8 +22,23 @@ export const levelDef = (id: number): Level => {
 };
 
 const SHORT: Record<string, string> = {
-  w_militia_blade: 'Blade', w_iron_cleaver: 'Cleaver', w_ashwood_staff: 'Staff', w_scrapheap_scattergun: 'Scatter',
-  w_hunters_pike: 'Pike', w_hunters_boomerang: 'Boomerang', w_blast_tube: 'Blast tube', w_horned_scepter: 'Scepter',
+  w_militia_blade: 'Blade',
+  w_iron_cleaver: 'Cleaver',
+  w_ashwood_staff: 'Staff',
+  w_scrapheap_scattergun: 'Scatter',
+  w_hunters_pike: 'Pike',
+  w_hunters_boomerang: 'Boomerang',
+  w_blast_tube: 'Blast Tube',
+  w_horned_scepter: 'Scepter',
+  w_comet_fists: 'Comet Fists',
+  w_bulwark_disc: 'Bulwark Disc',
+  w_skyforge_maul: 'Skyforge Maul',
+  w_steersong_arrow: 'Steersong',
+  w_silkline_shooters: 'Silkline',
+  w_kinetic_palms: 'Kinetic Palms',
+  w_gatewright_pistol: 'Gatewright',
+  w_unmaker_scythe: 'Unmaker',
+  w_conquerors_wand: 'Conqueror',
 };
 /** Card-sized weapon names (cards are about 99 px wide). */
 export const shortWeaponName = (id: string, fallback = id): string => SHORT[id] ?? fallback;

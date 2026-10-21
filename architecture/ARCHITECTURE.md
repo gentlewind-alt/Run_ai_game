@@ -21,7 +21,7 @@ This is the shape of `game/src/`. Cards S2-01 to S2-03 moved the Stage 2 code in
 game/src/
   main.ts                    Phaser config + scene list only
   config/
-    constants.ts             W, H, STEP and other true constants (not balance)
+    constants.ts             W (480), H (270), STEP and other true constants (16:9 landscape)
     settings.ts              loads config.json, merges overrides, exposes getSettings()
   data/
     types.ts                 TS types mirroring game/schemas/*.json

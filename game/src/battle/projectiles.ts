@@ -46,7 +46,7 @@ export function spawnPellet(b: BattleState, o: PelletOpts): void {
       steps++;
       sprite.setPosition(body.position.x, body.position.y);
       slow = Math.hypot(body.velocity.x, body.velocity.y) < 0.3 ? slow + 1 : 0;
-      return slow > 30 || steps > 240 || body.position.x > b.worldW + 40 || body.position.x < -40 || body.position.y > H + 40 || body.position.y < -400;
+      return slow > 30 || steps > 240 || body.position.x > b.worldW + 40 || body.position.x < -40 || body.position.y > Math.max(H, b.groundY) + 60 || body.position.y < -400;
     },
     destroy: () => {
       b.scene.matter.world.remove(body);

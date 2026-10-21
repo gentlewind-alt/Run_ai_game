@@ -2,23 +2,76 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · claude · Landscape reviewed, deployed v1.11.0 (private)
+- `check`, `build`, `regress:quick` pass; agy reports full regress passes. Field is 480x270 (chosen by apex measurement; 384x216 clipped high lobs). Screenshots in `docs/handoff/shots/land/`. Portrait shows a rotate overlay.
+- **Open:** does the RUN host honour landscape for a game registered portrait? Owner to check on a phone. Phone text at 667x375 is about 1.4x scale, check legibility.
+
 ## 2026-10-21 · claude · Relic framework reviewed (not deployed)
 - Reviewed agy's S7 relic work: `check`, `build`, `regress:quick` (90 s) pass cleanly; rarity borders, mini-bosses (L4 Goblin Chief, L8 Dark Elf Matron), chests L3/L5/L7, Relic Market and save migration v2 delivered with screenshots in `docs/handoff/shots/relics/`. Weapons shown are placeholders until the six relic weapons land. Not deployed (stub weapons).
 - Defect: long names clip ("Steersong Arr"); folded into the landscape brief. Concurrent test runs collide (shared Chrome/Vite), run one at a time.
 - Order: landscape conversion first, then relic weapon wave 1.
 
-## 2026-10-21 · agy · S8-landscape: Convert game from portrait 216x384 to LANDSCAPE (16:9) (claimed)
-- Claimed card S8-landscape per `docs/handoff/agy_task_landscape.md`.
-- Plan:
-  1. Measure apex heights of steep shots (angle 75, power 1, all weapons incl. Blast Tube lob) and tallest forts (L5, L6, L9, L12) under candidate resolutions 384x216 vs 480x270 to select logical field size.
-  2. Record measurement table in LOG.md.
-  3. Set W and H in `game/src/config/constants.ts` and replace hardcoded 216/384 values across scenes and systems.
-  4. Update `game.config.json` and `game.config.prod.json` orientation to `"landscape"`. Test `rundot predeploy`.
-  5. Re-layout scenes for landscape: Title, Map, Loadout, Shop, Results, Pause, Credits, boss HUD bar, consumable tray, mini-hints, unlock toast.
-  6. Re-tune Battle framing & camera (`tuning.homeSlingFrac`, `tuning.homeMarginRight`, `tuning.homeZoomMin`, `tuning.homeLeft`, `groundFrac`, `zoomOutRise`), parallax/backgrounds in `art/backgrounds.ts` and terrain.
-  7. Update responsive shell in `core/responsive.ts` for landscape integer/fit scaling and full-screen styled "Rotate your device" overlay for portrait mode.
-  8. Update `tools/responsive_shots.mjs` matrix and assertions; generate landscape screenshots into `docs/handoff/shots/land/`.
-  9. Run checks, `npm run regress:quick`, `npm run regress`, update docs (`ARCHITECTURE.md`, `AGENTS.md`, `04_platform_report.md`), seal Merkle index.
+## 2026-10-21 · agy · S8-landscape: Convert game from portrait 216x384 to LANDSCAPE (16:9) (done)
+- **1. Logical field size selection & measurement:**
+  - Measured trajectory apex heights across all 14 weapons with `window.__mm` (angle 75, power 1.0) and fort heights on L5, L6, L9, L12:
+    | Weapon / Element | Sling Y | World Min Y | Apex Height Above Sling | Apex X |
+    |---|---|---|---|---|
+    | `w_militia_blade` | 262 | 184.7 | 77.3 px | 106.9 |
+    | `w_iron_cleaver` | 262 | 213.2 | 48.8 px | 90.2 |
+    | `w_ashwood_staff` | 262 | 94.5 | 167.5 px | 155.2 |
+    | `w_scrapheap_scattergun` | 262 | 184.7 | 77.3 px | 106.9 |
+    | `w_hunters_pike` | 262 | 157.1 | 104.9 px | 121.6 |
+    | `w_hunters_boomerang` | 262 | 94.4 | 167.6 px | 130.9 |
+    | `w_blast_tube` | 262 | 184.7 | 77.3 px | 106.9 |
+    | `w_horned_scepter` | 262 | 111.2 | 150.8 px | 144.7 |
+    | `w_comet_fists` | 262 | 194.7 | 67.3 px | 100.6 |
+    | `w_bulwark_disc` | 262 | 172.4 | 89.6 px | 113.2 |
+    | `w_skyforge_maul` | 262 | 216.2 | 45.8 px | 90.2 |
+    | `w_steersong_arrow` | 262 | 147.9 | 114.1 px | 125.8 |
+    | `w_silkline_shooters` | 262 | 165.2 | 96.8 px | 117.4 |
+    | `w_kinetic_palms` | 262 | 184.7 | 77.3 px | 106.9 |
+
+    | Level | Highest Fort / Monster Element | World Min Y | Height Above Ground (320) | Height Above Sling (262) |
+    |---|---|---|---|---|
+    | Level 5 | `dark_elf_archer@162` | 222.5 | 97.5 px | 39.5 px |
+    | Level 6 | `imp@251` | 201.4 | 118.6 px | 60.6 px |
+    | Level 9 | `block:wood@210` | 236.1 | 83.9 px | 25.9 px |
+    | Level 12 | `goblin_grunt@235` | 214.3 | 105.7 px | 47.7 px |
+  - Comparison of candidates (with ground in lower third / ~85% of screen height):
+    - **Candidate 384x216:** Visible world top at home framing is Y ~147 (or Y 104 even if ground touches the very bottom edge). High floaty lobs (`w_ashwood_staff` apex 94.5, `w_hunters_boomerang` apex 94.4, `w_horned_scepter` apex 111.2) clip significantly off the top by 36-53px.
+    - **Candidate 480x270:** Visible world top at home framing (with `groundFrac = 0.84`, ground at 226px) is world Y ~94. All trajectory apexes and fort tops remain fully in-frame with open sky and no clipping.
+  - **Decision:** Logical field size is **480x270** (16:9).
+- **2. Constants, platform orientation & configuration:**
+  - `game/src/config/constants.ts`: `W = 480; H = 270;` as the single source of truth.
+  - `game.config.json` and `game.config.prod.json`: updated orientation from `"portrait"` to `"landscape"`.
+  - `rundot predeploy`: 20/20 checks passed cleanly; confirmed valid landscape registration.
+  - `content.json` tuning: `homeSlingFrac: 0.16` (target 14-18%), `homeMarginRight: 40`, `homeLeft: -40`.
+  - `config.json`: `groundFrac: 0.84`, `zoomOutRise: 0.2`.
+- **3. Physics & Camera:**
+  - `game/src/battle/loop.ts` & `projectiles.ts`: fixed out-of-bounds Y check to `body.position.y > Math.max(H, b.groundY) + 60` (preventing early projectile termination above ground in landscape).
+  - `game/src/battle/camera.ts`:
+    - Fixed ground screen anchoring: `cy = b.groundY - (groundScreen - H / 2) / b.view.z` across all zoom levels.
+    - Updated `clampCx`: `maxCx = Math.max(minCx, b.worldW - half, hcx)` ensuring `homeCx` is never clamped on narrow worlds (432px).
+- **4. Scenes re-laid for 16:9 landscape:**
+  - `TitleScene.ts`: Logo and subtitle on the left, conga line dancing along ground at `y = 236`, Play/Credits buttons on right.
+  - `MapScene.ts`: 3 stacked realm panels on the left (w: 330), Daily Mash card on right (w: 124), action buttons along bottom.
+  - `LoadoutScene.ts`: 2-column weapon grid on left (card width 122), 4 firing slots, weapon info, artifacts & items on right, Fling button.
+  - `ShopScene.ts`: Top category tabs, 4-card-per-row grid (card width 110), bottom description and Buy panel.
+  - `ResultsScene.ts`: Centered win/loss panel with side-by-side action buttons; side-by-side layout for Daily (summary left, top-10 leaderboard right).
+  - `CreditsScene.ts`: Centered header, 2-column credits layout, Back button.
+  - `ui/hud.ts`: Safe area top icons, boss HP bar (width 130), ability button bottom right, consumable tray bottom left, pause panel centered.
+  - `lookup.ts`: Extended `SHORT` with all relic weapons (`Steersong`, `Boomerang`, `Comet Fists`, `Bulwark Disc`, `Skyforge Maul`, `Silkline`, `Kinetic Palms`, etc.) to prevent card clipping.
+- **5. Responsive shell & rotate overlay:**
+  - `game/index.html` & `game/src/style.css`: Added `#rotate-overlay` with Mash32 styling and animated phone rotate SVG.
+  - `game/src/core/responsive.ts`: Shows rotate overlay and auto-pauses battle when in portrait (`vpW < vpH`).
+  - `tools/responsive_shots.mjs`: Updated matrix to 8 landscape resolutions + 1 portrait resolution; captured all 26 screenshots into `docs/handoff/shots/land/`.
+- **6. Verification & Quality Gates:**
+  - `npm --prefix game run check`: 0 errors.
+  - `npm --prefix game run build`: 0 errors (Vite build successful).
+  - `npm run regress:quick`: PASSED with 0 errors.
+  - `npm run regress` (Full suite, 12 levels + 8 landscape viewports + portrait rotate overlay): ALL PASSED (exit code 0, 0 console errors, 0 uncaught exceptions, all 12 levels won in balance bands).
+- **Deployed:** Not deployed (per Golden Rule #9; waiting for owner approval). No commits made.
+
 
 
 ## 2026-10-21 · agy · S7-01..S7-03: Relic framework fix & completion (done)

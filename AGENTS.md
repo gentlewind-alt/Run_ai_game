@@ -1,6 +1,6 @@
 # AGENTS.md: start here
 
-This repo builds **MONSTER MASH: Slingshot Siege**, a 16-bit physics launcher for the RUN.world "Monster Mash" jam. It is written in Phaser 3, Vite and TypeScript, uses the RUN SDK, and runs portrait at 216x384. Entries close **Mon 2 Nov 2026, 12:00 PT**.
+This repo builds **MONSTER MASH: Slingshot Siege**, a 16-bit physics launcher for the RUN.world "Monster Mash" jam. It is written in Phaser 3, Vite and TypeScript, uses the RUN SDK, and runs landscape at 480x270. Entries close **Mon 2 Nov 2026, 12:00 PT**.
 
 Any coding agent (Claude Code, Cursor, Codex, Gemini, the RUN Game Studio AI) can pick up work here. Read the files in this order, then take a task card.
 
