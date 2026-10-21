@@ -61,6 +61,8 @@ function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y
       p.tapped = true;
       b.wpn.onImpact(b.ctx, p);
       return;
+    } else if (b.wpn.onImpact) {
+      b.wpn.onImpact(b.ctx, p);
     }
     if (p.tapped && b.wpn.onPostImpact && !p.data.postDone) {
       p.data.postDone = true;

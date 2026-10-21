@@ -97,6 +97,9 @@ export interface Mods {
   serumMult: number;
   coinMult: number; // Gambler's Charm
   previewMult: number; // Analyst Lens
+  launchSpeedMult?: number;
+  twinFraction?: number;
+  twinDelaySteps?: number;
 }
 
 export interface BattleCtx {
@@ -137,6 +140,8 @@ export interface BattleCtx {
   escape(runner: Ent): void;
   addCoins(n: number): void; // goes through the coin multiplier
   reveal(e: Ent): void; // show HP and element for this monster
+  hitStop?(frames: number): void;
+  flash?(color?: number, durMs?: number): void;
 
   // presentation
   fx: {

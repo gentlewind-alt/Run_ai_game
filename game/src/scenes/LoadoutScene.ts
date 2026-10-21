@@ -90,6 +90,7 @@ export default class LoadoutScene extends Phaser.Scene {
     // Right side: Artifacts, Items, Buttons
     this.artifactRow();
     this.itemRow();
+    this.slingRow();
 
     makeButton(this, 305, H - 20, 64, 24, 'Back', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
     this.goBtn = makeButton(this, 415, H - 20, 110, 26, 'Fling!', 'go', () => this.start(), 6);
@@ -240,11 +241,27 @@ export default class LoadoutScene extends Phaser.Scene {
     });
   }
 
+  private slingRow(): void {
+    const skin = profile.equipped.slingSkin;
+    const def = data.content.cosmetics?.find((c) => c.id === skin);
+    const name = def?.name ?? 'Standard Sling';
+    const icon = skin === 's_quicksilver' ? 'sling_quicksilver' : skin === 's_gemini' ? 'sling_gemini' : 'sling';
+    text(this, 274, 224, 'Sling', C('d')).setOrigin(0, 0.5);
+    this.add.image(320, 224, icon).setScale(0.5).setDepth(2);
+    text(this, 336, 224, name, C('4'), 1, C('0')).setOrigin(0, 0.5);
+  }
+
   private refresh(): void {
     this.slots.forEach((id, i) => {
       const img = this.slotImgs[i];
-      if (id) img.setTexture(weaponTexture(id)).setVisible(true);
-      else img.setVisible(false);
+      if (id) {
+        img.setTexture(weaponTexture(id)).setVisible(true);
+        const tex = this.textures.get(weaponTexture(id));
+        const w = tex?.getSourceImage()?.width ?? 16;
+        img.setScale(w >= 32 ? 1 : 2);
+      } else {
+        img.setVisible(false);
+      }
     });
     for (const a of this.artifactBoxes) a.box.setStrokeStyle(this.equipped.includes(a.id) ? 2 : 1, this.equipped.includes(a.id) ? C('4') : C('d'));
     this.goBtn?.setEnabled(this.slots.every((s) => s !== null));

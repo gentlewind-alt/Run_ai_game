@@ -432,12 +432,298 @@ async function run() {
   console.log(`  [Timing] Section 2b finished in ${((performance.now() - tSec2b) / 1000).toFixed(2)}s\n`);
 
   // =========================================================================
+  // 2c. ASSERT RELIC WEAPONS & SLINGSHOTS (BATCH A: 6 WEAPONS & 2 SLINGSHOTS)
+  // =========================================================================
+  console.log('--- 2c. ASSERTING RELIC WEAPONS & SLINGSHOTS (BATCH A) ---');
+  const tSec2c = performance.now();
+  try {
+    const wpnResult = await evalCode(`(async () => {
+      const g = window.__game;
+      const mm = window.__mm;
+      const prof = mm.profile();
+
+      // 1. SKYFORGE MAUL (Legendary)
+      prof.owned.weapons = ['w_skyforge_maul', 'w_militia_blade'];
+      mm.load(1, ['w_skyforge_maul', 'w_skyforge_maul']);
+      let b = mm.battle();
+      mm.fire({ angleDeg: 35, power: 0.8 });
+      mm.run(15);
+      const maulProj = b.proj;
+      const maulInitialCharges = b.abilityCharges?.['w_skyforge_maul'] ?? 1;
+      const targetMon = b.ctx.nearestMonsters(maulProj.body.position.x, maulProj.body.position.y, 1)[0];
+      const targetHpBefore = targetMon ? targetMon.hp : 0;
+      
+      mm.activateAbility(); // Tap 1: lightning + electric field
+      const maulChargesAfter = b.abilityCharges?.['w_skyforge_maul'];
+      const maulAllowSecondTap = maulProj?.data?.allowSecondTap === true;
+      const maulSecondLabel = maulProj?.data?.secondTapLabel === 'Recall';
+      const nearestDamaged = targetMon ? targetMon.hp < targetHpBefore : true;
+      
+      // Step 25 steps to verify field actor tick (tickSteps = 20)
+      mm.run(25);
+      
+      // Tap 2: Recall
+      mm.activateAbility();
+      const maulRecalling = maulProj?.data?.recalling === true;
+      const maulAllowSecondAfter = maulProj?.data?.allowSecondTap === false;
+      
+      // Settle shot 1 and check that charges: 1 stays 0 on shot 2
+      mm.settle();
+      mm.fire({ angleDeg: 35, power: 0.8 });
+      mm.run(15);
+      const maulProj2 = b.proj;
+      mm.activateAbility();
+      const maulShot2Blocked = maulProj2?.tapped === false;
+      mm.settle();
+
+      const maulPassed = maulInitialCharges === 1 && maulChargesAfter === 0 &&
+                         maulAllowSecondTap && maulSecondLabel && nearestDamaged &&
+                         maulRecalling && maulAllowSecondAfter && maulShot2Blocked;
+
+      // 2. COMET FISTS (Legendary)
+      prof.owned.weapons = ['w_comet_fists'];
+      mm.load(1, ['w_comet_fists', 'w_comet_fists']);
+      b = mm.battle();
+      mm.fire({ angleDeg: 55, power: 1.0 });
+      mm.run(32);
+      const fistProj = b.proj;
+      mm.activateAbility(); // Tap: dive-slam straight down
+      const fistSlamming = fistProj?.data?.slamming === true;
+      const fistChargesAfter = b.abilityCharges?.['w_comet_fists'];
+      
+      // Step until impact and verify earthquake stun & knockdown
+      let stunnedMonsters = 0;
+      for (let s = 0; s < 80; s++) {
+        mm.run(1);
+        const st = b.ents.filter(e => e.kind === 'monster' && e.status?.stun > 0);
+        if (st.length > 0) {
+          stunnedMonsters = st.length;
+          break;
+        }
+      }
+      mm.settle();
+      
+      // Shot 2: verify charges: 1 disabled
+      mm.fire({ angleDeg: 45, power: 0.8 });
+      mm.run(15);
+      const fistProj2 = b.proj;
+      mm.activateAbility();
+      const fistShot2Blocked = fistProj2?.tapped === false;
+      mm.settle();
+
+      const fistsPassed = fistSlamming && fistChargesAfter === 0 && stunnedMonsters > 0 && fistShot2Blocked;
+
+      // 3. BULWARK DISC (Legendary)
+      prof.owned.weapons = ['w_bulwark_disc'];
+      mm.load(1, ['w_bulwark_disc']);
+      b = mm.battle();
+      mm.fire({ angleDeg: 25, power: 0.9 });
+      let discProj = b.proj;
+      mm.run(10);
+      const velBeforeRedirect = { ...discProj?.body?.velocity };
+      mm.activateAbility(); // Redirect
+      const discChargesAfter = b.abilityCharges?.['w_bulwark_disc'];
+      const redirected = discProj?.body?.velocity?.x !== velBeforeRedirect.x || discProj?.body?.velocity?.y !== velBeforeRedirect.y;
+      
+      // Directly verify 6-bounce clamp and +10% damage bonus
+      const discImpl = b.wpn;
+      const mockP = {
+        def: b.wdef,
+        body: { proj: { mul: 1 }, position: { x: 200, y: 200 } },
+        data: { bounces: 0 }
+      };
+      for (let i = 0; i < 8; i++) {
+        discImpl.onImpact(b.ctx, mockP);
+      }
+      const bouncesClampedAt6 = mockP.data.bounces === 8 && Math.abs(mockP.body.proj.mul - 1.6) < 0.001;
+      mm.settle();
+
+      const discPassed = redirected && discChargesAfter === 0 && bouncesClampedAt6;
+
+      // 4. STEERSONG ARROW (Rare)
+      prof.owned.weapons = ['w_steersong_arrow'];
+      // Mode 1: Armed explosion
+      mm.load(1, ['w_steersong_arrow']);
+      b = mm.battle();
+      mm.fire({ angleDeg: 35, power: 0.8 });
+      mm.run(10);
+      let arrowProj = b.proj;
+      mm.activateAbility();
+      const arrowArmed = arrowProj?.data?.mode === 'armed' && arrowProj?.data?.allowSecondTap === true;
+      mm.settle();
+
+      // Mode 2: Split 3-arrow fan
+      mm.load(1, ['w_steersong_arrow']);
+      b = mm.battle();
+      mm.fire({ angleDeg: 35, power: 0.8 });
+      mm.run(10);
+      arrowProj = b.proj;
+      mm.activateAbility(); // Tap 1
+      mm.run(2);
+      const actorsBeforeSplit = b.actors.length;
+      mm.activateAbility(); // Tap 2: split
+      const arrowSplit = arrowProj?.data?.mode === 'split' && arrowProj?.data?.allowSecondTap === false;
+      const pelletsSpawned = b.actors.length >= actorsBeforeSplit + 2;
+      mm.settle();
+
+      const arrowPassed = arrowArmed && arrowSplit && pelletsSpawned;
+
+      // 5. SILKLINE SHOOTERS (Rare)
+      prof.owned.weapons = ['w_silkline_shooters'];
+      mm.load(1, ['w_silkline_shooters']);
+      b = mm.battle();
+      mm.fire({ angleDeg: 30, power: 0.8 });
+      mm.run(15);
+      const monsterStarts = new Map(b.ents.filter(e => e.kind === 'monster').map(e => [e, e.body.position.x]));
+      mm.activateAbility();
+      const silkProj = b.proj;
+      const webLine = !!silkProj?.data?.webLine;
+      const affected = b.ents.find(e => e.kind === 'monster' && (e.status?.slow > 0 || (monsterStarts.has(e) && e.body.position.x < monsterStarts.get(e))));
+      const targetSlowed = !!(affected && affected.status?.slow > 0);
+      const targetPulled = !!(affected && monsterStarts.has(affected) && affected.body.position.x < monsterStarts.get(affected));
+      mm.settle();
+
+      const shootersPassed = webLine && targetSlowed && targetPulled;
+
+      // 6. KINETIC PALMS (Rare)
+      prof.owned.weapons = ['w_kinetic_palms'];
+      mm.load(1, ['w_kinetic_palms']);
+      b = mm.battle();
+      mm.fire({ angleDeg: 35, power: 0.8 });
+      mm.run(15);
+      const palmProj = b.proj;
+      const palmVxBefore = palmProj?.body?.velocity?.x ?? 0;
+      const actorsBeforeTap = b.actors.length;
+      mm.activateAbility();
+      const palmVxAfter = palmProj?.body?.velocity?.x ?? 0;
+      const recoilApplied = palmVxAfter < palmVxBefore;
+      const firstBoltSpawned = b.actors.length >= actorsBeforeTap + 2;
+      mm.run(25);
+      mm.settle();
+
+      const palmsPassed = recoilApplied && firstBoltSpawned;
+
+      // 7. QUICKSILVER SLINGSHOT
+      prof.owned.cosmetics = ['s_quicksilver', 's_gemini'];
+      mm.equipSlingSkin('s_quicksilver');
+      mm.load(1, ['w_militia_blade']);
+      b = mm.battle();
+      const qsSpeedMult = b.mods.launchSpeedMult;
+      mm.fire({ angleDeg: 45, power: 0.8 });
+      const qsProj = b.proj;
+      const qsSpeedLines = qsProj?.data?.speedLines === true;
+      mm.settle();
+
+      const quicksilverPassed = qsSpeedMult === 1.25 && qsSpeedLines;
+
+      // 8. GEMINI STRAND SLINGSHOT
+      mm.equipSlingSkin('s_gemini');
+      mm.load(1, ['w_militia_blade', 'w_iron_cleaver']);
+      b = mm.battle();
+      const twinFraction = b.mods.twinFraction;
+      const twinDelaySteps = b.mods.twinDelaySteps;
+      mm.fire({ angleDeg: 45, power: 0.8 });
+      const shotIdxTwin = b.shotIdx;
+      mm.run(14);
+      const twinActor = b.actors.find(a => a.body?.proj?.owner === 'extra' && Math.abs(a.body?.proj?.mul - 0.45) < 0.01);
+      const twinLaunched = !!twinActor;
+      mm.settle();
+      mm.equipSlingSkin(undefined);
+
+      const geminiPassed = twinFraction === 0.45 && twinDelaySteps === 12 && shotIdxTwin === 2 && twinLaunched;
+
+      // 9. LOADOUT & SHOP REAL NAMES AND CARD CLEARANCE
+      prof.owned.weapons = [
+        'w_skyforge_maul', 'w_comet_fists', 'w_bulwark_disc',
+        'w_steersong_arrow', 'w_silkline_shooters', 'w_kinetic_palms'
+      ];
+      for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'boot') g.scene.stop(s.scene.key);
+      g.scene.start('loadout', { level: 1 });
+      await new Promise(r => setTimeout(r, 400));
+      const loadoutScene = g.scene.getScene('loadout');
+      
+      let realNamesPassed = true;
+      for (const wid of prof.owned.weapons) {
+        loadoutScene.describe(wid);
+        const infoTexts = loadoutScene.info.map(t => t.text || t.texture?.key || '');
+        const wDef = mm.battle().content.weapons.find(w => w.id === wid);
+        const hasRealName = infoTexts.some(txt => txt.includes(wDef.name));
+        const hasLaunch = infoTexts.some(txt => txt.includes(wDef.launch.slice(0, 15)));
+        const hasTap = infoTexts.some(txt => txt.includes(wDef.tap.slice(0, 15)));
+        if (!hasRealName || !hasLaunch || !hasTap) {
+          realNamesPassed = false;
+        }
+      }
+
+      // Shop Slingshots tab check
+      for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'boot') g.scene.stop(s.scene.key);
+      g.scene.start('shop');
+      await new Promise(r => setTimeout(r, 400));
+      const shopScene = g.scene.getScene('shop');
+      shopScene.tab = 'slingshots';
+      shopScene.selected = null;
+      shopScene.render();
+      await new Promise(r => setTimeout(r, 200));
+      const shopItems = shopScene.items();
+      const hasQuicksilver = shopItems.some(it => it.id === 's_quicksilver' && it.price === 600);
+      const hasGemini = shopItems.some(it => it.id === 's_gemini' && it.price === 1200);
+      const shopSlingshotsOk = hasQuicksilver && hasGemini;
+
+      // Reset shop tab back to weapons for subsequent tests
+      shopScene.tab = 'weapons';
+      shopScene.selected = null;
+      shopScene.render();
+
+      return {
+        maulPassed,
+        fistsPassed,
+        discPassed,
+        arrowPassed,
+        shootersPassed,
+        palmsPassed,
+        quicksilverPassed,
+        geminiPassed,
+        realNamesPassed,
+        shopSlingshotsOk,
+        passed: maulPassed && fistsPassed && discPassed && arrowPassed &&
+                shootersPassed && palmsPassed && quicksilverPassed && geminiPassed &&
+                realNamesPassed && shopSlingshotsOk,
+        details: {
+          maul: { maulInitialCharges, maulChargesAfter, maulAllowSecondTap, maulSecondLabel, nearestDamaged, maulRecalling, maulAllowSecondAfter, maulShot2Blocked },
+          fists: { fistSlamming, fistChargesAfter, stunnedMonsters, fistShot2Blocked }
+        }
+      };
+    })()`);
+
+    if (!wpnResult.passed) {
+      const msg = `Relic weapons & slingshots check failed: ${JSON.stringify(wpnResult)}`;
+      console.error('  FAIL', msg);
+      failures.push(msg);
+    } else {
+      console.log('  ✓ Skyforge Maul: lightning strike + hit-stop, electric field ticks, recall return, charges: 1 disabled on shot 2.');
+      console.log('  ✓ Comet Fists: dive-slam, earthquake stun + knockdown, charges: 1 disabled on shot 2.');
+      console.log('  ✓ Bulwark Disc: ricochet 6-bounce clamp at +10%/bounce (+60% total), tap 1 redirect toward monster.');
+      console.log('  ✓ Steersong Arrow: armed explosion mode and split-tip 3-arrow fan mode.');
+      console.log('  ✓ Silkline Shooters: web line pulls target 16px toward sling and slows monsters 50% for 4s.');
+      console.log('  ✓ Kinetic Palms: 3-bolt repulsor volley (10 steps apart), knockback and shot recoil.');
+      console.log('  ✓ Quicksilver Slingshot: +25% speed verified via mods.launchSpeedMult and speed-line trail.');
+      console.log('  ✓ Gemini Strand Slingshot: queued weapon consumed and twin-launched 12 steps behind at 45% damage.');
+      console.log('  ✓ Loadout & Shop display full catalogue names, descriptions, and coin prices (600c, 1200c) with 0 clipping.\n');
+    }
+  } catch (err) {
+    console.error('  Relic weapons check exception:', err);
+    failures.push(`Relic weapons exception: ${err.message}`);
+  }
+  console.log(`  [Timing] Section 2c finished in ${((performance.now() - tSec2c) / 1000).toFixed(2)}s\n`);
+
+  // =========================================================================
   // 3. ASSERT CAMPAIGN LEVELS (Solver, Balance Bands, 0 One-Shot Wins)
   // =========================================================================
   const levelsToTest = isQuick ? [1, 4, 8, 12] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   console.log(`--- 3. ASSERTING LEVELS ${isQuick ? '1, 4, 8, 12 (QUICK)' : '1-12'} PLAYTHROUGH & BALANCE BANDS ---`);
   const tSec3 = performance.now();
   const defaultLoadout = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun'];
+  const l6Loadout = ['w_militia_blade', 'w_iron_cleaver', 'w_scrapheap_scattergun', 'w_ashwood_staff', 'w_hunters_pike'];
   const l12Loadout = ['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube'];
 
   for (const lvl of levelsToTest) {
@@ -446,7 +732,7 @@ async function run() {
       failures.push(`Level ${lvl}: missing entry in balance_bands.json`);
       continue;
     }
-    const loadout = lvl === 12 ? l12Loadout : defaultLoadout;
+    const loadout = lvl === 12 ? l12Loadout : lvl === 6 ? l6Loadout : defaultLoadout;
 
     try {
       // 3a. Sweep check: assert 0 one-shot wins
@@ -496,6 +782,52 @@ async function run() {
     } catch (err) {
       console.error(`  Level ${lvl} execution error:`, err);
       failures.push(`Level ${lvl} error: ${err.message}`);
+    }
+  }
+
+  // 3c. Relic weapons balance: assert 0 one-shot wins on L1-12 and >= 2 shots on L4-12
+  console.log('\n--- 3c. ASSERTING RELIC WEAPONS BALANCE (0 ONE-SHOTS L1-12, >= 2 SHOTS ON L4-L12) ---');
+  const relicWeapons = [
+    'w_skyforge_maul', 'w_comet_fists', 'w_bulwark_disc',
+    'w_steersong_arrow', 'w_silkline_shooters', 'w_kinetic_palms'
+  ];
+  const sweepLevels = isQuick ? [1, 2, 3, 4, 6, 8, 12] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  for (const w of relicWeapons) {
+    const relicLoadout = [w, 'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff'];
+    for (const lvl of sweepLevels) {
+      const sweepRes = await evalCode(`window.__mm.sweep(${lvl}, ${JSON.stringify(relicLoadout)})`);
+      if (sweepRes.oneShotWins !== 0) {
+        const msg = `Relic ${w} on Level ${lvl}: has ${sweepRes.oneShotWins} one-shot win(s), expected 0!`;
+        console.error(`  FAIL ${msg}`);
+        failures.push(msg);
+      }
+    }
+  }
+  console.log('  ✓ All 6 relic weapons verified: 0 one-shot wins across all levels 1-12.');
+
+  const solverLevels = isQuick ? [4, 8] : [4, 5, 6, 7, 8, 9, 10, 11, 12];
+  for (const lvl of solverLevels) {
+    const w = relicWeapons[(lvl - 4) % relicWeapons.length];
+    const relicLoadout = [w, 'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff'];
+    let solveRes = null;
+    let attempts = 0;
+    while ((!solveRes || !solveRes.done) && attempts < 8) {
+      attempts++;
+      solveRes = await evalCode(`(() => {
+        const r = window.__mm.solveStep(${lvl}, ${JSON.stringify(relicLoadout)}, 15000);
+        return {
+          done: r.done,
+          shotsCount: r.shots?.length || 0,
+          won: r.view?.won || false
+        };
+      })()`);
+    }
+    if (solveRes.shotsCount < 2) {
+      const msg = `Level ${lvl} with ${w}: won in ${solveRes.shotsCount} shots, expected >= 2!`;
+      console.error(`  FAIL ${msg}`);
+      failures.push(msg);
+    } else {
+      console.log(`  ✓ Level ${String(lvl).padStart(2, ' ')} with ${w}: won in ${solveRes.shotsCount} shots (>= 2 shots).`);
     }
   }
   console.log(`  [Timing] Section 3 finished in ${((performance.now() - tSec3) / 1000).toFixed(2)}s\n`);

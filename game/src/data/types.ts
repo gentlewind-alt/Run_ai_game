@@ -110,7 +110,21 @@ export interface Economy {
 
 export interface ArtifactDef { id: string; name: string; rarity?: string; price: number; effect: string; params?: Record<string, number | string | boolean> }
 export interface ConsumableDef { id: string; name: string; price: number; effect: string; targeted?: boolean; params?: Record<string, number | string | boolean> }
-export interface CosmeticDef { id: string; name: string; kind: 'sling_skin' | 'trail' | 'banner' | 'slot'; slot?: boolean; priceCoins?: number; priceBits?: number; reward?: string }
+export interface CosmeticDef {
+  id: string;
+  name: string;
+  kind: 'sling_skin' | 'trail' | 'banner' | 'slot';
+  slot?: boolean;
+  priceCoins?: number;
+  priceBits?: number;
+  reward?: string;
+  desc?: string;
+  mods?: {
+    launchSpeedMult?: number;
+    twinFraction?: number;
+    twinDelaySteps?: number;
+  };
+}
 
 export interface Content {
   tuning: Tuning;

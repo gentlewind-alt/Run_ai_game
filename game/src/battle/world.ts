@@ -27,7 +27,9 @@ export function buildWorld(b: BattleState): void {
 export function populate(b: BattleState): void {
   const s = b.scene;
   const slingSkin = profile.equipped.slingSkin;
-  const slingTex = slingSkin && s.textures.exists(slingSkin) ? slingSkin : 'sling';
+  const skinKey = slingSkin === 's_quicksilver' ? 'sling_quicksilver' :
+                  slingSkin === 's_gemini' ? 'sling_gemini' : slingSkin;
+  const slingTex = skinKey && s.textures.exists(skinKey) ? skinKey : 'sling';
   s.add.image(b.slingX, b.slingY + 28, slingTex).setDepth(2);
   for (const blk of b.level.blocks) addBlock(b, blk.m, blk.x, blk.y, blk.w, blk.h);
   for (const c of b.level.chests ?? []) addChest(b, c);

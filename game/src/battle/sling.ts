@@ -6,10 +6,13 @@ import { beatBob, beatPulse } from '../audio/beat';
 import { weaponImpl } from '../content/weapons';
 import { weaponDef } from '../data/lookup';
 import { clampCx, homeCx, homeZoom, pointerWorld, screenDist, setView, zoomBy } from './camera';
+import { H } from '../config/constants';
+import { profile } from '../core/profile';
 import { MatterLib } from './matter';
 import { setGravity } from './projectiles';
 import { targetTap } from './consumables';
 import { groundAt } from './terrain';
+import type { Proj } from './BattleCtx';
 import type { BattleState } from './state';
 
 export function setWeapon(b: BattleState, id: string): void {
@@ -98,14 +101,18 @@ export function updateQueue(b: BattleState, time: number): void {
 
 export function activateAbility(b: BattleState): void {
   const mode = b.wdef.ability.mode;
-  if (b.state !== 'flying' || !b.proj || b.proj.tapped || mode === 'impact' || mode === 'none') return;
+  if (b.state !== 'flying' || !b.proj || mode === 'impact' || mode === 'none') return;
+  const p = b.proj;
+  if (p.tapped && !p.data.allowSecondTap) return;
+
   if (b.wdef.ability.charges !== undefined) {
     b.abilityCharges = b.abilityCharges ?? {};
-    const cur = b.abilityCharges[b.wdef.id] ?? b.wdef.ability.charges;
-    if (cur <= 0) return;
-    b.abilityCharges[b.wdef.id] = cur - 1;
+    if (!p.tapped) {
+      const cur = b.abilityCharges[b.wdef.id] ?? b.wdef.ability.charges;
+      if (cur <= 0) return;
+      b.abilityCharges[b.wdef.id] = cur - 1;
+    }
   }
-  const p = b.proj;
   p.tapped = true;
   const { x, y } = p.body.position;
   b.wpn.onAbility?.(b.ctx, p);
@@ -114,13 +121,20 @@ export function activateAbility(b: BattleState): void {
 
 export function updateAbilityBtn(b: BattleState, time: number): void {
   const inAir = b.state === 'flying' && !!b.proj && b.wdef.ability.mode !== 'impact' && b.wdef.ability.mode !== 'none';
+  const p = b.proj;
+  const canTap = inAir && (!p!.tapped || !!p!.data.allowSecondTap);
+  if (p && p.data.secondTapLabel && p.data.allowSecondTap) {
+    b.ui.setAbilityLabel(p.data.secondTapLabel);
+  } else if (b.wdef) {
+    b.ui.setAbilityLabel(b.wdef.ability.label);
+  }
   if (b.wdef.ability.charges !== undefined) {
     b.abilityCharges = b.abilityCharges ?? {};
     const left = b.abilityCharges[b.wdef.id] ?? b.wdef.ability.charges;
-    const ready = inAir && !b.proj!.tapped && left > 0;
+    const ready = canTap && (!!p!.data.allowSecondTap || left > 0);
     b.ui.showAbility(inAir, ready, ready ? 1 + 0.07 * beatPulse(time) : 1, { left, max: b.wdef.ability.charges });
   } else {
-    const ready = inAir && !b.proj!.tapped;
+    const ready = canTap;
     b.ui.showAbility(inAir, ready, ready ? 1 + 0.07 * beatPulse(time) : 1);
   }
 }
@@ -214,15 +228,19 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   const id = b.loadout[b.shotIdx];
   setWeapon(b, id);
   const phys = b.wdef.physics;
+  const speedMult = b.mods.launchSpeedMult ?? 1;
+  const actualVel = vel.clone().scale(speedMult);
   const body: any = b.scene.matter.add.circle(b.pouch.x, b.pouch.y, phys.radius, {
     density: phys.density, friction: phys.friction ?? 0.3, frictionAir: phys.frictionAir ?? 0, restitution: phys.restitution ?? 0.2, label: 'proj',
   });
   body.proj = { wid: id, mul: 1, owner: 'main' };
   setGravity(body, phys.gravity ?? 1);
-  MatterLib.Body.setVelocity(body, { x: vel.x, y: vel.y });
+  MatterLib.Body.setVelocity(body, { x: actualVel.x, y: actualVel.y });
   MatterLib.Body.setAngularVelocity(body, phys.spin);
   const sprite = b.scene.add.image(b.pouch.x, b.pouch.y, b.wpn.texture).setDepth(4);
-  b.proj = { body, sprite, wid: id, def: b.wdef, steps: 0, slow: 0, tapped: false, t: 0, data: {} };
+  const pData: Record<string, any> = {};
+  if (speedMult > 1) pData.speedLines = true;
+  b.proj = { body, sprite, wid: id, def: b.wdef, steps: 0, slow: 0, tapped: false, t: 0, data: pData };
   // Prime Serum: this shot is buffed if any charges are left
   const buffed = b.mods.serumShots > 0;
   if (buffed) b.mods.serumShots--;
@@ -230,13 +248,73 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   b.readySprite.setVisible(false);
   b.pouch.set(b.slingX, b.slingY);
   b.shotIdx++;
+
+  // Gemini Strand twin launch (launches 12 steps behind at 45% damage along same aim)
+  const twinFrac = b.mods.twinFraction;
+  const twinDelay = b.mods.twinDelaySteps ?? 12;
+  if (twinFrac !== undefined && b.shotIdx < b.loadout.length) {
+    const twinId = b.loadout[b.shotIdx];
+    const twinWdef = weaponDef(twinId);
+    const twinWpn = weaponImpl(twinWdef);
+    b.shotIdx++;
+    const twinQ = b.queue.shift();
+    twinQ?.destroy();
+    let delay = twinDelay;
+    const launchPos = { x: b.slingX, y: b.slingY };
+    const twinVel = actualVel.clone();
+    b.actors.push({
+      update() {
+        delay--;
+        if (delay === 0) {
+          const tPhys = twinWdef.physics;
+          const tBody: any = b.scene.matter.add.circle(launchPos.x, launchPos.y, tPhys.radius, {
+            density: tPhys.density, friction: tPhys.friction ?? 0.3, frictionAir: tPhys.frictionAir ?? 0,
+            restitution: tPhys.restitution ?? 0.2, label: 'proj',
+          });
+          tBody.proj = { wid: twinId, mul: twinFrac, owner: 'extra' };
+          setGravity(tBody, tPhys.gravity ?? 1);
+          MatterLib.Body.setVelocity(tBody, { x: twinVel.x, y: twinVel.y });
+          MatterLib.Body.setAngularVelocity(tBody, tPhys.spin);
+          const tSprite = b.scene.add.image(launchPos.x, launchPos.y, twinWpn.texture).setDepth(4);
+          const tProj: Proj = { body: tBody, sprite: tSprite, wid: twinId, def: twinWdef, steps: 0, slow: 0, tapped: false, t: 0, data: {} };
+          sfx.launch();
+          twinWpn.onLaunch?.(b.ctx, tProj);
+          let tSlow = 0;
+          let tSteps = 0;
+          b.actors.push({
+            body: tBody,
+            pos: () => tBody.position,
+            update() {
+              tSteps++;
+              tSprite.setPosition(tBody.position.x, tBody.position.y);
+              tSprite.setRotation(tBody.angle);
+              twinWpn.onUpdate?.(b.ctx, tProj);
+              const sp = Math.hypot(tBody.velocity.x, tBody.velocity.y);
+              tSlow = sp < 0.3 ? tSlow + 1 : 0;
+              const F = b.tune.flow;
+              const out = tBody.position.x > b.worldW + 40 || tBody.position.x < -40 || tBody.position.y > Math.max(H, b.groundY) + 60;
+              return out || tSlow > F.projectileSlowSteps || tSteps > F.projectileMaxSteps;
+            },
+            destroy() {
+              b.scene.matter.world.remove(tBody);
+              tSprite.destroy();
+            },
+          });
+          return true;
+        }
+        return false;
+      },
+      destroy() {},
+    });
+  }
+
   b.view.free = false;
   b.state = 'flying';
   b.scene.cameras.main.shake(70, 0.004);
   sfx.launch();
   b.wpn.onLaunch?.(b.ctx, b.proj);
   b.events.emit('shot:launched', {
-    weaponId: id, index: b.shotIdx - 1, x: body.position.x, y: body.position.y, vx: vel.x, vy: vel.y, radius: phys.radius,
+    weaponId: id, index: b.shotIdx - 1, x: body.position.x, y: body.position.y, vx: actualVel.x, vy: actualVel.y, radius: phys.radius,
     density: phys.density, gravity: phys.gravity ?? 1,
   });
 }
@@ -249,18 +327,25 @@ export function drawOverlay(b: BattleState): void {
   const aiming = b.state === 'aiming';
   const pos = aiming ? b.pouch : new Phaser.Math.Vector2(b.slingX, b.slingY);
 
+  const skin = profile.equipped?.slingSkin;
+  const bandColor = skin === 's_quicksilver' ? C('b') : skin === 's_gemini' ? C('4') : C('2');
+
   if (b.readySprite.visible || aiming) {
     g.lineStyle(3, C('0'), 1);
     g.lineBetween(b.slingX - 7, b.slingY + 6, pos.x, pos.y);
     g.lineBetween(b.slingX + 6, b.slingY + 6, pos.x, pos.y);
-    g.lineStyle(1, C('2'), 1);
+    g.lineStyle(1, bandColor, 1);
     g.lineBetween(b.slingX - 7, b.slingY + 6, pos.x, pos.y);
     g.lineBetween(b.slingX + 6, b.slingY + 6, pos.x, pos.y);
   }
   if (b.state === 'ready' || aiming) {
     b.readySprite.setPosition(pos.x, pos.y);
+    if (b.mods.twinFraction && b.shotIdx < b.loadout.length) {
+      g.fillStyle(C('4'), 1).fillRect(pos.x - 8, pos.y - 6, 4, 4);
+    }
     if (aiming) {
-      const v = new Phaser.Math.Vector2(b.slingX - pos.x, b.slingY - pos.y).scale(b.tune.launchK);
+      const speedMult = b.mods.launchSpeedMult ?? 1;
+      const v = new Phaser.Math.Vector2(b.slingX - pos.x, b.slingY - pos.y).scale(b.tune.launchK * speedMult);
       b.readySprite.setRotation(Math.atan2(v.y, v.x) + Math.PI / 2);
       let x = pos.x;
       let y = pos.y;
@@ -278,7 +363,21 @@ export function drawOverlay(b: BattleState): void {
       }
     }
   }
-  if (b.proj) b.wpn.drawFx?.(b.ctx, b.proj, g);
+  if (b.proj) {
+    b.wpn.drawFx?.(b.ctx, b.proj, g);
+    if (b.proj.data?.speedLines) {
+      const v = b.proj.body.velocity;
+      const bp = b.proj.body.position;
+      const sp = Math.hypot(v.x, v.y);
+      if (sp > 1) {
+        const nx = v.x / sp;
+        const ny = v.y / sp;
+        g.lineStyle(1, C('c'), 0.8).lineBetween(bp.x - nx * 14, bp.y - ny * 14, bp.x - nx * 4, bp.y - ny * 4);
+        g.lineStyle(1, C('b'), 0.6).lineBetween(bp.x - nx * 20 - ny * 3, bp.y - ny * 20 + nx * 3, bp.x - nx * 8 - ny * 3, bp.y - ny * 8 + nx * 3);
+        g.lineStyle(1, C('b'), 0.6).lineBetween(bp.x - nx * 20 + ny * 3, bp.y - ny * 20 - nx * 3, bp.x - nx * 8 + ny * 3, bp.y - ny * 8 - nx * 3);
+      }
+    }
+  }
   for (const e of b.ents) {
     if (!e.revealed || e.dead || e.kind !== 'monster') continue;
     const x = e.body.position.x - 7;

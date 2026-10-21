@@ -53,6 +53,10 @@ export function makeCtx(b: BattleState): BattleCtx {
       e.revealed = true;
       if (e.weak && !e.icon) e.icon = b.scene.add.image(e.body.position.x, e.body.position.y, `el_${e.weak}`).setDepth(8);
     },
+    hitStop: (frames) => { b.hitStop = frames; },
+    flash: (color = 0xffffff, durMs = 80) => {
+      b.scene.cameras.main.flash(durMs, (color >> 16) & 255, (color >> 8) & 255, color & 255);
+    },
 
     fx: {
       ring: (x, y, r, color) => ring(b, x, y, r, color),

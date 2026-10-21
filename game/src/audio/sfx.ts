@@ -72,6 +72,32 @@ class Sfx {
   win(): void { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, 0.16, 'square', 0.14, undefined, i * 0.1)); }
   lose(): void { [392, 330, 262].forEach((f, i) => this.tone(f, 0.22, 'square', 0.14, undefined, i * 0.16)); }
   click(): void { this.tone(660, 0.05, 'square', 0.1); }
+  thunder(): void {
+    this.noise(0.08, 0.35, 4200);
+    this.tone(780, 0.06, 'sawtooth', 0.22, 140);
+    this.tone(110, 0.85, 'sine', 0.38, 35, 0.03);
+    this.noise(0.95, 0.32, 380);
+  }
+  quake(): void {
+    this.tone(75, 0.65, 'triangle', 0.35, 28);
+    this.noise(0.55, 0.28, 160);
+  }
+  ping(): void {
+    this.tone(2150, 0.12, 'sine', 0.25, 2600);
+    this.tone(3300, 0.08, 'triangle', 0.18);
+  }
+  thwip(): void {
+    this.tone(950, 0.09, 'sawtooth', 0.2, 320);
+    this.noise(0.07, 0.15, 2200);
+  }
+  repulsor(): void {
+    this.tone(520, 0.11, 'sine', 0.22, 1280);
+    this.tone(260, 0.09, 'square', 0.1, 740);
+  }
+  twang(): void {
+    this.tone(480, 0.15, 'triangle', 0.22, 210);
+    this.tone(240, 0.12, 'sawtooth', 0.12, 120);
+  }
 }
 
 export const sfx = new Sfx();

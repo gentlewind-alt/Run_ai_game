@@ -5,7 +5,7 @@ import { activateAbility, launchFrom, skipToReady } from '../battle/sling';
 import { homeCx, homeZoom, toggleView } from '../battle/camera';
 import { pressConsumable, targetTap } from '../battle/consumables';
 import type { BattleState } from '../battle/state';
-import { addCoins, applyDebug, profile, recordDailyResult, setLoadout, buyWeapon, recordResult } from '../core/profile';
+import { addCoins, applyDebug, profile, recordDailyResult, setLoadout, buyWeapon, recordResult, equipSlingSkin } from '../core/profile';
 import { sanitize, loadSave } from '../core/save';
 import { generateDailyLevel, getDailySeed } from '../content/levelKinds/daily';
 import { platform } from '../platform';
@@ -34,6 +34,7 @@ export function installTestHook(game: Phaser.Game): void {
   /** Starts a level with a fixed loadout and skips straight to the first shot. Equipped artifacts come from the profile. */
   const load = (levelId: number, loadout?: string[]): BattleView => {
     for (const s of game.scene.getScenes(true)) if (s.scene.key !== 'boot') game.scene.stop(s.scene.key);
+    game.scene.resume('game');
     game.scene.start('game', { level: levelId, loadout: loadout ?? Array.from({ length: 4 }, () => 'w_militia_blade') });
     tick(4);
     battleScene().skipToReady();
@@ -155,6 +156,8 @@ export function installTestHook(game: Phaser.Game): void {
 
   (window as any).__mm = {
     load, fire, run: tick, settle, set, give, play, sweep, solveStep,
+    activateAbility: () => activateAbility(battle()),
+    equipSlingSkin: (id?: string) => equipSlingSkin(id),
     state: () => snapshot(battle()),
     profile: () => profile,
     battle: () => battle(),

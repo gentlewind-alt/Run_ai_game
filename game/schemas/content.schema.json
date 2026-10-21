@@ -243,7 +243,17 @@
         "slot": { "type": "boolean", "description": "True if cosmetic grants an extra weapon slot." },
         "priceCoins": { "type": "number", "minimum": 0 },
         "priceBits": { "type": "number", "minimum": 0, "description": "RUN Bits price; needs the iap feature and a shop.config.json entry." },
-        "reward": { "type": "string", "description": "e.g. 'daily_streak_7'." }
+        "reward": { "type": "string", "description": "e.g. 'daily_streak_7'." },
+        "desc": { "type": "string" },
+        "mods": {
+          "type": "object",
+          "properties": {
+            "launchSpeedMult": { "type": "number", "minimum": 0 },
+            "twinFraction": { "type": "number", "minimum": 0 },
+            "twinDelaySteps": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": false
+        }
       }
     }
   }

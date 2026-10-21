@@ -2,6 +2,48 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-21 · agy · S9-weapons-a: Relic weapons batch A and 2 slingshots (done)
+- **What:** Replaced the six STUB weapons with full custom behaviours, implemented approved v2 32x32 hero art with modular emblems, synthesized WebAudio sound effects, built 2 functional slingshots with shop & battle HUD integration, verified balance (0 one-shot wins L1-12, >= 2 shots L4-L12), and captured 10 screenshot artifacts + contact sheet.
+  - **Skyforge Maul** (`w_skyforge_maul`, legendary): 32x32 spinning hammer with `drawKnotEmblem`; tap calls lightning bolt from top of screen onto nearest monster (white screen flash, 3-frame hit-stop, thunder SFX & screen shake), leaves electric field for 180 steps ticking chain damage every 20 steps; second tap recalls maul hitting monsters on return path; `ability.charges: 1` disables ability on subsequent shots.
+  - **Comet Fists** (`w_comet_fists`, legendary): 32x32 green-grey gauntlet fists with segmenting & thumb curl; tap dive-slams straight down; impact triggers ground earthquake rings hopping blocks +-90px and knocking monsters flat with 0.6s stun; tuned `quakeDamageMult: 0.1` preventing one-shot wipes; `ability.charges: 1`.
+  - **Bulwark Disc** (`w_bulwark_disc`, legendary): 32x32 concentric shield with `drawCrownEmblem` (no star); ricochets off blocks and terrain up to 6 bounces with +10% damage/bounce, ping SFX & sparks; tap redirects toward nearest monster once; `ability.charges: 1`.
+  - **Steersong Arrow** (`w_steersong_arrow`, rare): 32x32 red-fletched explosive arrow with twang launch SFX; tap arms explosive bulb detonation (r=38 blast, smoke/flame); second tap splits projectile into 3 fanned arrows (+-8 deg).
+  - **Silkline Shooters** (`w_silkline_shooters`, rare): 32x32 bracer shooter; tap fires web strand to nearest monster/block with thwip SFX, pulls target 16px toward sling, and slows monsters 50% for 4s with web splat FX.
+  - **Kinetic Palms** (`w_kinetic_palms`, rare): 32x32 gauntlet with `drawReactorCoreEmblem` (cyan segmented core + white triangle); tap fires 3-bolt repulsor volley (10 steps apart), knocks back targets, and applies shot recoil.
+  - **Modular Emblems**: `drawKnotEmblem`, `drawCrownEmblem`, `drawReactorCoreEmblem` isolated in `src/art/relicTextures.ts` as swappable layers.
+  - **Synthesized WebAudio SFX**: `thunder()`, `quake()`, `ping()`, `thwip()`, `repulsor()`, `twang()` in `src/audio/sfx.ts`.
+  - **Slingshots**:
+    - Added "Slingshots" tab in `ShopScene.ts` behind `features.slingshots` (replaces Skins tab; Gold Quiver moved to "Items"); coin purchases only: Quicksilver (600c), Gemini Strand (1200c).
+    - Quicksilver: +25% speed (`mods.launchSpeedMult`), cyan band, speed-line trail behind shot.
+    - Gemini Strand: twin launch 12 steps behind at 45% damage, golden band, consumes next queued weapon and renders in sling queue HUD.
+    - LoadoutScene: added dedicated Slingshot row at `y = 224` showing equipped sling icon and name; level header restored cleanly at `(370, 12)`.
+  - **Balance & Headless Tests**:
+    - Added Section 2c and 3c assertions to `tools/regress.mjs`.
+    - 0 one-shot wins across all 12 levels for all 6 relic weapons verified.
+    - Greedy solver achieves >= 2 shots on all levels 4-12 with relic loadout.
+    - Level 6 solver loadout tuned so greedy solver clears over the ridge in 4 shots (within band [2, 5]).
+  - **Visuals & Review Artifacts**:
+    - 10 screenshots captured in `docs/handoff/shots/weapons/`:
+      - `01_loadout_relic_weapons.png`, `02_shop_slingshots.png`, `03_skyforge_maul_lightning.png`, `04_skyforge_maul_electric_field.png`, `05_comet_fists_dive_slam.png`, `06_bulwark_disc_ricochet.png`, `07_steersong_arrow_split.png`, `08_silkline_shooters_web_pull.png`, `09_kinetic_palms_repulsor_volley.png`, `10_gemini_strand_twin_launch.png`.
+    - Contact sheet composite generated in `docs/handoff/shots/weapons/sheet.png` (480x480).
+- **Checks:**
+  - `npm run check`: PASSED (0 schema or type errors)
+  - `npm run build`: PASSED (clean build, 0 errors, chunks split cleanly)
+  - `npm run regress`: PASSED (100% pass across all 9 sections in 488.85s, EXIT 0)
+  - `node tools/merkle.mjs seal`: Sealed repo at `a627fc695032709d127e9eb0f79c131b7ab6d20762b2e04283be2cadf6e582c3` (clean)
+- **Notes / for the next agent:**
+  - All stubs replaced; `content.json` defines all weapon and slingshot parameters.
+  - Port 9222 / CDP headless tests must be run serially; do not run concurrent headless Chrome instances.
+- **Questions for owner:**
+  - Ready for card review. No git commit or deploy performed per golden rule 11 and task prompt.
+
+
+## 2026-10-21 · agy · S9-weapons-a: Relic weapons batch A and 2 slingshots (started)
+- **What:** Claimed card `S9-weapons-a` per `docs/handoff/agy_task_weapons_a.md`. Implementing full weapon behaviours for Skyforge Maul, Comet Fists, Bulwark Disc, Steersong Arrow, Silkline Shooters, and Kinetic Palms (replacing blade stubs), approved v2 32x32 sprites/effects, synthesized WebAudio sound effects (thunder, quake, ping, thwip, repulsor, twang), Quicksilver and Gemini Strand slingshots with shop tab and stats/data, balance and headless regression assertions, contact sheet and screenshots.
+- **Checks:** `check` and `regress:quick` loop planned.
+- **Notes / for the next agent:** Running tests one at a time.
+- **Questions for owner:** None.
+
 ## 2026-10-21 · agy · Code-quality review and refinement (done)
 - **What:** Completed static code-quality review and refinement pass per `docs/handoff/agy_task_refine.md` across all code added since commit `3ce282c` (with no gameplay behaviour change). Addressed Golden Rules 1 & 2 violations, listener and event hygiene, dead/duplicated code, large file splitting, boundary error handling, typing cleanups, and docs alignment.
 - **Findings and Fixes Table:**

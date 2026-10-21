@@ -343,19 +343,21 @@
       "archetype": "fists",
       "element": "physical",
       "rarity": "legendary",
-      "baseDamage": 30,
+      "baseDamage": 38,
       "unlock": {
         "boss": "goblin_chief",
         "level": 4
       },
       "price": 1500,
-      "launch": "Heavy flaming fists with blazing comet trails.",
-      "tap": "Comet strike: explosive impact upon activation.",
+      "launch": "Two heavy gauntlets hurled in tandem.",
+      "tap": "Dive-slam down causing an earthquake wave.",
       "physics": {
         "radius": 5,
-        "density": 0.04,
-        "spin": 0.3,
-        "gravity": 1.1
+        "density": 0.015,
+        "spin": 0.05,
+        "gravity": 1.1,
+        "friction": 0.7,
+        "frictionAir": 0.008
       },
       "ability": {
         "mode": "button",
@@ -363,28 +365,35 @@
         "charges": 1
       },
       "params": {
-        "behavior": "w_militia_blade"
+        "slamSpeed": 9,
+        "quakeRangeX": 90,
+        "quakeHopVy": 0,
+        "quakeDamageMult": 0.1,
+        "quakeStunSteps": 36
       }
     },
     {
       "id": "w_bulwark_disc",
       "name": "Bulwark Disc",
-      "archetype": "disc",
-      "element": "radiant",
+      "archetype": "shield",
+      "element": "physical",
       "rarity": "legendary",
-      "baseDamage": 28,
+      "baseDamage": 38,
       "unlock": {
         "boss": "dark_elf_matron",
         "level": 8
       },
       "price": 1500,
-      "launch": "Spinning radiant bulwark disc that carves through lines.",
-      "tap": "Bulwark burst: radiant wave on command.",
+      "launch": "Concentric rune shield that ricochets with escalating force.",
+      "tap": "Redirects once toward the nearest monster.",
       "physics": {
-        "radius": 5,
-        "density": 0.035,
-        "spin": 0.35,
-        "gravity": 0.9
+        "radius": 4,
+        "density": 0.012,
+        "spin": 0.4,
+        "gravity": 0.9,
+        "restitution": 0.6,
+        "friction": 0.3,
+        "frictionAir": 0.01
       },
       "ability": {
         "mode": "button",
@@ -392,28 +401,32 @@
         "charges": 1
       },
       "params": {
-        "behavior": "w_militia_blade"
+        "maxBounces": 6,
+        "bounceDamageBonus": 0.1,
+        "redirectSpeed": 7
       }
     },
     {
       "id": "w_skyforge_maul",
       "name": "Skyforge Maul",
       "archetype": "hammer",
-      "element": "hellfire",
+      "element": "radiant",
       "rarity": "legendary",
-      "baseDamage": 36,
+      "baseDamage": 38,
       "unlock": {
         "boss": "iron_warlord",
         "level": 12
       },
       "price": 1500,
-      "launch": "Colossal forged maul with crushing downward weight.",
-      "tap": "Skyforge slam: seismic shockwave.",
+      "launch": "Spinning hammer that smashes through fortresses.",
+      "tap": "Calls lightning and an electric field. Tap again to recall.",
       "physics": {
-        "radius": 6,
-        "density": 0.06,
-        "spin": 0.1,
-        "gravity": 1.4
+        "radius": 5,
+        "density": 0.015,
+        "spin": 0.35,
+        "gravity": 1.1,
+        "friction": 0.7,
+        "frictionAir": 0.008
       },
       "ability": {
         "mode": "button",
@@ -421,92 +434,110 @@
         "charges": 1
       },
       "params": {
-        "behavior": "w_militia_blade"
+        "boltHitStop": 3,
+        "boltDamageMult": 0.6,
+        "fieldSteps": 180,
+        "fieldRadius": 14,
+        "fieldTickSteps": 20,
+        "fieldTickMult": 0.04,
+        "recallSpeed": 10,
+        "recallDamageMult": 0.3
       }
     },
     {
       "id": "w_steersong_arrow",
       "name": "Steersong Arrow",
       "archetype": "bow",
-      "element": "radiant",
+      "element": "hellfire",
       "rarity": "rare",
-      "baseDamage": 22,
+      "baseDamage": 24,
       "unlock": {
         "chest": "c_l3",
         "level": 3
       },
-      "price": 600,
-      "launch": "Slender singing arrow that soars with low drag.",
-      "tap": "Steersong grace: precision thrust.",
+      "price": 800,
+      "launch": "Red-fletched projectile flying point-first.",
+      "tap": "Arms explosive tip. Tap again before impact to split into 3.",
       "physics": {
-        "radius": 3,
-        "density": 0.02,
+        "radius": 4,
+        "density": 0.012,
         "spin": 0,
-        "gravity": 0.75,
+        "gravity": 0.8,
         "align": true
       },
       "ability": {
         "mode": "button",
-        "label": "Steer"
+        "label": "Arm"
       },
       "params": {
-        "behavior": "w_militia_blade"
+        "blastRadius": 24,
+        "blastMult": 0.85,
+        "splitAngleDeg": 8,
+        "splitMult": 0.7
       }
     },
     {
       "id": "w_silkline_shooters",
       "name": "Silkline Shooters",
       "archetype": "crossbow",
-      "element": "void",
+      "element": "physical",
       "rarity": "rare",
       "baseDamage": 24,
       "unlock": {
         "chest": "c_l5",
         "level": 5
       },
-      "price": 600,
-      "launch": "Dual silk-bound darts that pierce air with eerie calm.",
-      "tap": "Silkline snip: rapid cutting pass.",
+      "price": 800,
+      "launch": "Wrist-mounted launcher firing concentrated web strands.",
+      "tap": "Web line pulls target 16px and slows monsters 50% for 4s.",
       "physics": {
-        "radius": 4,
-        "density": 0.025,
-        "spin": 0.15,
-        "gravity": 0.85
+        "radius": 5,
+        "density": 0.02,
+        "spin": 0.1,
+        "gravity": 0.95
       },
       "ability": {
         "mode": "button",
         "label": "Silk"
       },
       "params": {
-        "behavior": "w_militia_blade"
+        "pullDist": 16,
+        "slowSteps": 240,
+        "slowFactor": 0.5
       }
     },
     {
       "id": "w_kinetic_palms",
       "name": "Kinetic Palms",
       "archetype": "gauntlet",
-      "element": "physical",
+      "element": "radiant",
       "rarity": "rare",
-      "baseDamage": 20,
+      "baseDamage": 26,
       "unlock": {
         "chest": "c_l7",
         "level": 7
       },
-      "price": 600,
-      "launch": "Kinetic discharge that transfers momentum on contact.",
-      "tap": "Kinetic pulse: shockwave dispersal.",
+      "price": 800,
+      "launch": "Cyan-charged palm emitters with internal kinetic coils.",
+      "tap": "Fires a 3-bolt repulsor volley with knockback and shot recoil.",
       "physics": {
         "radius": 4,
-        "density": 0.03,
-        "spin": 0.25,
+        "density": 0.015,
+        "spin": 0.2,
         "gravity": 1.0
       },
       "ability": {
         "mode": "button",
-        "label": "Kinetc"
+        "label": "Volley"
       },
       "params": {
-        "behavior": "w_militia_blade"
+        "volleyCount": 3,
+        "volleyDelaySteps": 10,
+        "boltSpeed": 10,
+        "boltMult": 0.4,
+        "knockback": 1.8,
+        "recoilVx": -1.5,
+        "recoilVy": -0.6
       }
     }
   ],
@@ -928,21 +959,44 @@
       "name": "Gold Quiver",
       "kind": "slot",
       "slot": true,
-      "priceCoins": 0,
+      "priceCoins": 500,
       "priceBits": 0
+    },
+    {
+      "id": "s_quicksilver",
+      "name": "Quicksilver",
+      "kind": "sling_skin",
+      "priceCoins": 600,
+      "priceBits": 0,
+      "desc": "+25% launch speed and a flatter arc with speed lines.",
+      "mods": {
+        "launchSpeedMult": 1.25
+      }
+    },
+    {
+      "id": "s_gemini",
+      "name": "Gemini Strand",
+      "kind": "sling_skin",
+      "priceCoins": 1200,
+      "priceBits": 0,
+      "desc": "Next queued weapon launches 12 steps behind at 45% damage.",
+      "mods": {
+        "twinFraction": 0.45,
+        "twinDelaySteps": 12
+      }
     },
     {
       "id": "s_skin_bone",
       "name": "Bone Sling",
       "kind": "sling_skin",
-      "priceCoins": 0,
+      "priceCoins": 300,
       "priceBits": 0
     },
     {
       "id": "s_skin_iron",
       "name": "Iron Ballista",
       "kind": "sling_skin",
-      "priceCoins": 0,
+      "priceCoins": 400,
       "priceBits": 0
     }
   ],

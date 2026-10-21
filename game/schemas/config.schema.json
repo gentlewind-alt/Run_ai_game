@@ -77,7 +77,8 @@
         "tutorial": { "type": "boolean" },
         "music": { "type": "boolean" },
         "zoom": { "type": "boolean" },
-        "relics": { "type": "boolean" }
+        "relics": { "type": "boolean" },
+        "slingshots": { "type": "boolean" }
       }
     },
     "debug": {

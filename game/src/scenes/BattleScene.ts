@@ -34,6 +34,7 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.scene.resume();
     events.beginBattle();
     const b = (this.b = createBattle(this, this.levelId, this.loadout));
     buildBattle(b);

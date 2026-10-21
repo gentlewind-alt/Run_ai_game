@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import { W } from '../config/constants';
 import { levelSettings } from '../config/settings';
 import { events } from '../core/events';
+import { profile } from '../core/profile';
 import { createRng } from '../core/rng';
 import { data } from '../data/load';
 import { levelDef } from '../data/lookup';
@@ -23,12 +24,17 @@ const noUi: BattleUi = { setAbilityLabel() {}, showAbility() {}, setEscaped() {}
 export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[]): BattleState {
   const level = levelDef(levelId);
   const settings = levelSettings(level);
+  const slingSkin = profile.equipped?.slingSkin;
+  const slingCosmetic = data.content.cosmetics?.find((c) => c.id === slingSkin);
+  const launchSpeedMult = slingCosmetic?.mods?.launchSpeedMult ?? 1;
+  const twinFraction = slingCosmetic?.mods?.twinFraction;
+  const twinDelaySteps = slingCosmetic?.mods?.twinDelaySteps ?? 12;
   const b = {
     scene, ui: noUi, events, rng: createRng(level.id), content: data.content, level, levelId,
     loadout: level.loadout ?? loadout, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
     worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
-    mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: 1 }, artifacts: [], consumables: [], targeting: null, paused: false,
+    mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: 1, launchSpeedMult, twinFraction, twinDelaySteps }, artifacts: [], consumables: [], targeting: null, paused: false,
     ents: [], actors: [], proj: null, state: 'intro', shotIdx: 0, coins: 0, score: 0, chain: 0, chainT: 999, escaped: 0,
     steps: 0, acc: 0, hitStop: 0, settleSteps: 0, endTimer: 0, lastPop: 0, lastStretch: 0,
     pouch: new Phaser.Math.Vector2(settings.world.slingX, settings.world.slingY), queue: [], parts: [],

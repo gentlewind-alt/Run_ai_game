@@ -3,6 +3,7 @@ import { C, css } from './palette';
 import { gridTexture } from './pix';
 import { BLADE } from './sprites';
 import { registerMonsterTextures } from './monsterTextures';
+import { registerRelicTextures } from './relicTextures';
 
 // ---------------------------------------------------------------- tiny palette-bound drawing kit
 
@@ -145,39 +146,6 @@ function weaponSprite(id: string): Px {
       p.set(6, 4, 'c'); p.set(9, 4, 'c');
       p.disc(8, 4, 1.8, ['4', '3', '2']);
       break;
-    case 'w_comet_fists':
-      p.rectT(3, 6, 4, 7, STEEL); p.rect(3, 4, 4, 2, '4'); p.rect(4, 2, 2, 2, '3');
-      p.rectT(9, 6, 4, 7, STEEL); p.rect(9, 4, 4, 2, '4'); p.rect(10, 2, 2, 2, '3');
-      p.rect(3, 13, 4, 2, '2'); p.rect(9, 13, 4, 2, '2');
-      break;
-    case 'w_bulwark_disc':
-      for (let y = 1; y < 15; y++) {
-        for (let x = 1; x < 15; x++) {
-          const d = Math.hypot(x + 0.5 - 8, y + 0.5 - 8);
-          if (d <= 6.5) p.set(x, y, d <= 2 ? '4' : d <= 4.5 ? 'c' : 'd');
-        }
-      }
-      p.rect(7, 3, 2, 10, '4'); p.rect(3, 7, 10, 2, '4');
-      break;
-    case 'w_skyforge_maul':
-      p.rectT(7, 7, 2, 9, WOOD); p.rect(6, 14, 4, 2, STEEL[1]);
-      p.rectT(2, 2, 12, 6, STEEL); p.rect(5, 4, 6, 2, '4'); p.set(7, 3, '3'); p.set(8, 3, '3');
-      break;
-    case 'w_steersong_arrow':
-      p.rectT(7, 3, 2, 10, WOOD);
-      p.set(7, 0, 'c'); p.rect(6, 1, 4, 2, 'a'); p.set(7, 1, 'b');
-      p.rect(5, 12, 2, 3, 'c'); p.rect(9, 12, 2, 3, 'c');
-      break;
-    case 'w_silkline_shooters':
-      p.rectT(7, 3, 2, 12, WOOD);
-      p.line(2, 5, 13, 5, 'd'); p.set(2, 6, 'c'); p.set(13, 6, 'c');
-      p.disc(8, 8, 2.2, ['1', 'r', 'u']); p.set(8, 8, 'c');
-      break;
-    case 'w_kinetic_palms':
-      p.rectT(4, 5, 8, 8, STEEL);
-      p.rect(4, 1, 1, 3, 'c'); p.rect(6, 0, 1, 4, 'c'); p.rect(8, 0, 1, 4, 'c'); p.rect(10, 1, 1, 3, 'c');
-      p.disc(8, 9, 1.8, ['4', '3', '2']);
-      break;
     default:
       break;
   }
@@ -218,8 +186,6 @@ export const MONSTER_ART: Record<string, MonsterArt> = {
 export const WEAPON_IDS = [
   'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun',
   'w_hunters_pike', 'w_hunters_boomerang', 'w_blast_tube', 'w_horned_scepter',
-  'w_comet_fists', 'w_bulwark_disc', 'w_skyforge_maul',
-  'w_steersong_arrow', 'w_silkline_shooters', 'w_kinetic_palms',
 ];
 
 export const weaponTexture = (id: string): string => `wpn_${id}`;
@@ -353,6 +319,7 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
 /** Create every sprite texture once. Safe to call on every scene start. */
 export function registerArt(scene: Phaser.Scene): void {
   registerMonsterTextures(scene);
+  registerRelicTextures(scene);
   for (const id of WEAPON_IDS) {
     addTexture(scene, weaponTexture(id), weaponSprite(id));
   }

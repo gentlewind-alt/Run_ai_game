@@ -18,14 +18,14 @@ import { coinCounter } from '../ui/coins';
 import { createItemCard } from '../ui/cards';
 import { makeButton, panel, type Btn } from '../ui/widgets';
 
-type Tab = 'weapons' | 'relics' | 'artifacts' | 'items' | 'forge' | 'skins';
+type Tab = 'weapons' | 'relics' | 'artifacts' | 'items' | 'forge' | 'slingshots';
 const TABS: { id: Tab; label: string; w: number }[] = [
-  { id: 'weapons', label: 'Weapons', w: 60 },
-  { id: 'relics', label: 'Relics', w: 50 },
-  { id: 'artifacts', label: 'Artifacts', w: 60 },
-  { id: 'items', label: 'Items', w: 50 },
-  { id: 'forge', label: 'Forge', w: 50 },
-  { id: 'skins', label: 'Skins', w: 50 },
+  { id: 'weapons', label: 'Weapons', w: 56 },
+  { id: 'relics', label: 'Relics', w: 46 },
+  { id: 'artifacts', label: 'Artifacts', w: 56 },
+  { id: 'items', label: 'Items', w: 46 },
+  { id: 'forge', label: 'Forge', w: 46 },
+  { id: 'slingshots', label: 'Slingshots', w: 68 },
 ];
 
 interface Item {
@@ -72,10 +72,10 @@ export default class ShopScene extends Phaser.Scene {
     this.tabBtns.forEach((b) => b.box.destroy());
     this.tabBtns = [];
 
-    const showSkins = data.config.features?.iap !== false && (data.config.features as Record<string, boolean>)?.skins !== false;
+    const showSlingshots = data.config.features?.slingshots !== false;
     const showRelics = data.config.features?.relics !== false;
-    const tabs = TABS.filter((t) => (t.id !== 'skins' || showSkins) && (t.id !== 'relics' || showRelics));
-    if (this.tab === 'skins' && !showSkins) this.tab = 'weapons';
+    const tabs = TABS.filter((t) => (t.id !== 'slingshots' || showSlingshots) && (t.id !== 'relics' || showRelics));
+    if (this.tab === 'slingshots' && !showSlingshots) this.tab = 'weapons';
     if (this.tab === 'relics' && !showRelics) this.tab = 'weapons';
 
     const totalTabW = tabs.reduce((acc, t) => acc + t.w, 0) + (tabs.length - 1) * 6;
@@ -180,30 +180,41 @@ export default class ShopScene extends Phaser.Scene {
     }
     const cap = economy().maxConsumableStack;
     if (this.tab === 'items') {
-      return c.consumables.map((k) => ({
+      const consumableItems: Item[] = c.consumables.map((k) => ({
         id: k.id, name: shortItemName(k.id, k.name), price: k.price, icon: iconKey(k.id), scale: 2, desc: [k.name, k.effect, `You have ${consumableCount(k.id)}, up to ${cap}.`],
         state: consumableCount(k.id) >= cap ? 'full' : 'buy', note: '',
       }));
+      const gq = (c.cosmetics ?? []).find((sk) => sk.slot || sk.id === 's_gold_quiver' || sk.id === GOLD_QUIVER);
+      if (gq) {
+        const owned = owns('cosmetics', gq.id) || owns('cosmetics', GOLD_QUIVER);
+        consumableItems.push({
+          id: gq.id, name: gq.name, price: gq.priceCoins ?? 500, icon: 'icon_coin', scale: 2,
+          desc: [gq.name, 'Carry a 5th weapon into battle.'],
+          state: owned ? 'owned' : 'buy', note: owned ? '5 Slots' : '',
+        });
+      }
+      return consumableItems;
     }
-    const cosmetics: CosmeticDef[] = c.cosmetics ?? [
-      { id: 's_gold_quiver', name: 'Gold Quiver', kind: 'slot', slot: true, priceBits: 0, priceCoins: 0 },
-      { id: 's_skin_bone', name: 'Bone Sling', kind: 'sling_skin', priceBits: 0, priceCoins: 0 },
-      { id: 's_skin_iron', name: 'Iron Ballista', kind: 'sling_skin', priceBits: 0, priceCoins: 0 },
-    ];
-    return cosmetics.map((sk: CosmeticDef) => {
-      const isSlot = Boolean(sk.slot || sk.kind === 'slot');
-      const owned = owns('cosmetics', sk.id) || (isSlot && owns('cosmetics', GOLD_QUIVER));
-      const isEquipped = profile.equipped.slingSkin === sk.id;
-      const icon = isSlot ? 'icon_coin' : sk.id;
-      const desc = isSlot
-        ? [sk.name, 'Carry a 5th weapon into battle.', 'Prices in RUN Bits (owner approval).']
-        : [sk.name, 'Custom slingshot frame.', 'Changes sling silhouette in battle.'];
-      const note = isSlot ? (owned ? '5 Slots' : '0 Bits') : (isEquipped ? 'Equipped' : owned ? 'Equip' : '0 Bits');
-      return {
-        id: sk.id, name: sk.name, price: sk.priceBits ?? 0, icon, scale: isSlot ? 2 : 1, desc,
-        state: isSlot ? (owned ? 'owned' : 'buy') : (owned ? 'owned' : 'buy'), note,
-      };
-    });
+    if (this.tab === 'slingshots') {
+      const cosmetics: CosmeticDef[] = c.cosmetics ?? [];
+      const slingshots = cosmetics.filter((sk) => sk.kind === 'sling_skin');
+      return slingshots.map((sk: CosmeticDef) => {
+        const owned = owns('cosmetics', sk.id);
+        const isEquipped = profile.equipped.slingSkin === sk.id;
+        const icon = sk.id === 's_quicksilver' ? 'sling_quicksilver' : sk.id === 's_gemini' ? 'sling_gemini' : sk.id;
+        const price = sk.priceCoins ?? 0;
+        const desc = [
+          sk.name,
+          sk.desc ?? (sk.id === 's_quicksilver' ? '+25% launch speed with speed lines.' : 'Launches queued twin 12 steps behind at 45% damage.'),
+        ];
+        const note = isEquipped ? 'Equipped' : owned ? 'Equip' : `${price}c`;
+        return {
+          id: sk.id, name: sk.name, price, icon, scale: 1, desc,
+          state: isEquipped ? 'owned' : 'buy', note,
+        };
+      });
+    }
+    return [];
   }
 
   private renderGrid(): void {
@@ -228,7 +239,7 @@ export default class ShopScene extends Phaser.Scene {
       });
       const extra: Phaser.GameObjects.GameObject[] = [];
 
-      if (this.tab === 'skins') {
+      if (this.tab === 'slingshots') {
         extra.push(text(this, x + 31, y + 26, it.note, it.note === 'Equipped' ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
       } else if (it.state === 'owned') {
         extra.push(text(this, x + 31, y + 26, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
@@ -266,19 +277,49 @@ export default class ShopScene extends Phaser.Scene {
     lines.forEach((l, i) => { l.setY(y0 + 24 + i * 11); });
     this.body.add(lines);
 
-    const label = it.state === 'owned' ? 'Owned' : it.state === 'locked' ? it.note : it.state === 'full' ? 'Stock full' : `Buy for ${it.price}`;
-    const btnEnabled = it.state === 'buy';
+    const isSlingEquip = this.tab === 'slingshots' && owns('cosmetics', it.id);
+    const label = isSlingEquip ? (profile.equipped.slingSkin === it.id ? 'Equipped' : 'Equip') :
+                  it.state === 'owned' ? 'Owned' : it.state === 'locked' ? it.note : it.state === 'full' ? 'Stock full' : `Buy for ${it.price}`;
+    const btnEnabled = this.tab === 'slingshots' ? profile.equipped.slingSkin !== it.id : it.state === 'buy';
     const buy = makeButton(this, W / 2, y0 + 64, 160, 24, label, 'go', () => this.buy(it), 6);
     buy.setEnabled(btnEnabled);
     this.body.add(buy.box);
   }
 
   private buy(it: Item): void {
-    if (it.state !== 'buy') return;
-    if (this.tab === 'skins') {
+    if (this.tab === 'slingshots') {
+      if (owns('cosmetics', it.id)) {
+        equipSlingSkin(it.id);
+        sfx.click();
+        this.toast(`Equipped ${it.name}!`, C('5'));
+        this.render();
+        return;
+      }
+      if (profile.coins < it.price) {
+        sfx.lose();
+        this.toast(`Need ${it.price - profile.coins} more coins.`, C('3'));
+        return;
+      }
+      profile.coins -= it.price;
+      profile.owned.cosmetics.push(it.id);
       equipSlingSkin(it.id);
-      sfx.click();
-      this.toast(`Equipped ${it.name}!`, C('5'));
+      sfx.unlock();
+      this.toast(`Bought & equipped ${it.name}!`, C('5'));
+      this.render();
+      return;
+    }
+    if (it.state !== 'buy') return;
+    if (it.id === 's_gold_quiver' || it.id === GOLD_QUIVER) {
+      if (profile.coins < it.price) {
+        sfx.lose();
+        this.toast(`Need ${it.price - profile.coins} more coins.`, C('3'));
+        return;
+      }
+      profile.coins -= it.price;
+      profile.owned.cosmetics.push(it.id);
+      profile.owned.cosmetics.push(GOLD_QUIVER);
+      sfx.unlock();
+      this.toast(`Bought ${it.name}! 5 slots unlocked.`, C('5'));
       this.render();
       return;
     }
