@@ -79,6 +79,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | X7 | Sound pass (RUN `generate sfx` plus WebAudio) | X5 | todo | | | plan in `09_expansion_design.md` section 7 |
 | X8a | Concept-art look: realm backdrop plates (RUN generated) and brick / rivet / plank block textures | X6b | todo | agy | 10-22 | brief `agy_task_x8a_concept_art.md`; visual only |
 | X8b | Collapsible boss fortresses for levels 4, 8, 12, 16, 20, 24 | X8a | todo | agy | 10-22 | brief `agy_task_x8b_boss_fortresses.md`; frames not slabs, stand-still and collapse checks |
+| X9 | Omnitrix Dial: one four-armed alien drops, splash + earthquake, leaps back to the sky | X8b | todo | agy | 10-22 | brief `agy_task_x9_omnitrix_alien.md`; sprite `shots/gen/omni_alien.png` |
 | X8 | Relic scale + L4 runners + loadout/results UI (playtest 10-22) | | review | claude | 10-22 | done in the cloud session at the owner's request; see LOG |
 
 ## Waiting on owner

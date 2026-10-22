@@ -54,7 +54,7 @@ WEAPON_FX = {
     'w_silkline_shooters': 'wrist shooters firing sticky web lines that pin monsters to the walls',
     'w_kinetic_palms': 'armoured gauntlets firing a repulsor blast of force that shoves a whole tower over',
     'w_brahmastra_arrow': 'a golden mythic arrow turning into a focused white-gold beam of light that cuts across the battlefield',
-    'w_omnitrix_dial': 'a green and black dial flashing, then five giant alien forearms (fire claw, brute fist, crystal arm, stone arm, lightning arm) crashing down from the sky, bouncing once and rising back up',
+    'w_omnitrix_dial': 'a green and black dial flashing, then a giant red four-armed alien brute crashes down from the sky fists first, the impact cracks the ground with an earthquake shockwave and a ring of splash damage throwing blocks and monsters, then it bounces back up into the sky',
     'w_pinata_mirv': 'a colourful paper pinata bursting mid-air into five candy bombs that rain down in a fan',
     'w_hailstorm_cauldron': 'an iron cauldron tipping over in the sky and pouring a rain of scalding green stew drops onto the fort',
     'w_rolling_millstone': 'a heavy stone millstone rolling along the ground and crushing blocks and monsters',
