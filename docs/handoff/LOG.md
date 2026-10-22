@@ -2,6 +2,9 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Projectile re-hit damage investigated (no change shipped)
+- A projectile that rests on a monster damages it on every physics contact. Tried a 20-step cooldown limited to bosses only (`bossRehitSteps`): bosses on levels 12, 16, 20 and 24 then became unwinnable for the greedy solver within 6 shots. So **all boss HP pools are balanced around that sustained contact damage**; a real fix means lowering boss HP (and armour) to match, then re-tuning bands 4-24. Reverted; behaviour unchanged. Do this after the jam if at all: it is the same feel players already know.
+
 ## 2026-10-22 · claude · Maul fork and Fists spikes (v1.23.0, private)
 - **Skyforge Maul:** the bolt forks to one more monster (`chainJumps 1`, `chainMult 0.12`). **Comet Fists:** two rock spikes burst ahead of the slam (`spikes 2`, `spikeMult 0.08`). First values (2 jumps at 0.3, 3 spikes at 0.25) caused one-shot wins on levels 1-2 in the relic check, so both are deliberately small.
 - agy still returns RESOURCE_EXHAUSTED (checked again), so all of this was built directly. `regress:quick` green.
