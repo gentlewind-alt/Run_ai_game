@@ -51,6 +51,26 @@ export const cometFists: WeaponImpl = {
       ctx.M.Body.setVelocity(m.body, { x: dir * 3.0, y: -2.5 });
       ctx.M.Body.setAngle(m.body, dir * Math.PI / 2);
     }
+
+    // Rising spikes: rock spears burst from the ground one after another in the direction of the throw
+    let k = 0;
+    let t = 0;
+    ctx.addActor({
+      pos: () => ({ x: ix, y: iy }),
+      update() {
+        t++;
+        if (t % P.spikeEvery !== 0) return false;
+        k++;
+        const sx = ix + k * P.spikeGap;
+        const sy = ctx.groundAt(sx);
+        ctx.blast(sx, sy - 6, P.spikeRadius, P.spikeMult, p.wid);
+        ctx.push(sx, sy - 6, P.spikeRadius * 1.5, P.spikePush);
+        ctx.fx.sparks(sx, sy - 4, ['6', '5', 'd'], 5);
+        ctx.fx.ring(sx, sy, P.spikeRadius, C('6'));
+        return k >= P.spikes;
+      },
+      destroy() {},
+    });
   },
   onUpdate(ctx, p) {
     if (p.data.slamming) {

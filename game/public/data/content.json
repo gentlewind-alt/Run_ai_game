@@ -364,7 +364,7 @@
       },
       "price": 1500,
       "launch": "Two heavy gauntlets hurled in tandem.",
-      "tap": "Dive-slam down causing an earthquake wave.",
+      "tap": "Dive-slam causing an earthquake wave, then two rock spikes burst from the ground ahead.",
       "physics": {
         "radius": 5,
         "density": 0.015,
@@ -383,7 +383,13 @@
         "quakeRangeX": 90,
         "quakeHopVy": 0,
         "quakeDamageMult": 0.1,
-        "quakeStunSteps": 36
+        "quakeStunSteps": 36,
+        "spikes": 2,
+        "spikeGap": 26,
+        "spikeEvery": 8,
+        "spikeRadius": 12,
+        "spikeMult": 0.08,
+        "spikePush": 0.5
       }
     },
     {
@@ -437,7 +443,7 @@
       },
       "price": 1500,
       "launch": "Spinning hammer that smashes through fortresses.",
-      "tap": "Calls lightning and an electric field. Tap again to recall.",
+      "tap": "Calls lightning that forks to one more monster, and an electric field. Tap again to recall.",
       "physics": {
         "radius": 5,
         "density": 0.015,
@@ -459,7 +465,11 @@
         "fieldTickSteps": 20,
         "fieldTickMult": 0.04,
         "recallSpeed": 10,
-        "recallDamageMult": 0.3
+        "recallDamageMult": 0.3,
+        "chainJumps": 1,
+        "chainRange": 70,
+        "chainMult": 0.12,
+        "chainFalloff": 0.7
       }
     },
     {

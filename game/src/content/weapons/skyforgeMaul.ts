@@ -34,6 +34,21 @@ export const skyforgeMaul: WeaponImpl = {
       if (target) {
         ctx.directHit(target, p.wid, P.boltDamageMult ?? 1.5, tx, ty, true);
         ctx.addStatus(target, 'chain', 60);
+        // the bolt forks to the nearest monsters from there, a little weaker each jump
+        const hit = new Set<Ent>([target]);
+        let fx = tx;
+        let fy = ty;
+        let fm = P.chainMult;
+        for (let j = 0; j < P.chainJumps; j++) {
+          const next = ctx.nearestMonsters(fx, fy, P.chainJumps + 2).find((m) => !hit.has(m) && Math.hypot(m.body.position.x - fx, m.body.position.y - fy) <= P.chainRange);
+          if (!next) break;
+          hit.add(next);
+          for (let q = 1; q <= 6; q++) ctx.fx.sparks(fx + (next.body.position.x - fx) * q / 6, fy + (next.body.position.y - fy) * q / 6, ['b', 'c'], 1);
+          ctx.directHit(next, p.wid, fm, next.body.position.x, next.body.position.y, false);
+          fm *= P.chainFalloff;
+          fx = next.body.position.x;
+          fy = next.body.position.y;
+        }
       }
 
       // Crackling blue-white electric field around that spot for 3 s (180 steps)

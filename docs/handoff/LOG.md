@@ -2,6 +2,11 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Maul fork and Fists spikes (v1.23.0, private)
+- **Skyforge Maul:** the bolt forks to one more monster (`chainJumps 1`, `chainMult 0.12`). **Comet Fists:** two rock spikes burst ahead of the slam (`spikes 2`, `spikeMult 0.08`). First values (2 jumps at 0.3, 3 spikes at 0.25) caused one-shot wins on levels 1-2 in the relic check, so both are deliberately small.
+- agy still returns RESOURCE_EXHAUSTED (checked again), so all of this was built directly. `regress:quick` green.
+- **Open:** projectile re-hit damage, sound build (plan only), leaderboard row-content test.
+
 ## 2026-10-22 · claude · Scattergun Cluster and Disc final blast (v1.22.0, private)
 - **Scattergun "Cluster":** new optional `onEnd(x, y)` on `PelletOpts` (called when a pellet ends inside the world); each pellet pops in a small blast (`popRadius 12`, `popMult 0.2`).
 - **Bulwark Disc:** the sixth bounce rings out as a shield blast, once (`finalRadius 26`, `finalMult 0.5`). `tools/regress.mjs` disc mock projectile now carries `wid`.

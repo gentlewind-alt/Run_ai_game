@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "e4e1e5c100cde3bbe537bcb323f1e8d230b159291e0d82d1307d3c363d87d2d1",
+  "hash": "63ffb17e32bd9f7100018ffc43a091eb8715f8b3f8a6bb136b53ceca55269001",
   "children": [
     {
       "name": ".gitignore",
@@ -101,13 +101,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "f85a0098c3c47e81bfe7dd55c9226c7d85f8fcfa806f8184af744b029486d538",
+      "hash": "d22adc29bd5947e890c9d7565dec2a1b47c8c56e607cd5109630d608d4cea683",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "9c958472fadf4ea9434188ba9cea214b040d1d515ef06db6905356c1e0f6c73c",
+          "hash": "b5980d8ad5b248271ee74080332f8a2fc88b0cb8890ad1b29265909101775f9f",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -330,8 +330,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "197583a508a9d283d2fcecd85ff37c5a8cfc3d28e24f8290487ffd9f8f5a93d8",
-              "size": 101278
+              "hash": "13718d54cfeb8840e34b14664fee302adbc9a5beb266be6cdf77300c6f88df30",
+              "size": 101875
             },
             {
               "name": "ref",
@@ -1907,8 +1907,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "5f976bf9ca905f5685862347dd65231829ae343829f3c8db9938f40fca45602b",
-              "size": 10186
+              "hash": "81342bd92673d62d0c3d88f32560103731720cf55f624213b3bb6eaae62e7ab4",
+              "size": 10211
             }
           ]
         },
@@ -2060,7 +2060,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "3afd665c78c79596e3e1483a615d120d9c0c7e86cf6833c673002118a42d5d7d",
+      "hash": "8aedec29722f7a2970f4a575e54c28acef517fd93989335f567ff2b4d522e26f",
       "children": [
         {
           "name": ".gitignore",
@@ -2136,7 +2136,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "b57c570d398d0279a64d5969328fbb6e8622838215db5504a430bba1eaaf4736",
+          "hash": "1de35f392d106d96f85606dd667190e8ce51a8ac6669f947b82b2630e7cadcfb",
           "children": [
             {
               "name": "cdn-assets",
@@ -2171,7 +2171,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "64eca62e07a4c7e07a4a33dd55109ef0506ce53b92e6ac93a1f5b5295da90365",
+              "hash": "b3b61f769228b47c21ea6d8ce8b11b64c34b57ea732a9534e10c0fc55aa4603e",
               "children": [
                 {
                   "name": "config.json",
@@ -2184,8 +2184,8 @@
                   "name": "content.json",
                   "path": "game/public/data/content.json",
                   "type": "file",
-                  "hash": "6b3e88670320e3fa8099abbbd9327c924843d0fba7e1602e01152214203699bb",
-                  "size": 37686
+                  "hash": "222803a27155c6eaebf0f1b2a937f47bc3d85fc2d18064d9f4a877ab27f1ceb3",
+                  "size": 38020
                 },
                 {
                   "name": "levels",
@@ -2840,7 +2840,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "f67496d5aacccafa35a17de184101754e516cd9b86ea86da33a8eed3ac4d720c",
+          "hash": "cbff1dc0786123fd3c1d5275ec513e262d5863f365b88d75fea1ea5db29abe9c",
           "children": [
             {
               "name": "art",
@@ -3137,7 +3137,7 @@
               "name": "content",
               "path": "game/src/content",
               "type": "dir",
-              "hash": "e88dc79a5ec7369d3f61486066c4e40c0480b8bcdcd2b17dce6d4093ab5b19a9",
+              "hash": "8ba428e8a8fcc7d0acc7447e36060af696514487cb32f369e175c3d5db8da885",
               "children": [
                 {
                   "name": "artifacts",
@@ -3343,7 +3343,7 @@
                   "name": "weapons",
                   "path": "game/src/content/weapons",
                   "type": "dir",
-                  "hash": "64903de346be64a267d9a4e28e25e6830b53cba14fed4f285bb72095e8dc2664",
+                  "hash": "9a6b75913ef6327081c9253fa272f930cabae15cb697224683832f3d991c1514",
                   "children": [
                     {
                       "name": "blackHoleMarble.ts",
@@ -3405,8 +3405,8 @@
                       "name": "cometFists.ts",
                       "path": "game/src/content/weapons/cometFists.ts",
                       "type": "file",
-                      "hash": "1e136dfbad319c6d4086c98b7611571e5ffe720ee78823a0813cab5d0678f56f",
-                      "size": 2797
+                      "hash": "296cff7d4747b23f2617f9001261cbbe6d7bdff4cf2bd3505a0c372b8e6f7f71",
+                      "size": 3462
                     },
                     {
                       "name": "earthwormDrill.ts",
@@ -3489,8 +3489,8 @@
                       "name": "skyforgeMaul.ts",
                       "path": "game/src/content/weapons/skyforgeMaul.ts",
                       "type": "file",
-                      "hash": "b6677ff2ae1474453d34e6549b5bf0f62340e08eef8a295569904932e988a08c",
-                      "size": 4732
+                      "hash": "289addf43ce39a504d9f4865edd5ca1da3a7d6051c7b1f6cbadc042240cee9c0",
+                      "size": 5573
                     },
                     {
                       "name": "staff.ts",
