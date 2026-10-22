@@ -1,5 +1,7 @@
 import type Phaser from 'phaser';
-import type { BattleCtx, Proj } from '../../battle/BattleCtx';
+import type { BattleCtx, Ent, Proj } from '../../battle/BattleCtx';
+
+export interface ImpactInfo { target?: Ent; rel: number; x: number; y: number }
 
 /**
  * Behaviour for one weapon id. Stats and numbers come from the data row (`physics`, `ability`, `params`), read through `p.def`.
@@ -10,7 +12,8 @@ export interface WeaponImpl {
   texture: string;
   onLaunch?(ctx: BattleCtx, p: Proj): void;
   onAbility?(ctx: BattleCtx, p: Proj): void;
-  onImpact?(ctx: BattleCtx, p: Proj): void;
+  /** `hit` says what was touched (a monster or block; absent for ground and walls) and how fast the contact was. */
+  onImpact?(ctx: BattleCtx, p: Proj, hit?: ImpactInfo): void;
   /** Called once on the first contact after the ability fired (for example the cleaver's shockwave). */
   onPostImpact?(ctx: BattleCtx, p: Proj): void;
   onUpdate?(ctx: BattleCtx, p: Proj): void;

@@ -2,6 +2,14 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · cloud · Bulwark Disc now really ricochets
+- **Report:** the owner saw the disc not ricocheting. **Cause (measured):** the disc had no ricochet rule, only plain physics bounce (restitution 0.6). That works on steep flat-ground landings, but the disc usually hits planks, monsters and slopes at a glancing angle and just drops. Its "bounce" counter also counted rolling on the ground (2 to 8 "bounces" while resting), so the sixth-bounce shield blast could fire with no real ricochet.
+- **Fix** (`content/weapons/bulwarkDisc.ts`, numbers in the `w_bulwark_disc` data row): after knocking a monster or block, the disc lobs on to the nearest other monster within `ricochetRange` (90 px), for up to `ricochetJumps` (1) times, arriving by a ballistic arc (`ricochetLift` 4.5, `ricochetGravity` 0.25, capped at `ricochetSpeed` 7). The new velocity is applied in `onUpdate`, after the solver, because `collisionstart` fires before the solver and cancels a velocity set there. Only knocks faster than `minBounceSpeed` (1.5) and at least `bounceGapSteps` (8) apart count as bounces.
+- **Plumbing:** `WeaponImpl.onImpact` now gets a third argument `{ target?, rel, x, y }` (what was hit and how fast). Other weapons ignore it.
+- **Balance:** first try (3+ jumps, 150 px) made one-shot wins on levels 1, 2, 3 and 11, which breaks the rule of zero. With 1 jump and 90 px the sweep shows 0 one-shot wins on levels 1-12, and the solver wins levels 4-11 with the disc in 3-5 shots (level 12 with the disc first was not won in 6; the standard level 12 loadout has no disc). Not run: the full `regress` (hangs on the cloud box).
+- **Test change:** `tools/regress.mjs` disc assertion now resets `lastBounce` between its 8 mock impacts (the gap rule). Same expected values (8 bounces, x1.6).
+- **Questions for owner:** is one ricochet jump enough, or should the disc reach more targets at lower damage? Both are data values (`ricochetJumps`, `ricochetRange`).
+
 ## 2026-10-22 · cloud · Fixes from the Goblin Hills playtest (X8)
 The owner asked for these fixes to be made in the cloud session, not through agy, so `agy_task_relic_scale.md` is marked done.
 - **Relic scale:** new `config.display.weapon` (`flightPx 16`, `slingPx 24`, `queuePx 24`, `relicBonus 1.25`) and `src/art/weaponScale.ts`. `sling.ts` no longer has the `w >= 32 ? 1.5 : 1.5` helpers; relics now draw at about 20 px in flight and 30 px on the sling (they were 48 px). The queue rests on the ground by sprite height instead of a constant. Optional `weapon.display.px`. Steersong split arrows use `params.splitScale` (0.5) instead of the literal 1.2 (they were 38 px). Collision radii are unchanged, so no balance band moves. Before/after sheet: `docs/handoff/shots/review/relic_size_after.png`.

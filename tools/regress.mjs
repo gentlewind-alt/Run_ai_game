@@ -582,6 +582,7 @@ async function run() {
         data: { bounces: 0 }
       };
       for (let i = 0; i < 8; i++) {
+        mockP.data.lastBounce = -9999; // the real disc ignores knocks closer than bounceGapSteps; space these out
         discImpl.onImpact(b.ctx, mockP);
       }
       const bouncesClampedAt6 = mockP.data.bounces === 8 && Math.abs(mockP.body.proj.mul - 1.6) < 0.001;
