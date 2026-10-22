@@ -46,10 +46,14 @@ function Process($file, $dest, $S) {
 $map = @{
   'w_skyforge_maul' = 'maul_test.png'; 'w_comet_fists' = 'fists.png'; 'w_bulwark_disc' = 'disc_v2_2.png';
   'w_steersong_arrow' = 'arrow.png'; 'w_silkline_shooters' = 'shooters.png'; 'w_kinetic_palms' = 'palms.png';
-  'w_brahmastra_arrow' = 'w_brahmastra_arrow.png'; 'w_omnitrix_dial' = 'w_omnitrix_dial.png'
+  'w_brahmastra_arrow' = 'w_brahmastra_arrow.png'; 'w_omnitrix_dial' = 'w_omnitrix_dial.png';
+  'w_hailstorm_cauldron' = 'w_hailstorm_cauldron.png'; 'w_rolling_millstone' = 'w_rolling_millstone.png'; 'w_pinata_mirv' = 'w_pinata_mirv.png';
+  'w_earthworm_drill' = 'w_earthworm_drill.png'; 'w_black_hole_marble' = 'w_black_hole_marble.png'; 'w_chain_rod' = 'w_chain_rod.png'
 }
 # monsters: id -> @(source file, size in px); the output has no _card variant
-$monsters = @{ 'frost_wolf' = @('frost_wolf.png', 32); 'ice_golem' = @('ice_golem.png', 40); 'frost_giant' = @('frost_giant.png', 56) }
+$monsters = @{ 'frost_wolf' = @('frost_wolf.png', 32); 'ice_golem' = @('ice_golem.png', 40); 'frost_giant' = @('frost_giant.png', 56);
+  'lava_imp' = @('lava_imp.png', 24); 'forge_ogre' = @('forge_ogre.png', 40); 'forge_tyrant' = @('forge_tyrant.png', 56);
+  'cloud_harpy' = @('cloud_harpy.png', 32); 'storm_mage' = @('storm_mage.png', 32); 'storm_sovereign' = @('storm_sovereign.png', 56) }
 foreach ($id in $map.Keys) {
   $f = Join-Path $src $map[$id]
   if (-not (Test-Path $f)) { Write-Output "missing $f"; continue }
