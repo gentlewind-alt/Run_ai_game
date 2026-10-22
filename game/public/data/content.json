@@ -241,7 +241,7 @@
       "unlock": "level 5",
       "price": 250,
       "launch": "Flies point-first, flat and fast.",
-      "tap": "Speeds up and pierces through up to 3 wood blocks or monsters.",
+      "tap": "Speeds up and pierces up to 3 wood blocks or monsters, then blasts the first solid it hits.",
       "physics": {
         "radius": 3,
         "density": 0.02,
@@ -255,7 +255,9 @@
       },
       "params": {
         "boost": 1.6,
-        "pierce": 3
+        "pierce": 3,
+        "drillRadius": 18,
+        "drillMult": 0.1
       }
     },
     {
@@ -323,7 +325,7 @@
       "unlock": "level 8",
       "price": 400,
       "launch": "Light, trails ember particles.",
-      "tap": "Curse burst: monsters in a small radius take +15% damage from everything for 4 s.",
+      "tap": "Curse burst (+15% damage taken for 4 s) and a fire pool where it lands that sets monsters in it alight for 3 s.",
       "physics": {
         "radius": 4,
         "density": 0.006,
@@ -336,7 +338,11 @@
       },
       "params": {
         "radius": 34,
-        "curseSteps": 240
+        "curseSteps": 240,
+        "poolSteps": 180,
+        "poolRadius": 28,
+        "poolTick": 15,
+        "poolBurnSteps": 60
       }
     },
     {
@@ -699,11 +705,11 @@
       },
       "params": {
         "drops": 12,
-        "dropEvery": 4,
-        "bandWidth": 120,
-        "dropSpeed": 4,
-        "dropRadius": 14,
-        "dropMult": 0.45
+        "dropEvery": 3,
+        "bandWidth": 90,
+        "dropSpeed": 7,
+        "dropRadius": 16,
+        "dropMult": 1.2
       }
     },
     {
@@ -729,7 +735,6 @@
         "label": "Roll"
       },
       "params": {
-        "behavior": "w_militia_blade",
         "sawSteps": 96,
         "sawSpin": 0.4,
         "sawSpeed": 2.4,

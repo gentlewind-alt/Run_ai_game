@@ -2,8 +2,15 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "a2f84ef090f5b29a188bcd6658724fce0d521881609b39824b1b5fb8ed2f7c2c",
+  "hash": "6296c9bb676e6c34cfa7370d247fb047b20e2891028a9842687def539c55770a",
   "children": [
+    {
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "type": "file",
+      "hash": "9ad073063ed63933dc7a197baee060ee9f8b54c9b8b5d0c55aea4f7f5d0f1472",
+      "size": 13
+    },
     {
       "name": "AGENTS.md",
       "path": "AGENTS.md",
@@ -94,13 +101,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "ad0b624f9cec5539356ca6e6a5c2ca3914b6e6dc2000373dc30c6badbc92859a",
+      "hash": "3a1524de0d482423bf01056727b5dbe7e5db5cd24a56af7582e9f335abb4a78f",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "90468273b156636c6bf6617667fa349d1492b51320b924b7e2ad8e3c6c9358e3",
+          "hash": "3917e25d234d37293be2f301ca3f1149a3dd8c2c2bf80dd3054b90d7eb0c931b",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -323,8 +330,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "acc6dd1d4898665d4975900702a39ed84d562c25e7165a878284ee637a8e9430",
-              "size": 98651
+              "hash": "7b59e9d356c10c294f380fd836d39fdf85dfbd05fdf5087775514f3b62d8e9b4",
+              "size": 100067
             },
             {
               "name": "ref",
@@ -373,7 +380,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "835ee44046f4b313239de7dcb30c1e40d4b965dc9ad04c6715fe7de0da2ddda0",
+              "hash": "f855ead9373954b052f578ccf381b8113200c5056b55c916e5e7787099d172b3",
               "children": [
                 {
                   "name": "01_title.png",
@@ -590,7 +597,7 @@
                   "name": "gen",
                   "path": "docs/handoff/shots/gen",
                   "type": "dir",
-                  "hash": "e5eea628bc1d3465d4a01354f3039a8d52c98083d39aea5fc9dc08be775cc632",
+                  "hash": "3ac6a6cd4a2c276df4cecf9ae6b82fac9fe969a3d991368559605f4208202ce5",
                   "children": [
                     {
                       "name": "arrow.png",
@@ -927,6 +934,63 @@
                       "type": "file",
                       "hash": "094048fa6c1f30799f89bb46118f54a70e558ee047aebf680c45c392c3492b0e",
                       "size": 496
+                    },
+                    {
+                      "name": "w",
+                      "path": "docs/handoff/shots/gen/w",
+                      "type": "dir",
+                      "hash": "be4a0d0d6c333d9677b82d86d23a38d698b64dbec467042df878762df06f8088",
+                      "children": [
+                        {
+                          "name": "black_hole_marble.png",
+                          "path": "docs/handoff/shots/gen/w/black_hole_marble.png",
+                          "type": "file",
+                          "hash": "7886b1885cff96960233af4570846e24bf9700d8c2d29df4b248bf906ab4dbf4",
+                          "size": 87375
+                        },
+                        {
+                          "name": "chain_rod.png",
+                          "path": "docs/handoff/shots/gen/w/chain_rod.png",
+                          "type": "file",
+                          "hash": "d9f40078676d86a72fe20472a238502603e35c28bbe09d71ad2dee3d13cd35a3",
+                          "size": 81796
+                        },
+                        {
+                          "name": "earthworm_drill.png",
+                          "path": "docs/handoff/shots/gen/w/earthworm_drill.png",
+                          "type": "file",
+                          "hash": "e7892c9f45d50327ed8c06f161772aa0db2d9e45abf7543a774dda7917e2c986",
+                          "size": 85007
+                        },
+                        {
+                          "name": "hailstorm_cauldron.png",
+                          "path": "docs/handoff/shots/gen/w/hailstorm_cauldron.png",
+                          "type": "file",
+                          "hash": "81206f8a73b87409c57170a7275397e9b71332d1c9b4c2e945de673e01e039aa",
+                          "size": 80871
+                        },
+                        {
+                          "name": "pinata_mirv.png",
+                          "path": "docs/handoff/shots/gen/w/pinata_mirv.png",
+                          "type": "file",
+                          "hash": "be27157532a52cb06fefa069788698c6eda9fc688c212e332a924faa496d04b4",
+                          "size": 87123
+                        },
+                        {
+                          "name": "rolling_millstone.png",
+                          "path": "docs/handoff/shots/gen/w/rolling_millstone.png",
+                          "type": "file",
+                          "hash": "4784d0fcc8ed2caab9d0afdb47c15f16da5f36735ff92bbe07a7c39dffbec111",
+                          "size": 83892
+                        },
+                        {
+                          "name": "scepter.png",
+                          "path": "docs/handoff/shots/gen/w/scepter.png",
+                          "type": "file",
+                          "hash": "acc760e7c390e64dafc3aec41acddc64d0ac3dfab09e3043f097168e17d3093b",
+                          "size": 80947
+                        }
+                      ]
                     },
                     {
                       "name": "w_black_hole_marble.png",
@@ -1843,8 +1907,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "1d6a3bd47191940e66e279bc8e3b1bb9bc0ec6a91c42956f4a6de45e1577b37f",
-              "size": 10148
+              "hash": "8465febc278987e36c57867c1f443e7540bc28222f40f0ec7af16fae7b81d82e",
+              "size": 10187
             }
           ]
         },
@@ -1852,7 +1916,7 @@
           "name": "monster_mash",
           "path": "docs/monster_mash",
           "type": "dir",
-          "hash": "54e7b0543f82c3c2e2618fc53076d76dbbbbdb67d2ad70b2719033d4fa0d9818",
+          "hash": "2e316f23f2cdc3cd3d1d6da7b742a641e7a368a0f9ab53a8965eaf8c45612db4",
           "children": [
             {
               "name": "00_local_kickoff.md",
@@ -1923,6 +1987,13 @@
               "type": "file",
               "hash": "5df1b8e4d92bf1ffc1657d3d41eb678b4bc1395572ea8a1e8679c98382e10036",
               "size": 11584
+            },
+            {
+              "name": "10_sfx_plan.md",
+              "path": "docs/monster_mash/10_sfx_plan.md",
+              "type": "file",
+              "hash": "8619a12be1f93877222479841fad8b6a6c3be0204a6ee9831d32b7152ec394e9",
+              "size": 3393
             }
           ]
         },
@@ -1989,7 +2060,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "40467b238f14bdfd26836d690220f81d6c1275915e4f70849c3a1aea699b2f71",
+      "hash": "87ec0889eca4b9b580411d83073a51edbdf368c7d282cbde09cb32ca04510d91",
       "children": [
         {
           "name": ".gitignore",
@@ -2065,7 +2136,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "d306500df407a1e283f23568d511daef370ae073f5bbcc6dee937ab5acfdaafc",
+          "hash": "580ba08f0aa472e9bf81ff443f08a6b122fddf037dc437a2298944873738b081",
           "children": [
             {
               "name": "cdn-assets",
@@ -2100,7 +2171,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "c09713fb232b83c7c6a44da598db9978ac5f0947369ec31824cb2a7d39901b99",
+              "hash": "3a95fd57495a06c441cd8a07536757f8c194be1632881f71d9a41c36f4cdb7cf",
               "children": [
                 {
                   "name": "config.json",
@@ -2113,8 +2184,8 @@
                   "name": "content.json",
                   "path": "game/public/data/content.json",
                   "type": "file",
-                  "hash": "f99da70fbb894b026d66f414545d0d18087fd936a9319c682546ba8909387e96",
-                  "size": 37205
+                  "hash": "43fe1ecab9399e68a22560fa6772f1284f3a9c446da10e111b6f53d2629d8abc",
+                  "size": 37381
                 },
                 {
                   "name": "levels",
@@ -2769,7 +2840,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "0bc2ec00ee4df27ad47add36df429f136f269512b79237aec417127427f20725",
+          "hash": "ec21dea30af4703391389864b11a6c5041fd1c7067605053170212fe746992ac",
           "children": [
             {
               "name": "art",
@@ -3066,7 +3137,7 @@
               "name": "content",
               "path": "game/src/content",
               "type": "dir",
-              "hash": "58485b174d50c3124c4558ed5349c9907edbaafa07e300e78bc770fc0165c4b1",
+              "hash": "f10d06c9c53d263d4df527ba093d0b117dc484e6431a32b6cbe2866e75ee8915",
               "children": [
                 {
                   "name": "artifacts",
@@ -3272,7 +3343,7 @@
                   "name": "weapons",
                   "path": "game/src/content/weapons",
                   "type": "dir",
-                  "hash": "10a0c42b262924cb95a8d65bcab53f6a07969558b2e8ea9c1dc97e5012acef2e",
+                  "hash": "4a21723e3e61767491d3012d67bad996f9bd0f4f5267ff4dab5f966cce6d7fb4",
                   "children": [
                     {
                       "name": "blackHoleMarble.ts",
@@ -3348,8 +3419,8 @@
                       "name": "hailstormCauldron.ts",
                       "path": "game/src/content/weapons/hailstormCauldron.ts",
                       "type": "file",
-                      "hash": "890e492e9d906079a0777874a9f939107cc2f4ca9d36bf328ef99dbf5e24c6ca",
-                      "size": 2107
+                      "hash": "980446b28e75d252da86eb88e6230f36e5ae1d5fee326bcbeb1990e9c5cbb64a",
+                      "size": 2501
                     },
                     {
                       "name": "index.ts",
@@ -3376,8 +3447,8 @@
                       "name": "pike.ts",
                       "path": "game/src/content/weapons/pike.ts",
                       "type": "file",
-                      "hash": "bc2d6a80dfbc887cdd48fd55454dea745987a0a9fba3bc5f2a1924f0837ba44a",
-                      "size": 641
+                      "hash": "5e86b4c4db68512880d9b14ec423faec178851afa44497052ed75bcd7d5c94f8",
+                      "size": 1000
                     },
                     {
                       "name": "pinataMirv.ts",
@@ -3404,8 +3475,8 @@
                       "name": "scepter.ts",
                       "path": "game/src/content/weapons/scepter.ts",
                       "type": "file",
-                      "hash": "30f4f01260a566a2911b1582c7e0fb12dd010af69c70e034ca8f279913d15806",
-                      "size": 772
+                      "hash": "f65ef2c7764fe01e4a3ad02619bf863795e46889455ccf98e7efdfac392fe813",
+                      "size": 1410
                     },
                     {
                       "name": "silklineShooters.ts",
@@ -3779,10 +3850,17 @@
       "size": 4535
     },
     {
+      "name": "scratch_regress.log",
+      "path": "scratch_regress.log",
+      "type": "file",
+      "hash": "f545771d43be55ba9842834afeee9e70c110e3645409f6ce4a9800d8becf1aa9",
+      "size": 3197
+    },
+    {
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "db8a0962a398148223d71db3192c266383df8e5cc315728473fdada44d8f43c4",
+      "hash": "9346e49c02ea42b869dcb19a958f05c43b5275b5f36c7e1235b6886f1bca34d0",
       "children": [
         {
           "name": "agy_chain.sh",
@@ -3953,6 +4031,13 @@
           "size": 5812
         },
         {
+          "name": "test_weapons.sh",
+          "path": "tools/test_weapons.sh",
+          "type": "file",
+          "hash": "915e3a77c9e9c9f678ccc50897eccd9b4bc083e088fd9d323c3ba7c99ce4de7f",
+          "size": 877
+        },
+        {
           "name": "tune_boss.mjs",
           "path": "tools/tune_boss.mjs",
           "type": "file",
@@ -3974,13 +4059,6 @@
           "size": 17704
         }
       ]
-    },
-    {
-      "name": "vite_dev.log",
-      "path": "vite_dev.log",
-      "type": "file",
-      "hash": "f6b0fd4ff1219d285e3a7c036576a200563aafc8886d3cc5b8d7d8b1ab53ae87",
-      "size": 732
     },
     {
       "name": "vite4.log",

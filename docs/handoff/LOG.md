@@ -2,6 +2,13 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Pocket Tanks batch 2, weapon smoke test, SFX plan (v1.20.0, private)
+- **Abilities:** Horned Scepter "Hellbrand" leaves a fire pool where it lands (`poolSteps/poolRadius/poolTick/poolBurnSteps`, burn only: any direct pool damage broke the level 16 band because the boss was standing in it). Hunters Pike "Driller" blasts the first solid it meets after piercing (`drillRadius/drillMult`, kept small for the same reason).
+- **Fixes found by looking:** Rolling Millstone showed the Blade sprite because `params.behavior` bypasses the weapon's own texture; the row now uses its own behaviour file. Hailstorm Cauldron dropped on block tops and did almost nothing: half the drops now seek monsters in the band, drops fall faster, `dropMult` 1.2.
+- **Tests:** `tools/test_weapons.sh` fires ten expansion weapons on level 5 and needs score > 0 (all pass); screenshots in `docs/handoff/shots/gen/w/`. `regress:quick` bands pass for 1, 4, 8, 12, 16, 20, 24.
+- **Docs:** `docs/monster_mash/10_sfx_plan.md` is the weapon-ability sound plan (RUN `generate sfx` for the hero set, synth for the rest, data-owned `sfx` ids, ducking, fallbacks). Nothing built yet; estimate credits and ask the owner first.
+- **Open:** Boomerang Rebound, Scattergun Cluster, relic add-ons; projectile re-hit damage (a resting projectile hits every contact; fixing it needs the whole band table re-tuned); the sound build.
+
 ## 2026-10-22 · claude · X6b realm 6 Sky Citadel, six weapons, generated Omnitrix arms (v1.19.0, private)
 - **Realm 6** `sky_citadel` (levels 21-24: Cloud dock, Gale bridge, Thunder hall, Storm throne): background `sky`, Map lighting `sky`, monsters `cloud_harpy` (imp behaviour), `storm_mage` (hexer, shield 60), boss `storm_sovereign` (HP 2200, armour 24, reuses `frost_giant` with `params.storm = 1`; the theme table in `frostGiant.ts` now holds ice, lava and storm words and colours).
 - **Weapons:** Pinata MIRV (chest c_l21), Earthworm Drill (c_l22), Chain Rod (c_l23), Hailstorm Cauldron (unlock level 22), Rolling Millstone (level 23, reuses the Blade roll via `params.behavior`), Black Hole Marble (legendary, drops from `storm_sovereign`). Numbers are in the data rows; behaviours in `src/content/weapons/` (`util.ts` has the shared `landingY`).

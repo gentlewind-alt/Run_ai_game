@@ -32,7 +32,10 @@ export const hailstormCauldron: WeaponImpl = {
         t++;
         if (launched < P.drops && t % P.dropEvery === 0) {
           launched++;
-          const x = cx + (ctx.rng.next() - 0.5) * P.bandWidth;
+          // half the drops seek the monsters in the band, the rest fall at random across it
+          const near = ctx.nearestMonsters(cx, b.position.y, 4).filter((m) => Math.abs(m.body.position.x - cx) <= P.bandWidth / 2);
+          const seek = near.length > 0 && launched % 2 === 0 ? near[(launched / 2) % near.length | 0] : null;
+          const x = seek ? seek.body.position.x + (ctx.rng.next() - 0.5) * 8 : cx + (ctx.rng.next() - 0.5) * P.bandWidth;
           const landY = landingY(ctx, x);
           const dot = ctx.fx.dot(x, -10, 2.2, C('5'), C('6'));
           let y = -10;
