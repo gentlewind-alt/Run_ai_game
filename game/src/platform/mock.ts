@@ -23,6 +23,24 @@ const mockLeaderboardRows: Row[] = [
   { rank: 10, name: 'RookieSling', score: 1050 },
 ];
 
+const mockBoards = new Map<string, Row[]>();
+const FAKE_NAMES = ['DragonSlayer', 'GoblinCrusher', 'ShadowBow', 'IronShield', 'MashMaster', 'HexBreaker', 'BoulderToss', 'ImpCatcher', 'StoneWall', 'RookieSling'];
+
+/** Daily keeps the original table; every other board gets believable fake rows scaled to the board. */
+function rowsFor(board: string): Row[] {
+  let rows = mockBoards.get(board);
+  if (!rows) {
+    if (board === 'daily') rows = mockLeaderboardRows;
+    else {
+      const seed = [...board].reduce((n, c) => n + c.charCodeAt(0), 0);
+      const top = board === 'overall' ? 18000 : 1800 + (seed % 6) * 500;
+      rows = FAKE_NAMES.map((name, i) => ({ rank: i + 1, name, score: Math.round(top * (1 - i * 0.08)) }));
+    }
+    mockBoards.set(board, rows);
+  }
+  return rows;
+}
+
 export const mockPlatform: Platform = {
   ...noopPlatform,
   hosted: false,
@@ -39,21 +57,23 @@ export const mockPlatform: Platform = {
   leaderboard: {
     async submit(board, score) {
       console.debug('[mock] leaderboard submit', board, score);
-      const existing = mockLeaderboardRows.find((r) => r.name === 'You');
+      const rows = rowsFor(board);
+      const existing = rows.find((r) => r.name === 'You');
       if (existing) {
         existing.score = Math.max(existing.score, score);
       } else {
-        mockLeaderboardRows.push({ rank: 0, name: 'You', score });
+        rows.push({ rank: 0, name: 'You', score });
       }
-      mockLeaderboardRows.sort((a, b) => b.score - a.score);
-      mockLeaderboardRows.forEach((r, i) => { r.rank = i + 1; });
+      rows.sort((a, b) => b.score - a.score);
+      rows.forEach((r, i) => { r.rank = i + 1; });
     },
-    async top(_board, n) {
-      return mockLeaderboardRows.slice(0, n);
+    async top(board, n) {
+      return rowsFor(board).slice(0, n);
     },
-    async myRank(_board) {
-      const found = mockLeaderboardRows.find((r) => r.name === 'You');
-      return found ?? { rank: mockLeaderboardRows.length + 1, name: 'You', score: 0 };
+    async myRank(board) {
+      const rows = rowsFor(board);
+      const found = rows.find((r) => r.name === 'You');
+      return found ?? { rank: rows.length + 1, name: 'You', score: 0 };
     },
   },
   async share(text, params) {

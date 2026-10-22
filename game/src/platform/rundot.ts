@@ -1,5 +1,6 @@
 // The only file that imports the RUN SDK.
 import RundotGameAPI from '@series-inc/rundot-game-sdk/api';
+import { boardRoute } from './boards';
 import { noopPlatform, type Platform, type Row } from './types';
 
 const safe = <T>(f: () => T, fallback: T): T => {
@@ -53,14 +54,14 @@ export const rundotPlatform: Platform = {
   leaderboard: {
     async submit(board: string, score: number): Promise<void> {
       try {
-        await RundotGameAPI.leaderboard.submitScore({ score, duration: 60, period: board });
+        await RundotGameAPI.leaderboard.submitScore({ score, duration: 60, ...boardRoute(board) });
       } catch (e) {
         console.warn('leaderboard submit failed', e);
       }
     },
     async top(board: string, n: number): Promise<Row[]> {
       try {
-        const res: any = await RundotGameAPI.leaderboard.getPagedScores({ period: board, limit: n });
+        const res: any = await RundotGameAPI.leaderboard.getPagedScores({ limit: n, ...boardRoute(board) });
         return (res?.entries ?? []).map((e: any, i: number) => ({
           rank: e.rank ?? i + 1,
           name: e.player?.username ?? 'Player',
@@ -72,7 +73,7 @@ export const rundotPlatform: Platform = {
     },
     async myRank(board: string): Promise<Row | null> {
       try {
-        const res: any = await RundotGameAPI.leaderboard.getMyRank({ period: board });
+        const res: any = await RundotGameAPI.leaderboard.getMyRank({ ...boardRoute(board) });
         return res ? { rank: res.rank, name: 'You', score: res.score } : null;
       } catch {
         return null;

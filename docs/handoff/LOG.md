@@ -2,6 +2,13 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · X4 score leaderboards built directly (v1.16.0, private)
+- **Boards:** `daily` (RUN period `daily`), `level_<n>` and `overall` (RUN mode with period `alltime`). `src/platform/boards.ts` maps board names to RUN options (the old code passed every board name as a period). A win submits the level best and the overall total (`core/leaderboards.ts`: `submitBests`, `levelRankLine`, `overallScore`); errors never reach the game loop.
+- **UI:** `scenes/LeaderboardScene.ts` (tabs Daily / This level / Overall, level selector, top 10, your row highlighted or shown below, Refresh with a 4 s cooldown), Map "Scores" button, "Level rank #N" line on Results. Added a `#` glyph to the 5x7 font (it showed as `?`, also in the Daily results panel).
+- **Config:** `rundot/leaderboard.config.json` now declares modes `overall` and `level_1..level_24` plus periods `daily` and `alltime` (`requiresToken` still false, owner decision open). `rundot predeploy` passes. Not verified: whether the host accepts these modes on deploy and returns real rows.
+- **Testing aid:** open the game with `?mock=1` to force the in-memory mock (fake rows). `tools/scene_shot.mjs <scene> [json] [out.png]` screenshots any scene from the title in headless Chrome (`QS="&mock=1"` for the query string).
+- **Checks:** `check`, `build`, `regress:quick` pass; screenshots of all three tabs reviewed. No headless assertions for the boards yet (listed for the next agy run).
+
 ## 2026-10-22 · claude · X3 realm 4 Frost Peaks built directly (v1.15.0, private)
 - **Why direct:** agy gemini and claude-sonnet both return `RESOURCE_EXHAUSTED: AI credits balance too low`; the routing rule falls through to Claude.
 - **Built:** realm `frost_peaks` (levels 13-16, background style `frost`, Map page 2 via "More realms >"), monsters `frost_wolf` (runner), `ice_golem` (shatters on death, shard blast), boss `frost_giant` (armour 16, icicle volley visual, chest crystal weak point 2x), generated art from the RUN CLI loaded through a new monster `sprite` field, weapon `w_brahmastra_arrow` (legendary, unlock boss `frost_giant`): the tap freezes the arrow and fires a 240 px beam for 90 steps sweeping 10 degrees (`fx.beam`, `DamageOpts.ignoreArmour`, wood x1.5, crystal x3, one charge), synthesized `sfx.brahmastra()`.

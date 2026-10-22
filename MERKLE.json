@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "a4180a68d8bcf610185e331faeb85fa87b116db04e0c6c738beabe41bf656faa",
+  "hash": "b850a1255cbd8d27be4de0d8a83bae556dc4ce462e22a6fbf476f03eda7472d7",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "fe5012ee251db368f1b1efa084522dfa3a48132693f357bce561f107ef08f087",
+      "hash": "a7bd33e28acbc2fa9f1a6b9a0efb790b60e7d73aea15139e391d68d0e15fe3aa",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "eea4cf504c4302b06daacbc81c4cf0a32f62d7694a08ecccdf2d77a77b736887",
+          "hash": "c1742c8fc2aba6fdcd283839f0510a9f9bd643f3651a95766b0a317cc2e27231",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -113,15 +113,15 @@
               "name": "agy_chain.log",
               "path": "docs/handoff/agy_chain.log",
               "type": "file",
-              "hash": "8eba807b50c9f9b6fe3f752287ced758f927ff9fa7256e42f5c3ce104afb467e",
-              "size": 343
+              "hash": "6517f8d90b2f9f9076d2466590590c6331d18261d771ba0adc236dc475877e51",
+              "size": 564
             },
             {
               "name": "agy_done.txt",
               "path": "docs/handoff/agy_done.txt",
               "type": "file",
-              "hash": "270c6a787f3ecc2c779975f78db915dc437c963b235f6855a69977ccfe083769",
-              "size": 63
+              "hash": "609609e0f67475feae3bec98163e1e3f13b88e0c864f2a546813fd867fe3a7e5",
+              "size": 93
             },
             {
               "name": "agy_task_boss.md",
@@ -285,6 +285,13 @@
               "size": 4392
             },
             {
+              "name": "agy_task_x3b_tests.md",
+              "path": "docs/handoff/agy_task_x3b_tests.md",
+              "type": "file",
+              "hash": "ce4842b2fa12ea43f0e91445911c835157e4d18a794c2baaa9c327c6c56386f4",
+              "size": 2485
+            },
+            {
               "name": "agy_task_x4_leaderboards.md",
               "path": "docs/handoff/agy_task_x4_leaderboards.md",
               "type": "file",
@@ -299,11 +306,25 @@
               "size": 3174
             },
             {
+              "name": "agy_task_x6a_realm5_omnitrix.md",
+              "path": "docs/handoff/agy_task_x6a_realm5_omnitrix.md",
+              "type": "file",
+              "hash": "bdb2787dd8ab48b699beedf6e1615d55d75031ddab17a3e15b37a4df8530af79",
+              "size": 4003
+            },
+            {
+              "name": "agy_task_x6b_realm6_weapons.md",
+              "path": "docs/handoff/agy_task_x6b_realm6_weapons.md",
+              "type": "file",
+              "hash": "5538060855f58b0c35273603b69e5218571931f06eab3372d8b6b8e076567db3",
+              "size": 3572
+            },
+            {
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "0e98efc19632c4bb19e74500aa425ec81e62d645976d6d083f38bb36e91d65b2",
-              "size": 91132
+              "hash": "41123c66e6200c7fa5d75f29f72f588053d87df59daffec525a4107846bcc3bc",
+              "size": 92592
             },
             {
               "name": "ref",
@@ -352,7 +373,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "05177a1c471a0baadcf1dfecf31c319af13737f67a41e1f86e8aaba527398ae8",
+              "hash": "c2f58623046a6ce0135cda09620892adb53114fc2e42d2f0b7c480a313901752",
               "children": [
                 {
                   "name": "01_title.png",
@@ -569,7 +590,7 @@
                   "name": "gen",
                   "path": "docs/handoff/shots/gen",
                   "type": "dir",
-                  "hash": "ac4bef3822abe66f8bc35bf99c29405d30de1d2b572cdd9d3befa10294524655",
+                  "hash": "12b6a7a227877cb6467cf6ee82fb2f6f7d63b0a70d81b89a69ac937581da6475",
                   "children": [
                     {
                       "name": "arrow.png",
@@ -584,6 +605,20 @@
                       "type": "file",
                       "hash": "40524f2856d49711b1ab3e47d259115aa4b20c71964d28cb1125b2630e034ec5",
                       "size": 506
+                    },
+                    {
+                      "name": "cloud_harpy.png",
+                      "path": "docs/handoff/shots/gen/cloud_harpy.png",
+                      "type": "file",
+                      "hash": "718dd04dffee8d15256c9cd8d21537372a7a82e7b4873d92531137094f572d98",
+                      "size": 40153
+                    },
+                    {
+                      "name": "cloud_harpy.png.json",
+                      "path": "docs/handoff/shots/gen/cloud_harpy.png.json",
+                      "type": "file",
+                      "hash": "594754820770bed7081a523da7e9b5d200378f4e21f1b2e2a68098b8a311af70",
+                      "size": 454
                     },
                     {
                       "name": "contact_sheet.png",
@@ -649,6 +684,34 @@
                       "size": 522
                     },
                     {
+                      "name": "forge_ogre.png",
+                      "path": "docs/handoff/shots/gen/forge_ogre.png",
+                      "type": "file",
+                      "hash": "8fa3041ff61c48a4c20b287424c8ff94a08fa15d9847d5234da003f226a0bd2a",
+                      "size": 24254
+                    },
+                    {
+                      "name": "forge_ogre.png.json",
+                      "path": "docs/handoff/shots/gen/forge_ogre.png.json",
+                      "type": "file",
+                      "hash": "774e386f0a041d73feae09dace0729214be4ff39045a6f0835bf07fde71d22e4",
+                      "size": 476
+                    },
+                    {
+                      "name": "forge_tyrant.png",
+                      "path": "docs/handoff/shots/gen/forge_tyrant.png",
+                      "type": "file",
+                      "hash": "10a7bcf8df04af220a138b1d89446df9ad062331e85e62896dfeef4c0ea6de5d",
+                      "size": 29374
+                    },
+                    {
+                      "name": "forge_tyrant.png.json",
+                      "path": "docs/handoff/shots/gen/forge_tyrant.png.json",
+                      "type": "file",
+                      "hash": "1888a676a2925272a9df59930072bdaf6c9280d82c7d966e25db8cc672d92f00",
+                      "size": 498
+                    },
+                    {
                       "name": "frost_giant.png",
                       "path": "docs/handoff/shots/gen/frost_giant.png",
                       "type": "file",
@@ -689,6 +752,20 @@
                       "type": "file",
                       "hash": "2f6c836f5db65dd646308cec414a808ba3868db5958e6ed15cd0ab30c1c8f4c5",
                       "size": 479
+                    },
+                    {
+                      "name": "lava_imp.png",
+                      "path": "docs/handoff/shots/gen/lava_imp.png",
+                      "type": "file",
+                      "hash": "daa4becf3aeec5bd6b1505330882e0307224481c56e49a8fb5c1f567d9644754",
+                      "size": 8302
+                    },
+                    {
+                      "name": "lava_imp.png.json",
+                      "path": "docs/handoff/shots/gen/lava_imp.png.json",
+                      "type": "file",
+                      "hash": "ecf5de1de6edbf5ed04a90c1a8b1ab80d9f58d06f98df2d0ccfedb2abcef2546",
+                      "size": 461
                     },
                     {
                       "name": "maul_test.png",
@@ -747,6 +824,34 @@
                       "size": 486
                     },
                     {
+                      "name": "storm_mage.png",
+                      "path": "docs/handoff/shots/gen/storm_mage.png",
+                      "type": "file",
+                      "hash": "b6103caf5eee7a14f8e513247f3cf4a18c7e782c95492839931b12269d263c5f",
+                      "size": 31229
+                    },
+                    {
+                      "name": "storm_mage.png.json",
+                      "path": "docs/handoff/shots/gen/storm_mage.png.json",
+                      "type": "file",
+                      "hash": "e68a50254f49cc7d3426f0981ab3145051913b09de91998b7d3c30acbff60bab",
+                      "size": 498
+                    },
+                    {
+                      "name": "storm_sovereign.png",
+                      "path": "docs/handoff/shots/gen/storm_sovereign.png",
+                      "type": "file",
+                      "hash": "8602af1a7180a937ce00533017d10446414920e7ee5ddea95f30a74c01e56f90",
+                      "size": 36754
+                    },
+                    {
+                      "name": "storm_sovereign.png.json",
+                      "path": "docs/handoff/shots/gen/storm_sovereign.png.json",
+                      "type": "file",
+                      "hash": "094048fa6c1f30799f89bb46118f54a70e558ee047aebf680c45c392c3492b0e",
+                      "size": 496
+                    },
+                    {
                       "name": "w_brahmastra_arrow.png",
                       "path": "docs/handoff/shots/gen/w_brahmastra_arrow.png",
                       "type": "file",
@@ -761,6 +866,34 @@
                       "size": 519
                     },
                     {
+                      "name": "w_earthworm_drill.png",
+                      "path": "docs/handoff/shots/gen/w_earthworm_drill.png",
+                      "type": "file",
+                      "hash": "73da4505092bae33704d5e9c19b1f9188d3e6dfccb1d722913aa92ca255dcbf0",
+                      "size": 26601
+                    },
+                    {
+                      "name": "w_earthworm_drill.png.json",
+                      "path": "docs/handoff/shots/gen/w_earthworm_drill.png.json",
+                      "type": "file",
+                      "hash": "af0e996d1f78a3e5441d01c996125429539398b14461e966ba690da0ca99876f",
+                      "size": 438
+                    },
+                    {
+                      "name": "w_hailstorm_cauldron.png",
+                      "path": "docs/handoff/shots/gen/w_hailstorm_cauldron.png",
+                      "type": "file",
+                      "hash": "4f30a56de3b607d2ab4331dca5430f3050b8057af5dc9fa5b6953f1c974a248b",
+                      "size": 9961
+                    },
+                    {
+                      "name": "w_hailstorm_cauldron.png.json",
+                      "path": "docs/handoff/shots/gen/w_hailstorm_cauldron.png.json",
+                      "type": "file",
+                      "hash": "84587e4c3971c2a2529f60b18af07c13edd2b03f88572b11218bcf2583eda395",
+                      "size": 455
+                    },
+                    {
                       "name": "w_omnitrix_dial.png",
                       "path": "docs/handoff/shots/gen/w_omnitrix_dial.png",
                       "type": "file",
@@ -773,6 +906,34 @@
                       "type": "file",
                       "hash": "b436daa9d1d75168f85a967b73d255f94deaa6fdc0d0451c709ade09989b69fa",
                       "size": 452
+                    },
+                    {
+                      "name": "w_pinata_mirv.png",
+                      "path": "docs/handoff/shots/gen/w_pinata_mirv.png",
+                      "type": "file",
+                      "hash": "f5d26aa4e225adf2c21c3f82d3e50214341f25a6cfba75abea3f22acf1acbdab",
+                      "size": 6166
+                    },
+                    {
+                      "name": "w_pinata_mirv.png.json",
+                      "path": "docs/handoff/shots/gen/w_pinata_mirv.png.json",
+                      "type": "file",
+                      "hash": "1b6835ef1844227f50fa34cf45aee7f2737e58a0bad3880a4b6841bb4d322cc7",
+                      "size": 433
+                    },
+                    {
+                      "name": "w_rolling_millstone.png",
+                      "path": "docs/handoff/shots/gen/w_rolling_millstone.png",
+                      "type": "file",
+                      "hash": "a5cfe8bd2fce3c41c322e9e695716245aa6a85610ff69d30574563c1cee71af6",
+                      "size": 9559
+                    },
+                    {
+                      "name": "w_rolling_millstone.png.json",
+                      "path": "docs/handoff/shots/gen/w_rolling_millstone.png.json",
+                      "type": "file",
+                      "hash": "fc7c001be076dd57da10263f024c70ac93e00e238f797c7184441b3eaaf75588",
+                      "size": 447
                     }
                   ]
                 },
@@ -1021,6 +1182,27 @@
                       "size": 14398
                     }
                   ]
+                },
+                {
+                  "name": "lb_daily.png",
+                  "path": "docs/handoff/shots/lb_daily.png",
+                  "type": "file",
+                  "hash": "26f43eed20b705f9d0f33d204f7a23ba3b1d3d24a7df86e488e0acce8e913c52",
+                  "size": 39082
+                },
+                {
+                  "name": "lb_level.png",
+                  "path": "docs/handoff/shots/lb_level.png",
+                  "type": "file",
+                  "hash": "8ad4eb4ece991d759c10caf6f7eb63e91bd3db9587a9289918278da98457e3e6",
+                  "size": 39233
+                },
+                {
+                  "name": "lb_overall.png",
+                  "path": "docs/handoff/shots/lb_overall.png",
+                  "type": "file",
+                  "hash": "9ca95a7df2ba14b64fe95412ff0df782fbfd37f0178a3902b5ca962d69baf0f9",
+                  "size": 39465
                 },
                 {
                   "name": "relics",
@@ -1535,8 +1717,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "d27ca49bd7a365a77ead49857944c4b2eff37fafc1a90039c0b1428a27525f73",
-              "size": 9558
+              "hash": "ee81fddc2c5a9dabc5f1b7e50980ba2a330a59ff13a59e3404ae4a52ba24eee5",
+              "size": 9593
             }
           ]
         },
@@ -1681,7 +1863,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "838be87063a77fc2d9c20ab6abda96891efdc7dc9cc33f37fb191857e888055b",
+      "hash": "6449c9c65573e3e08b165a861e8974d755ac8a4bb2ef0f58ba6028bf809463ce",
       "children": [
         {
           "name": ".gitignore",
@@ -2128,7 +2310,7 @@
           "name": "rundot",
           "path": "game/rundot",
           "type": "dir",
-          "hash": "c97f709f506c382e7b429aa179f87b8ee838a59365dd448d5e161c1401b67048",
+          "hash": "8f41ac4c9fdd1ab0d3c03958a45e0cbec8351aa67c15c6d71584cf2ad4d51967",
           "children": [
             {
               "name": "cli_hooks.json",
@@ -2141,8 +2323,8 @@
               "name": "leaderboard.config.json",
               "path": "game/rundot/leaderboard.config.json",
               "type": "file",
-              "hash": "56d2d8079fa6e263a542f51c23a1d4cd5fc2ed1392aaa16b42d48fe67e69fd56",
-              "size": 29
+              "hash": "a7eb79a4fbcf093412a4a996b6634d91ab7c2788fd6de4ecae25ffe522d47384",
+              "size": 1624
             },
             {
               "name": "shop.config.json",
@@ -2236,13 +2418,13 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "b73aec8140389c18f4c8619b6293333c0e26aff0855eecccc34a55f585d89c23",
+          "hash": "1e9575795796ebe7459222420f8f0ae59df8721d2ced07c46e63ff5c05830f20",
           "children": [
             {
               "name": "art",
               "path": "game/src/art",
               "type": "dir",
-              "hash": "e9f819c742174839aa6fe03bee5969a843e49f272e6847f189c82577e1df4111",
+              "hash": "4fbe7e547bd7eb217fe83982d26faafe42e61cf23a3979c555f9ad5b8833835f",
               "children": [
                 {
                   "name": "backgrounds.ts",
@@ -2255,8 +2437,8 @@
                   "name": "font5x7.ts",
                   "path": "game/src/art/font5x7.ts",
                   "type": "file",
-                  "hash": "de771357515c4b28118bfb1db13f46ed129357365e4049e74da83b116f96944a",
-                  "size": 7987
+                  "hash": "d3d2af015c66e7da0127609145f17ee173af0d4e5572579007c1bfb6481c070c",
+                  "size": 8037
                 },
                 {
                   "name": "generatedSprites.ts",
@@ -2861,7 +3043,7 @@
               "name": "core",
               "path": "game/src/core",
               "type": "dir",
-              "hash": "b773ae24234a15dfb9beecad93b3c739f2e6e0748d5d63c271a2b3f8b2830a7a",
+              "hash": "34dc054efe92973883dd62f955394639ceaf1ac3bcda140cf7590bf401800e36",
               "children": [
                 {
                   "name": "economy.ts",
@@ -2883,6 +3065,13 @@
                   "type": "file",
                   "hash": "7039df07db1848bbefaac3a51ae84bf1c60c5d7eec6a1afdd70dcc2d83c32a33",
                   "size": 2325
+                },
+                {
+                  "name": "leaderboards.ts",
+                  "path": "game/src/core/leaderboards.ts",
+                  "type": "file",
+                  "hash": "56c498c679864dc342a6775e1303f0ac4d88fc937006cc6e2ed41bd5a8d29385",
+                  "size": 1336
                 },
                 {
                   "name": "profile.ts",
@@ -2962,35 +3151,42 @@
               "name": "main.ts",
               "path": "game/src/main.ts",
               "type": "file",
-              "hash": "65ecb64ed0c25e93c25bdf5d523fd48dd98003ec2ee7471b7002423dfff219c5",
-              "size": 3272
+              "hash": "36d81a818ade3da2123408479c22bc574be23734409bb038e1663165e8e0073e",
+              "size": 3348
             },
             {
               "name": "platform",
               "path": "game/src/platform",
               "type": "dir",
-              "hash": "d1e766858261a52a231909b45839ee408898a80e5c0d48875ae9aee4f9878a5a",
+              "hash": "7da2b5fbe5ce7e444bd2acd981c653db8e2ce5d1940be95716f3473e238180f0",
               "children": [
+                {
+                  "name": "boards.ts",
+                  "path": "game/src/platform/boards.ts",
+                  "type": "file",
+                  "hash": "6868c051e0f81b286598f03edc1d5c9fec920d84942983315e88c0f606d76e6e",
+                  "size": 711
+                },
                 {
                   "name": "index.ts",
                   "path": "game/src/platform/index.ts",
                   "type": "file",
-                  "hash": "8b3fa8ec2a63aed751eb5474a5243470fabd3f6e428240a4d6e471ef635acd1c",
-                  "size": 338
+                  "hash": "082702507e8a3290ccc04db670e438d460550902ddc88eec545e7db37c05fe15",
+                  "size": 577
                 },
                 {
                   "name": "mock.ts",
                   "path": "game/src/platform/mock.ts",
                   "type": "file",
-                  "hash": "d43904666d8428a026c965a88de4bd9bd3cae18ddbe09c7855d706a059d5343b",
-                  "size": 2948
+                  "hash": "1175cc30da658d2e48a3cd330fa93edeebf4bfe59fca5ef5ca39400331fbc42e",
+                  "size": 3709
                 },
                 {
                   "name": "rundot.ts",
                   "path": "game/src/platform/rundot.ts",
                   "type": "file",
-                  "hash": "63f20353b681ec45e2a4e8ebae12ded3c375abc21dbc6f3ec0bf0fe36d618c30",
-                  "size": 4899
+                  "hash": "631efb5e531bcb57cccc9a5bbef14a4ff1418ebaad4eaf4be6b3c5ea05bcf4b3",
+                  "size": 4959
                 },
                 {
                   "name": "types.ts",
@@ -3005,7 +3201,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "aa8e6c57025125881b4481cefbb3bb85f23ae21b3e2cf542cad728d84c4e00ef",
+              "hash": "a0049edcdf6429e9c091dbfc82503a043dcf60fdfddee299f2f624d390d18072",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -3029,6 +3225,13 @@
                   "size": 1892
                 },
                 {
+                  "name": "LeaderboardScene.ts",
+                  "path": "game/src/scenes/LeaderboardScene.ts",
+                  "type": "file",
+                  "hash": "d91e0ff435a982ee3e29f59bd5b5f9854280ecb61bf036ecb83eff9156a4df49",
+                  "size": 5642
+                },
+                {
                   "name": "LoadoutScene.ts",
                   "path": "game/src/scenes/LoadoutScene.ts",
                   "type": "file",
@@ -3039,15 +3242,15 @@
                   "name": "MapScene.ts",
                   "path": "game/src/scenes/MapScene.ts",
                   "type": "file",
-                  "hash": "d12af10a25fe5dd9a31b92e1e1b1b2aca0f967b753d7008514ec8c6b4f7658fb",
-                  "size": 9037
+                  "hash": "d0ab92b99ef2a8398201a0ffefa5b92febde27bd051e86cb23e68bae4f6b6d53",
+                  "size": 9188
                 },
                 {
                   "name": "ResultsScene.ts",
                   "path": "game/src/scenes/ResultsScene.ts",
                   "type": "file",
-                  "hash": "f4fcf8679c5c27e069d0dec43de4c7968476aff402da168f8e630bad01b1e6af",
-                  "size": 10367
+                  "hash": "a7e0cc2d99d87d52cdb7a0543a0c4c93494da03cdc30ea20c8b673e1aed5f38d",
+                  "size": 10674
                 },
                 {
                   "name": "ShopScene.ts",
@@ -3148,6 +3351,13 @@
       "size": 505
     },
     {
+      "name": "gen_realm56_log.txt",
+      "path": "gen_realm56_log.txt",
+      "type": "file",
+      "hash": "dcff27078dcb79b2ad8b7219d13e5fbd355d2bbdd52c60abb1790101c8dc44e0",
+      "size": 1421
+    },
+    {
       "name": "package.json",
       "path": "package.json",
       "type": "file",
@@ -3165,7 +3375,7 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "dff285e48720dc1fdd6ecd5c6a268d86c2fe1e05950704eccc6ba5ed10c6d0b0",
+      "hash": "5cd20ecfd48794882bb9c1541746524a2ebb8d4741b0f79e22128233508c69a9",
       "children": [
         {
           "name": "agy_chain.sh",
@@ -3201,6 +3411,13 @@
           "type": "file",
           "hash": "79f966b1ddd90bcd59a0cf5b582885e53348ffcd3ea36f9120869b5c02b8aea9",
           "size": 1940
+        },
+        {
+          "name": "gen_realm56_sprites.sh",
+          "path": "tools/gen_realm56_sprites.sh",
+          "type": "file",
+          "hash": "b9d428a049c14e01ebb91eb1cb110c87af995ed7d72c60eef7b607f53bb4e7c0",
+          "size": 3280
         },
         {
           "name": "gen_relic_sprites.sh",
@@ -3273,6 +3490,13 @@
           "size": 10370
         },
         {
+          "name": "scene_shot.mjs",
+          "path": "tools/scene_shot.mjs",
+          "type": "file",
+          "hash": "615147329f051b6a8672c7de71cd99cabebb7e24771da4976e719a1da266bedd",
+          "size": 3233
+        },
+        {
           "name": "sprite_sheet.ps1",
           "path": "tools/sprite_sheet.ps1",
           "type": "file",
@@ -3324,6 +3548,13 @@
       ]
     },
     {
+      "name": "vite_dev.log",
+      "path": "vite_dev.log",
+      "type": "file",
+      "hash": "357aae10345ea39b6378f66aca36a6a821a0ef4380665ff8df77c4f473fd8f71",
+      "size": 264
+    },
+    {
       "name": "vite4.log",
       "path": "vite4.log",
       "type": "file",
@@ -3341,8 +3572,8 @@
       "name": "vite6.log",
       "path": "vite6.log",
       "type": "file",
-      "hash": "014702edb85d64ae0aa57e41305478205f6e4a58beaa7c832b385678a989bd3d",
-      "size": 246
+      "hash": "887235343658290a706b29e374827e76ef87d10c43a55512ec0962a36e72fef6",
+      "size": 2376
     }
   ]
 }

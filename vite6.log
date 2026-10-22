@@ -3,3 +3,26 @@
 
   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5212[22m/[39m
 [2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+node:internal/fs/watchers:323
+    const error = new UVException({
+                  ^
+
+Error: EBUSY: resource busy or locked, watch 'C:\Users\samar\OneDrive\Desktop\Run_ai_game\.claude\worktrees\new-session-c737a3\game\MONSTER_MASH__Slingshot_Siege_bebea3ce85003a62.zip'
+    at FSWatcher.<computed> (node:internal/fs/watchers:323:19)
+    at Object.watch (node:fs:2608:36)
+    at createFsWatchInstance (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22195:17)
+    at setFsWatchListener (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22242:15)
+    at NodeFsHandler._watchWithNodeFs (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22397:14)
+    at NodeFsHandler._handleFile (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22461:23)
+    at NodeFsHandler._addToNodeFs (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22703:21)
+Emitted 'error' event on FSWatcher instance at:
+    at FSWatcher._handleError (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:23896:10)
+    at NodeFsHandler._addToNodeFs (file:///C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/game/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:22711:18) {
+  errno: -4082,
+  syscall: 'watch',
+  code: 'EBUSY',
+  path: 'C:\\Users\\samar\\OneDrive\\Desktop\\Run_ai_game\\.claude\\worktrees\\new-session-c737a3\\game\\MONSTER_MASH__Slingshot_Siege_bebea3ce85003a62.zip',
+  filename: 'C:\\Users\\samar\\OneDrive\\Desktop\\Run_ai_game\\.claude\\worktrees\\new-session-c737a3\\game\\MONSTER_MASH__Slingshot_Siege_bebea3ce85003a62.zip'
+}
+
+Node.js v24.21.0

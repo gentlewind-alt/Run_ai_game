@@ -1,3 +1,90 @@
 {
-  "requiresToken": false
+  "requiresToken": false,
+  "modes": {
+    "overall": {
+      "displayName": "Overall"
+    },
+    "level_1": {
+      "displayName": "Level 1"
+    },
+    "level_2": {
+      "displayName": "Level 2"
+    },
+    "level_3": {
+      "displayName": "Level 3"
+    },
+    "level_4": {
+      "displayName": "Level 4"
+    },
+    "level_5": {
+      "displayName": "Level 5"
+    },
+    "level_6": {
+      "displayName": "Level 6"
+    },
+    "level_7": {
+      "displayName": "Level 7"
+    },
+    "level_8": {
+      "displayName": "Level 8"
+    },
+    "level_9": {
+      "displayName": "Level 9"
+    },
+    "level_10": {
+      "displayName": "Level 10"
+    },
+    "level_11": {
+      "displayName": "Level 11"
+    },
+    "level_12": {
+      "displayName": "Level 12"
+    },
+    "level_13": {
+      "displayName": "Level 13"
+    },
+    "level_14": {
+      "displayName": "Level 14"
+    },
+    "level_15": {
+      "displayName": "Level 15"
+    },
+    "level_16": {
+      "displayName": "Level 16"
+    },
+    "level_17": {
+      "displayName": "Level 17"
+    },
+    "level_18": {
+      "displayName": "Level 18"
+    },
+    "level_19": {
+      "displayName": "Level 19"
+    },
+    "level_20": {
+      "displayName": "Level 20"
+    },
+    "level_21": {
+      "displayName": "Level 21"
+    },
+    "level_22": {
+      "displayName": "Level 22"
+    },
+    "level_23": {
+      "displayName": "Level 23"
+    },
+    "level_24": {
+      "displayName": "Level 24"
+    }
+  },
+  "periods": {
+    "daily": {
+      "displayName": "Daily",
+      "type": "daily"
+    },
+    "alltime": {
+      "displayName": "All time",
+      "type": "alltime"
+    }
+  }
 }

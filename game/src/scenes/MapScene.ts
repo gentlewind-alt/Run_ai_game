@@ -78,9 +78,10 @@ export default class MapScene extends Phaser.Scene {
       this.drawDaily(PANEL_Y0);
     }
 
-    makeButton(this, Math.round(W * 0.15), H - 16, 76, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
-    makeButton(this, W / 2, H - 16, 76, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
-    makeButton(this, Math.round(W * 0.85), H - 16, 76, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
+    makeButton(this, Math.round(W * 0.12), H - 16, 76, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
+    makeButton(this, Math.round(W * 0.37), H - 16, 76, 24, 'Scores', 'ability', () => { sfx.click(); goTo(this, 'leaderboards'); }, 6);
+    makeButton(this, Math.round(W * 0.63), H - 16, 76, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
+    makeButton(this, Math.round(W * 0.88), H - 16, 76, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
     irisOpen(this);
   }
 

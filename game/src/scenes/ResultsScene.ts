@@ -8,6 +8,7 @@ import { addCoins, lastResult, levelUnlocked, profile } from '../core/profile';
 import { beatBob, beatPhase } from '../audio/beat';
 import { setText } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
+import { levelRankLine } from '../core/leaderboards';
 import { data } from '../data/load';
 import { platform } from '../platform';
 import type { Row } from '../platform/types';
@@ -79,6 +80,13 @@ export default class ResultsScene extends Phaser.Scene {
       this.add.image(W / 2 - 34, py + 104, 'icon_coin').setDepth(2);
       coinsTxt = text(this, W / 2 - 26, py + 104, `+${r.credited} coins`, C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
       text(this, W / 2, py + 117, r.credited < r.earned ? (d.won ? 'Replays pay less' : 'Losses pay a quarter') : `Total ${profile.coins}`, C('d')).setDepth(2);
+    }
+
+    if (d.won && d.levelId > 0) {
+      const rankTxt = text(this, W / 2, py + 131, ' ', C('d')).setDepth(2);
+      void levelRankLine(d.levelId).then((line) => {
+        if (line && rankTxt.scene) setText(rankTxt, this, line, C('d'));
+      });
     }
 
     const next = d.levelId + 1;
