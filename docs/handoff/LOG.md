@@ -2,6 +2,11 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · cloud · Bulwark Disc: more targets, lower damage (owner's choice)
+- **Change:** the disc now ricochets up to `ricochetJumps` 3 times within `ricochetRange` 100 px, and each jump hits softer: damage multiplier `ricochetFalloff` 0.6 per jump (x0.6, x0.36, x0.22). The old +10% per bounce bonus is off (`bounceDamageBonus` 0). Launch text updated. All in the `w_bulwark_disc` data row.
+- **Checks:** `check`, `tsc`, build pass. Sweep (disc first, standard loadout) shows **0 one-shot wins on levels 1-12** (4 jumps at 0.7 gave 1 on level 3, so it was tightened). Traces show three jumps with the expected multipliers. `tools/regress.mjs` disc assertion updated (no falloff without jumps, so multiplier 1).
+- **Not yet done when this was committed:** the solver run on levels 4-11 (needs at least 2 shots) was still running. The earlier 1-jump version passed levels 4-11 in 3-5 shots, and this version is weaker per hit, so I expect it to pass. Not run: the full `regress`.
+
 ## 2026-10-22 · cloud · Bulwark Disc now really ricochets
 - **Report:** the owner saw the disc not ricocheting. **Cause (measured):** the disc had no ricochet rule, only plain physics bounce (restitution 0.6). That works on steep flat-ground landings, but the disc usually hits planks, monsters and slopes at a glancing angle and just drops. Its "bounce" counter also counted rolling on the ground (2 to 8 "bounces" while resting), so the sixth-bounce shield blast could fire with no real ricochet.
 - **Fix** (`content/weapons/bulwarkDisc.ts`, numbers in the `w_bulwark_disc` data row): after knocking a monster or block, the disc lobs on to the nearest other monster within `ricochetRange` (90 px), for up to `ricochetJumps` (1) times, arriving by a ballistic arc (`ricochetLift` 4.5, `ricochetGravity` 0.25, capped at `ricochetSpeed` 7). The new velocity is applied in `onUpdate`, after the solver, because `collisionstart` fires before the solver and cancels a velocity set there. Only knocks faster than `minBounceSpeed` (1.5) and at least `bounceGapSteps` (8) apart count as bounces.

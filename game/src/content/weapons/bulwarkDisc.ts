@@ -34,9 +34,10 @@ export const bulwarkDisc: WeaponImpl = {
     p.data.bounces = (p.data.bounces ?? 0) + 1;
     const bCount = Math.min(p.data.bounces, maxBounces);
 
-    // Each bounce damages what it touches at +10% per bounce, with a spark and a ping
-    const bonus = P.bounceDamageBonus ?? 0.10;
-    p.body.proj.mul = 1 + bCount * bonus;
+    // Damage per bounce: an optional bonus (bounceDamageBonus, 0 in the data now) times the ricochet falloff, so each jump hits
+    // a little softer than the last: ricochetFalloff ^ jumps so far.
+    const bonus = P.bounceDamageBonus ?? 0;
+    p.body.proj.mul = (1 + bCount * bonus) * Math.pow(P.ricochetFalloff ?? 0.7, p.data.jumps ?? 0);
 
     sfx.ping();
     ctx.fx.pingStar?.(p.body.position.x, p.body.position.y);
@@ -57,6 +58,7 @@ export const bulwarkDisc: WeaponImpl = {
         const t = (lift + Math.sqrt(lift * lift + 2 * g * dy)) / g; // steps to arrive
         const maxSp = P.ricochetSpeed ?? 7;
         p.data.jumps = (p.data.jumps ?? 0) + 1;
+        p.body.proj.mul = (1 + bCount * (P.bounceDamageBonus ?? 0)) * Math.pow(P.ricochetFalloff ?? 0.7, p.data.jumps);
         p.data.ricochet = { x: Phaser.Math.Clamp(dx / t, -maxSp, maxSp), y: -lift };
         ctx.fx.ring(b.x, b.y, 12, C('b'));
       }

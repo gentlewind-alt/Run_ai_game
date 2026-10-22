@@ -573,7 +573,7 @@ async function run() {
       const discChargesAfter = b.abilityCharges?.['w_bulwark_disc'];
       const redirected = discProj?.body?.velocity?.x !== velBeforeRedirect.x || discProj?.body?.velocity?.y !== velBeforeRedirect.y;
       
-      // Directly verify 6-bounce clamp and +10% damage bonus
+      // Directly verify the bounce counter and damage multiplier (ricochet falloff itself is covered by the sweep and the solver)
       const discImpl = b.wpn;
       const mockP = {
         def: b.wdef,
@@ -585,7 +585,7 @@ async function run() {
         mockP.data.lastBounce = -9999; // the real disc ignores knocks closer than bounceGapSteps; space these out
         discImpl.onImpact(b.ctx, mockP);
       }
-      const bouncesClampedAt6 = mockP.data.bounces === 8 && Math.abs(mockP.body.proj.mul - 1.6) < 0.001;
+      const bouncesClampedAt6 = mockP.data.bounces === 8 && Math.abs(mockP.body.proj.mul - 1) < 0.001; // no ricochet jumps in this mock, so no falloff yet
       mm.settle();
 
       const discPassed = redirected && discChargesAfter === 0 && bouncesClampedAt6;
@@ -752,7 +752,7 @@ async function run() {
     } else {
       console.log('  ✓ Skyforge Maul: lightning strike + hit-stop, electric field ticks, recall return, charges: 1 disabled on shot 2.');
       console.log('  ✓ Comet Fists: dive-slam, earthquake stun + knockdown, charges: 1 disabled on shot 2.');
-      console.log('  ✓ Bulwark Disc: ricochet 6-bounce clamp at +10%/bounce (+60% total), tap 1 redirect toward monster.');
+      console.log('  ✓ Bulwark Disc: bounces counted past the 6th, no bonus without jumps, tap 1 redirect toward monster.');
       console.log('  ✓ Steersong Arrow: armed explosion mode and split-tip 3-arrow fan mode.');
       console.log('  ✓ Silkline Shooters: web line pulls target 16px toward sling and slows monsters 50% for 4s.');
       console.log('  ✓ Kinetic Palms: 3-bolt repulsor volley (10 steps apart), knockback and shot recoil.');
