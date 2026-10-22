@@ -6,6 +6,7 @@ Any coding agent (Claude Code, Cursor, Codex, Gemini, the RUN Game Studio AI) ca
 
 | # | File | Why |
 |---|---|---|
+| 00 | `docs/handoff/HANDOFF_2026-10-22.md` | Latest session handoff: state, links, open items, tooling gotchas |
 | 0 | `docs/handoff/REPO_MAP.md` | Every source file with a one-line context, plus the Merkle root (`MERKLE.json` has all hashes) |
 | 1 | `docs/handoff/STATUS.md` | What is done, who is on what, what's next |
 | 2 | `architecture/WORKFLOW.md` | How to claim a card, commit, test, deploy, hand off |
