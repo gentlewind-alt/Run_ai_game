@@ -633,7 +633,7 @@
       },
       "price": 1500,
       "launch": "Heavy green dial that spins as it flies.",
-      "tap": "Five alien forearms crash down, bounce once, then rise back into the sky.",
+      "tap": "A giant four-armed alien crashes down: splash damage and an earthquake, then it leaps back into the sky.",
       "physics": {
         "radius": 5,
         "density": 0.014,
@@ -646,31 +646,21 @@
         "charges": 1
       },
       "params": {
-        "bandWidth": 150,
-        "staggerSteps": 6,
-        "fallSpeed": 7,
-        "bounceSpeed": 4,
-        "bounceGravity": 0.25,
-        "bounceMult": 0.6,
-        "impactRadius": 22,
-        "multFire": 0.7,
-        "multBrute": 0.8,
-        "multCrystal": 0.6,
-        "multStone": 1.2,
-        "multLightning": 0.7,
-        "burnSteps": 120,
-        "knockSteps": 48,
-        "pushStrength": 2.2,
-        "crystalBonusMult": 1.0,
+        "alienHeight": 64,
+        "fallSpeed": 9,
+        "splashRadius": 40,
+        "splashMult": 1.4,
+        "quakeRangeX": 110,
+        "quakeMult": 0.35,
+        "quakeHopVy": -4,
         "stunSteps": 60,
-        "armHeight": 56
+        "knockX": 3,
+        "holdSteps": 18,
+        "bounceSpeed": 9,
+        "bounceGravity": 0.15
       },
       "extraSprites": [
-        "sprites/arms/omni_arm_fire",
-        "sprites/arms/omni_arm_brute",
-        "sprites/arms/omni_arm_crystal",
-        "sprites/arms/omni_arm_stone",
-        "sprites/arms/omni_arm_lightning"
+        "sprites/arms/omni_alien"
       ]
     },
     {

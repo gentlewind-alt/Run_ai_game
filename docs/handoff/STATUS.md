@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.28.0 (hurt-frame fix for realm 4-6 monsters; sprite load retry; Map crash fix), private
+**Current build:** v1.29.0 (rewarded ads, concept-art backdrops and blocks, collapsible boss fortresses, Omnitrix alien), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -77,9 +77,9 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | X6a | Realm 5 Ember Forge (levels 17-20) + Omnitrix Dial | X3 | review | claude | 10-22 | built directly; arms use hand-drawn sprites until the generated ones are swapped in |
 | X6b | Realm 6 Sky Citadel (21-24) + Hailstorm Cauldron, Millstone, Pinata MIRV, Drill, Chain Rod, Black Hole Marble | X6a | review | claude | 10-22 | built directly (agy out of credits); L21 band 2-5; all six checked on screen and by `tools/test_weapons.sh` |
 | X7 | Sound pass (RUN `generate sfx` plus WebAudio) | X5 | todo | | | plan in `09_expansion_design.md` section 7 |
-| X8a | Concept-art look: realm backdrop plates (RUN generated) and brick / rivet / plank block textures | X6b | todo | agy | 10-22 | brief `agy_task_x8a_concept_art.md`; visual only |
-| X8b | Collapsible boss fortresses for levels 4, 8, 12, 16, 20, 24 | X8a | todo | agy | 10-22 | brief `agy_task_x8b_boss_fortresses.md`; frames not slabs, stand-still and collapse checks |
-| X9 | Omnitrix Dial: one four-armed alien drops, splash + earthquake, leaps back to the sky | X8b | todo | agy | 10-22 | brief `agy_task_x9_omnitrix_alien.md`; sprite `shots/gen/omni_alien.png` |
+| X8a | Concept-art look: realm backdrop plates (RUN generated) and brick / rivet / plank block textures | X6b | review | agy | 10-22 | brief `agy_task_x8a_concept_art.md`; visual only |
+| X8b | Collapsible boss fortresses for levels 4, 8, 12, 16, 20, 24 | X8a | review | agy | 10-22 | brief `agy_task_x8b_boss_fortresses.md`; frames not slabs, stand-still and collapse checks |
+| X9 | Omnitrix Dial: one four-armed alien drops, splash + earthquake, leaps back to the sky | X8b | review | agy | 10-22 | brief `agy_task_x9_omnitrix_alien.md`; sprite `shots/gen/omni_alien.png` |
 | X8 | Relic scale + L4 runners + loadout/results UI (playtest 10-22) | | review | claude | 10-22 | done in the cloud session at the owner's request; see LOG |
 
 ## Waiting on owner

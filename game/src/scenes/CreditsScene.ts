@@ -25,7 +25,7 @@ export default class CreditsScene extends Phaser.Scene {
       },
       {
         title: 'Code (share of lines)',
-        names: ['agy (Antigravity)  65%', 'Claude (Anthropic) 35%'],
+        names: ['agy (Antigravity)  62%', 'Claude (Anthropic) 38%'],
       },
       {
         title: 'Art and Audio',

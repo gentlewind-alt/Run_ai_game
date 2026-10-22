@@ -71,6 +71,9 @@ foreach ($id in $arms.Keys) {
   Process $f (Join-Path $outA "$id.png") 56
   Write-Output "ok arm $id"
 }
+# The four-armed alien (the Omnitrix Dial's ability): one big sprite, 64 px
+$alien = Join-Path $src 'omni_alien.png'
+if (Test-Path $alien) { Process $alien (Join-Path $outA 'omni_alien.png') 64; Write-Output 'ok alien' }
 $outM = Join-Path $root 'game\public\sprites\monsters'
 New-Item -ItemType Directory -Force $outM | Out-Null
 foreach ($id in $monsters.Keys) {
