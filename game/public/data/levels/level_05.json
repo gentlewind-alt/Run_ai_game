@@ -4,11 +4,11 @@
   "realm": "dark_elf_wood",
   "kind": "siege",
   "worldW": 432,
-  "shots": 4,
+  "shots": 5,
   "hints": [
     "Archers hide high. Lob over the pit."
   ],
-  "scoreTarget": 1100,
+  "scoreTarget": 1200,
   "terrain": [
     [
       0,
@@ -114,6 +114,27 @@
       "y": 263,
       "w": 48,
       "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 279.0,
+      "y": 245.0,
+      "w": 10,
+      "h": 30
+    },
+    {
+      "m": "stone",
+      "x": 317.0,
+      "y": 245.0,
+      "w": 10,
+      "h": 30
+    },
+    {
+      "m": "wood",
+      "x": 298,
+      "y": 227,
+      "w": 48,
+      "h": 6
     }
   ],
   "monsters": [
@@ -135,12 +156,22 @@
     {
       "t": "dark_elf_archer",
       "x": 298,
-      "y": 253.0
+      "y": 217.0
     },
     {
       "t": "dark_elf_hexer",
       "x": 298,
       "y": 289.0
+    },
+    {
+      "t": "imp",
+      "x": 230,
+      "y": 215
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 298,
+      "y": 253.0
     }
   ],
   "chests": [

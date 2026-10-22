@@ -35,7 +35,7 @@ export function installTestHook(game: Phaser.Game): void {
   const load = (levelId: number, loadout?: string[]): BattleView => {
     for (const s of game.scene.getScenes(true)) if (s.scene.key !== 'boot') game.scene.stop(s.scene.key);
     game.scene.resume('game');
-    game.scene.start('game', { level: levelId, loadout: loadout ?? Array.from({ length: 4 }, () => 'w_militia_blade') });
+    game.scene.start('game', { level: levelId, loadout: loadout ?? Array.from({ length: 6 }, () => 'w_militia_blade') });
     tick(4);
     battleScene().skipToReady();
     tick(20);

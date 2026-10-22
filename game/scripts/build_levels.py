@@ -49,8 +49,9 @@ def tower(cx, base, w=44, tiers=1, pillar='stone', ph=30, floor='wood'):
 
 
 def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target, chests=None, **extra):
+    shots = extra.pop('shots', 4 if n <= 3 else (5 if n <= 7 else 6))
     d = {
-        'id': n, 'name': name, 'realm': realm, 'kind': kind, 'worldW': worldW, 'shots': 4, 'hints': hints,
+        'id': n, 'name': name, 'realm': realm, 'kind': kind, 'worldW': worldW, 'shots': shots, 'hints': hints,
         'scoreTarget': target,
     }
     d.update(extra)
@@ -72,8 +73,9 @@ def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target
 write(1, 'First fort', 'goblin_hills', 'siege', 432, ['Drag back from the sling, then let go.'],
       [[0, 320], [110, 320], [140, 308], [190, 308], [216, 320], [432, 320]],
       [blk('stone', 232, 306, 10, 28), blk('stone', 268, 306, 10, 28), blk('wood', 250, 289, 56, 6), blk('wood', 236, 276, 6, 20),
-       blk('wood', 264, 276, 6, 20), blk('wood', 250, 263, 48, 6), blk('stone', 238, 254, 12, 12), blk('wood', 290, 313, 14, 14)],
-      [mon('goblin_grunt', 250, 313), mon('goblin_grunt', 260, 253), mon('goblin_grunt', 308, 313)], 720)
+       blk('wood', 264, 276, 6, 20), blk('wood', 250, 263, 48, 6), blk('stone', 238, 254, 12, 12), blk('wood', 290, 313, 14, 14),
+       blk('stone', 315, 306, 10, 28), blk('wood', 315, 289, 28, 6)],
+      [mon('goblin_grunt', 250, 313), mon('goblin_grunt', 260, 253), mon('goblin_grunt', 308, 313), mon('goblin_grunt', 315, stand(286))], 720)
 
 # 2 Bomb squad: a hump hides the base. Bombers chain when one goes.
 write(2, 'Bomb squad', 'goblin_hills', 'siege', 432, ['Press the ability button mid-flight.'],
@@ -98,16 +100,17 @@ write(3, 'Run, skeleton, run', 'goblin_hills', 'runner', 540, ['Stop the runners
 # 4 Hill fort: a plateau fort with chief in the bay, grunts on top, runners waiting beyond the slope.
 P4 = 288
 b4 = [blk('stone', x, P4 - 14, 12, 28) for x in (192, 226, 260)]
-b4 += [blk('wood', 226, P4 - 31, 84, 6)]
+b4 += [blk('stone', 274, P4 - 14, 12, 28)]
+b4 += [blk('wood', 233, P4 - 31, 98, 6)]
 b4 += [blk('wood', x, P4 - 44, 6, 20) for x in (204, 226, 248)]
-b4 += [blk('wood', 226, P4 - 57, 52, 6), blk('stone', 208, P4 - 66, 12, 12)]
+b4 += [blk('wood', 226, P4 - 57, 52, 6), blk('stone', 208, P4 - 66, 12, 12), blk('stone', 244, P4 - 66, 12, 12)]
 write(4, 'Hill fort', 'goblin_hills', 'boss', 600, ['Defeat the Goblin Chief!'],
       [[0, 320], [140, 320], [176, P4], [270, P4], [300, 320], [600, 320]],
       b4,
       [mon('goblin_chief', 209, stand(P4, 21)), mon('goblin_bomber', 243, stand(P4)), mon('goblin_grunt', 226, stand(P4 - 60)),
-       mon('goblin_grunt', 242, stand(P4 - 60)), mon('goblin_grunt', 120, stand(GROUND)),
+       mon('goblin_grunt', 242, stand(P4 - 60)), mon('goblin_grunt', 120, stand(GROUND)), mon('goblin_grunt', 256, stand(P4)),
        mon('skeleton_runner', 312, stand(GROUND), dir=1, speed=0.8, delay=0.8), mon('skeleton_runner', 330, stand(GROUND), dir=1, speed=0.7, delay=1.2)],
-      1200, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13})
+      1350, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13}, shots=5)
 
 # ---------------------------------------------------------------- Dark Elf Wood (dusk): archers, hexers, imps
 # Everything the player must kill sits inside the reach of a full pull. Distance and height are the difficulty.
@@ -115,46 +118,58 @@ write(4, 'Hill fort', 'goblin_hills', 'boss', 600, ['Defeat the Goblin Chief!'],
 # 5 Moonlit towers: two towers on plateaus either side of a pit. A hexer waits in the pit and shields its neighbours.
 PA, PIT, PB = 296, 336, 296
 tA, topA = tower(162, PA, 44, 2, 'stone', 28)
-tB, topB = tower(298, PB, 48, 1, 'stone', 30)
+tB, topB = tower(298, PB, 48, 2, 'stone', 30)
 c5 = [chst('c_l5', 328, 290, 'w_silkline_shooters', 40)]
 write(5, 'Moonlit towers', 'dark_elf_wood', 'siege', 432, ['Archers hide high. Lob over the pit.'],
       [[0, 320], [110, 320], [128, PA], [196, PA], [214, PIT], [250, PIT], [268, PB], [336, PB], [356, 320], [432, 320]],
       tA + tB,
       [mon('dark_elf_archer', 162, stand(topA)), mon('dark_elf_hexer', 162, stand(PA - 34)), mon('goblin_grunt', 162, stand(PA)),
-       mon('dark_elf_archer', 298, stand(topB)), mon('dark_elf_hexer', 298, stand(PB))],
-      1100, chests=c5)
+       mon('dark_elf_archer', 298, stand(topB)), mon('dark_elf_hexer', 298, stand(PB)), mon('imp', 230, 215),
+       mon('dark_elf_archer', 298, stand(PB - 36))],
+      1200, chests=c5, shots=5)
 
 # 6 Imp swarm: a ridge hides the fort, so shots have to lob. Imps weave above the peak and the fort.
 tC, topC = tower(300, GROUND, 44, 2, 'wood', 28)
+b6 = tC + [blk('stone', 255, GROUND - 14, 10, 28), blk('wood', 300, topC - 10, 28, 6)]
 write(6, 'Imp swarm', 'dark_elf_wood', 'siege', 432, ['A ridge blocks flat shots. Aim high.'],
       [[0, 320], [110, 320], [140, 296], [176, 250], [214, 250], [240, 286], [270, 320], [432, 320]],
-      tC,
-      [mon('imp', 230, 220), mon('imp', 255, 205), mon('imp', 280, 215), mon('dark_elf_archer', 300, stand(topC)),
+      b6,
+      [mon('imp', 205, 230), mon('imp', 230, 220), mon('imp', 255, 205), mon('imp', 280, 215), mon('dark_elf_archer', 300, stand(topC - 13)),
        mon('dark_elf_hexer', 300, stand(GROUND - 34)), mon('goblin_grunt', 300, stand(GROUND)),
        mon('dark_elf_archer', 195, stand(250))],
-      1250)
+      1300, shots=5)
 
 # 7 Hexer court: a stone screen in front of a shielded stage. Two hexers cover a guard and an archer.
 P7 = 300
-tD, topD = tower(275, P7, 52, 2, 'stone', 28)
+tD, topD = tower(285, P7, 44, 2, 'stone', 28)
 c7 = [chst('c_l7', 325, 294, 'w_kinetic_palms', 40)]
+b7 = tD + [
+    blk('stone', 175, P7 - 12, 14, 24),
+    blk('stone', 220, P7 - 14, 8, 28), blk('stone', 250, P7 - 14, 8, 28), blk('wood', 235, P7 - 31, 38, 6)
+]
 write(7, 'Hexer court', 'dark_elf_wood', 'siege', 432, ['Hurt the hexer to drop its shields.'],
       [[0, 320], [110, 320], [150, P7], [336, P7], [356, 320], [432, 320]],
-      tD + [blk('stone', 180, P7 - 24, 12, 48)],
-      [mon('dark_elf_hexer', 230, stand(P7)), mon('goblin_grunt', 255, stand(P7)), mon('dark_elf_hexer', 275, stand(P7 - 34)),
-       mon('dark_elf_archer', 275, stand(topD)), mon('dark_elf_archer', 320, stand(P7)),
-       mon('imp', 265, 205)],
-      1100, chests=c7)
+      b7,
+      [mon('dark_elf_archer', 195, stand(P7)),
+       mon('dark_elf_hexer', 235, stand(P7)), mon('goblin_grunt', 235, stand(P7 - 34)),
+       mon('dark_elf_hexer', 285, stand(P7)), mon('dark_elf_archer', 285, stand(topD - 14)),
+       mon('goblin_grunt', 325, stand(P7)), mon('imp', 260, 205), mon('imp', 210, 195)],
+      1350, chests=c7, shots=5)
 
 # 8 Elf bastion: a stepped cliff, a two-tier keep on the upper step, a lower outpost. Everything at once.
 P8a, P8b = 300, 268
 tE, topE = tower(275, P8b, 56, 2, 'stone', 28)
+b8 = tE + [
+    blk('stone', 160, P8a - 20, 12, 40), blk('stone', 174, P8a - 20, 12, 40), blk('stone', 167, P8a - 46, 26, 12),
+    blk('wood', 324, P8b - 14, 8, 28), blk('wood', 324, P8b - 31, 24, 6), blk('stone', 275, topE - 10, 12, 20)
+]
 write(8, 'Elf bastion', 'dark_elf_wood', 'boss', 432, ['Defeat the Dark Elf Matron.'],
       [[0, 320], [110, 320], [126, P8a], [196, P8a], [220, P8b], [336, P8b], [356, 320], [432, 320]],
-      tE + [blk('stone', 160, P8a - 20, 12, 40), blk('wood', 160, P8a - 46, 12, 12), blk('wood', 324, P8b - 14, 8, 28), blk('wood', 324, P8b - 31, 24, 6)],
-      [mon('dark_elf_matron', 275, stand(P8b, 20)), mon('dark_elf_archer', 275, stand(topE)), mon('goblin_grunt', 275, stand(P8b - 34)),
-       mon('dark_elf_hexer', 324, stand(P8b)), mon('dark_elf_archer', 190, stand(P8a)), mon('imp', 235, 195)],
-      1350)
+      b8,
+      [mon('dark_elf_matron', 275, stand(P8b, 20)), mon('dark_elf_archer', 275, stand(topE - 20)), mon('goblin_grunt', 275, stand(P8b - 34)),
+       mon('dark_elf_hexer', 324, stand(P8b)), mon('dark_elf_archer', 190, stand(P8a)), mon('imp', 235, 195),
+       mon('goblin_grunt', 167, stand(P8a - 52))],
+      1400, shots=6)
 
 # ---------------------------------------------------------------- Iron Keep (fire glow): brutes, trolls, iron blocks, runners
 # 648-wide worlds. Heavy blocks and high HP monsters require abilities, status combos, and precision.
@@ -164,46 +179,51 @@ P9 = 304
 b9 = [
     blk('iron', 188, P9 - 16, 12, 32), blk('iron', 232, P9 - 16, 12, 32), blk('stone', 210, P9 - 35, 60, 6),
     blk('stone', 195, P9 - 48, 8, 20), blk('stone', 225, P9 - 48, 8, 20), blk('wood', 210, P9 - 61, 44, 6),
-    blk('wood', 150, P9 - 10, 8, 20), blk('stone', 260, GROUND - 14, 10, 28)
+    blk('wood', 150, P9 - 10, 8, 20), blk('stone', 260, GROUND - 14, 10, 28),
+    blk('iron', 210, P9 - 73, 36, 12), blk('stone', 166, P9 - 14, 10, 28), blk('stone', 210, P9 - 48, 8, 20)
 ]
 write(9, 'Molten gate', 'iron_keep', 'runner', 648, ['Iron blocks resist light hits.', 'Stop the runners before the exit.'],
       [[0, 320], [110, 320], [140, P9], [250, P9], [280, 320], [648, 320]],
       b9,
       [mon('goblin_bomber', 150, stand(P9)), mon('orc_brute', 210, stand(P9, 28)), mon('troll', 210, stand(P9 - 38, 28)),
+       mon('goblin_grunt', 166, stand(P9)),
        mon('skeleton_runner', 285, stand(GROUND), dir=1, speed=0.7, delay=1.0),
        mon('skeleton_runner', 315, stand(GROUND), dir=1, speed=0.55, delay=1.4)],
-      1500, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13})
+      1600, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13}, shots=6)
 
 # 10 Iron foundry: a sunken furnace pit with a covered troll, guarded by an orc brute and a shielded hexer high above.
 P10a, PIT10, P10b = 300, 336, 276
 b10 = [
     blk('stone', 150, P10a - 14, 10, 28),
     blk('stone', 210, PIT10 - 16, 8, 32), blk('stone', 246, PIT10 - 16, 8, 32), blk('wood', 228, PIT10 - 35, 48, 6),
-    blk('stone', 295, P10b - 15, 8, 30), blk('stone', 330, P10b - 15, 8, 30), blk('wood', 312.5, P10b - 33, 46, 6)
+    blk('stone', 295, P10b - 15, 8, 30), blk('stone', 330, P10b - 15, 8, 30), blk('wood', 312.5, P10b - 33, 46, 6),
+    blk('iron', 228, PIT10 - 44, 36, 12), blk('stone', 312.5, P10b - 48, 8, 24)
 ]
 write(10, 'Iron foundry', 'iron_keep', 'siege', 648, ['Void weakens iron and brutes.', 'Hellfire burns trolls to stop regen.'],
       [[0, 320], [105, 320], [125, P10a], [175, P10a], [195, PIT10], [255, PIT10], [275, P10b], [340, P10b], [365, 320], [648, 320]],
       b10,
       [mon('orc_brute', 150, stand(P10a, 28)), mon('troll', 228, stand(PIT10, 28)), mon('goblin_grunt', 228, stand(PIT10 - 38)),
-       mon('dark_elf_hexer', 312.5, stand(P10b)), mon('dark_elf_archer', 312.5, stand(P10b - 36))],
-      500,
-      shots=4)
+       mon('dark_elf_hexer', 312.5, stand(P10b)), mon('dark_elf_archer', 312.5, stand(P10b - 36)),
+       mon('goblin_grunt', 312.5, stand(P10b - 60))],
+      1200,
+      shots=6)
 
 # 11 Furnace bastion: multi-tier fortress with heavy iron footings, shielded defenders, and sprinting runners.
 P11a, P11b = 300, 268
 b11 = [
-    blk('stone', 150, P11a - 14, 8, 28),
+    blk('stone', 150, P11a - 14, 8, 28), blk('stone', 165, P11a - 14, 8, 28), blk('stone', 150, P11a - 42, 8, 28),
     blk('wood', 215, P11b - 12, 6, 24), blk('iron', 255, P11b - 12, 6, 24), blk('stone', 235, P11b - 27, 46, 6),
     blk('wood', 225, P11b - 38, 6, 16), blk('wood', 245, P11b - 38, 6, 16), blk('iron', 235, P11b - 50, 34, 16),
+    blk('stone', 235, P11b - 64, 24, 12)
 ]
 write(11, 'Furnace bastion', 'iron_keep', 'runner', 648, ['Curse with the Scepter.', 'Pierce the iron shield or stun runners.'],
       [[0, 320], [110, 320], [130, P11a], [190, P11a], [215, P11b], [325, P11b], [355, 320], [648, 320]],
       b11,
       [mon('dark_elf_hexer', 165, stand(P11a)), mon('goblin_bomber', 235, stand(P11b - 30)),
-       mon('orc_brute', 225, stand(P11b, 28)),
+       mon('orc_brute', 225, stand(P11b, 28)), mon('goblin_grunt', 235, stand(P11b - 70)),
        mon('skeleton_runner', 275, stand(P11b), dir=1, speed=0.45, delay=1.2),
        mon('skeleton_runner', 300, stand(P11b), dir=1, speed=0.4, delay=1.8)],
-      700, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13})
+      1300, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13}, shots=6)
 
 # 12 Iron Throne: boss arena for the Iron Warlord.
 P12 = 280
@@ -212,7 +232,9 @@ b12 = [
     blk('iron', 205, P12 - 16, 12, 32), blk('iron', 265, P12 - 16, 12, 32),
     blk('stone', 235, P12 - 35, 72, 6),
     blk('stone', 215, P12 - 46, 8, 16), blk('stone', 255, P12 - 46, 8, 16),
-    blk('stone', 235, P12 - 57, 48, 6)
+    blk('stone', 235, P12 - 57, 48, 6),
+    blk('stone', 305, P12 - 14, 10, 28), blk('stone', 330, P12 - 14, 10, 28),
+    blk('stone', 317.5, P12 - 35, 40, 6), blk('stone', 317.5, P12 - 48, 12, 20)
 ]
 write(12, 'Iron Throne', 'iron_keep', 'boss', 648,
       ['Wait for the visor to open for 2x.', 'Boulders shake the ground. Stay steady.'],
@@ -221,6 +243,6 @@ write(12, 'Iron Throne', 'iron_keep', 'boss', 648,
       [mon('iron_warlord', 235, stand(P12, 30)),
        mon('dark_elf_hexer', 150, stand(P12)),
        mon('goblin_grunt', 235, stand(P12 - 60))],
-      850,
-      shots=5,
-      loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube'])
+      1400,
+      shots=6,
+      loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube', 'w_scrapheap_scattergun'])

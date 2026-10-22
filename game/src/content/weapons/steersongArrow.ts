@@ -48,7 +48,7 @@ export const steersongArrow: WeaponImpl = {
           wid: p.wid,
           color: '2',
           texture: 'wpn_w_steersong_arrow',
-          scale: 0.85,
+          scale: 1.2,
           gravity: p.def.physics.gravity,
         });
       });

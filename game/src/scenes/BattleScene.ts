@@ -15,7 +15,7 @@ import { hasSeenHint, markHintSeen, setMuted } from '../core/profile';
 import { goTo } from '../core/flow';
 import { createHud, type Hud } from '../ui/hud';
 
-const DEFAULT_LOADOUT = ['w_militia_blade', 'w_militia_blade', 'w_militia_blade', 'w_militia_blade'];
+const DEFAULT_LOADOUT = Array.from({ length: 6 }, () => 'w_militia_blade');
 
 /** Thin orchestrator: builds the battle, hooks the HUD to its events and runs the fixed-step loop. Rules live in battle/. */
 export default class BattleScene extends Phaser.Scene {

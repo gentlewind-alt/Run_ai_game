@@ -12,3 +12,6 @@ Art: Claude generates sprites with the RUN CLI and puts the processed 32/24 px P
 6. **Tests**: regress assertions for the beam (tick count, armour ignored, charge used), the frost giant weak point and death, levels 13-16 bands, map page 2 navigation, save with `reachedLevel` 13+. Screenshots of the realm background, each new level, the boss, and the beam into `docs/handoff/shots/realm4/`, reviewed against `08_design_direction.md`.
 
 Done means: `npm run check`, `npm run build`, `npm run regress:quick` and the full `npm run regress` pass; `node tools/merkle.mjs seal`; append `DONE agy_task_x3_realm4` to `docs/handoff/agy_done.txt`. No commit or deploy.
+
+## Small carry-over fix (from the review of task x1)
+The Shop info line shows `?` where a separator belongs ("LEGENDARY ? Boss relic (Iron Warlord) ? Pity at 3 losses (0/3)") because the 5x7 pixel font has no bullet or middle-dot glyph. Replace those separators with ` - ` (or a glyph the font has), and add a regress check that no rendered Shop, Loadout, Results or toast string contains a character missing from the font (scan `art/font5x7.ts` glyphs against all `t()` strings in the data and scenes, fail on `?` fallbacks).

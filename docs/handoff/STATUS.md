@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.13.0 (landscape 480x270, relic weapons batch A mechanics, visual polish pending), private
+**Current build:** v1.14.0 (landscape, generated relic art, six weapon slots), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -56,7 +56,8 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | S7-03 | Treasure chests (L3, L5, L7) & pity shop (Relic Market) | review | agy | 10-21 | wave 1 part 1; chests grant relic or 150 coins fallback, pity unlocks at >= 3 boss losses |
 | S8-landscape | Convert game from portrait 216x384 to LANDSCAPE (16:9) | review | agy | 10-21 | 480x270 measured & built; all scenes re-laid, rotate overlay, full regress passes |
 | S8-refine | Code-quality review and refinement pass | done | agy | 10-21 | Golden rules 1&2, listener hygiene, split modules, boundary errs, types, docs |
-| S9-weapons-a | Relic weapons batch A (6 weapons) & 2 slingshots | doing | agy | 10-22 | Visual polish pass per agy_task_weapons_polish.md (sprites, fx, icons, sheet, compare) |
+| S9-weapons-a | Relic weapons batch A (6 weapons) & 2 slingshots | review | agy | 10-22 | Task x1 art fixes complete (scale, poses, shop info clearance, silhouettes, real sheet & compare) |
+| x2-slots6-balance | Six weapon slots + damage vs HP balance pass | done | agy | 10-22 | loadoutSize 6, 2-rows-of-3 UI, shots L1-3:4/L4-7:5/L8-12:6, rare baseDamage 28-42, legendary 44-60, level HP +35%, balance_bands updated, regress passes |
 
 ## Parallel lanes (once S2-03 is done)
 
@@ -67,6 +68,13 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 
 | S9-weapons-a | Relic weapons batch A (6) + Quicksilver/Gemini slingshots | S7 | review | agy | 10-22 | mechanics + tests pass; visuals below the approved bar |
 | S9-polish | Visual polish of batch A (sprite size, effects, icons, real contact sheet) | S9-weapons-a | todo | | | blocked: agy weekly limit reached 10-22; brief ready in agy_task_weapons_polish.md |
+
+| X1 | Image fixes: relic sprite size, shop info panel, locked silhouettes | S9 | done | agy | 10-22 | see LOG |
+| X2 | Six weapon slots + damage vs HP balance | X1 | review | agy+claude | 10-22 | loadoutSize 6, levels 4-12 shots 5-6, regress bands 3-5; agy stopped at its quota, docs/tests partly unverified |
+| X3 | Realm 4 Frost Peaks (levels 13-16) + Brahmastra Arrow | X2 | todo | | | art generated and processed; brief `agy_task_x3_realm4.md` |
+| X4 | Score leaderboards (daily, per level, overall) | X2 | todo | | | brief `agy_task_x4_leaderboards.md` |
+| X5 | Pocket Tanks ability pass | X2 | todo | | | brief `agy_task_x5_abilities.md` |
+| X6 | Realms 5-6, Omnitrix Dial and other new weapons, sound pass | X3 | todo | | | design in `09_expansion_design.md` |
 
 ## Waiting on owner
 

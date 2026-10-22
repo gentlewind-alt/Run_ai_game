@@ -4,12 +4,12 @@
   "realm": "iron_keep",
   "kind": "runner",
   "worldW": 648,
-  "shots": 4,
+  "shots": 6,
   "hints": [
     "Curse with the Scepter.",
     "Pierce the iron shield or stun runners."
   ],
-  "scoreTarget": 700,
+  "scoreTarget": 1300,
   "escapeLimit": 1,
   "exit": {
     "x": 620,
@@ -58,6 +58,20 @@
       "h": 28
     },
     {
+      "m": "stone",
+      "x": 165,
+      "y": 286,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 150,
+      "y": 258,
+      "w": 8,
+      "h": 28
+    },
+    {
       "m": "wood",
       "x": 215,
       "y": 256,
@@ -98,6 +112,13 @@
       "y": 218,
       "w": 34,
       "h": 16
+    },
+    {
+      "m": "stone",
+      "x": 235,
+      "y": 204,
+      "w": 24,
+      "h": 12
     }
   ],
   "monsters": [
@@ -115,6 +136,11 @@
       "t": "orc_brute",
       "x": 225,
       "y": 254.0
+    },
+    {
+      "t": "goblin_grunt",
+      "x": 235,
+      "y": 191.0
     },
     {
       "t": "skeleton_runner",

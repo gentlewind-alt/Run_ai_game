@@ -53,7 +53,7 @@ export interface ResultInfo {
 }
 
 const DEFAULT_ECONOMY: Economy = {
-  startCoins: 0, replayCoinFactor: 0.4, lossCoinFactor: 0.25, maxConsumableStack: 5, loadoutSize: 4, artifactSlots: 1,
+  startCoins: 0, replayCoinFactor: 0.4, lossCoinFactor: 0.25, maxConsumableStack: 5, loadoutSize: 6, artifactSlots: 1,
   secondArtifactAfterLevel: 8,
 };
 export const economy = (): Economy => ({ ...DEFAULT_ECONOMY, ...(data.content?.economy ?? {}) });

@@ -36,6 +36,17 @@ export function sanitize(raw: Record<string, unknown>): Profile {
   const statsObj = isObj(raw.stats) ? raw.stats : {};
   const bossLosses = numMap(statsObj.bossLosses);
   const weapons = strs(owned.weapons);
+  const starterWeapon = (weapons.length ? weapons[0] : d.owned.weapons[0]) ?? 'w_militia_blade';
+  const rawLoadout = strs(eq.loadout);
+  const cosmetics = strs(owned.cosmetics);
+  const hasQuiver = cosmetics.includes('gold_quiver') || cosmetics.includes('s_gold_quiver');
+  const targetLoadoutSize = 6 + (hasQuiver ? 1 : 0);
+  const loadout = rawLoadout.slice();
+  if (loadout.length > 0 && loadout.length < targetLoadoutSize) {
+    while (loadout.length < targetLoadoutSize) {
+      loadout.push(starterWeapon);
+    }
+  }
   return {
     version: SAVE_VERSION,
     coins: Math.max(0, Math.floor(num(raw.coins, d.coins))),
@@ -46,7 +57,7 @@ export function sanitize(raw: Record<string, unknown>): Profile {
       cosmetics: strs(owned.cosmetics),
     },
     upgrades: numMap(raw.upgrades),
-    equipped: { loadout: strs(eq.loadout), artifacts: strs(eq.artifacts), slingSkin: typeof eq.slingSkin === 'string' ? eq.slingSkin : undefined },
+    equipped: { loadout, artifacts: strs(eq.artifacts), slingSkin: typeof eq.slingSkin === 'string' ? eq.slingSkin : undefined },
     stars: numMap(raw.stars, 3),
     best: numMap(raw.best),
     daily: {

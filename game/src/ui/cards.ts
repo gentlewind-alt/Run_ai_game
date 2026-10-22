@@ -48,8 +48,23 @@ export function createItemCard(opts: CardOptions): CardResult {
   const autoScale = srcW === 24 ? 1.0 : srcW >= 32 ? 0.75 : 1.2;
   const icon = opts.scene.add.image(opts.x + 15, opts.y + 19, cardKey)
     .setScale(opts.iconScale ?? autoScale).setDepth(2);
-  if (opts.locked && (opts.isSilhouette || cardKey.startsWith('wpn_'))) {
-    icon.setTint(0x1a1c2c).setAlpha(0.6);
+  const extraObjs: Phaser.GameObjects.GameObject[] = [];
+  if (opts.locked && opts.isSilhouette) {
+    if (opts.rarity) {
+      const rimCol = rarityColor(opts.rarity);
+      const offsets = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      for (const [dx, dy] of offsets) {
+        const rim = opts.scene.add.image(opts.x + 15 + dx, opts.y + 19 + dy, cardKey)
+          .setScale(opts.iconScale ?? autoScale)
+          .setTint(rimCol)
+          .setAlpha(0.45)
+          .setDepth(2);
+        extraObjs.push(rim);
+      }
+    }
+    icon.setTint(0x1a1c2c).setAlpha(0.95);
+  } else if (opts.locked && cardKey.startsWith('wpn_')) {
+    icon.setAlpha(0.4);
   }
 
   const nameColor = opts.locked ? C('e') : opts.rarity ? rarityColor(opts.rarity) : C('c');
@@ -64,6 +79,6 @@ export function createItemCard(opts: CardOptions): CardResult {
 
   return {
     panel: p, iconBox, icon, nameTxt, hit,
-    objects: [p, iconBox, icon, nameTxt, hit],
+    objects: [p, iconBox, ...extraObjs, icon, nameTxt, hit],
   };
 }

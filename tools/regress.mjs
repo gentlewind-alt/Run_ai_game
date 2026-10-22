@@ -301,24 +301,72 @@ async function run() {
       const sanitized = window.__mm.sanitizeSave(v1Fixture);
       await window.__mm.platform().storage.set('save', JSON.stringify(v1Fixture));
       const loadStatus = await window.__mm.loadSave();
+      // Snapshot values immediately — setProfile mutates the shared profile object in place
+      const prof1Coins = window.__mm.profile().coins;
+      const prof1Stars = JSON.parse(JSON.stringify(window.__mm.profile().stars));
+      const prof1Weapons = window.__mm.profile().owned.weapons.slice();
+      const prof1HasDaily = typeof window.__mm.profile().daily?.streak === 'number';
+      const prof1HasFlags = typeof window.__mm.profile().flags === 'object';
+      const prof1HasBossLosses = typeof window.__mm.profile().stats?.bossLosses === 'object';
       const prof = window.__mm.profile();
+
+      // v-previous save with 4 loadout ids -> must load and pad to 6 with starter weapon
+      const save4Ids = {
+        version: 2,
+        coins: 200,
+        owned: { weapons: ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun'], artifacts: [], consumables: {}, cosmetics: [] },
+        upgrades: {},
+        stars: { '1': 2 },
+        equipped: { loadout: ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun'], artifacts: [] },
+        flags: {},
+        stats: { bossLosses: {} },
+        settings: { muted: false, musicOn: true }
+      };
+      await window.__mm.platform().storage.set('save', JSON.stringify(save4Ids));
+      const load4Status = await window.__mm.loadSave();
+      const prof4 = window.__mm.profile();
+      const fourIdsPadded = load4Status === 'loaded' &&
+        prof4.equipped.loadout.length === 6 &&
+        prof4.equipped.loadout[0] === 'w_militia_blade' &&
+        prof4.equipped.loadout[1] === 'w_iron_cleaver' &&
+        prof4.equipped.loadout[2] === 'w_ashwood_staff' &&
+        prof4.equipped.loadout[3] === 'w_scrapheap_scattergun' &&
+        prof4.equipped.loadout[4] === 'w_militia_blade' &&
+        prof4.equipped.loadout[5] === 'w_militia_blade';
+
+      // Full 6-weapon fight assertion on Level 12 (6 shots)
+      const sixWeapons = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun', 'w_blast_tube'];
+      const v6 = window.__mm.play(12, sixWeapons, [
+        { angleDeg: 35, power: 0.8 },
+        { angleDeg: 45, power: 0.8 },
+        { angleDeg: 55, power: 0.8 },
+        { angleDeg: 65, power: 0.8 },
+        { angleDeg: 30, power: 0.8 },
+        { angleDeg: 50, power: 0.8 }
+      ]);
+      const sixFightValid = v6.shotsLeft !== undefined && (6 - v6.shotsLeft) === 6;
+
       return {
         loadStatus,
-        coinsPreserved: prof.coins === 350 && sanitized.coins === 350,
-        starsPreserved: prof.stars['1'] === 3 && prof.stars['2'] === 2 && prof.stars['3'] === 3 && prof.stars['4'] === 1,
-        weaponsPreserved: prof.owned.weapons.length === 2 && prof.owned.weapons.includes('w_iron_cleaver'),
-        hasDaily: typeof prof.daily?.streak === 'number',
-        hasFlags: typeof prof.flags === 'object',
-        hasBossLosses: typeof prof.stats?.bossLosses === 'object'
+        coinsPreserved: prof1Coins === 350 && sanitized.coins === 350,
+        starsPreserved: prof1Stars['1'] === 3 && prof1Stars['2'] === 2 && prof1Stars['3'] === 3 && prof1Stars['4'] === 1,
+        weaponsPreserved: prof1Weapons.length === 2 && prof1Weapons.includes('w_iron_cleaver'),
+        hasDaily: prof1HasDaily,
+        hasFlags: prof1HasFlags,
+        hasBossLosses: prof1HasBossLosses,
+        fourIdsPadded,
+        sixFightValid
       };
     })()`);
 
-    if (saveResult.loadStatus !== 'loaded' || !saveResult.coinsPreserved || !saveResult.starsPreserved || !saveResult.weaponsPreserved || !saveResult.hasDaily || !saveResult.hasFlags || !saveResult.hasBossLosses) {
-      const msg = `Save migration failed: status=${saveResult.loadStatus}, coinsPreserved=${saveResult.coinsPreserved}, starsPreserved=${saveResult.starsPreserved}, hasBossLosses=${saveResult.hasBossLosses}`;
+    if (saveResult.loadStatus !== 'loaded' || !saveResult.coinsPreserved || !saveResult.starsPreserved || !saveResult.weaponsPreserved || !saveResult.hasDaily || !saveResult.hasFlags || !saveResult.hasBossLosses || !saveResult.fourIdsPadded || !saveResult.sixFightValid) {
+      const msg = `Save migration failed: status=${saveResult.loadStatus}, coinsPreserved=${saveResult.coinsPreserved}, fourIdsPadded=${saveResult.fourIdsPadded}, sixFightValid=${saveResult.sixFightValid}`;
       console.error('  ERROR:', msg);
       failures.push(msg);
     } else {
-      console.log('  ✓ v1 save migration passed: 350 coins preserved, 1-4 stars preserved, all modern fields normalized.\n');
+      console.log('  ✓ v1 save migration passed: 350 coins preserved, 1-4 stars preserved, all modern fields normalized.');
+      console.log('  ✓ v-previous 4-id save loaded and padded with starter weapon to 6 slots.');
+      console.log('  ✓ Full 6-weapon fight verified: all 6 shots executed in battle sequence.\n');
     }
   } catch (err) {
     console.error('  Save migration threw exception:', err);
@@ -722,9 +770,9 @@ async function run() {
   const levelsToTest = isQuick ? [1, 4, 8, 12] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   console.log(`--- 3. ASSERTING LEVELS ${isQuick ? '1, 4, 8, 12 (QUICK)' : '1-12'} PLAYTHROUGH & BALANCE BANDS ---`);
   const tSec3 = performance.now();
-  const defaultLoadout = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun'];
-  const l6Loadout = ['w_militia_blade', 'w_iron_cleaver', 'w_scrapheap_scattergun', 'w_ashwood_staff', 'w_hunters_pike'];
-  const l12Loadout = ['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube'];
+  const defaultLoadout = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun', 'w_blast_tube'];
+  const l6Loadout = ['w_militia_blade', 'w_iron_cleaver', 'w_scrapheap_scattergun', 'w_ashwood_staff', 'w_hunters_pike', 'w_blast_tube'];
+  const l12Loadout = ['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube', 'w_scrapheap_scattergun'];
 
   for (const lvl of levelsToTest) {
     const band = balanceBands[String(lvl)] || balanceBands[lvl];
@@ -793,7 +841,7 @@ async function run() {
   ];
   const sweepLevels = isQuick ? [1, 2, 3, 4, 6, 8, 12] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   for (const w of relicWeapons) {
-    const relicLoadout = [w, 'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff'];
+    const relicLoadout = [w, 'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun', 'w_blast_tube'];
     for (const lvl of sweepLevels) {
       const sweepRes = await evalCode(`window.__mm.sweep(${lvl}, ${JSON.stringify(relicLoadout)})`);
       if (sweepRes.oneShotWins !== 0) {
@@ -808,7 +856,7 @@ async function run() {
   const solverLevels = isQuick ? [4, 8] : [4, 5, 6, 7, 8, 9, 10, 11, 12];
   for (const lvl of solverLevels) {
     const w = relicWeapons[(lvl - 4) % relicWeapons.length];
-    const relicLoadout = [w, 'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff'];
+    const relicLoadout = [w, 'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun', 'w_blast_tube'];
     let solveRes = null;
     let attempts = 0;
     while ((!solveRes || !solveRes.done) && attempts < 8) {
@@ -843,7 +891,7 @@ async function run() {
       const g = window.__game;
 
       window.__mm.give({ unlockAll: true });
-      const testEquipped = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike'];
+      const testEquipped = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun', 'w_blast_tube'];
       window.__mm.profile().equipped.loadout = testEquipped.slice();
 
       for (const [currLvl, nextLvl] of [[1, 2], [2, 3]]) {
@@ -958,7 +1006,9 @@ async function run() {
 
         const isActive = newGame && newGame.scene.isActive();
         const newLevelId = newGame ? newGame.levelId : null;
-        const battleLoadoutOk = newGame && newGame.b && JSON.stringify(newGame.b.loadout) === JSON.stringify(testEquipped);
+        // b.loadout is capped to min(loadout.length, level.shots) — compare the prefix that actually fires
+        const effectiveShots = newGame && newGame.b ? newGame.b.loadout.length : testEquipped.length;
+        const battleLoadoutOk = newGame && newGame.b && JSON.stringify(newGame.b.loadout) === JSON.stringify(testEquipped.slice(0, effectiveShots));
 
         results.push({
           currLvl,
@@ -1057,6 +1107,49 @@ async function run() {
         }
       }
 
+      // Shop info panel non-overlap assertion across all tabs for the longest description
+      const infoPanelOverlaps = [];
+      const tabsToCheck = ['weapons', 'relics', 'artifacts', 'items', 'slingshots'];
+      for (const tabName of tabsToCheck) {
+        shopScene.tab = tabName;
+        shopScene.selected = null;
+        shopScene.render();
+        await new Promise(r => setTimeout(r, 60));
+
+        const tabItems = shopScene.items();
+        if (!tabItems.length) continue;
+        let longestItem = tabItems[0];
+        let maxDescLen = 0;
+        for (const it of tabItems) {
+          const len = (it.desc || []).join(' ').length;
+          if (len > maxDescLen) {
+            maxDescLen = len;
+            longestItem = it;
+          }
+        }
+
+        shopScene.selected = longestItem.id;
+        shopScene.render();
+        await new Promise(r => setTimeout(r, 60));
+
+        const bodyObjs = shopScene.body ? shopScene.body.list : [];
+        const actionBtn = bodyObjs.find(c => c.type === 'Container' && Math.abs(c.x - 240) < 15 && c.y > 150);
+        if (actionBtn) {
+          const btnTop = actionBtn.y - 10;
+          const infoTexts = bodyObjs.filter(c => c.type === 'Image' && c.y >= 130 && c.y < actionBtn.y + 10);
+          for (const t of infoTexts) {
+            const textBot = t.y + (t.height ? (1 - (t.originY ?? 0.5)) * t.height : 4);
+            const clearance = btnTop - textBot;
+            if (clearance < 4) {
+              infoPanelOverlaps.push({ tab: tabName, item: longestItem.id, textY: t.y, textBot, btnY: actionBtn.y, btnTop, clearance });
+            }
+          }
+          if (actionBtn.y + 10 > 240) {
+            infoPanelOverlaps.push({ tab: tabName, item: longestItem.id, issue: 'Collides with back button', btnBottom: actionBtn.y + 10 });
+          }
+        }
+      }
+
       return {
         loadoutCardsChecked: images.length,
         loadoutOverlaps,
@@ -1064,18 +1157,20 @@ async function run() {
         shopCardsChecked: shopImages.length,
         shopOverlaps,
         shopBoundsExceeded,
+        infoPanelOverlaps,
         passed: loadoutOverlaps.length === 0 && shopOverlaps.length === 0 &&
                 loadoutBoundsExceeded.length === 0 && shopBoundsExceeded.length === 0 &&
+                infoPanelOverlaps.length === 0 &&
                 images.length > 0 && shopImages.length > 0
       };
     })()`);
 
     if (!b2Res.passed) {
-      const msg = `Weapon card checks failed: loadoutOverlaps=${b2Res.loadoutOverlaps.length}, shopOverlaps=${b2Res.shopOverlaps.length}, loadoutBoundsExceeded=${b2Res.loadoutBoundsExceeded?.length ?? 0}, shopBoundsExceeded=${b2Res.shopBoundsExceeded?.length ?? 0}`;
+      const msg = `Weapon card & shop info checks failed: loadoutOverlaps=${b2Res.loadoutOverlaps.length}, shopOverlaps=${b2Res.shopOverlaps.length}, infoPanelOverlaps=${b2Res.infoPanelOverlaps?.length ?? 0} (${JSON.stringify(b2Res.infoPanelOverlaps || [])})`;
       console.error('  FAIL', msg);
       failures.push(msg);
     } else {
-      console.log(`  ✓ Bug 2 assertion passed: ${b2Res.loadoutCardsChecked} Loadout cards & ${b2Res.shopCardsChecked} Shop cards have 0 overlaps and 0 bounds overflows.\n`);
+      console.log(`  ✓ Bug 2 assertion passed: ${b2Res.loadoutCardsChecked} Loadout cards & ${b2Res.shopCardsChecked} Shop cards have 0 overlaps; Shop info panel has 0 button overlaps across all 5 tabs.\n`);
     }
   } catch (err) {
     console.error('  Bug 2 check exception:', err);

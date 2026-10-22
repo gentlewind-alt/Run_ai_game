@@ -41,7 +41,7 @@ const evalJs = async (expression) => { const r = await send('Runtime.evaluate', 
 
 await send('Runtime.enable');
 await send('Page.enable');
-await send('Page.navigate', { url: `${base}/?debug=1&level=${level}` });
+await send('Page.navigate', { url: process.argv.includes('--loadout') ? `${base}/?debug=1` : `${base}/?debug=1&level=${level}` });
 await sleep(6000);
 await evalJs(`(async()=>{const g=window.__game;g.scene.stop('game');await new Promise(r=>setTimeout(r,300));g.scene.start('game',{level:${level},loadout:${JSON.stringify(loadout)}});return 1})()`);
 if (process.argv.includes('--interrupt')) {
@@ -50,6 +50,15 @@ if (process.argv.includes('--interrupt')) {
   await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: 600, y: 200, button: 'left', clickCount: 1 });
   for (let x = 600; x >= 360; x -= 40) { await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y: 200, button: 'left' }); await sleep(30); }
   await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 360, y: 200, button: 'left', clickCount: 1 });
+}
+if (process.argv.includes('--loadout')) {
+  await evalJs(`(()=>{const g=window.__game;const cur=g.scene.scenes.find(s=>s.scene.isActive()&&s.scene.key!=='boot');cur.scene.start('loadout',{level:${level}});return 1})()`);
+  await sleep(7000);
+  const shotL = await send('Page.captureScreenshot', { format: 'png' });
+  fs.writeFileSync(path.resolve('docs/handoff/shots/repro_loadout.png'), Buffer.from(shotL.data, 'base64'));
+  console.log('loadout screenshot saved');
+  stop();
+  process.exit(0);
 }
 const out = [];
 for (let i = 0; i < 40; i++) {

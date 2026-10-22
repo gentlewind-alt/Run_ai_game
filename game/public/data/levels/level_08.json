@@ -4,11 +4,11 @@
   "realm": "dark_elf_wood",
   "kind": "boss",
   "worldW": 432,
-  "shots": 4,
+  "shots": 6,
   "hints": [
     "Defeat the Dark Elf Matron."
   ],
-  "scoreTarget": 1350,
+  "scoreTarget": 1400,
   "terrain": [
     [
       0,
@@ -94,10 +94,17 @@
       "h": 40
     },
     {
-      "m": "wood",
-      "x": 160,
-      "y": 254,
+      "m": "stone",
+      "x": 174,
+      "y": 280,
       "w": 12,
+      "h": 40
+    },
+    {
+      "m": "stone",
+      "x": 167,
+      "y": 254,
+      "w": 26,
       "h": 12
     },
     {
@@ -113,6 +120,13 @@
       "y": 237,
       "w": 24,
       "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 275,
+      "y": 190,
+      "w": 12,
+      "h": 20
     }
   ],
   "monsters": [
@@ -124,7 +138,7 @@
     {
       "t": "dark_elf_archer",
       "x": 275,
-      "y": 193.0
+      "y": 173.0
     },
     {
       "t": "goblin_grunt",
@@ -145,6 +159,11 @@
       "t": "imp",
       "x": 235,
       "y": 195
+    },
+    {
+      "t": "goblin_grunt",
+      "x": 167,
+      "y": 241.0
     }
   ]
 }

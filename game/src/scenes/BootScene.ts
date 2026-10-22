@@ -6,7 +6,7 @@ import { gridTexture } from '../art/pix';
 import { PAUSE_ICON, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../art/sprites';
 import { sfx } from '../audio/sfx';
 import { checkRegistries } from '../content/validate';
-import { DEBUG, debugLevel, profile, startLevelParam } from '../core/profile';
+import { DEBUG, debugLevel, loadoutSize, profile, startLevelParam } from '../core/profile';
 
 /** Creates every shared texture (data and save are already loaded by main.ts), then opens the title. */
 export default class BootScene extends Phaser.Scene {
@@ -38,7 +38,7 @@ export default class BootScene extends Phaser.Scene {
     }
     sfx.setMuted(profile.settings.muted);
     const owned = profile.owned.weapons;
-    const loadout = (profile.equipped.loadout.length ? profile.equipped.loadout : Array.from({ length: 4 }, (_, i) => owned[i % owned.length])).slice();
+    const loadout = (profile.equipped.loadout.length ? profile.equipped.loadout : Array.from({ length: loadoutSize() }, (_, i) => owned[i % owned.length])).slice();
     if (debugLevel) this.scene.start('game', { level: debugLevel, loadout });
     else if (DEBUG && startLevelParam) this.scene.start('game', { level: startLevelParam, loadout });
     else this.scene.start('title');

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { C } from '../art/palette';
+import { C, rarityColor } from '../art/palette';
 import { setText, text, textBlock } from '../art/font5x7';
 import { iconKey } from '../art/icons';
 import { pixText } from '../art/pix';
@@ -38,6 +38,7 @@ interface Item {
   state: 'buy' | 'owned' | 'locked' | 'full';
   note: string;
   rarity?: string;
+  source?: string;
   isSilhouette?: boolean;
 }
 
@@ -114,7 +115,8 @@ export default class ShopScene extends Phaser.Scene {
             const losses = profile.stats?.bossLosses?.[String(bLvl)] ?? 0;
             return {
               id: w.id, name: shortWeaponName(w.id, w.name), price: pityPrice, icon: weaponTexture(w.id), scale: 2,
-              desc: [w.name, `Unlocked by defeating ${bName}.`, `Pity unlock at ${pityLosses} boss losses (losses: ${losses}/${pityLosses}).`, `Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
+              source: `Boss relic (${bName}) - Pity at ${pityLosses} losses (${losses}/${pityLosses})`,
+              desc: [`Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
               state: owned ? 'owned' : losses >= pityLosses ? 'buy' : 'locked',
               note: owned ? 'Owned' : losses >= pityLosses ? `${pityPrice}c` : `${bName}`,
               rarity, isSilhouette: !owned && losses < pityLosses,
@@ -124,7 +126,8 @@ export default class ShopScene extends Phaser.Scene {
             const chestLvl = w.unlock.level ?? (w.unlock.chest === 'c_l3' ? 3 : w.unlock.chest === 'c_l5' ? 5 : 7);
             return {
               id: w.id, name: shortWeaponName(w.id, w.name), price: w.price ?? 600, icon: weaponTexture(w.id), scale: 2,
-              desc: [w.name, `Found in hidden treasure chest in Level ${chestLvl}.`, `Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
+              source: `Found in Level ${chestLvl} hidden chest`,
+              desc: [`Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
               state: owned ? 'owned' : 'locked',
               note: owned ? 'Owned' : `Level ${chestLvl} Chest`,
               rarity, isSilhouette: !owned,
@@ -135,7 +138,8 @@ export default class ShopScene extends Phaser.Scene {
         const unlocked = reachedLevel() >= reqLvl;
         return {
           id: w.id, name: shortWeaponName(w.id, w.name), price: w.price ?? 0, icon: weaponTexture(w.id), scale: 2,
-          desc: [w.name, `Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
+          source: reqLvl <= 1 ? 'Starting weapon' : `Unlocked at Level ${reqLvl}`,
+          desc: [`Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
           state: owned ? 'owned' : unlocked ? 'buy' : 'locked',
           note: unlocked ? '' : `Level ${reqLvl}`,
           rarity,
@@ -156,7 +160,8 @@ export default class ShopScene extends Phaser.Scene {
           const unlocked = losses >= pityLosses;
           return {
             id: w.id, name: shortWeaponName(w.id, w.name), price: pityPrice, icon: weaponTexture(w.id), scale: 2,
-            desc: [w.name, `Boss relic: defeated by ${bName}.`, `Pity unlock at ${pityLosses} boss losses (${losses}/${pityLosses}).`, `Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
+            source: `Boss relic (${bName}) - Pity at ${pityLosses} losses (${losses}/${pityLosses})`,
+            desc: [`Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
             state: owned ? 'owned' : unlocked ? 'buy' : 'locked',
             note: owned ? 'Owned' : unlocked ? `${pityPrice}c` : `${losses}/${pityLosses} losses`,
             rarity, isSilhouette: !owned && !unlocked,
@@ -165,7 +170,8 @@ export default class ShopScene extends Phaser.Scene {
         const chestLvl = typeof w.unlock === 'object' ? (w.unlock.level ?? (w.unlock.chest === 'c_l3' ? 3 : w.unlock.chest === 'c_l5' ? 5 : 7)) : 3;
         return {
           id: w.id, name: shortWeaponName(w.id, w.name), price: w.price ?? 600, icon: weaponTexture(w.id), scale: 2,
-          desc: [w.name, `Found in hidden treasure chest in Level ${chestLvl}.`, `Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
+          source: `Found in Level ${chestLvl} hidden chest`,
+          desc: [`Launch: ${w.launch ?? ''}`, `Tap: ${w.tap ?? ''}`],
           state: owned ? 'owned' : 'locked',
           note: owned ? 'Owned' : `Chest L${chestLvl}`,
           rarity, isSilhouette: !owned,
@@ -174,14 +180,18 @@ export default class ShopScene extends Phaser.Scene {
     }
     if (this.tab === 'artifacts') {
       return c.artifacts.map((a) => ({
-        id: a.id, name: shortItemName(a.id, a.name), price: a.price, icon: iconKey(a.id), scale: 2, desc: [a.name, a.effect],
+        id: a.id, name: shortItemName(a.id, a.name), price: a.price, icon: iconKey(a.id), scale: 2,
+        source: `${(a.rarity ?? 'rare').toUpperCase()} Artifact`,
+        desc: [a.effect],
         state: owns('artifacts', a.id) ? 'owned' : 'buy', note: '', rarity: a.rarity,
       }));
     }
     const cap = economy().maxConsumableStack;
     if (this.tab === 'items') {
       const consumableItems: Item[] = c.consumables.map((k) => ({
-        id: k.id, name: shortItemName(k.id, k.name), price: k.price, icon: iconKey(k.id), scale: 2, desc: [k.name, k.effect, `You have ${consumableCount(k.id)}, up to ${cap}.`],
+        id: k.id, name: shortItemName(k.id, k.name), price: k.price, icon: iconKey(k.id), scale: 2,
+        source: `Consumable - Stock: ${consumableCount(k.id)}/${cap}`,
+        desc: [k.effect],
         state: consumableCount(k.id) >= cap ? 'full' : 'buy', note: '',
       }));
       const gq = (c.cosmetics ?? []).find((sk) => sk.slot || sk.id === 's_gold_quiver' || sk.id === GOLD_QUIVER);
@@ -189,7 +199,8 @@ export default class ShopScene extends Phaser.Scene {
         const owned = owns('cosmetics', gq.id) || owns('cosmetics', GOLD_QUIVER);
         consumableItems.push({
           id: gq.id, name: gq.name, price: gq.priceCoins ?? 500, icon: 'icon_coin', scale: 2,
-          desc: [gq.name, 'Carry a 5th weapon into battle.'],
+          source: 'Permanent Upgrade',
+          desc: ['Carry a 5th weapon into battle.'],
           state: owned ? 'owned' : 'buy', note: owned ? '5 Slots' : '',
         });
       }
@@ -204,12 +215,13 @@ export default class ShopScene extends Phaser.Scene {
         const icon = sk.id === 's_quicksilver' ? 'sling_quicksilver' : sk.id === 's_gemini' ? 'sling_gemini' : sk.id;
         const price = sk.priceCoins ?? 0;
         const desc = [
-          sk.name,
           sk.desc ?? (sk.id === 's_quicksilver' ? '+25% launch speed with speed lines.' : 'Launches queued twin 12 steps behind at 45% damage.'),
         ];
         const note = isEquipped ? 'Equipped' : owned ? 'Equip' : `${price}c`;
         return {
-          id: sk.id, name: sk.name, price, icon, scale: 1, desc,
+          id: sk.id, name: sk.name, price, icon, scale: 1,
+          source: 'Slingshot Frame',
+          desc,
           state: isEquipped ? 'owned' : 'buy', note,
         };
       });
@@ -267,21 +279,50 @@ export default class ShopScene extends Phaser.Scene {
     }
 
     const it = list.find((x) => x.id === this.selected);
-    const y0 = 136;
+    const y0 = 132;
     if (!it) {
       this.body.add(text(this, W / 2, y0 + 16, 'Tap something to see what it does.', C('d'), 1, C('0')));
       return;
     }
-    this.body.add(text(this, W / 2, y0 + 10, it.name, C('4'), 1, C('0')));
-    const lines = it.desc.flatMap((d) => textBlock(this, W / 2, 0, d, C('c'), 380));
-    lines.forEach((l, i) => { l.setY(y0 + 24 + i * 11); });
+    // 1. Title
+    const titleCol = it.rarity ? rarityColor(it.rarity) : C('4');
+    this.body.add(text(this, W / 2, y0 + 7, it.name, titleCol, 1, C('0')));
+
+    // 2. Rarity and source line
+    const metaParts: string[] = [];
+    if (it.rarity) metaParts.push(it.rarity.toUpperCase());
+    if (it.source) metaParts.push(it.source);
+    const metaStr = metaParts.join(' - ');
+    const metaY = y0 + 18;
+    this.body.add(text(this, W / 2, metaY, metaStr, C('d'), 1, C('0')));
+
+    // 3. Description (wrapped, at most 4 lines)
+    const descStartY = metaY + 11;
+    const lines: Phaser.GameObjects.Image[] = [];
+    const maxWidth = 420;
+    for (const d of it.desc) {
+      if (lines.length >= 4) break;
+      const wrapped = textBlock(this, W / 2, 0, d, C('c'), maxWidth);
+      for (const wLine of wrapped) {
+        if (lines.length < 4) lines.push(wLine);
+        else wLine.destroy();
+      }
+    }
+    const lineSpacing = 10;
+    lines.forEach((l, i) => { l.setY(descStartY + i * lineSpacing); });
     this.body.add(lines);
+
+    // 4. Button anchored below with fixed gap
+    const descBottom = lines.length > 0 ? descStartY + (lines.length - 1) * lineSpacing + 5 : metaY + 5;
+    const gap = 8;
+    const btnH = 20;
+    const btnY = Math.round(descBottom + gap + btnH / 2);
 
     const isSlingEquip = this.tab === 'slingshots' && owns('cosmetics', it.id);
     const label = isSlingEquip ? (profile.equipped.slingSkin === it.id ? 'Equipped' : 'Equip') :
                   it.state === 'owned' ? 'Owned' : it.state === 'locked' ? it.note : it.state === 'full' ? 'Stock full' : `Buy for ${it.price}`;
     const btnEnabled = this.tab === 'slingshots' ? profile.equipped.slingSkin !== it.id : it.state === 'buy';
-    const buy = makeButton(this, W / 2, y0 + 64, 160, 24, label, 'go', () => this.buy(it), 6);
+    const buy = makeButton(this, W / 2, btnY, 150, btnH, label, 'go', () => this.buy(it), 6);
     buy.setEnabled(btnEnabled);
     this.body.add(buy.box);
   }

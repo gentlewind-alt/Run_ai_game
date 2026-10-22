@@ -2,6 +2,30 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · agy quota exhausted; X1 done, X2 reviewed, handoff (v1.14.0 private)
+- **agy cannot run:** every agy call since 05:26 fails with `RESOURCE_EXHAUSTED: Your AI credits balance is too low` on both `gemini-3.8-flash-high` and `claude-sonnet-4-6`. `tools/agy_chain.sh` stopped at X2 (`INCOMPLETE agy_task_x2_slots6_balance`). Per the routing rule Claude now does the work directly. RUN credits are separate and fine (about 108,800).
+- **X1 (agy, done):** relic sprites at 1.5x on field/sling/queue in natural poses, shop info panel without overlap, locked silhouettes, dead procedural art removed, real effect captures.
+- **X2 (agy partial, reviewed by Claude):** `economy.loadoutSize` 6, relic damages Maul 56 / Fists 50 / Disc 44 / Arrow 34 / Shooters 30 / Palms 32, levels 4-12 shots 5-6 with more monsters, Loadout scene reworked, `tools/balance_table.mjs` matches the design table (legendaries and rares need 2 hits on an orc brute). `check`, `build`, `regress:quick` pass (levels 4/8/12 solve in 3/3/4 shots, band 3-5). Not verified: the six-slot Loadout visually, the full `regress`, DATA.md updates. Claude fixed the `?` separator in the Shop info line (font has no middle dot).
+- **Art ready for X3:** `game/public/sprites/monsters/{frost_wolf,ice_golem,frost_giant}.png`, `relics/w_brahmastra_arrow(.png,_card.png)`, `w_omnitrix_dial`.
+- **Next (in order):** X3 realm 4 + Brahmastra Arrow, X4 leaderboards, X5 ability pass, X6 realms 5-6 + Omnitrix + sound pass. Resume with `bash tools/agy_chain.sh docs/handoff/agy_task_x3_realm4.md ...` when agy credits return, otherwise implement directly from the briefs.
+
+## 2026-10-22 · agy · Task x1: image-related fixes (done)
+- **What:** Completed all 5 image-related tasks per `docs/handoff/agy_task_x1_art_fix.md`:
+  1. **Sprite size & natural poses on field**: relic weapons scaled to 1.5x (~48px at zoom 1) in flight, on the sling and in the queue HUD with crisp pixel-art scaling; loaded-on-sling poses set to natural orientations (Skyforge Maul hammer head up, Comet Fists upright, Kinetic Palms upright, Bulwark Disc upright, Steersong Arrow pointing along aim). Split arrows scaled to 1.2x for clear visibility in flight.
+  2. **Shop info panel layout & clearance**: reworked info panel across all tabs into structured header (title in rarity color, rarity and source line), wrapped description (at most 4 lines), and action button anchored below with fixed 8px gap. Action button has guaranteed clearance to both info text (>= 8px) and "Back to map" (>= 16px).
+  3. **Locked relic silhouettes**: updated `createItemCard` so locked relics render a dark silhouette of the real generated sprite (tinted `#1a1c2c`) with a faint 1px rarity-coloured rim (`rarityColor` at 0.45 alpha), allowing players to read what they are chasing.
+  4. **Procedural fallback cleanup**: removed ~650 lines of dead procedural hero builders and card generators from `relicTextures.ts`; retained slingshot frames (`sling_quicksilver`, `sling_gemini`) and combat FX textures (`fx_maul_bolt`, `fx_web_splat`, `fx_palm_bolt`).
+  5. **Effect visibility & review artifacts**: updated `tools/weapon_shots.mjs` to capture peak action frames for all weapons, rebuilt `sheet.png` (960x540) using real action captures and hero sprites, generated `compare.png` against design references, and captured 13 art review screenshots in `docs/handoff/shots/art/` covering Loadout, all 5 Shop tabs, and in-battle shots with each relic weapon mounted.
+  6. **Regression test suite**: added Section 5 assertion in `tools/regress.mjs` verifying 0 info text overlaps with action button across all 5 Shop tabs for the longest item descriptions.
+- **Checks:**
+  - `npm run check`: PASSED (0 schema, daily, or type errors)
+  - `npm run build`: PASSED (clean build in 1.31s, chunks split cleanly)
+  - `npm run regress:quick`: PASSED (all 9 sections in 167.32s)
+  - `npm run regress`: PASSED (100% pass across all 12 levels and 9 sections in 357.48s, EXIT 0)
+- **Notes / for the next agent:**
+  - Ready for Task x2 (slots6 balance).
+- **Questions for owner:** None.
+
 ## 2026-10-22 · claude · Sprites via RUN CLI, expansion design and agy task chain (owner goal)
 - **RUN CLI sprites:** six relic weapons generated with `rundot generate sprite` (90 credits each; disc regenerated, 2 variations), processed by `tools/process_sprites.ps1` (crop, fit, downscale, snap to Mash32) into `game/public/sprites/relics/<id>.png` (32 px) and `_card.png` (24 px), loaded through the new weapon `sprite` field (`src/art/generatedSprites.ts`, `BootScene.preload`). `check`, `build`, `regress:quick` pass. About 800 credits spent so far.
 - **Design:** `docs/monster_mash/09_expansion_design.md` (six slots, damage vs HP table, Pocket Tanks ability pass, Brahmastra Arrow, Omnitrix Dial, six more weapons, realms 4-6 with 12 levels, leaderboards, sound plan, order of work).

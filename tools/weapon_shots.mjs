@@ -13,10 +13,11 @@ const CHROME_PATH = process.env.CHROME_BIN ||
 const repoRoot = fs.existsSync(path.resolve('game')) ? path.resolve('.') : path.resolve('..');
 const gameDir = path.join(repoRoot, 'game');
 const TMP_PROFILE = path.join(os.tmpdir(), 'mm_chrome_profile_weapons');
-const SHOTS_DIR = path.resolve(repoRoot, 'docs/handoff/shots/weapons');
+const WEAPONS_DIR = path.resolve(repoRoot, 'docs/handoff/shots/weapons');
+const ART_DIR = path.resolve(repoRoot, 'docs/handoff/shots/art');
 
-if (!fs.existsSync(SHOTS_DIR)) {
-  fs.mkdirSync(SHOTS_DIR, { recursive: true });
+for (const d of [WEAPONS_DIR, ART_DIR]) {
+  if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -34,7 +35,7 @@ async function checkServer() {
 }
 
 async function run() {
-  console.log('=== STARTING RELIC WEAPONS & SLINGSHOTS SCREENSHOT CAPTURE ===\n');
+  console.log('=== STARTING RELIC WEAPONS, ART & SLINGSHOTS SCREENSHOT CAPTURE ===\n');
 
   let devProc = null;
   let serverUrl = await checkServer();
@@ -156,13 +157,16 @@ async function run() {
   });
   await sleep(400);
 
-  const takeScreenshot = async (name) => {
+  const takeScreenshot = async (dir, name) => {
     const res = await send('Page.captureScreenshot', { format: 'png' });
     const buffer = Buffer.from(res.data, 'base64');
-    const outPath = path.join(SHOTS_DIR, `${name}.png`);
+    const outPath = path.join(dir, `${name}.png`);
     fs.writeFileSync(outPath, buffer);
-    console.log(`  ✓ Saved screenshot: ${name}.png (${buffer.length} bytes)`);
+    console.log(`  ✓ Saved screenshot: ${name}.png (${buffer.length} bytes) in ${path.basename(dir)}`);
+    return res.data;
   };
+
+  const actionCaptures = {};
 
   // 1. Loadout with Relics & Slingshot Row
   console.log('1. Capturing Loadout with Relics & Slingshot Row...');
@@ -181,7 +185,8 @@ async function run() {
     g.scene.start('loadout', { level: 4 });
   })()`);
   await sleep(600);
-  await takeScreenshot('01_loadout_relic_weapons');
+  await takeScreenshot(WEAPONS_DIR, '01_loadout_relic_weapons');
+  await takeScreenshot(ART_DIR, '01_loadout');
 
   // 2. Shop Slingshots Tab
   console.log('2. Capturing Shop Slingshots Tab...');
@@ -198,52 +203,71 @@ async function run() {
   await evalCode(`(() => {
     const shop = window.__game.scene.getScene('shop');
     shop.tab = 'slingshots';
-    shop.selected = null;
+    shop.selected = 's_quicksilver';
     shop.render();
   })()`);
   await sleep(400);
-  await takeScreenshot('02_shop_slingshots');
+  await takeScreenshot(WEAPONS_DIR, '02_shop_slingshots');
+  await takeScreenshot(ART_DIR, '07_shop_slingshots');
 
-  // 3. Skyforge Maul (Lightning strike & Electric field)
-  console.log('3. Capturing Skyforge Maul Lightning...');
+  // Shop all tabs for ART_DIR
+  const tabs = [
+    { id: 'weapons', sel: 'w_scrapheap_scattergun', name: '02_shop_weapons' },
+    { id: 'relics', sel: 'w_skyforge_maul', name: '03_shop_relics' },
+    { id: 'artifacts', sel: 'a_horn_plenty', name: '04_shop_artifacts' },
+    { id: 'items', sel: 'c_prime_serum', name: '05_shop_items' },
+    { id: 'forge', sel: null, name: '06_shop_forge' },
+  ];
+  for (const t of tabs) {
+    console.log(`Capturing Shop ${t.id} tab...`);
+    await evalCode(`(() => {
+      const shop = window.__game.scene.getScene('shop');
+      shop.tab = '${t.id}';
+      shop.selected = ${t.sel ? `'${t.sel}'` : 'null'};
+      shop.render();
+    })()`);
+    await sleep(300);
+    await takeScreenshot(ART_DIR, t.name);
+  }
+
+  // 3. Skyforge Maul (Lightning strike & Electric field at peak)
+  console.log('3. Capturing Skyforge Maul Lightning strike...');
   await evalCode(`(() => {
     const mm = window.__mm;
     mm.load(1, ['w_skyforge_maul']);
     mm.fire({ angleDeg: 35, power: 0.8 });
     mm.run(15);
     mm.activateAbility();
-    mm.run(2);
+    mm.run(4);
   })()`);
-  await sleep(200);
-  await takeScreenshot('03_skyforge_maul_lightning');
+  await sleep(250);
+  actionCaptures['maul'] = await takeScreenshot(WEAPONS_DIR, '03_skyforge_maul_lightning');
 
-  // 4. Comet Fists (Dive-slam & Earthquake shockwave)
-  console.log('4. Capturing Comet Fists Earthquake...');
+  // 4. Comet Fists (Dive-slam & Earthquake shockwave at peak)
+  console.log('4. Capturing Comet Fists Earthquake shockwave...');
   await evalCode(`(() => {
     const mm = window.__mm;
     mm.load(1, ['w_comet_fists']);
     mm.fire({ angleDeg: 55, power: 0.95 });
-    mm.run(30);
+    mm.run(28);
     mm.activateAbility();
-    mm.run(16);
+    mm.run(26);
   })()`);
-  await sleep(200);
-  await takeScreenshot('04_comet_fists_earthquake');
+  await sleep(250);
+  actionCaptures['fists'] = await takeScreenshot(WEAPONS_DIR, '04_comet_fists_earthquake');
 
-  // 5. Bulwark Disc (Ricochet & Redirect)
-  console.log('5. Capturing Bulwark Disc Ricochet...');
+  // 5. Bulwark Disc (Ricochet, Ping star & Ghost trail)
+  console.log('5. Capturing Bulwark Disc Ricochet & Ping Star...');
   await evalCode(`(() => {
     const mm = window.__mm;
     mm.load(1, ['w_bulwark_disc']);
     mm.fire({ angleDeg: 25, power: 0.85 });
-    mm.run(15);
-    mm.activateAbility();
-    mm.run(5);
+    mm.run(18);
   })()`);
-  await sleep(200);
-  await takeScreenshot('05_bulwark_disc_ricochet');
+  await sleep(250);
+  actionCaptures['disc'] = await takeScreenshot(WEAPONS_DIR, '05_bulwark_disc_ricochet');
 
-  // 6. Steersong Arrow (Split-tip 3-arrow fan)
+  // 6. Steersong Arrow (Split-tip 3-arrow fan clearly fanning out)
   console.log('6. Capturing Steersong Arrow Split Fan...');
   await evalCode(`(() => {
     const mm = window.__mm;
@@ -253,68 +277,91 @@ async function run() {
     mm.activateAbility(); // Arm
     mm.run(2);
     mm.activateAbility(); // Split
-    mm.run(4);
+    mm.run(8);
   })()`);
-  await sleep(200);
-  await takeScreenshot('06_steersong_arrow_split');
+  await sleep(250);
+  actionCaptures['arrow'] = await takeScreenshot(WEAPONS_DIR, '06_steersong_arrow_split');
 
-  // 7. Silkline Shooters (Web strand & pull/slow)
-  console.log('7. Capturing Silkline Shooters Web Line...');
+  // 7. Silkline Shooters (Web strand & splat & slow)
+  console.log('7. Capturing Silkline Shooters Web Line & Splat...');
   await evalCode(`(() => {
     const mm = window.__mm;
     mm.load(1, ['w_silkline_shooters']);
     mm.fire({ angleDeg: 30, power: 0.8 });
-    mm.run(15);
+    mm.run(12);
     mm.activateAbility();
-    mm.run(3);
+    mm.run(6);
   })()`);
-  await sleep(200);
-  await takeScreenshot('07_silkline_shooters_web');
+  await sleep(250);
+  actionCaptures['shooters'] = await takeScreenshot(WEAPONS_DIR, '07_silkline_shooters_web');
 
-  // 8. Kinetic Palms (3-bolt repulsor volley)
+  // 8. Kinetic Palms (3-bolt repulsor volley & muzzle flash)
   console.log('8. Capturing Kinetic Palms Repulsor Volley...');
   await evalCode(`(() => {
     const mm = window.__mm;
     mm.load(1, ['w_kinetic_palms']);
     mm.fire({ angleDeg: 35, power: 0.8 });
-    mm.run(15);
+    mm.run(14);
     mm.activateAbility();
-    mm.run(12);
+    mm.run(10);
   })()`);
-  await sleep(200);
-  await takeScreenshot('08_kinetic_palms_repulsor');
+  await sleep(250);
+  actionCaptures['palms'] = await takeScreenshot(WEAPONS_DIR, '08_kinetic_palms_repulsor');
 
   // 9. Quicksilver Slingshot (Speed lines & cyan band)
   console.log('9. Capturing Quicksilver Slingshot...');
   await evalCode(`(() => {
     const mm = window.__mm;
     const prof = mm.profile();
-    prof.equipped.slingSkin = 'quicksilver';
+    prof.equipped.slingSkin = 's_quicksilver';
     mm.load(1, ['w_militia_blade']);
     mm.fire({ angleDeg: 35, power: 0.9 });
-    mm.run(12);
+    mm.run(14);
   })()`);
-  await sleep(200);
-  await takeScreenshot('09_quicksilver_sling_speed');
+  await sleep(250);
+  actionCaptures['quicksilver'] = await takeScreenshot(WEAPONS_DIR, '09_quicksilver_sling_speed');
 
   // 10. Gemini Strand Slingshot (Twin launch in flight)
   console.log('10. Capturing Gemini Strand Twin Launch...');
   await evalCode(`(() => {
     const mm = window.__mm;
     const prof = mm.profile();
-    prof.equipped.slingSkin = 'gemini';
+    prof.equipped.slingSkin = 's_gemini';
     mm.load(1, ['w_militia_blade', 'w_iron_cleaver']);
     mm.fire({ angleDeg: 40, power: 0.85 });
     mm.run(18);
   })()`);
-  await sleep(200);
-  await takeScreenshot('10_gemini_strand_twin_launch');
+  await sleep(250);
+  actionCaptures['gemini'] = await takeScreenshot(WEAPONS_DIR, '10_gemini_strand_twin_launch');
 
-  // 11. Assemble Master Contact Sheet (sheet.png)
-  console.log('11. Generating Master Contact Sheet (sheet.png)...');
-  const sheetBase64 = await evalCode(`(() => {
+  // Battle with each relic weapon mounted on sling in its natural pose
+  const relicWeapons = [
+    { id: 'w_skyforge_maul', name: '08_battle_w_skyforge_maul' },
+    { id: 'w_comet_fists', name: '09_battle_w_comet_fists' },
+    { id: 'w_bulwark_disc', name: '10_battle_w_bulwark_disc' },
+    { id: 'w_steersong_arrow', name: '11_battle_w_steersong_arrow' },
+    { id: 'w_silkline_shooters', name: '12_battle_w_silkline_shooters' },
+    { id: 'w_kinetic_palms', name: '13_battle_w_kinetic_palms' },
+  ];
+  for (const rw of relicWeapons) {
+    console.log(`Capturing battle with ${rw.id} mounted on sling...`);
+    await evalCode(`(() => {
+      const mm = window.__mm;
+      const prof = mm.profile();
+      prof.equipped.slingSkin = 'classic';
+      mm.load(1, ['${rw.id}', 'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff']);
+    })()`);
+    await sleep(400);
+    await takeScreenshot(ART_DIR, rw.name);
+  }
+
+  // 11. Assemble Master Contact Sheet (sheet.png) from real action captures!
+  console.log('11. Generating Master Contact Sheet (sheet.png) from real captures...');
+  const captureDataJson = JSON.stringify(actionCaptures);
+  const sheetBase64 = await evalCode(`(async () => {
     const g = window.__game;
     const tm = g.textures;
+    const captures = ${captureDataJson};
 
     const canvas = document.createElement('canvas');
     canvas.width = 960;
@@ -329,95 +376,86 @@ async function run() {
     // Title banner
     ctx.fillStyle = '#f0c040';
     ctx.font = 'bold 20px monospace';
-    ctx.fillText('MONSTER MASH: SLINGSHOT SIEGE - RELIC WEAPONS & SLINGSHOTS (BATCH A)', 24, 34);
+    ctx.fillText('MONSTER MASH: SLINGSHOT SIEGE - RELIC WEAPONS & SLINGSHOTS', 24, 34);
 
     ctx.fillStyle = '#8ba4b8';
     ctx.font = '12px monospace';
-    ctx.fillText('Approved 32x32 Hero Sprites, Modular Emblems, Slingshot Frames, and In-Game FX Effects', 24, 52);
+    ctx.fillText('Generated Sprites, 4x Hero Scales, Slingshot Frames, and REAL In-Game Combat FX Captures', 24, 52);
 
-    // Draw textured frames
-    const texturesToDraw = [
-      { key: 'wpn_w_skyforge_maul', label: 'Maul Hero' },
-      { key: 'wpn_w_skyforge_maul_charged', label: 'Maul Charged' },
-      { key: 'wpn_w_skyforge_maul_planted', label: 'Maul Planted' },
-      { key: 'wpn_w_comet_fists', label: 'Fists Hero' },
-      { key: 'wpn_w_comet_fists_charged', label: 'Fists Charged' },
-      { key: 'wpn_w_bulwark_disc', label: 'Disc Hero' },
-      { key: 'wpn_w_steersong_arrow', label: 'Arrow Hero' },
-      { key: 'wpn_w_steersong_arrow_armed', label: 'Arrow Armed' },
-      { key: 'wpn_w_steersong_arrow_split', label: 'Arrow Split' },
-      { key: 'wpn_w_silkline_shooters', label: 'Shooters Hero' },
-      { key: 'wpn_w_kinetic_palms', label: 'Palms Hero' },
+    // Section 1: Hero sprites at 4x scale
+    const heroSprites = [
+      { key: 'wpn_w_skyforge_maul', label: 'Skyforge Maul' },
+      { key: 'wpn_w_comet_fists', label: 'Comet Fists' },
+      { key: 'wpn_w_bulwark_disc', label: 'Bulwark Disc' },
+      { key: 'wpn_w_steersong_arrow', label: 'Steersong Arrow' },
+      { key: 'wpn_w_silkline_shooters', label: 'Silkline Shooters' },
+      { key: 'wpn_w_kinetic_palms', label: 'Kinetic Palms' },
       { key: 'sling_quicksilver', label: 'Quicksilver' },
       { key: 'sling_gemini', label: 'Gemini Strand' },
-      { key: 'fx_maul_bolt', label: 'Lightning Bolt' },
-      { key: 'fx_web_splat', label: 'Web Splat' },
-      { key: 'fx_palm_bolt', label: 'Repulsor Bolt' }
     ];
 
-    let startX = 24;
-    let startY = 70;
-    const cellW = 56;
-    const cellH = 75;
+    heroSprites.forEach((item, idx) => {
+      const x = 24 + idx * 116;
+      const y = 68;
 
-    texturesToDraw.forEach((item, idx) => {
-      const col = idx % 8;
-      const row = Math.floor(idx / 8);
-      const x = startX + col * 116;
-      const y = startY + row * 82;
-
-      // Card frame
       ctx.fillStyle = '#182436';
-      ctx.fillRect(x, y, 106, 74);
+      ctx.fillRect(x, y, 108, 92);
       ctx.strokeStyle = '#2b3f5c';
-      ctx.strokeRect(x, y, 106, 74);
+      ctx.strokeRect(x, y, 108, 92);
 
       if (tm.exists(item.key)) {
         const img = tm.get(item.key).getSourceImage();
         const sw = img.width;
         const sh = img.height;
-        // Scale 2x with crisp pixels
-        const scale = 2;
+        // Scale to fit card
+        const scale = sw <= 16 ? 4 : sw <= 24 ? 3 : 2;
         const dw = sw * scale;
         const dh = sh * scale;
-        const ox = x + Math.floor((106 - dw) / 2);
-        const oy = y + 8 + Math.floor((44 - Math.min(dh, 44)) / 2);
-        ctx.drawImage(img, ox, oy, dw, Math.min(dh, 44));
+        const ox = x + Math.floor((108 - dw) / 2);
+        const oy = y + 8 + Math.floor((60 - Math.min(dh, 60)) / 2);
+        ctx.drawImage(img, ox, oy, dw, Math.min(dh, 60));
       }
 
       ctx.fillStyle = '#9cb6db';
       ctx.font = '10px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(item.label, x + 53, y + 66);
+      ctx.fillText(item.label, x + 54, y + 82);
       ctx.textAlign = 'start';
     });
 
-    // Section 2: In-Game Action Showcase (Grid of Action Thumbnails)
+    // Section 2: In-Game Action Showcase (Real Captures)
     ctx.fillStyle = '#f0c040';
     ctx.font = 'bold 15px monospace';
-    ctx.fillText('IN-GAME ACTION SNAPSHOTS (COMBAT MECHANICS & FX)', 24, 256);
+    ctx.fillText('REAL IN-GAME ACTION CAPTURES (COMBAT MECHANICS & FX)', 24, 182);
 
     const actionPanels = [
-      { title: '1. SKYFORGE MAUL', desc: 'Lightning bolt strike & electric field' },
-      { title: '2. COMET FISTS', desc: 'Dive-slam & ground earthquake shock' },
-      { title: '3. BULWARK DISC', desc: '6-bounce ricochet & target redirect' },
-      { title: '4. STEERSONG ARROW', desc: 'Armed explosion & 3-arrow fan split' },
-      { title: '5. SILKLINE SHOOTERS', desc: 'Web strand pull & 4s 50% slow' },
-      { title: '6. KINETIC PALMS', desc: '3-bolt repulsor volley & recoil' },
-      { title: '7. QUICKSILVER SLING', desc: '+25% speed, flat arc & cyan band' },
-      { title: '8. GEMINI STRAND', desc: '12-step twin launch at 45% damage' },
+      { key: 'maul', title: '1. SKYFORGE MAUL', desc: 'Lightning bolt strike & electric field' },
+      { key: 'fists', title: '2. COMET FISTS', desc: 'Dive-slam & ground earthquake shock' },
+      { key: 'disc', title: '3. BULWARK DISC', desc: 'Ricochet & ping star bounce' },
+      { key: 'arrow', title: '4. STEERSONG ARROW', desc: 'Armed explosion & 3-arrow fan split' },
+      { key: 'shooters', title: '5. SILKLINE SHOOTERS', desc: 'Web strand pull & 4s 50% slow' },
+      { key: 'palms', title: '6. KINETIC PALMS', desc: '3-bolt repulsor volley & recoil' },
+      { key: 'quicksilver', title: '7. QUICKSILVER SLING', desc: '+25% speed & speed-line trail' },
+      { key: 'gemini', title: '8. GEMINI STRAND', desc: '12-step twin launch at 45% damage' },
     ];
 
-    actionPanels.forEach((p, idx) => {
+    const loadImg = (b64) => new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.src = 'data:image/png;base64,' + b64;
+    });
+
+    for (let idx = 0; idx < actionPanels.length; idx++) {
+      const p = actionPanels[idx];
       const col = idx % 4;
       const row = Math.floor(idx / 4);
       const px = 24 + col * 232;
-      const py = 272 + row * 126;
+      const py = 196 + row * 164;
 
       ctx.fillStyle = '#141d2c';
-      ctx.fillRect(px, py, 222, 114);
+      ctx.fillRect(px, py, 222, 154);
       ctx.strokeStyle = '#2b3f5c';
-      ctx.strokeRect(px, py, 222, 114);
+      ctx.strokeRect(px, py, 222, 154);
 
       // Header strip
       ctx.fillStyle = '#1e2c44';
@@ -428,37 +466,35 @@ async function run() {
 
       ctx.fillStyle = '#8ba4b8';
       ctx.font = '9px monospace';
-      ctx.fillText(p.desc, px + 8, py + 36);
+      ctx.fillText(p.desc, px + 8, py + 34);
 
-      // Simulation preview box
+      // Simulation preview box with real capture
       ctx.fillStyle = '#0a0d14';
-      ctx.fillRect(px + 8, py + 44, 206, 62);
+      ctx.fillRect(px + 8, py + 40, 206, 106);
       ctx.strokeStyle = '#1d273a';
-      ctx.strokeRect(px + 8, py + 44, 206, 62);
+      ctx.strokeRect(px + 8, py + 40, 206, 106);
 
-      // Draw active combat icon
-      ctx.fillStyle = '#5ac54f';
-      ctx.font = '9px monospace';
-      ctx.fillText('Mechanic Status: VERIFIED', px + 14, py + 64);
-      ctx.fillStyle = '#6cb7ff';
-      ctx.fillText('Audio: Synthesized WebAudio', px + 14, py + 78);
-      ctx.fillStyle = '#9cb6db';
-      ctx.fillText('Deterministic Sweep: 0 One-Shots', px + 14, py + 92);
-    });
+      if (captures[p.key]) {
+        const capturedImg = await loadImg(captures[p.key]);
+        // Crop center combat region (capturedImg is 960x540)
+        // Draw into 206x106 preview box
+        ctx.drawImage(capturedImg, 0, 0, capturedImg.width, capturedImg.height, px + 8, py + 40, 206, 106);
+      }
+    }
 
     return canvas.toDataURL('image/png').replace(/^data:image\\/png;base64,/, '');
   })()`);
 
   const sheetBuffer = Buffer.from(sheetBase64, 'base64');
-  fs.writeFileSync(path.join(SHOTS_DIR, 'sheet.png'), sheetBuffer);
-  console.log(`  ✓ Saved contact sheet: sheet.png (${sheetBuffer.length} bytes)`);
+  fs.writeFileSync(path.join(WEAPONS_DIR, 'sheet.png'), sheetBuffer);
+  console.log(`  ✓ Saved contact sheet from real captures: sheet.png (${sheetBuffer.length} bytes)`);
 
-  console.log('\nAll 10 weapon screenshots and contact sheet captured successfully!');
+  console.log('\nAll screenshots and contact sheet captured successfully!');
   cleanup();
   process.exit(0);
 }
 
 run().catch((err) => {
-  console.error('Fatal error during weapon screenshot capture:', err);
+  console.error('Fatal error during screenshot capture:', err);
   process.exit(1);
 });

@@ -4,12 +4,12 @@
   "realm": "iron_keep",
   "kind": "runner",
   "worldW": 648,
-  "shots": 4,
+  "shots": 6,
   "hints": [
     "Iron blocks resist light hits.",
     "Stop the runners before the exit."
   ],
-  "scoreTarget": 1500,
+  "scoreTarget": 1600,
   "escapeLimit": 1,
   "exit": {
     "x": 620,
@@ -97,6 +97,27 @@
       "y": 306,
       "w": 10,
       "h": 28
+    },
+    {
+      "m": "iron",
+      "x": 210,
+      "y": 231,
+      "w": 36,
+      "h": 12
+    },
+    {
+      "m": "stone",
+      "x": 166,
+      "y": 290,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 210,
+      "y": 256,
+      "w": 8,
+      "h": 20
     }
   ],
   "monsters": [
@@ -114,6 +135,11 @@
       "t": "troll",
       "x": 210,
       "y": 252.0
+    },
+    {
+      "t": "goblin_grunt",
+      "x": 166,
+      "y": 297.0
     },
     {
       "t": "skeleton_runner",

@@ -4,11 +4,11 @@
   "realm": "dark_elf_wood",
   "kind": "siege",
   "worldW": 432,
-  "shots": 4,
+  "shots": 5,
   "hints": [
     "A ridge blocks flat shots. Aim high."
   ],
-  "scoreTarget": 1250,
+  "scoreTarget": 1300,
   "terrain": [
     [
       0,
@@ -85,9 +85,28 @@
       "y": 255,
       "w": 44,
       "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 255,
+      "y": 306,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "wood",
+      "x": 300,
+      "y": 242,
+      "w": 28,
+      "h": 6
     }
   ],
   "monsters": [
+    {
+      "t": "imp",
+      "x": 205,
+      "y": 230
+    },
     {
       "t": "imp",
       "x": 230,
@@ -106,7 +125,7 @@
     {
       "t": "dark_elf_archer",
       "x": 300,
-      "y": 245.0
+      "y": 232.0
     },
     {
       "t": "dark_elf_hexer",

@@ -4,11 +4,11 @@
   "realm": "goblin_hills",
   "kind": "boss",
   "worldW": 600,
-  "shots": 4,
+  "shots": 5,
   "hints": [
     "Defeat the Goblin Chief!"
   ],
-  "scoreTarget": 1200,
+  "scoreTarget": 1350,
   "escapeLimit": 1,
   "exit": {
     "x": 580,
@@ -63,10 +63,17 @@
       "h": 28
     },
     {
+      "m": "stone",
+      "x": 274,
+      "y": 274,
+      "w": 12,
+      "h": 28
+    },
+    {
       "m": "wood",
-      "x": 226,
+      "x": 233,
       "y": 257,
-      "w": 84,
+      "w": 98,
       "h": 6
     },
     {
@@ -103,6 +110,13 @@
       "y": 222,
       "w": 12,
       "h": 12
+    },
+    {
+      "m": "stone",
+      "x": 244,
+      "y": 222,
+      "w": 12,
+      "h": 12
     }
   ],
   "monsters": [
@@ -130,6 +144,11 @@
       "t": "goblin_grunt",
       "x": 120,
       "y": 313.0
+    },
+    {
+      "t": "goblin_grunt",
+      "x": 256,
+      "y": 281.0
     },
     {
       "t": "skeleton_runner",
