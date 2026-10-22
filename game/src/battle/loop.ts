@@ -100,13 +100,16 @@ function syncSprites(b: BattleState, time: number): void {
     const beat = beatBob(time, e.phase);
     const running = e.def?.behavior === 'runner';
     const openKey = e.params.visorOpen === 1 ? `${e.type}_open` : e.type;
-    const tex = e.hurt > 0 ? `${e.type}_hurt` : (b.scene.textures.exists(openKey) ? openKey : e.type);
+    // Generated-art monsters (realms 4-6) have no hurt frame: they keep their sprite and get a red tint instead.
+    const hurtFrame = e.hurt > 0 && b.scene.textures.exists(`${e.type}_hurt`);
+    const tex = hurtFrame ? `${e.type}_hurt` : (b.scene.textures.exists(openKey) ? openKey : e.type);
     e.sprite.setTexture(tex);
     e.sprite.setPosition(bp.x, bp.y + e.h / 2 - e.size / 2 + 1 + (running ? -Math.abs(Math.sin(b.steps / 4)) * 2 : 0));
     e.sprite.setRotation(e.body.angle);
     const amp = e.size >= 24 ? 0.03 : 0.05;
     e.sprite.setScale(running ? 1 : 1 + amp * beat, running ? 1 : 1 - amp * 1.4 * beat);
     if (e.flash > 0) e.sprite.setTintFill(0xffffff);
+    else if (e.hurt > 0 && !hurtFrame) e.sprite.setTint(0xff8a8a);
     else if (e.status.chain > 0) e.sprite.setTint(0xb8c0c8);
     else if (e.status.stun > 0) e.sprite.setTint(0x9fb8ff);
     else if (e.status.curse > 0) e.sprite.setTint(0xd7a0ff);

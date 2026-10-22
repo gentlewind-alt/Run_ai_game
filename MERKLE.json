@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "0c6b87d04ab1e2a7659ee1ae8517735cfdf5abb21139659314a55ff6ff5ea5a2",
+  "hash": "57b63a269c8df8da3ae9cff1edc75c10cfb2be5244ffeb3e833797d37c74f992",
   "children": [
     {
       "name": ".gitignore",
@@ -101,13 +101,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "687ee7daeac43aa9a548e226fa304917ad395962ae980e59c22e44042c6ad764",
+      "hash": "b19b5dbe047e12d58b6ca4ce615e32d8faab13a6ec2607eface6024b16d119ae",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "ccfbbd306e281f5555e2a0364533bf466d4c47938157bd6ddc425f64db407ec6",
+          "hash": "a356c5dde267f4e38da02fd969312c91de4a7582fcfbffa2abdbd1c8af2027c7",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -330,8 +330,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "4d4b774dc2273937d2ce8338de9841002dd6bfb9f1c338bf6044499ee608c409",
-              "size": 116792
+              "hash": "ac186c2e4dc3e3dfbbf064eac3c539c6b6cce3abb80d81a2c20cf210ec0f6a1d",
+              "size": 117444
             },
             {
               "name": "ref",
@@ -1964,8 +1964,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "c44e66d5e01c47e340714ac9714a1607bdd23e48b6dcfec5f9d8019f81f6a7cf",
-              "size": 10513
+              "hash": "39d69b380d624664df08ae6e3b3f52a187b81845eaed530f9418f8f2ab43e3ec",
+              "size": 10511
             }
           ]
         },
@@ -2117,7 +2117,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "09231972bd4cccb9c82a09406306e338fa88fe3c371e01da3c5aafba8c40927d",
+      "hash": "ef88df364ee71fd268d2decaeedfbb119ae2ba3f311ee6ca7b7c43a79eabd5cf",
       "children": [
         {
           "name": ".gitignore",
@@ -2897,7 +2897,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "3ad8301b8bb37712c0cdfa50c6a84e2610e53d1f7172e472b595e126440245ca",
+          "hash": "4976a0f74948c33ee46a3f509c04f17a27f8648397f3c7bfe005eba558cd3770",
           "children": [
             {
               "name": "art",
@@ -3031,7 +3031,7 @@
               "name": "battle",
               "path": "game/src/battle",
               "type": "dir",
-              "hash": "4436c1b2cc1cddd1c98f3a07d3dfb74eed9fc4aabafca8da38dc3208d0a6f7c4",
+              "hash": "30d976575be2f797c54943efcbd939025bbac767b50c17cc2af2de1d6a19bf8c",
               "children": [
                 {
                   "name": "artifacts.ts",
@@ -3093,8 +3093,8 @@
                   "name": "loop.ts",
                   "path": "game/src/battle/loop.ts",
                   "type": "file",
-                  "hash": "7f51fdb23fb3f408b54a064641bdbb16c792a58195c2e7ab6b336a11da753c50",
-                  "size": 4655
+                  "hash": "0927a913b00b8b792c05f0aa97e68cb6a73bd14756e04fc35532730d581308b6",
+                  "size": 4914
                 },
                 {
                   "name": "matter.ts",

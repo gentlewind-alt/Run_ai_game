@@ -55,6 +55,11 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
 - **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
 
+## 2026-10-22 · claude · Green box on hit: missing hurt frame (v1.28.0)
+- **Real cause of the green boxes:** `battle/loop.ts` swaps a monster to `${type}_hurt` for 14 steps after every hit. Only the procedural monsters (realms 1-3) have hurt frames; frost, ember and sky monsters only have generated art, so each hit showed Phaser's `__MISSING` box. Reproduced headless (hurt Forge Tyrant drew `__MISSING`), fixed, re-checked on levels 17, 20, 24.
+- **Fix:** use the hurt frame only when it exists; otherwise keep the sprite and tint it red while hurt. The v1.27 load retry and placeholder silhouettes stay as a safety net.
+- `regress:quick` green.
+
 ## 2026-10-22 · claude · Green "missing texture" boxes on monsters (v1.27.0)
 - **Report:** green boxes with a diagonal cross (Phaser's missing-texture placeholder) on the Ember Forge level. Not reproducible with all files present (scanned every weapon, artifact and consumable on levels 12, 19, 20 for `__MISSING`: none).
 - **Cause (by elimination):** monsters of realms 4-6 (frost, ember, sky) have no procedural art, only generated PNGs. If a PNG fails to load (ad blocker, network hiccup on the host) the monster's texture never exists. Confirmed by renaming `forge_tyrant.png`: the monster then had no texture at all.
