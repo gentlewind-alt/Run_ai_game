@@ -61,6 +61,16 @@ foreach ($id in $map.Keys) {
   Process $f (Join-Path $out "${id}_card.png") $CardSize
   Write-Output "ok $id"
 }
+# Omnitrix arms: tall sprites, output without a card variant
+$arms = @{ 'omni_arm_fire' = 'omni_arm_fire.png'; 'omni_arm_brute' = 'omni_arm_brute.png'; 'omni_arm_crystal' = 'omni_arm_crystal.png'; 'omni_arm_stone' = 'omni_arm_stone.png'; 'omni_arm_lightning' = 'omni_arm_lightning.png' }
+$outA = Join-Path $root 'game\public\sprites\arms'
+New-Item -ItemType Directory -Force $outA | Out-Null
+foreach ($id in $arms.Keys) {
+  $f = Join-Path $src $arms[$id]
+  if (-not (Test-Path $f)) { Write-Output "missing $f"; continue }
+  Process $f (Join-Path $outA "$id.png") 56
+  Write-Output "ok arm $id"
+}
 $outM = Join-Path $root 'game\public\sprites\monsters'
 New-Item -ItemType Directory -Force $outM | Out-Null
 foreach ($id in $monsters.Keys) {

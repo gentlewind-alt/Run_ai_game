@@ -585,6 +585,53 @@
         "woodMult": 1.5,
         "crystalMult": 3
       }
+    },
+    {
+      "id": "w_omnitrix_dial",
+      "sprite": "sprites/relics/w_omnitrix_dial",
+      "name": "Omnitrix Dial",
+      "archetype": "dial",
+      "element": "void",
+      "rarity": "legendary",
+      "baseDamage": 46,
+      "unlock": {
+        "chest": "c_l19",
+        "level": 19
+      },
+      "price": 1500,
+      "launch": "Heavy green dial that spins as it flies.",
+      "tap": "Five alien forearms crash down, bounce once, then rise back into the sky.",
+      "physics": {
+        "radius": 5,
+        "density": 0.014,
+        "spin": 0.3,
+        "gravity": 1.0
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Alien",
+        "charges": 1
+      },
+      "params": {
+        "bandWidth": 150,
+        "staggerSteps": 6,
+        "fallSpeed": 7,
+        "bounceSpeed": 4,
+        "bounceGravity": 0.25,
+        "bounceMult": 0.6,
+        "impactRadius": 22,
+        "multFire": 0.7,
+        "multBrute": 0.8,
+        "multCrystal": 0.6,
+        "multStone": 1.2,
+        "multLightning": 0.7,
+        "burnSteps": 120,
+        "knockSteps": 48,
+        "pushStrength": 2.2,
+        "crystalBonusMult": 1.0,
+        "stunSteps": 60,
+        "armHeight": 56
+      }
     }
   ],
   "stretchWeapons": [
@@ -961,6 +1008,62 @@
         "weakDuration": 120,
         "weakMult": 2
       }
+    },
+    {
+      "id": "lava_imp",
+      "name": "Lava Imp",
+      "hp": 25,
+      "weak": "void",
+      "resist": "hellfire",
+      "note": "Flying imp that wobbles over the fort.",
+      "behavior": "imp",
+      "sprite": "sprites/monsters/lava_imp",
+      "params": {
+        "ampX": 22,
+        "ampY": 10,
+        "freqX": 1.5,
+        "freqY": 3,
+        "selfMoving": 1
+      }
+    },
+    {
+      "id": "forge_ogre",
+      "name": "Forge Ogre",
+      "hp": 330,
+      "weak": "void",
+      "resist": "hellfire",
+      "coins": 50,
+      "score": 450,
+      "note": "Armoured ogre that stomps now and then.",
+      "behavior": "goblin_chief",
+      "density": 0.004,
+      "sprite": "sprites/monsters/forge_ogre",
+      "params": {
+        "armour": 10,
+        "stompEvery": 300
+      }
+    },
+    {
+      "id": "forge_tyrant",
+      "name": "Forge Tyrant",
+      "hp": 1100,
+      "weak": "void",
+      "resist": "hellfire",
+      "boss": true,
+      "coins": 400,
+      "score": 3000,
+      "note": "Armoured boss. The anvil on its back opens for 2x hits now and then.",
+      "behavior": "frost_giant",
+      "density": 0.004,
+      "sprite": "sprites/monsters/forge_tyrant",
+      "params": {
+        "armour": 18,
+        "stompEvery": 360,
+        "weakEvery": 420,
+        "weakDuration": 120,
+        "weakMult": 2,
+        "lava": 1
+      }
     }
   ],
   "materials": [
@@ -1068,6 +1171,25 @@
       "palette": "icy blue, white, cyan",
       "name": "Frost Peaks",
       "background": "frost"
+    },
+    {
+      "id": "ember_forge",
+      "levels": [
+        17,
+        18,
+        19,
+        20
+      ],
+      "monsters": [
+        "lava_imp",
+        "forge_ogre",
+        "skeleton_runner",
+        "dark_elf_hexer",
+        "forge_tyrant"
+      ],
+      "palette": "red, plum, orange glow",
+      "name": "Ember Forge",
+      "background": "ember"
     }
   ],
   "cosmetics": [

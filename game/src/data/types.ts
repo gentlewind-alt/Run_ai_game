@@ -14,6 +14,7 @@ export interface WeaponDef {
   unlock: WeaponUnlock;
   price?: number;
   enabled?: boolean;
+  extraSprites?: string[]; // more generated art loaded under its file name as the texture key (see art/generatedSprites.ts)
   launch?: string;
   sprite?: string;
   tap?: string;

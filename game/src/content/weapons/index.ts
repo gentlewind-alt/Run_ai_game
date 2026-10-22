@@ -6,6 +6,7 @@ import { bulwarkDisc } from './bulwarkDisc';
 import { cleaver } from './cleaver';
 import { cometFists } from './cometFists';
 import { kineticPalms } from './kineticPalms';
+import { omnitrixDial } from './omnitrixDial';
 import { pike } from './pike';
 import { scattergun } from './scattergun';
 import { scepter } from './scepter';
@@ -33,6 +34,7 @@ export const WEAPONS: Record<string, WeaponImpl> = {
   w_silkline_shooters: silklineShooters,
   w_kinetic_palms: kineticPalms,
   w_brahmastra_arrow: brahmastraArrow,
+  w_omnitrix_dial: omnitrixDial,
 };
 
 /** The behaviour for a weapon row: `params.behavior` names another weapon's behaviour to reuse, otherwise the row's own id. */

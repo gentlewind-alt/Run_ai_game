@@ -11,6 +11,7 @@ const cardKey = (id: string): string => `gen_card_${id}`;
 export function preloadGeneratedSprites(scene: Phaser.Scene): void {
   for (const m of data.content.monsters) if (m.sprite) scene.load.image(`gen_mon_${m.id}`, `${m.sprite}.png`);
   for (const w of data.content.weapons) {
+    for (const path of w.extraSprites ?? []) scene.load.image(path.split('/').pop() as string, `${path}.png`);
     if (!w.sprite) continue;
     scene.load.image(flightKey(w.id), `${w.sprite}.png`);
     scene.load.image(cardKey(w.id), `${w.sprite}_card.png`);

@@ -3,6 +3,7 @@ import { C, css } from './palette';
 import { gridTexture } from './pix';
 import { BLADE } from './sprites';
 import { registerMonsterTextures } from './monsterTextures';
+import { registerOmnitrixTextures } from './omnitrixTextures';
 import { registerRelicTextures } from './relicTextures';
 
 // ---------------------------------------------------------------- tiny palette-bound drawing kit
@@ -184,6 +185,9 @@ export const MONSTER_ART: Record<string, MonsterArt> = {
   frost_wolf: { w: 22, h: 14, size: 32 },
   ice_golem: { w: 28, h: 30, size: 40 },
   frost_giant: { w: 36, h: 46, size: 56 },
+  lava_imp: { w: 12, h: 12, size: 24 },
+  forge_ogre: { w: 30, h: 34, size: 40 },
+  forge_tyrant: { w: 36, h: 46, size: 56 },
 };
 
 export const WEAPON_IDS = [
@@ -323,6 +327,7 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
 export function registerArt(scene: Phaser.Scene): void {
   registerMonsterTextures(scene);
   registerRelicTextures(scene);
+  registerOmnitrixTextures(scene);
   for (const id of WEAPON_IDS) {
     addTexture(scene, weaponTexture(id), weaponSprite(id));
   }

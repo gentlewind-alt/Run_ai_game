@@ -48,6 +48,13 @@ STYLES.frost = {
   grass: ['c', 'd', 'e'], dirt: 'e', dirtDark: 'f', pebble: 'd',
 };
 
+// Ember Forge: a furnace cave, plum to red to orange sky from the glow below, basalt ground and drifting embers.
+STYLES.ember = {
+  sky: ['1', '2', '3'], edges: [85, 190], far: ['f', 'e'], mid: ['f', 'm'], near: ['0', 'f'],
+  trees: { fill: '0', light: 'f', trunk: '0', kind: 'none' }, clouds: false, stars: false, moon: false, motes: '3',
+  grass: ['3', 'f', '0'], dirt: 'f', dirtDark: '0', pebble: '2',
+};
+
 export const styleFor = (realm: string): RealmStyle => STYLES[realm] ?? STYLES.hills;
 
 const hash = (n: number): number => {

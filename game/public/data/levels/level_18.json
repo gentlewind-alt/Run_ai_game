@@ -1,0 +1,150 @@
+{
+  "id": 18,
+  "name": "Molten bridge",
+  "realm": "ember_forge",
+  "kind": "runner",
+  "worldW": 648,
+  "shots": 6,
+  "hints": [
+    "Skeletons race across the bridge.",
+    "Stop them before the exit."
+  ],
+  "scoreTarget": 1600,
+  "escapeLimit": 1,
+  "exit": {
+    "x": 620,
+    "y": 307
+  },
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ],
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      120,
+      320
+    ],
+    [
+      150,
+      300
+    ],
+    [
+      250,
+      300
+    ],
+    [
+      270,
+      336
+    ],
+    [
+      340,
+      336
+    ],
+    [
+      360,
+      300
+    ],
+    [
+      450,
+      300
+    ],
+    [
+      480,
+      320
+    ],
+    [
+      648,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "stone",
+      "x": 185,
+      "y": 285,
+      "w": 10,
+      "h": 30
+    },
+    {
+      "m": "stone",
+      "x": 225,
+      "y": 285,
+      "w": 10,
+      "h": 30
+    },
+    {
+      "m": "wood",
+      "x": 205,
+      "y": 267,
+      "w": 50,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 372,
+      "y": 285,
+      "w": 10,
+      "h": 30
+    },
+    {
+      "m": "stone",
+      "x": 412,
+      "y": 285,
+      "w": 10,
+      "h": 30
+    },
+    {
+      "m": "stone",
+      "x": 392,
+      "y": 267,
+      "w": 50,
+      "h": 6
+    }
+  ],
+  "monsters": [
+    {
+      "t": "forge_ogre",
+      "x": 392,
+      "y": 283.0
+    },
+    {
+      "t": "lava_imp",
+      "x": 205,
+      "y": 230
+    },
+    {
+      "t": "lava_imp",
+      "x": 372,
+      "y": 220
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 205,
+      "y": 256.0
+    },
+    {
+      "t": "skeleton_runner",
+      "x": 300,
+      "y": 329.0,
+      "dir": 1,
+      "speed": 0.8,
+      "delay": 0.8
+    },
+    {
+      "t": "skeleton_runner",
+      "x": 320,
+      "y": 329.0,
+      "dir": 1,
+      "speed": 0.7,
+      "delay": 1.3
+    }
+  ]
+}

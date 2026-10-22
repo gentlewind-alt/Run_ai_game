@@ -1,5 +1,5 @@
 {
-  "_note": "Expected shot count bands for greedy solver per level (1-16). Used by tools/regress.mjs.",
+  "_note": "Expected shot count bands for greedy solver per level (1-20). Used by tools/regress.mjs.",
   "1": {
     "min": 2,
     "max": 3
@@ -61,6 +61,22 @@
     "max": 5
   },
   "16": {
+    "min": 3,
+    "max": 5
+  },
+  "17": {
+    "min": 2,
+    "max": 5
+  },
+  "18": {
+    "min": 3,
+    "max": 5
+  },
+  "19": {
+    "min": 3,
+    "max": 5
+  },
+  "20": {
     "min": 3,
     "max": 5
   }

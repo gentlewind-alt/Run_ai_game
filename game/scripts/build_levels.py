@@ -306,3 +306,58 @@ write(16, 'Frost throne', 'frost_peaks', 'boss', 648,
        mon('dark_elf_archer', 265, stand(P16 - 50))],
       1100, shots=6,
       loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube', 'w_scrapheap_scattergun'])
+
+# ---------------------------------------------------------------- Ember Forge
+LOAD5 = ['w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_blast_tube', 'w_scrapheap_scattergun', 'w_hunters_boomerang']
+
+# 17 Cinder gate: a wooden-floored tower, an ogre at its foot and lava imps wobbling above.
+P17 = 300
+b17, top17 = tower(225, P17, w=60, tiers=3, pillar='stone', ph=26, floor='stone')
+b17 += [blk('stone', 168, P17 - 12, 10, 24), blk('iron', 225, P17 - 6, 36, 12)]
+write(17, 'Cinder gate', 'ember_forge', 'siege', 540, ['Imps fly. Ogres stomp. Break the tower.'],
+      [[0, 320], [130, 320], [160, P17], [310, P17], [340, 320], [540, 320]],
+      b17,
+      [mon('forge_ogre', 225, stand(P17 - 12, 34)), mon('lava_imp', 200, P17 - 150), mon('lava_imp', 255, P17 - 155),
+       mon('lava_imp', 290, P17 - 70), mon('dark_elf_archer', 205, stand(top17)), mon('forge_ogre', 288, stand(P17, 34))],
+      1400, shots=6, loadout=LOAD5)
+
+# 18 Molten bridge: a pit in the middle, runners racing the far shelf, an ogre guarding it.
+LO18, PIT18 = 300, 336
+b18 = [
+    blk('stone', 185, LO18 - 15, 10, 30), blk('stone', 225, LO18 - 15, 10, 30), blk('wood', 205, LO18 - 33, 50, 6),
+    blk('stone', 372, LO18 - 15, 10, 30), blk('stone', 412, LO18 - 15, 10, 30), blk('stone', 392, LO18 - 33, 50, 6),
+]
+write(18, 'Molten bridge', 'ember_forge', 'runner', 648, ['Skeletons race across the bridge.', 'Stop them before the exit.'],
+      [[0, 320], [120, 320], [150, LO18], [250, LO18], [270, PIT18], [340, PIT18], [360, LO18], [450, LO18], [480, 320], [648, 320]],
+      b18,
+      [mon('forge_ogre', 392, stand(LO18, 34)), mon('lava_imp', 205, LO18 - 70), mon('lava_imp', 372, LO18 - 80),
+       mon('dark_elf_hexer', 205, stand(LO18 - 37)),
+       mon('skeleton_runner', 300, stand(PIT18), dir=1, speed=0.8, delay=0.8), mon('skeleton_runner', 320, stand(PIT18), dir=1, speed=0.7, delay=1.3)],
+      1600, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13}, shots=6, loadout=LOAD5)
+
+# 19 Anvil hall: a three-tier hall of stone and iron with two ogres, and a hidden chest holding the Omnitrix Dial.
+P19 = 296
+b19, top19 = tower(230, P19, w=60, tiers=3, pillar='stone', ph=26, floor='stone')
+b19 += [blk('iron', 230, P19 - 6, 36, 12), blk('stone', 165, P19 - 18, 12, 36)]
+c19 = [chst('c_l19', 318, P19 - 8, 'w_omnitrix_dial', 40)]
+write(19, 'Anvil hall', 'ember_forge', 'siege', 540, ['A chest hides in the rubble.', 'Iron resists. Shatter the pillars.'],
+      [[0, 320], [120, 320], [150, P19], [320, P19], [350, 320], [540, 320]],
+      b19,
+      [mon('forge_ogre', 230, stand(P19 - 12, 34)), mon('forge_ogre', 230, stand(P19 - 12 - 32, 34)),
+       mon('lava_imp', 210, top19 - 40), mon('lava_imp', 255, top19 - 46), mon('dark_elf_hexer', 165, stand(P19 - 36))],
+      1900, chests=c19, shots=6, loadout=LOAD5)
+
+# 20 Forge throne: the Forge Tyrant on a shelf ringed by stone and iron. The anvil on its back opens for 2x.
+P20 = 296
+b20 = [
+    blk('stone', 168, P20 - 22, 12, 44), blk('stone', 302, P20 - 22, 12, 44),
+    blk('iron', 188, P20 - 19, 8, 38), blk('iron', 282, P20 - 19, 8, 38),
+    blk('stone', 235, P20 - 44 - 3, 144, 6), blk('stone', 205, P20 - 53, 10, 20), blk('stone', 265, P20 - 53, 10, 20),
+]
+write(20, 'Forge throne', 'ember_forge', 'boss', 648,
+      ['Hit the glowing anvil for 2x.', 'Lava surges in a band. Stay steady.'],
+      [[0, 320], [110, 320], [135, P20], [340, P20], [370, 320], [648, 320]],
+      b20,
+      [mon('forge_tyrant', 235, stand(P20, 46)), mon('lava_imp', 205, P20 - 80), mon('lava_imp', 265, P20 - 84),
+       mon('forge_ogre', 160, stand(P20, 34))],
+      2600, shots=6, loadout=LOAD5)

@@ -72,6 +72,15 @@ class Sfx {
   win(): void { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, 0.16, 'square', 0.14, undefined, i * 0.1)); }
   lose(): void { [392, 330, 262].forEach((f, i) => this.tone(f, 0.22, 'square', 0.14, undefined, i * 0.16)); }
   click(): void { this.tone(660, 0.05, 'square', 0.1); }
+  omnitrix(): void {
+    // dial click, rising whine, five staggered rubbery thuds, a whoosh as the arms leave
+    this.tone(1200, 0.03, 'square', 0.15);
+    this.tone(900, 0.03, 'square', 0.12, undefined, 0.05);
+    this.tone(300, 0.5, 'sawtooth', 0.12, 1400, 0.1);
+    for (let i = 0; i < 5; i++) this.tone(95, 0.14, 'sine', 0.3, 45, 0.55 + i * 0.1);
+    this.tone(180, 0.35, 'triangle', 0.16, 900, 1.3);
+    this.noise(0.45, 0.1, 2600);
+  }
   brahmastra(): void {
     // rising choral chord, a bright shimmer and a low boom as the beam ends
     [220, 277, 330, 440].forEach((f, i) => this.tone(f, 1.6, 'triangle', 0.14, f * 1.5, i * 0.05));
