@@ -1,16 +1,16 @@
 # Merkle Index
 
-Root hash: `63ffb17e32bd9f7100018ffc43a091eb8715f8b3f8a6bb136b53ceca55269001`
+Root hash: `e211642e30c69374e6354f24e1da53d2d1d1095ef83493a0bd28b4ea33a39561`
 
 | Directory | Hash | Files | Purpose |
 |---|---|---|---|
-| `.` | `63ffb17e` | 531 | MONSTER MASH: Slingshot Siege project root |
+| `.` | `e211642e` | 533 | MONSTER MASH: Slingshot Siege project root |
 | `architecture` | `e867d151` | 5 | System design, module boundaries, data schemas, and agent workflow |
 | `catalogue` | `8baca4d1` | 3 | Four Realms source items (weapons, gear, consumables) for porting |
-| `docs` | `d22adc29` | 265 | Project documentation, design briefs, status, and agent logs |
-| `docs/handoff` | `b5980d8a` | 247 | Agent coordination: status board, append-only logs, and task briefs |
+| `docs` | `765c4468` | 267 | Project documentation, design briefs, status, and agent logs |
+| `docs/handoff` | `28d835f7` | 249 | Agent coordination: status board, append-only logs, and task briefs |
 | `docs/handoff/ref` | `fe95b7a4` | 3 | - |
-| `docs/handoff/shots` | `f855ead9` | 209 | - |
+| `docs/handoff/shots` | `4d390ac7` | 210 | - |
 | `docs/monster_mash` | `2e316f23` | 11 | Design briefs, math models, platform reports, and review history |
 | `docs/release` | `a54b4b49` | 7 | - |
 | `game` | `8aedec29` | 220 | Phaser 3 + Vite game client (RUN project template) |

@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "63ffb17e32bd9f7100018ffc43a091eb8715f8b3f8a6bb136b53ceca55269001",
+  "hash": "e211642e30c69374e6354f24e1da53d2d1d1095ef83493a0bd28b4ea33a39561",
   "children": [
     {
       "name": ".gitignore",
@@ -15,8 +15,8 @@
       "name": "AGENTS.md",
       "path": "AGENTS.md",
       "type": "file",
-      "hash": "0a7b01665d5d13bb17ff40a424079ec68a21f9243f99f04c54c8272212d68e9f",
-      "size": 4579
+      "hash": "5e2119eaaab40b4fec05ad258be61b50d6ff8aded27a558e75e2b6ae9cbbfc17",
+      "size": 4711
     },
     {
       "name": "architecture",
@@ -101,13 +101,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "d22adc29bd5947e890c9d7565dec2a1b47c8c56e607cd5109630d608d4cea683",
+      "hash": "765c446880c3c31409d54746d0f1d672437c0dde34d6dbae30e7e35e1245054c",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "b5980d8ad5b248271ee74080332f8a2fc88b0cb8890ad1b29265909101775f9f",
+          "hash": "28d835f7e7f1fa016768a0e54ad8fca3ae583f213f43fba3ab7e7f27b8f94ca1",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -330,8 +330,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "13718d54cfeb8840e34b14664fee302adbc9a5beb266be6cdf77300c6f88df30",
-              "size": 101875
+              "hash": "eef4163229072c6c2b19b8a6250b02fc2e365a88be620328c1cbee09a10ec1c3",
+              "size": 102467
             },
             {
               "name": "ref",
@@ -377,10 +377,17 @@
               "size": 11106
             },
             {
+              "name": "REPO_MAP.md",
+              "path": "docs/handoff/REPO_MAP.md",
+              "type": "file",
+              "hash": "99f9c33a69629d3f439da0129605ac868206610ba41ce0b073e0529edfcb7cea",
+              "size": 20630
+            },
+            {
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "f855ead9373954b052f578ccf381b8113200c5056b55c916e5e7787099d172b3",
+              "hash": "4d390ac795e9c85af2c722c5d3e86ffd9bf2af10a9642ff1517aaca6e25ae2d3",
               "children": [
                 {
                   "name": "01_title.png",
@@ -597,7 +604,7 @@
                   "name": "gen",
                   "path": "docs/handoff/shots/gen",
                   "type": "dir",
-                  "hash": "3ac6a6cd4a2c276df4cecf9ae6b82fac9fe969a3d991368559605f4208202ce5",
+                  "hash": "7fd246bed15ef91ef1b57664b91ea81fccbda9072f25a7601a787b4fe09b4cfc",
                   "children": [
                     {
                       "name": "arrow.png",
@@ -773,6 +780,13 @@
                       "type": "file",
                       "hash": "ecf5de1de6edbf5ed04a90c1a8b1ab80d9f58d06f98df2d0ccfedb2abcef2546",
                       "size": 461
+                    },
+                    {
+                      "name": "leaderboard_overall.png",
+                      "path": "docs/handoff/shots/gen/leaderboard_overall.png",
+                      "type": "file",
+                      "hash": "9ca95a7df2ba14b64fe95412ff0df782fbfd37f0178a3902b5ca962d69baf0f9",
+                      "size": 39465
                     },
                     {
                       "name": "maul_test.png",

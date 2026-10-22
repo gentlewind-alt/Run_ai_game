@@ -6,6 +6,7 @@ Any coding agent (Claude Code, Cursor, Codex, Gemini, the RUN Game Studio AI) ca
 
 | # | File | Why |
 |---|---|---|
+| 0 | `docs/handoff/REPO_MAP.md` | Every source file with a one-line context, plus the Merkle root (`MERKLE.json` has all hashes) |
 | 1 | `docs/handoff/STATUS.md` | What is done, who is on what, what's next |
 | 2 | `architecture/WORKFLOW.md` | How to claim a card, commit, test, deploy, hand off |
 | 3 | `architecture/ARCHITECTURE.md` | Module layout, import rules, registries, events, settings |
