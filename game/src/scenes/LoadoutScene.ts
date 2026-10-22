@@ -26,6 +26,7 @@ export default class LoadoutScene extends Phaser.Scene {
   private goBtn?: ReturnType<typeof makeButton>;
   private gridObjs: Phaser.GameObjects.GameObject[] = [];
   private page = 0;
+  private fixed: string[] | null = null; // the level's own loadout (tutorials, mini-bosses): shown locked, never saved as the player's
 
   constructor() {
     super('loadout');
@@ -43,6 +44,7 @@ export default class LoadoutScene extends Phaser.Scene {
     this.page = 0;
 
     const lvl = levelDef(this.level);
+    this.fixed = lvl.loadout?.length ? lvl.loadout.slice() : null;
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
 
     // Divider between grid and loadout panel
@@ -55,7 +57,7 @@ export default class LoadoutScene extends Phaser.Scene {
     }
 
     // Right side: Firing Slots (2 rows of 3, up to 7 with Gold Quiver)
-    const n = loadoutSize();
+    const n = this.fixed ? this.fixed.length : loadoutSize();
     const row0Count = Math.ceil(n / 2);
     const row1Count = Math.floor(n / 2);
     for (let i = 0; i < n; i++) {
@@ -67,7 +69,7 @@ export default class LoadoutScene extends Phaser.Scene {
       const sy = isRow0 ? 44 : 74;
       const boxSize = 26; // touch target 26x26 >= 24px
       const box = this.add.rectangle(sx, sy, boxSize, boxSize, C('0')).setStrokeStyle(1, C('d')).setInteractive();
-      box.on('pointerdown', () => { sfx.click(); this.slots[i] = null; this.refresh(); });
+      box.on('pointerdown', () => { if (this.fixed) return; sfx.click(); this.slots[i] = null; this.refresh(); });
       this.slotImgs.push(this.add.image(sx, sy, 'px').setVisible(false).setScale(1.5));
       pixText(this, sx - 9, sy - 9, String(i + 1), C('4'));
     }
@@ -93,6 +95,8 @@ export default class LoadoutScene extends Phaser.Scene {
       }
     }
 
+    if (this.fixed) this.slots = this.fixed.slice();
+
     // Right side: Artifacts, Items, Buttons
     this.artifactRow();
     this.itemRow();
@@ -102,8 +106,13 @@ export default class LoadoutScene extends Phaser.Scene {
     this.goBtn = makeButton(this, 415, H - 18, 110, 26, 'Fling!', 'go', () => this.start(), 6);
 
     // Left side: Weapon Grid
-    this.renderWeaponGrid();
-    this.describe(null);
+    if (this.fixed) {
+      textBlock(this, 132, 100, 'This level comes with its own set of weapons.', C('4'), 200, C('0'));
+      textBlock(this, 132, 130, 'Check the slots on the right, then Fling!', C('d'), 200);
+    } else {
+      this.renderWeaponGrid();
+      this.describe(null);
+    }
 
     this.refresh();
     irisOpen(this);
@@ -172,11 +181,15 @@ export default class LoadoutScene extends Phaser.Scene {
     }
     const w = data.content.weapons.find((x) => x.id === id)!;
     this.info.push(text(this, infoX, 94, w.name, C('4'), 1, C('0')));
+    // Each block starts below the last one, however many lines the text wraps to.
+    let y = 107;
     if (w.launch) {
-      this.info.push(...textBlock(this, infoX, 107, w.launch, C('c'), 196));
+      const lines = textBlock(this, infoX, y, w.launch, C('c'), 196);
+      this.info.push(...lines);
+      y += lines.length * 12 + 3;
     }
     if (w.tap) {
-      this.info.push(...textBlock(this, infoX, 124, w.tap, C('b'), 196));
+      this.info.push(...textBlock(this, infoX, y, w.tap, C('b'), 196));
     }
   }
 
@@ -276,7 +289,7 @@ export default class LoadoutScene extends Phaser.Scene {
   private start(): void {
     if (!this.slots.every((s) => s !== null)) return;
     const loadout = this.slots as string[];
-    setLoadout(loadout);
+    if (!this.fixed) setLoadout(loadout);
     setArtifacts(this.equipped);
     sfx.click();
     goTo(this, 'game', { level: this.level, loadout });

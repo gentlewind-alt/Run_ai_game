@@ -499,6 +499,7 @@
         "label": "Arm"
       },
       "params": {
+        "splitScale": 0.5,
         "blastRadius": 24,
         "blastMult": 0.85,
         "splitAngleDeg": 8,

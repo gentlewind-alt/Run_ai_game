@@ -11,7 +11,7 @@ export interface Settings extends Config {
 const DEFAULTS: Config = {
   version: 1,
   levels: [1],
-  display: { pixelArt: true, maxParticles: 90 },
+  display: { pixelArt: true, maxParticles: 90, weapon: { flightPx: 16, slingPx: 24, queuePx: 24, relicBonus: 1.25 } },
   world: { groundY: 320, slingX: 56, slingY: 262 },
   physics: { stepHz: 60, gravityY: 1, positionIterations: 8, velocityIterations: 6, enableSleeping: true, maxStepsPerFrame: 3 },
   camera: {

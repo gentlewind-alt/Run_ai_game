@@ -77,7 +77,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | X6a | Realm 5 Ember Forge (levels 17-20) + Omnitrix Dial | X3 | review | claude | 10-22 | built directly; arms use hand-drawn sprites until the generated ones are swapped in |
 | X6b | Realm 6 Sky Citadel (21-24) + Hailstorm Cauldron, Millstone, Pinata MIRV, Drill, Chain Rod, Black Hole Marble | X6a | review | claude | 10-22 | built directly (agy out of credits); L21 band 2-5; all six checked on screen and by `tools/test_weapons.sh` |
 | X7 | Sound pass (RUN `generate sfx` plus WebAudio) | X5 | todo | | | plan in `09_expansion_design.md` section 7 |
-| X8 | Relic scale + L4 runners + loadout/results UI (playtest 10-22) | | todo | | 10-22 | brief `agy_task_relic_scale.md` |
+| X8 | Relic scale + L4 runners + loadout/results UI (playtest 10-22) | | review | claude | 10-22 | done in the cloud session at the owner's request; see LOG |
 
 ## Waiting on owner
 

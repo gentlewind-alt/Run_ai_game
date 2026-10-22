@@ -1,5 +1,7 @@
 # agy task: relic weapon scale, plus Goblin Hills playtest fixes
 
+> **DONE 2026-10-22 by the cloud session** (the owner asked for the fixes to be made here, not through agy). See LOG.md. The text below is kept as the record of what was asked.
+
 **From:** cloud playtest 2026-10-22, levels 1-4 played by hand in the real UI (headless Chromium, 844x390, `?mock=1`). Reference images: `docs/handoff/shots/review/relic_size_sheet.png` and `relic_card_overlap.png`.
 
 ## 1. Relic weapons are drawn about 3x too big (owner-reported, confirmed)

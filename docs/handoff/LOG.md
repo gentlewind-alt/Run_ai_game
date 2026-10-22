@@ -2,6 +2,16 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · cloud · Fixes from the Goblin Hills playtest (X8)
+The owner asked for these fixes to be made in the cloud session, not through agy, so `agy_task_relic_scale.md` is marked done.
+- **Relic scale:** new `config.display.weapon` (`flightPx 16`, `slingPx 24`, `queuePx 24`, `relicBonus 1.25`) and `src/art/weaponScale.ts`. `sling.ts` no longer has the `w >= 32 ? 1.5 : 1.5` helpers; relics now draw at about 20 px in flight and 30 px on the sling (they were 48 px). The queue rests on the ground by sprite height instead of a constant. Optional `weapon.display.px`. Steersong split arrows use `params.splitScale` (0.5) instead of the literal 1.2 (they were 38 px). Collision radii are unchanged, so no balance band moves. Before/after sheet: `docs/handoff/shots/review/relic_size_after.png`.
+- **Relic Found card:** the art fits a 44 px box, and the whole description wraps inside the card.
+- **Level 4 runners:** new level flag `runnersStartOnShot` (runner behaviour waits for the first shot), runner speed 0.8/0.7 to 0.55/0.5, hint now "Runners bolt after your first shot!", HUD label "Runners out 0/1". Greedy solver still wins in 3 shots (band 3-5). By hand, 3 of 5 first shots at the runners cleared both of them. Edited through `scripts/build_levels.py`; only levels 1 and 4 changed.
+- **Loadout screen:** a level with its own `loadout` (level 4) shows its slots locked with a short message, and never overwrites the player's saved loadout. Weapon descriptions stack by measured height (no overlap). Level 1's hint fits one line.
+- **Results screen:** buttons moved down so "Level rank" is no longer covered.
+- **Checks:** `npm run check` and `npm run build` pass, `tsc` clean. I did not run the full `regress` (it hangs in section 3c on the cloud box). Not verified: touch input, a phone, the real RUN host.
+- **Still open:** B1 rename "Omnitrix Dial", B2 projectile re-hit damage, B3 regress cleanup, the Daily Mash streak and server-time bugs, the "Clear Goblin Hills to enter" text on the map, and the "Items." tab label.
+
 ## 2026-10-22 · cloud · Goblin Hills played by hand, relic scale confirmed
 - **Played levels 1-4 in the real UI.** L1 3 stars, L2 2 stars, L3 3 stars (the chest gave the Steersong Arrow), **L4 lost 4 of 4** to escaping runners. No console errors.
 - **Relic weapons are about 3x too big:** 32x32 sprites drawn at 1.5x (48 px), next to 16 px normal weapons and 16 px goblins. The hitbox is still about 10 px. Contact sheet: `docs/handoff/shots/review/relic_size_sheet.png`.

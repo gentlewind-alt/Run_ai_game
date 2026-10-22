@@ -6,7 +6,7 @@
   "worldW": 600,
   "shots": 5,
   "hints": [
-    "Defeat the Goblin Chief!"
+    "Runners bolt after your first shot!"
   ],
   "scoreTarget": 1350,
   "escapeLimit": 1,
@@ -14,6 +14,7 @@
     "x": 580,
     "y": 307
   },
+  "runnersStartOnShot": true,
   "loadout": [
     "w_militia_blade",
     "w_iron_cleaver",
@@ -162,7 +163,7 @@
       "x": 312,
       "y": 313.0,
       "dir": 1,
-      "speed": 0.8,
+      "speed": 0.55,
       "delay": 0.8
     },
     {
@@ -170,7 +171,7 @@
       "x": 330,
       "y": 313.0,
       "dir": 1,
-      "speed": 0.7,
+      "speed": 0.5,
       "delay": 1.2
     }
   ]

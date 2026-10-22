@@ -107,3 +107,9 @@ Each stage card turns on the flags for what it ships. On deadline day, a broken 
 None open. S2-02 removed `level.weapon`, `tuning.sawSteps`, the legacy `public/data/level_NN.json` location and the weapon stats in code.
 
 
+
+## Weapon size and runner start (added 2026-10-22)
+
+- `config.json → display.weapon` sets the drawn weapon size in world px: `flightPx` (16), `slingPx` (24), `queuePx` (24) and `relicBonus` (1.25, applied to 32 px relic art). Code never holds these numbers; `src/art/weaponScale.ts` turns them into a scale. A weapon row may set `display: { px }` to override its flight size (long items).
+- `level.runnersStartOnShot: true` keeps runners standing until the first shot is fired. Level 4 uses it, and its first hint says so. Edit levels 1-8 through `game/scripts/build_levels.py`, then regenerate (`python3 scripts/build_levels.py`), because the generator overwrites the JSON.
+- Params like `w_steersong_arrow.params.splitScale` hold per-weapon sizes too (the split arrows are drawn at 0.5 of their 32 px art).

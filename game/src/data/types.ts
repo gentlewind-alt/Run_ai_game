@@ -18,6 +18,7 @@ export interface WeaponDef {
   launch?: string;
   sprite?: string;
   tap?: string;
+  display?: { px?: number }; // flight size in world px for long items (arrows, spears); overrides config.display.weapon.flightPx
   physics: { radius: number; density: number; spin: number; gravity?: number; align?: boolean; friction?: number; restitution?: number; frictionAir?: number };
   ability: { mode: AbilityMode; label: string; charges?: number };
   params: Params;
@@ -157,6 +158,7 @@ export interface Level {
   loadout?: string[];
   scoreTarget?: number;
   escapeLimit?: number;
+  runnersStartOnShot?: boolean; // runners hold still until the first shot is fired, so the player is never out of time before they act
   hints?: string[];
   exit?: { x: number; y: number };
   terrain?: number[][];
@@ -167,10 +169,13 @@ export interface Level {
   chests?: LevelChest[];
 }
 
+/** How big weapons are drawn, in world px (the viewport is 480x270; a goblin is about 16 px). Relic art is 32 px, so relicBonus applies to it. */
+export interface WeaponDisplay { flightPx: number; slingPx: number; queuePx: number; relicBonus: number }
+
 export interface Config {
   version: number;
   levels: number[];
-  display: { pixelArt: boolean; maxParticles: number };
+  display: { pixelArt: boolean; maxParticles: number; weapon: WeaponDisplay };
   world: { groundY: number; slingX: number; slingY: number };
   physics: { stepHz: number; gravityY: number; positionIterations: number; velocityIterations: number; enableSleeping: boolean; maxStepsPerFrame: number };
   camera: {

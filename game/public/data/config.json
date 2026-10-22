@@ -31,7 +31,13 @@
   ],
   "display": {
     "pixelArt": true,
-    "maxParticles": 90
+    "maxParticles": 90,
+    "weapon": {
+      "flightPx": 16,
+      "slingPx": 24,
+      "queuePx": 24,
+      "relicBonus": 1.25
+    }
   },
   "world": {
     "groundY": 320,

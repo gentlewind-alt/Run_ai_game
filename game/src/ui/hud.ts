@@ -54,7 +54,7 @@ export function createHud(
     coinsTxt = text(scene, 8, top + 6, 'Coins 0', C('4')).setOrigin(0, 0.5).setDepth(10);
     scoreTxt = text(scene, 8, top + 18, 'Score 0', C('c')).setOrigin(0, 0.5).setDepth(10);
     if (o.escapeLimit !== undefined) {
-      escTxt = text(scene, 8, top + 30, `Escaped 0 of ${o.escapeLimit}`, C('d')).setOrigin(0, 0.5).setDepth(10);
+      escTxt = text(scene, 8, top + 30, `Runners out 0/${o.escapeLimit}`, C('d')).setOrigin(0, 0.5).setDepth(10);
     }
 
     muteBtn = scene.add.image(W - 14, top + 6, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
@@ -151,7 +151,7 @@ export function createHud(
       }
     },
     setEscaped: (escaped, limit) => {
-      if (escTxt) setText(escTxt, scene, `Escaped ${escaped} of ${limit}`, escaped > limit ? C('2') : C('d'));
+      if (escTxt) setText(escTxt, scene, `Runners out ${escaped}/${limit}`, escaped > limit ? C('2') : C('d'));
     },
     setTargeting: (on, label) => {
       targetTxt?.destroy();
