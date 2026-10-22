@@ -80,6 +80,8 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 
 ## Waiting on owner
 
+- **Review 10-22 (`docs/handoff/review_2026-10-22.md`):** approve renaming "Omnitrix Dial" (B1). Decide whether to fix the boss re-hit damage and retune, or keep it (B2).
+
 - Phone test of v1.3.0: does the shot feel good? Does pinch zoom work? Does the ability button feel natural? Is the zoomed-out home view readable?
 - Approve: try `rundot game set-public` after S2 to learn the review turnaround (it can be undone with `set-private`).
 

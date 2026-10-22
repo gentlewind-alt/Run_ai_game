@@ -2,6 +2,13 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · cloud · Review of aeb9206..f31fed7 (v1.11 to v1.23)
+- **Full findings:** `docs/handoff/review_2026-10-22.md`.
+- **Checks:** check and build pass. Quick regress on Linux: levels 1/4/8/16 in band; **12, 20 and 24 fail their bands** (2, 6 and 2 shots), although they passed locally. Section 3c hung and hit the 20-minute timeout.
+- **Blockers before set-public:** B1, rename "Omnitrix Dial" (Ben 10 trademark, jam is original-only). B2, projectile re-hit damage makes boss fights machine-dependent: fix it and retune the bosses.
+- **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
+- **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
+
 ## 2026-10-22 · claude · Projectile re-hit damage investigated (no change shipped)
 - A projectile that rests on a monster damages it on every physics contact. Tried a 20-step cooldown limited to bosses only (`bossRehitSteps`): bosses on levels 12, 16, 20 and 24 then became unwinnable for the greedy solver within 6 shots. So **all boss HP pools are balanced around that sustained contact damage**; a real fix means lowering boss HP (and armour) to match, then re-tuning bands 4-24. Reverted; behaviour unchanged. Do this after the jam if at all: it is the same feel players already know.
 
