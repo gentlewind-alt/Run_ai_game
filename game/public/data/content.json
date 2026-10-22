@@ -568,7 +568,7 @@
       },
       "ability": {
         "mode": "button",
-        "label": "Volley"
+        "label": "Repel"
       },
       "params": {
         "volleyCount": 3,
@@ -679,7 +679,7 @@
       "archetype": "bomb",
       "element": "hellfire",
       "rarity": "epic",
-      "baseDamage": 30,
+      "baseDamage": 38,
       "unlock": {
         "chest": "c_l21",
         "level": 21
@@ -695,7 +695,8 @@
       },
       "ability": {
         "mode": "button",
-        "label": "Burst"
+        "label": "Burst",
+        "charges": 2
       },
       "params": {
         "bombs": 5,
@@ -714,7 +715,7 @@
       "archetype": "cauldron",
       "element": "radiant",
       "rarity": "epic",
-      "baseDamage": 26,
+      "baseDamage": 36,
       "unlock": "level 22",
       "price": 1000,
       "launch": "Small iron pot that sloshes as it flies.",
@@ -727,7 +728,8 @@
       },
       "ability": {
         "mode": "button",
-        "label": "Pour"
+        "label": "Pour",
+        "charges": 2
       },
       "params": {
         "drops": 12,

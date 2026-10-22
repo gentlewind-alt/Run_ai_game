@@ -217,24 +217,161 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
     g.fillRect(x, y, w, h);
   };
 
+  const bHash = (x: number, y: number): number => {
+    const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+    return s - Math.floor(s);
+  };
+
   for (const b of blocks) {
     for (const cracked of [false, true]) {
       make(blockKey(b.m, b.w, b.h, cracked), b.w, b.h, (g) => {
         const m = b.m;
+        // 1px 'v' outline all around
         rect(g, 'v', 0, 0, b.w, b.h);
-        if (m === 'iron') {
+
+        if (m === 'stone') {
+          if (b.w < 8 || b.h < 8) {
+            // Too small: fill, outline, one mortar line
+            rect(g, 'k', 1, 1, b.w - 2, b.h - 2);
+            rect(g, 'l', 1, 1, b.w - 2, 1);
+            rect(g, 'l', 1, 1, 1, b.h - 2);
+            rect(g, 'm', 1, b.h - 2, b.w - 2, 1);
+            rect(g, 'm', b.w - 2, 1, 1, b.h - 2);
+            rect(g, 'm', 1, Math.floor(b.h / 2), b.w - 2, 1);
+          } else {
+            // Fill base
+            rect(g, 'k', 1, 1, b.w - 2, b.h - 2);
+            // Top-left highlight edges
+            rect(g, 'l', 1, 1, b.w - 2, 1);
+            rect(g, 'l', 1, 1, 1, b.h - 2);
+            // Bottom-right shadow edges
+            rect(g, 'm', 1, b.h - 2, b.w - 2, 1);
+            rect(g, 'm', b.w - 2, 1, 1, b.h - 2);
+            // Running-bond bricks
+            const bh = b.h < 9 ? 3 : 4;
+            for (let row = 0; row * bh + 1 < b.h - 1; row++) {
+              const ry = row * bh + 1;
+              const offset = (row % 2) * 4;
+              // Horizontal mortar line
+              if (ry > 1) rect(g, 'm', 1, ry, b.w - 2, 1);
+              // Vertical mortar lines (running bond)
+              for (let bx = offset; bx < b.w - 1; bx += 8) {
+                if (bx > 1) rect(g, 'm', bx, ry, 1, Math.min(bh - 1, b.h - 1 - ry));
+                // Highlight: 1px 'l' at top-left interior corner of each brick
+                const brickX = bx + 1;
+                const brickY = ry + 1;
+                if (brickX > 1 && brickX < b.w - 1 && brickY > 1 && brickY < b.h - 1) {
+                  rect(g, 'l', brickX, brickY, 1, 1);
+                }
+              }
+            }
+          }
+        } else if (m === 'iron') {
+          // Fill base
           rect(g, 'e', 1, 1, b.w - 2, b.h - 2);
+          // Top-left highlight
           rect(g, 'd', 1, 1, b.w - 2, 1);
           rect(g, 'd', 1, 1, 1, b.h - 2);
+          // Bottom-right shadow
           rect(g, 'f', 1, b.h - 2, b.w - 2, 1);
           rect(g, 'f', b.w - 2, 1, 1, b.h - 2);
-          if (b.w >= 10 && b.h >= 10) {
+          // Plate seams every 12px along the long side
+          const longSideH = b.w >= b.h;
+          const long = longSideH ? b.w : b.h;
+          for (let s = 12; s < long - 2; s += 12) {
+            if (longSideH) {
+              rect(g, 'f', s, 1, 1, b.h - 2);
+              if (s + 1 < b.w - 1) rect(g, 'd', s + 1, 1, 1, b.h - 2);
+            } else {
+              rect(g, 'f', 1, s, b.w - 2, 1);
+              if (s + 1 < b.h - 1) rect(g, 'd', 1, s + 1, b.w - 2, 1);
+            }
+          }
+          // 2x2 rivets at plate corners when plate >= 8x8
+          if (b.w >= 8 && b.h >= 8) {
+            // Top-left rivet
             rect(g, 'c', 2, 2, 2, 2);
+            rect(g, 'f', 3, 3, 1, 1); // shadow pixel
+            // Top-right rivet
             rect(g, 'c', b.w - 4, 2, 2, 2);
-            rect(g, 'd', 2, b.h - 4, 2, 2);
-            rect(g, 'd', b.w - 4, b.h - 4, 2, 2);
+            rect(g, 'f', b.w - 3, 3, 1, 1);
+            // Bottom-left rivet
+            rect(g, 'c', 2, b.h - 4, 2, 2);
+            rect(g, 'f', 3, b.h - 3, 1, 1);
+            // Bottom-right rivet
+            rect(g, 'c', b.w - 4, b.h - 4, 2, 2);
+            rect(g, 'f', b.w - 3, b.h - 3, 1, 1);
+          }
+          // Diagonal 'd' sheen on plates wider than 16
+          if (b.w > 16) {
+            const sheenLen = Math.min(b.w - 4, b.h - 4);
+            for (let si = 0; si < sheenLen; si++) {
+              const sx = 2 + si;
+              const sy = 2 + si;
+              if (sx < b.w - 2 && sy < b.h - 2) rect(g, 'd', sx, sy, 1, 1);
+            }
+          }
+        } else if (m === 'wood') {
+          // Fill base
+          rect(g, 'g', 1, 1, b.w - 2, b.h - 2);
+          // Top-left highlight
+          rect(g, 'i', 1, 1, b.w - 2, 1);
+          rect(g, 'i', 1, 1, 1, b.h - 2);
+          // Bottom-right shadow
+          rect(g, 'h', 1, b.h - 2, b.w - 2, 1);
+          rect(g, 'h', b.w - 2, 1, 1, b.h - 2);
+          // Planks along the long side, 4px wide, separated by 'h' lines
+          const plankAlongW = b.w >= b.h;
+          const plankCount = plankAlongW ? Math.floor((b.h - 2) / 4) : Math.floor((b.w - 2) / 4);
+          for (let p = 0; p < plankCount; p++) {
+            const ps = p * 4 + 1;
+            if (p > 0) {
+              // Plank separator line
+              if (plankAlongW) rect(g, 'h', 1, ps, b.w - 2, 1);
+              else rect(g, 'h', ps, 1, 1, b.h - 2);
+            }
+            // Grain: 1px 'h' dashes every 5-7px using deterministic hash
+            if (plankAlongW) {
+              const plankY = ps + 2;
+              if (plankY < b.h - 1) {
+                for (let gx = 2; gx < b.w - 2; gx++) {
+                  const interval = 5 + Math.floor(bHash(gx, plankY) * 3);
+                  if (gx % interval === 0) rect(g, 'h', gx, plankY, 1, 1);
+                }
+              }
+            } else {
+              const plankX = ps + 2;
+              if (plankX < b.w - 1) {
+                for (let gy = 2; gy < b.h - 2; gy++) {
+                  const interval = 5 + Math.floor(bHash(plankX, gy) * 3);
+                  if (gy % interval === 0) rect(g, 'h', plankX, gy, 1, 1);
+                }
+              }
+            }
+            // Nail heads: 'v' pixel with 'i' above, 2px from each end of every plank when plank >= 10 long
+            const plankLen = plankAlongW ? b.w - 2 : b.h - 2;
+            if (plankLen >= 10) {
+              if (plankAlongW) {
+                const py = ps + 2;
+                if (py < b.h - 1 && py > 1) {
+                  rect(g, 'i', 2, py - 1, 1, 1);
+                  rect(g, 'v', 2, py, 1, 1);
+                  rect(g, 'i', b.w - 3, py - 1, 1, 1);
+                  rect(g, 'v', b.w - 3, py, 1, 1);
+                }
+              } else {
+                const px2 = ps + 2;
+                if (px2 < b.w - 1 && px2 > 1) {
+                  rect(g, 'i', px2 - 1, 2, 1, 1);
+                  rect(g, 'v', px2, 2, 1, 1);
+                  rect(g, 'i', px2 - 1, b.h - 3, 1, 1);
+                  rect(g, 'v', px2, b.h - 3, 1, 1);
+                }
+              }
+            }
           }
         } else if (m === 'crystal') {
+          // Crystal: base fill with highlight/shadow edges + facet diagonal
           rect(g, 'b', 1, 1, b.w - 2, b.h - 2);
           rect(g, 'c', 1, 1, b.w - 2, 1);
           rect(g, 'c', 1, 1, 1, b.h - 2);
@@ -243,17 +380,16 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
           if (b.w >= 8 && b.h >= 8) {
             rect(g, 'c', Math.floor(b.w / 2) - 1, Math.floor(b.h / 2) - 1, 2, 2);
           }
-        } else if (m === 'stone') {
-          rect(g, 'k', 1, 1, b.w - 2, b.h - 2);
-          rect(g, 'l', 1, 1, b.w - 2, 1);
-          rect(g, 'l', 1, 1, 1, b.h - 2);
-          rect(g, 'm', 1, b.h - 2, b.w - 2, 1);
-          rect(g, 'm', b.w - 2, 1, 1, b.h - 2);
-          if (b.w >= 10 && b.h >= 10) {
-            rect(g, 'm', 3, 3, 2, 1);
-            rect(g, 'l', b.w - 5, b.h - 4, 2, 1);
+          // 1px 'c' facet diagonal
+          const diagLen = Math.min(b.w - 3, b.h - 3);
+          g.fillStyle = css(C('c'));
+          for (let di = 0; di < diagLen; di++) {
+            const dx = 1 + di;
+            const dy = 1 + di;
+            if (dx < b.w - 1 && dy < b.h - 1) rect(g, 'c', dx, dy, 1, 1);
           }
         } else {
+          // Default wood fallback
           rect(g, 'g', 1, 1, b.w - 2, b.h - 2);
           rect(g, 'i', 1, 1, b.w - 2, 1);
           rect(g, 'i', 1, 1, 1, b.h - 2);
@@ -265,10 +401,34 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
             else rect(g, 'h', 2, i, b.w - 4, 1);
           }
         }
+
         if (cracked) {
-          rect(g, 'v', Math.floor(b.w * 0.3), 1, 1, Math.floor(b.h * 0.5));
-          rect(g, 'v', Math.floor(b.w * 0.3) + 1, Math.floor(b.h * 0.5), 1, Math.floor(b.h * 0.4));
-          rect(g, 'v', Math.floor(b.w * 0.7), Math.floor(b.h * 0.3), 1, Math.floor(b.h * 0.6));
+          // Jagged 2-segment crack in 'v' with per-material edge pixel
+          const edgeCh = m === 'stone' ? 'm' : m === 'iron' ? 'f' : 'h';
+          const cx1 = Math.floor(b.w * 0.3);
+          const cy1 = 1;
+          const cx2 = Math.floor(b.w * 0.38);
+          const cy2 = Math.floor(b.h * 0.5);
+          const cx3 = Math.floor(b.w * 0.45);
+          const cy3 = b.h - 2;
+          // Draw segments
+          const drawLine = (x0: number, y0: number, x1: number, y1: number, ch: string) => {
+            const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+            for (let step = 0; step <= n; step++) {
+              const t2 = n === 0 ? 0 : step / n;
+              const px3 = Math.round(x0 + (x1 - x0) * t2);
+              const py3 = Math.round(y0 + (y1 - y0) * t2);
+              if (px3 >= 0 && py3 >= 0 && px3 < b.w && py3 < b.h) {
+                rect(g, ch, px3, py3, 1, 1);
+              }
+            }
+          };
+          drawLine(cx1, cy1, cx2, cy2, 'v');
+          drawLine(cx2, cy2, cx3, cy3, 'v');
+          // Edge pixel alongside crack
+          drawLine(cx1 + 1, cy1, cx2 + 1, cy2, edgeCh);
+          // One missing corner: 2x2 transparent at top-right
+          g.clearRect(b.w - 3, 0, 3, 3);
         }
       });
     }

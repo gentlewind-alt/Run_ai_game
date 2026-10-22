@@ -134,7 +134,7 @@ export default class ShopScene extends Phaser.Scene {
             };
           }
         }
-        const reqLvl = weaponUnlockLevel(w.id);
+        const reqLvl = weaponUnlockLevel(w.unlock);
         const unlocked = reachedLevel() >= reqLvl;
         return {
           id: w.id, name: shortWeaponName(w.id, w.name), price: w.price ?? 0, icon: weaponTexture(w.id), scale: 2,

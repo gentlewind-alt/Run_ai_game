@@ -57,7 +57,7 @@ STYLES.ember = {
 
 // Sky Citadel: high slate sky, pale cloud banks, cold stone ground and drifting sparks of static.
 STYLES.sky = {
-  sky: ['8', '9', 'a'], edges: [85, 190], far: ['q', 'f'], mid: ['f', 'm'], near: ['m', 'f'],
+  sky: ['8', '9', 'a'], edges: [85, 190], far: ['d', 'e'], mid: ['e', 'f'], near: ['m', 'f'],
   trees: { fill: 'f', light: 'm', trunk: 'f', kind: 'none' }, clouds: true, stars: false, moon: false, motes: 'b',
   grass: ['c', 'f', 'm'], dirt: 'm', dirtDark: 'f', pebble: 'q',
 };
@@ -203,7 +203,25 @@ export function buildBackground(scene: Phaser.Scene, worldW: number, groundY: nu
   };
   scene.add.rectangle(WW / 2, -300, WW + 1400, 700, C(S.sky[0])).setDepth(-5).setScrollFactor(0.05, 1);
   scene.add.rectangle(WW / 2, groundY + groundH + 300, WW + 1400, 600, C(S.dirt)).setDepth(-5);
-  layer('par_sky', 0.05, -4);
+  if (scene.textures.exists('bg_' + realm)) {
+    // Painted scenery plate: farthest layer, tiled to cover the world width
+    const scaleH = (groundY + 80) / 360;
+    const plateW = 640 * scaleH;
+    const numTiles = Math.ceil(LW / plateW) + 1;
+    for (let t = 0; t < numTiles; t++) {
+      scene.add.image(-350 + t * plateW, -20, 'bg_' + realm)
+        .setOrigin(0, 0)
+        .setScale(scaleH)
+        .setScrollFactor(0.05, 1)
+        .setDepth(-4.5);
+    }
+    // Readability overlay between plate and ridges
+    scene.add.rectangle(WW / 2, groundY / 2, WW + 1400, groundY + 200, C(S.sky[2]), 0.25)
+      .setDepth(-4)
+      .setScrollFactor(0.05, 1);
+  } else {
+    layer('par_sky', 0.05, -4);
+  }
   layer('par_far', 0.25, -3);
   layer('par_mid', 0.5, -2);
   layer('par_near', 0.75, -1);

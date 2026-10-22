@@ -20,6 +20,11 @@ export default class BootScene extends Phaser.Scene {
   preload(): void {
     this.load.on('loaderror', (f: Phaser.Loader.File) => this.failed.push({ key: f.key, url: String(f.url) }));
     preloadGeneratedSprites(this);
+    // Backdrop plates (concept-art scenery)
+    const BG_STYLES = ['hills', 'wood', 'keep', 'frost', 'ember', 'sky'];
+    for (const style of BG_STYLES) {
+      this.load.image(`bg_${style}`, `sprites/bg/${style}.png`);
+    }
   }
 
   create(): void {
