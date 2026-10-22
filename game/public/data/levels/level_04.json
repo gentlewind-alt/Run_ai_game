@@ -14,6 +14,13 @@
     "x": 580,
     "y": 307
   },
+  "loadout": [
+    "w_militia_blade",
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_scrapheap_scattergun",
+    "w_militia_blade"
+  ],
   "terrain": [
     [
       0,

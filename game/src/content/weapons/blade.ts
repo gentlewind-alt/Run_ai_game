@@ -5,10 +5,11 @@ import type { WeaponImpl } from './types';
 
 export const blade: WeaponImpl = {
   texture: weaponTexture('w_militia_blade'),
-  // Spin-saw: floats and hits everything it touches for 0.6 s.
+  // Whirlwind roll: the blade keeps its gravity, drops to the ground and rolls along it as a buzzsaw, carving through
+  // wood and monsters in its path for 1.4 s.
   onAbility(ctx, p) {
     p.t = p.def.params.sawSteps;
-    ctx.setGravity(p.body, 0);
+    p.data.rollDir = p.body.velocity.x >= 0 ? 1 : -1;
     ctx.M.Body.setAngularVelocity(p.body, p.def.params.sawSpin);
     sfx.saw();
   },
@@ -17,10 +18,9 @@ export const blade: WeaponImpl = {
     const P = p.def.params;
     p.t--;
     const b = p.body;
-    const sp = Math.hypot(b.velocity.x, b.velocity.y);
-    if (sp < P.sawSpeed && sp > 0.01) ctx.M.Body.setVelocity(b, { x: (b.velocity.x / sp) * P.sawSpeed, y: (b.velocity.y / sp) * P.sawSpeed });
+    ctx.M.Body.setVelocity(b, { x: p.data.rollDir * P.sawSpeed, y: b.velocity.y });
     if (p.t % P.tickSteps === 0) ctx.damageAround(b.position.x, b.position.y, P.tickRadius, P.tickMult, p.wid);
-    if (p.t === 0) ctx.setGravity(b, p.def.physics.gravity ?? 1);
+    if (p.t % 3 === 0) ctx.fx.sparks(b.position.x, b.position.y + 4, ['4', '3'], 1);
   },
   drawFx(_ctx, p, g) {
     if (p.t <= 0) return;

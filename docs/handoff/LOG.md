@@ -2,6 +2,14 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · X5 Pocket Tanks batch 1 (v1.17.0, private) and realm 5/6 art
+- **Abilities (data in `content.json`, code in `src/content/weapons/`):** Militia Blade "Whirlwind" (keeps gravity, rolls along the ground as a buzzsaw for 72 steps at speed 3, tick 0.1 radius 12, sparks), Iron Cleaver "Crater" (crater decal that fades, three shock rings, quakeRings, flash; gameplay radii unchanged), Blast Tube "Nuke" (radius 52, flash, hit-stop, fireball, three shock rings, quake sound), Ashwood Staff "Volley" (3 homing bolts, each splits in two on hit; replaces the "every 5th bolt ever" module counter).
+- **Balance lessons:** a bigger Cleaver shock/push radius made the level 12 boss unwinnable for the greedy solver (bisected by reverting weapons one at a time); a Blade roll at speed 4.5 for 84 steps crossed the whole level and cleared level 4 in 2 shots. Both fixed in data. `tools/bisect_revert.py <weapon_id> <code_file>` restores one weapon to the committed version for bisecting.
+- **Checks:** `check`, `build`, `regress:quick` pass (levels 1/4/8/12/16 in 2/3/3/4/3 shots). The abilities have not been looked at on screen or covered by headless assertions yet.
+- **Still to do for X5:** Pike "Driller", Boomerang "Rebound", Scepter "Hellbrand" fire pool, Scattergun "Cluster" (needs a pellet impact callback), relic add-ons (Maul chain lightning, Fists spikes, Disc shield ring and 6th-bounce blast).
+- **Art ready for realms 5-6 and the new weapons (RUN CLI, processed, not yet used in data):** monsters `lava_imp`, `forge_ogre`, `forge_tyrant`, `cloud_harpy`, `storm_mage`, `storm_sovereign`; weapon icons `w_omnitrix_dial`, `w_hailstorm_cauldron`, `w_rolling_millstone`, `w_pinata_mirv`, `w_earthworm_drill`, `w_black_hole_marble`, `w_chain_rod`. About 2,250 RUN credits used in total (about 107,750 left).
+- **Leftover:** X3b tests (beam, boss, map page 2), X6a/X6b realms 5-6 and weapons, sound pass; briefs are in `docs/handoff/`. agy runs for 7 minutes at a time before its credits run out again.
+
 ## 2026-10-22 · claude · X4 score leaderboards built directly (v1.16.0, private)
 - **Boards:** `daily` (RUN period `daily`), `level_<n>` and `overall` (RUN mode with period `alltime`). `src/platform/boards.ts` maps board names to RUN options (the old code passed every board name as a period). A win submits the level best and the overall total (`core/leaderboards.ts`: `submitBests`, `levelRankLine`, `overallScore`); errors never reach the game loop.
 - **UI:** `scenes/LeaderboardScene.ts` (tabs Daily / This level / Overall, level selector, top 10, your row highlighted or shown below, Refresh with a 4 s cooldown), Map "Scores" button, "Level rank #N" line on Results. Added a `#` glyph to the 5x7 font (it showed as `?`, also in the Daily results panel).

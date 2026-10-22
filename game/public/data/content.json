@@ -112,7 +112,7 @@
       "unlock": "start",
       "price": 0,
       "launch": "Spins end over end. Light and fast.",
-      "tap": "Spin-saw: hits everything touching it for 0.6 s.",
+      "tap": "Whirlwind: rolls along the ground as a sawblade for 1.2 s, carving what it touches.",
       "physics": {
         "radius": 4,
         "density": 0.03,
@@ -121,15 +121,15 @@
       },
       "ability": {
         "mode": "button",
-        "label": "Saw"
+        "label": "Whirl"
       },
       "params": {
-        "sawSteps": 36,
+        "sawSteps": 72,
         "sawSpin": 0.7,
-        "sawSpeed": 5.5,
+        "sawSpeed": 3,
         "tickSteps": 6,
-        "tickRadius": 11,
-        "tickMult": 0.22
+        "tickRadius": 12,
+        "tickMult": 0.1
       }
     },
     {
@@ -142,7 +142,7 @@
       "unlock": "level 2",
       "price": 100,
       "launch": "Heavy, short flat arc. Drops fast.",
-      "tap": "Dive-slam straight down with a shockwave; knocks down Minions.",
+      "tap": "Crater slam: dive-slam that digs a crater and sends out a crumbling shock ring.",
       "physics": {
         "radius": 5,
         "density": 0.05,
@@ -151,13 +151,13 @@
       },
       "ability": {
         "mode": "button",
-        "label": "Slam"
+        "label": "Crater"
       },
       "params": {
         "slamSpeed": 9,
         "slamHold": 7,
         "slamDrag": 0.9,
-        "shockRingRadius": 30,
+        "shockRingRadius": 44,
         "shockRadius": 24,
         "shockMult": 0.8,
         "shockPushRadius": 38,
@@ -174,7 +174,7 @@
       "unlock": "level 3",
       "price": 150,
       "launch": "Light, floaty.",
-      "tap": "Fires a homing bolt at the nearest monster; every 5th bolt you ever fire splits in two.",
+      "tap": "Ember volley: 3 homing bolts that each split in two when they hit.",
       "physics": {
         "radius": 4,
         "density": 0.008,
@@ -183,16 +183,18 @@
       },
       "ability": {
         "mode": "button",
-        "label": "Bolt"
+        "label": "Volley"
       },
       "params": {
-        "boltMult": 1.4,
+        "boltMult": 0.9,
         "boltSpeed": 5.5,
         "boltTurn": 0.18,
         "boltHitRadius": 8,
         "boltSteps": 240,
-        "splitEvery": 5,
-        "boltLaunchVy": -2
+        "boltLaunchVy": -2,
+        "volley": 3,
+        "splitCount": 2,
+        "splitMult": 0.45
       }
     },
     {
@@ -295,7 +297,7 @@
       "unlock": "level 7",
       "price": 350,
       "launch": "A heavy shell on a high lob.",
-      "tap": "Detonate in the air: wide blast, damage falls off with distance.",
+      "tap": "Nuke lob: airburst with a huge radius, flash and shock rings; damage falls off with distance.",
       "physics": {
         "radius": 5,
         "density": 0.04,
@@ -304,10 +306,10 @@
       },
       "ability": {
         "mode": "both",
-        "label": "Boom"
+        "label": "Nuke"
       },
       "params": {
-        "radius": 36,
+        "radius": 52,
         "mult": 1
       }
     },

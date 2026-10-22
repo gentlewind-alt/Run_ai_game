@@ -110,7 +110,8 @@ write(4, 'Hill fort', 'goblin_hills', 'boss', 600, ['Defeat the Goblin Chief!'],
       [mon('goblin_chief', 209, stand(P4, 21)), mon('goblin_bomber', 243, stand(P4)), mon('goblin_grunt', 226, stand(P4 - 60)),
        mon('goblin_grunt', 242, stand(P4 - 60)), mon('goblin_grunt', 120, stand(GROUND)), mon('goblin_grunt', 256, stand(P4)),
        mon('skeleton_runner', 312, stand(GROUND), dir=1, speed=0.8, delay=0.8), mon('skeleton_runner', 330, stand(GROUND), dir=1, speed=0.7, delay=1.2)],
-      1350, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13}, shots=5)
+      1350, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13}, shots=5,
+      loadout=['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun', 'w_militia_blade'])
 
 # ---------------------------------------------------------------- Dark Elf Wood (dusk): archers, hexers, imps
 # Everything the player must kill sits inside the reach of a full pull. Distance and height are the difficulty.

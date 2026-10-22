@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "b850a1255cbd8d27be4de0d8a83bae556dc4ce462e22a6fbf476f03eda7472d7",
+  "hash": "2f274e0b3144dd8c37073527f8a2f38e4014810a7b1d14cc604408b90dcc2a6d",
   "children": [
     {
       "name": "AGENTS.md",
@@ -94,13 +94,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "a7bd33e28acbc2fa9f1a6b9a0efb790b60e7d73aea15139e391d68d0e15fe3aa",
+      "hash": "adfcf219eff4f55be7f32236b85a649cce0ee4dcd9bfc17cc1a82bb01a15689e",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "c1742c8fc2aba6fdcd283839f0510a9f9bd643f3651a95766b0a317cc2e27231",
+          "hash": "c406867fb48a804988f42fb28457ef0f383c3c612fcfd8dc500d44060fb1f964",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -323,8 +323,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "41123c66e6200c7fa5d75f29f72f588053d87df59daffec525a4107846bcc3bc",
-              "size": 92592
+              "hash": "3c804e4132e9dfa5b73d40ac98ffe8624d1d3945f9408ea3c0c9114f483b96b5",
+              "size": 94618
             },
             {
               "name": "ref",
@@ -373,7 +373,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "c2f58623046a6ce0135cda09620892adb53114fc2e42d2f0b7c480a313901752",
+              "hash": "b4c34ff63a67ca7b24614d4eae3767d1c618414674b07cc704c51a81ac87c5b6",
               "children": [
                 {
                   "name": "01_title.png",
@@ -590,7 +590,7 @@
                   "name": "gen",
                   "path": "docs/handoff/shots/gen",
                   "type": "dir",
-                  "hash": "12b6a7a227877cb6467cf6ee82fb2f6f7d63b0a70d81b89a69ac937581da6475",
+                  "hash": "71789faacc5215d0fdc3298cc8edbf96eac9392012bfa59b927b231720f380fb",
                   "children": [
                     {
                       "name": "arrow.png",
@@ -852,6 +852,20 @@
                       "size": 496
                     },
                     {
+                      "name": "w_black_hole_marble.png",
+                      "path": "docs/handoff/shots/gen/w_black_hole_marble.png",
+                      "type": "file",
+                      "hash": "6455951164a809eb6fb31c560b4f9c1413876affde79483fcf99a7f25a5e484c",
+                      "size": 34247
+                    },
+                    {
+                      "name": "w_black_hole_marble.png.json",
+                      "path": "docs/handoff/shots/gen/w_black_hole_marble.png.json",
+                      "type": "file",
+                      "hash": "4e2fd9b981a2a5138fcb5f44f9bcaa0089d2aab007e8da63549548e1949b1c5d",
+                      "size": 435
+                    },
+                    {
                       "name": "w_brahmastra_arrow.png",
                       "path": "docs/handoff/shots/gen/w_brahmastra_arrow.png",
                       "type": "file",
@@ -864,6 +878,20 @@
                       "type": "file",
                       "hash": "1e89d7339d0ec6c4efbd1ecf9eec1e09bc4a7c9aacd6abdec74b4292e316e6d1",
                       "size": 519
+                    },
+                    {
+                      "name": "w_chain_rod.png",
+                      "path": "docs/handoff/shots/gen/w_chain_rod.png",
+                      "type": "file",
+                      "hash": "17ad28357a0a381219914357ab3d20e3084445d433469bbdcba399d85e187709",
+                      "size": 19477
+                    },
+                    {
+                      "name": "w_chain_rod.png.json",
+                      "path": "docs/handoff/shots/gen/w_chain_rod.png.json",
+                      "type": "file",
+                      "hash": "60fcf7630a4437669c637cb70976439e304d31960360e55b8154fb93a41800b8",
+                      "size": 448
                     },
                     {
                       "name": "w_earthworm_drill.png",
@@ -1717,8 +1745,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "ee81fddc2c5a9dabc5f1b7e50980ba2a330a59ff13a59e3404ae4a52ba24eee5",
-              "size": 9593
+              "hash": "6be8ee5a4f87f3e39df72c3e568aaaa4aebc53cb0b0cf442113d204c8d50e7c7",
+              "size": 9704
             }
           ]
         },
@@ -1863,7 +1891,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "6449c9c65573e3e08b165a861e8974d755ac8a4bb2ef0f58ba6028bf809463ce",
+      "hash": "73b0196eaf259b7095db5603ffe49d2c7b16ee0bf0d7540c5c854e0d018e7f8d",
       "children": [
         {
           "name": ".gitignore",
@@ -1939,7 +1967,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "445678920817475ca5c4d2064cc43870d857ae4dca7168e024963b804aad6abf",
+          "hash": "a54487a7ff7ec3b3cd1768edde1c8d7cff116f38db2339ada0769a0e7aec0f16",
           "children": [
             {
               "name": "cdn-assets",
@@ -1974,7 +2002,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "3aa94dc1918e28ebde726e43a4d8cfc3db94924a7793820ca008e2c60083d467",
+              "hash": "4244ced77da70c1a9cefa8795ec37198bff265ee3538a264b15cd9f07fa53ebc",
               "children": [
                 {
                   "name": "config.json",
@@ -1987,14 +2015,14 @@
                   "name": "content.json",
                   "path": "game/public/data/content.json",
                   "type": "file",
-                  "hash": "cae5e9e1bdb6a532602a04fd9783f1c6db1f20c14d32b4abb7bea9e2ce42c72c",
-                  "size": 27262
+                  "hash": "13a991c1b27b01271e8ed0b18c1c4d40153a18c16604871a3a3de0268ecae400",
+                  "size": 27373
                 },
                 {
                   "name": "levels",
                   "path": "game/public/data/levels",
                   "type": "dir",
-                  "hash": "3cf8b8577b2e64e2c56dbb1f293e359aa95a8f5d343ecf06c19022bea7b70598",
+                  "hash": "ad780d008639f40c96be9cd24c389ba774c21ea670d766dbf776ba44462eb40d",
                   "children": [
                     {
                       "name": "level_01.json",
@@ -2021,8 +2049,8 @@
                       "name": "level_04.json",
                       "path": "game/public/data/levels/level_04.json",
                       "type": "file",
-                      "hash": "8169f4c8164a1a17139b763079e52f529c8496d543114f60e187a7f195611d53",
-                      "size": 2234
+                      "hash": "767bb8554188c8acc2b9285531fd52025399758eed0c8708ae35938a879c4c8f",
+                      "size": 2374
                     },
                     {
                       "name": "level_05.json",
@@ -2130,14 +2158,35 @@
               "name": "sprites",
               "path": "game/public/sprites",
               "type": "dir",
-              "hash": "fc39a8c58ebd0c8a76db2bc4b2b540ca075360a4d902c4cf1fc31ad5eac82810",
+              "hash": "45c6e1b931e1ae685d1e47eac5433289151a93b1ae9985ef5ee6c4a72d922fc8",
               "children": [
                 {
                   "name": "monsters",
                   "path": "game/public/sprites/monsters",
                   "type": "dir",
-                  "hash": "72cea520ab79dfc05eef3efa60731fde635ceb86d9eeb578ad5aab750d5e6d6e",
+                  "hash": "4cd8463edd91f34e6b02e57cf54d3affbd2cd04c48595d9fcee9f8e060cc2322",
                   "children": [
+                    {
+                      "name": "cloud_harpy.png",
+                      "path": "game/public/sprites/monsters/cloud_harpy.png",
+                      "type": "file",
+                      "hash": "a784d620421e3836d2a7db973a887c48c28b481c74957dd2c5c9d8b00ace16de",
+                      "size": 594
+                    },
+                    {
+                      "name": "forge_ogre.png",
+                      "path": "game/public/sprites/monsters/forge_ogre.png",
+                      "type": "file",
+                      "hash": "1d99adb531e48832c816f35f91abba1ca178bcb31424b0ea81f30dcba28b4495",
+                      "size": 992
+                    },
+                    {
+                      "name": "forge_tyrant.png",
+                      "path": "game/public/sprites/monsters/forge_tyrant.png",
+                      "type": "file",
+                      "hash": "c414d955b403e77d1c63f6aa316dbc6c589649b5798ea16ea3fedabf035db2f1",
+                      "size": 1632
+                    },
                     {
                       "name": "frost_giant.png",
                       "path": "game/public/sprites/monsters/frost_giant.png",
@@ -2158,6 +2207,27 @@
                       "type": "file",
                       "hash": "a24b8df7042a5bd0dcc831a3a7e79d22304e80af5b3bc8252e1dbb0fd5eca067",
                       "size": 997
+                    },
+                    {
+                      "name": "lava_imp.png",
+                      "path": "game/public/sprites/monsters/lava_imp.png",
+                      "type": "file",
+                      "hash": "80256e536079bddd3c7391f1aae51ec851c05b81f83eec2acfd174c84f24c5f8",
+                      "size": 473
+                    },
+                    {
+                      "name": "storm_mage.png",
+                      "path": "game/public/sprites/monsters/storm_mage.png",
+                      "type": "file",
+                      "hash": "93834b793f824e7a4af866d53fe3783646cce17a1c3ec83f7ee069809ffd98bf",
+                      "size": 615
+                    },
+                    {
+                      "name": "storm_sovereign.png",
+                      "path": "game/public/sprites/monsters/storm_sovereign.png",
+                      "type": "file",
+                      "hash": "19f2cf5f7ecd8015a37492ea34defb0456e0e820eef617b56cd88ce5d117137d",
+                      "size": 1591
                     }
                   ]
                 },
@@ -2165,8 +2235,22 @@
                   "name": "relics",
                   "path": "game/public/sprites/relics",
                   "type": "dir",
-                  "hash": "4703e102cd0824725b7c9d58f273c784ca685e1a284e08fae868ff398020a15f",
+                  "hash": "f672d54a6f41576a6dd83d90b59ec5941905f5337d2498ec1b1efab97db781ec",
                   "children": [
+                    {
+                      "name": "w_black_hole_marble_card.png",
+                      "path": "game/public/sprites/relics/w_black_hole_marble_card.png",
+                      "type": "file",
+                      "hash": "2e52ffc1569f460583083731863d831edf1b30ca4812472d7c63c175978b21f8",
+                      "size": 412
+                    },
+                    {
+                      "name": "w_black_hole_marble.png",
+                      "path": "game/public/sprites/relics/w_black_hole_marble.png",
+                      "type": "file",
+                      "hash": "ef5aae9385ff770d6480815f811e48219f4c1912840ab28278e2728f53306691",
+                      "size": 603
+                    },
                     {
                       "name": "w_brahmastra_arrow_card.png",
                       "path": "game/public/sprites/relics/w_brahmastra_arrow_card.png",
@@ -2196,6 +2280,20 @@
                       "size": 697
                     },
                     {
+                      "name": "w_chain_rod_card.png",
+                      "path": "game/public/sprites/relics/w_chain_rod_card.png",
+                      "type": "file",
+                      "hash": "575092d618cab7736e48313e812dfe7a7d597b22da0b566de8622f11937ec60a",
+                      "size": 338
+                    },
+                    {
+                      "name": "w_chain_rod.png",
+                      "path": "game/public/sprites/relics/w_chain_rod.png",
+                      "type": "file",
+                      "hash": "a32b6462305500e6b0766df194e109fa39726e6df713cb2bd8f961fd700b2d03",
+                      "size": 448
+                    },
+                    {
                       "name": "w_comet_fists_card.png",
                       "path": "game/public/sprites/relics/w_comet_fists_card.png",
                       "type": "file",
@@ -2208,6 +2306,34 @@
                       "type": "file",
                       "hash": "8feab387c3929f68e6935cd1208e1c97cad78915eb660de93fdc1d84c1d33920",
                       "size": 649
+                    },
+                    {
+                      "name": "w_earthworm_drill_card.png",
+                      "path": "game/public/sprites/relics/w_earthworm_drill_card.png",
+                      "type": "file",
+                      "hash": "dfb9ca53d0a1e91bca7a4e4ff1f3bf7655536175a469822e8c074a6cd9dac646",
+                      "size": 525
+                    },
+                    {
+                      "name": "w_earthworm_drill.png",
+                      "path": "game/public/sprites/relics/w_earthworm_drill.png",
+                      "type": "file",
+                      "hash": "85fdf84500a5e69efa6217b0cd3f4121d25ed76349ec4fd14f3b654b5e768621",
+                      "size": 742
+                    },
+                    {
+                      "name": "w_hailstorm_cauldron_card.png",
+                      "path": "game/public/sprites/relics/w_hailstorm_cauldron_card.png",
+                      "type": "file",
+                      "hash": "1d07e10074743bea912fbd320bdeb949e72e82a7c99c37e02d0d2b430359a117",
+                      "size": 407
+                    },
+                    {
+                      "name": "w_hailstorm_cauldron.png",
+                      "path": "game/public/sprites/relics/w_hailstorm_cauldron.png",
+                      "type": "file",
+                      "hash": "2d2d3f9fad9fd68c5fc8c6d9e1bd6e9b2161824c87972833188aa0ca1ce3ae85",
+                      "size": 595
                     },
                     {
                       "name": "w_kinetic_palms_card.png",
@@ -2236,6 +2362,34 @@
                       "type": "file",
                       "hash": "e5ce9f42ee3079444c2df56a000d92bdc30cee506192e6499df61839623c536f",
                       "size": 648
+                    },
+                    {
+                      "name": "w_pinata_mirv_card.png",
+                      "path": "game/public/sprites/relics/w_pinata_mirv_card.png",
+                      "type": "file",
+                      "hash": "3e9815ee3d93ff5b5818bd7ba676d7563195a5ef340451fa312aafe32aa7802d",
+                      "size": 549
+                    },
+                    {
+                      "name": "w_pinata_mirv.png",
+                      "path": "game/public/sprites/relics/w_pinata_mirv.png",
+                      "type": "file",
+                      "hash": "6850b77257a1b595501431d6b1c7f3dc6a9475034c45535cc4d014e374d339fe",
+                      "size": 766
+                    },
+                    {
+                      "name": "w_rolling_millstone_card.png",
+                      "path": "game/public/sprites/relics/w_rolling_millstone_card.png",
+                      "type": "file",
+                      "hash": "f24974a463124a0262c56368077808a98f623b984fed1ed984d61eefe059b200",
+                      "size": 471
+                    },
+                    {
+                      "name": "w_rolling_millstone.png",
+                      "path": "game/public/sprites/relics/w_rolling_millstone.png",
+                      "type": "file",
+                      "hash": "dfb34b6c41d952c30c563ab68dcfb547bacc3bb622dd17dbaaf9dc9cd020fca5",
+                      "size": 667
                     },
                     {
                       "name": "w_silkline_shooters_card.png",
@@ -2382,7 +2536,7 @@
           "name": "scripts",
           "path": "game/scripts",
           "type": "dir",
-          "hash": "ab5bcc6630c470caa368ff6ad7c20248c043265f29f9d85b64ec73eb9b107b3c",
+          "hash": "7f6fc8fabf111447f5f87c93fa9281c0134cf3a35da6e68c99f2e6eecb3aaf62",
           "children": [
             {
               "name": "balance_bands.json",
@@ -2395,8 +2549,8 @@
               "name": "build_levels.py",
               "path": "game/scripts/build_levels.py",
               "type": "file",
-              "hash": "4ea594cd72ce27a1bf54ca5ec03e45f1e64dc7b03ba643981061f2640cc3f55c",
-              "size": 18352
+              "hash": "bc538bf598c57c5944f7b462e3c0ff25f4917381e91be702c9345dcc58bf59aa",
+              "size": 18469
             },
             {
               "name": "check-daily.mjs",
@@ -2418,7 +2572,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "1e9575795796ebe7459222420f8f0ae59df8721d2ced07c46e63ff5c05830f20",
+          "hash": "151751b0e7fcaf18b366adbc53e2056d9b1ca619fa5ac24613c6897cad4e3510",
           "children": [
             {
               "name": "art",
@@ -2708,7 +2862,7 @@
               "name": "content",
               "path": "game/src/content",
               "type": "dir",
-              "hash": "9b9fa262488a23c52c7c45043f1562f9ff51569cd87436c7510ca21bbeaf41c4",
+              "hash": "6a23f2c440e74f7cfd47cafa6565abc9f33d0d79f31c33e9177fe0b8336372e9",
               "children": [
                 {
                   "name": "artifacts",
@@ -2914,21 +3068,21 @@
                   "name": "weapons",
                   "path": "game/src/content/weapons",
                   "type": "dir",
-                  "hash": "1efa00d963219cf72806da11c3af896215757641cd0576fd5d190c5ce97a8773",
+                  "hash": "168c29f43d463985403db786c3d7c0af76bc55d359539507cc446ac4498dd99c",
                   "children": [
                     {
                       "name": "blade.ts",
                       "path": "game/src/content/weapons/blade.ts",
                       "type": "file",
-                      "hash": "1b8d0becb6cfe9d5abec0c220ba1a2c1be833c0dcd989c0650065e3f41f499f6",
-                      "size": 1181
+                      "hash": "25d35dc3c9539deca994920daf2c1da238faba3d42e2b658025ace84a73b424d",
+                      "size": 1210
                     },
                     {
                       "name": "blastTube.ts",
                       "path": "game/src/content/weapons/blastTube.ts",
                       "type": "file",
-                      "hash": "e122c854abcb6f5f28910524ab447d43aa4d1a796edf5ff78706d358a4a33915",
-                      "size": 561
+                      "hash": "87e9b87352d58e1b26438ffa7b661b8068c90c347385fdaf2208db0b7d94fc3f",
+                      "size": 1030
                     },
                     {
                       "name": "boomerang.ts",
@@ -2955,8 +3109,8 @@
                       "name": "cleaver.ts",
                       "path": "game/src/content/weapons/cleaver.ts",
                       "type": "file",
-                      "hash": "3cafb70303adfb06b6aa5ca91b50ad5bb40270e70fe3cddfcdcee08c6e3f0641",
-                      "size": 1157
+                      "hash": "c53748154ccbb6504c5f810fbd2c0bd17fa322e79efac988c79ef14e0f177be3",
+                      "size": 1700
                     },
                     {
                       "name": "cometFists.ts",
@@ -3018,8 +3172,8 @@
                       "name": "staff.ts",
                       "path": "game/src/content/weapons/staff.ts",
                       "type": "file",
-                      "hash": "fd265b8b3bd11451ef47df292e5a9a0e7f4e5951568b28bd37ee4b05067d4875",
-                      "size": 1845
+                      "hash": "47e63bf27ff57b086639cc153973910bdf10e9333e7009f60b624a286cdfdd0d",
+                      "size": 2379
                     },
                     {
                       "name": "steersongArrow.ts",
@@ -3351,13 +3505,6 @@
       "size": 505
     },
     {
-      "name": "gen_realm56_log.txt",
-      "path": "gen_realm56_log.txt",
-      "type": "file",
-      "hash": "dcff27078dcb79b2ad8b7219d13e5fbd355d2bbdd52c60abb1790101c8dc44e0",
-      "size": 1421
-    },
-    {
       "name": "package.json",
       "path": "package.json",
       "type": "file",
@@ -3375,7 +3522,7 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "5cd20ecfd48794882bb9c1541746524a2ebb8d4741b0f79e22128233508c69a9",
+      "hash": "5ea1244357352947cc6778131c2df0f11c352a41d6ecede7c03771d0baa017ee",
       "children": [
         {
           "name": "agy_chain.sh",
@@ -3404,6 +3551,13 @@
           "type": "file",
           "hash": "4412931e1284b50fa6d644b11b2fbc8e2cca55aa1c47affc45828e173fe4d1d8",
           "size": 5572
+        },
+        {
+          "name": "bisect_revert.py",
+          "path": "tools/bisect_revert.py",
+          "type": "file",
+          "hash": "43c1acee50451b1a0c567487b389a5a23882533ca785b9624c2c482f69a3b138",
+          "size": 793
         },
         {
           "name": "gen_realm_sprites.sh",
@@ -3458,8 +3612,8 @@
           "name": "process_sprites.ps1",
           "path": "tools/process_sprites.ps1",
           "type": "file",
-          "hash": "8ba3ebe56cea2caa67a036c0170e501826b441d5aa4eb10069304c0d90962336",
-          "size": 4209
+          "hash": "74a069c6d9d63c03aa10ce747e369ae7c0282b1b06fa9f51bc19af0086f2804b",
+          "size": 4745
         },
         {
           "name": "regress.mjs",
@@ -3546,13 +3700,6 @@
           "size": 17704
         }
       ]
-    },
-    {
-      "name": "vite_dev.log",
-      "path": "vite_dev.log",
-      "type": "file",
-      "hash": "357aae10345ea39b6378f66aca36a6a821a0ef4380665ff8df77c4f473fd8f71",
-      "size": 264
     },
     {
       "name": "vite4.log",

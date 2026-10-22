@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.16.0 (leaderboards), private
+**Current build:** v1.17.0 (Pocket Tanks abilities batch 1), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -73,7 +73,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | X2 | Six weapon slots + damage vs HP balance | X1 | review | agy+claude | 10-22 | loadoutSize 6, levels 4-12 shots 5-6, regress bands 3-5; agy stopped at its quota, docs/tests partly unverified |
 | X3 | Realm 4 Frost Peaks (levels 13-16) + Brahmastra Arrow | X2 | review | claude | 10-22 | built directly (agy out of credits); beam, boss drop and map page 2 not yet covered by headless assertions |
 | X4 | Score leaderboards (daily, per level, overall) | X2 | review | claude | 10-22 | Scores screen, rank on Results, board routing; host boards untested until deploy |
-| X5 | Pocket Tanks ability pass | X2 | todo | | | brief `agy_task_x5_abilities.md` |
+| X5 | Pocket Tanks ability pass | X2 | doing | claude | 10-22 | batch 1 done (Blade, Cleaver, Blast Tube, Staff); Pike, Boomerang, Scepter, Scattergun and relic add-ons remain |
 | X6 | Realms 5-6, Omnitrix Dial and other new weapons, sound pass | X3 | todo | | | design in `09_expansion_design.md` |
 
 ## Waiting on owner

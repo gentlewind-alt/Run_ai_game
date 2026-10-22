@@ -5,7 +5,7 @@ import type { WeaponImpl } from './types';
 
 export const cleaver: WeaponImpl = {
   texture: weaponTexture('w_iron_cleaver'),
-  // Dive-slam straight down; the first thing it hits sends out a shockwave.
+  // Crater slam: dive straight down; where it lands it digs a visible crater and sends out a crumbling shock ring.
   onAbility(ctx, p) {
     ctx.M.Body.setVelocity(p.body, { x: 0, y: p.def.params.slamSpeed });
     ctx.M.Body.setAngularVelocity(p.body, 0);
@@ -17,11 +17,19 @@ export const cleaver: WeaponImpl = {
     const P = p.def.params;
     const b = p.body.position;
     ctx.fx.ring(b.x, b.y, P.shockRingRadius, C('c'));
+    ctx.fx.ring(b.x, b.y, P.shockRingRadius * 0.6, C('4'));
     ctx.damageAround(b.x, b.y, P.shockRadius, P.shockMult, p.wid);
     ctx.push(b.x, b.y, P.shockPushRadius, P.shockPush);
-    ctx.fx.sparks(b.x, b.y, ['k', 'l', 'c'], 12);
-    ctx.fx.shake(0.01);
+    ctx.fx.quakeRings?.(b.x, b.y, P.shockRingRadius * 2);
+    ctx.fx.sparks(b.x, b.y, ['k', 'l', 'c', 'h'], 14);
+    ctx.fx.shake(0.018);
+    ctx.flash?.(0xffffff, 40);
+    // the crater: a dark ellipse in the ground that fades after a couple of seconds
+    const crater = ctx.fx.dot(b.x, b.y + 2, P.shockRadius * 0.6, C('j'), C('0'));
+    crater.setScale(1, 0.3).setDepth(2);
+    crater.scene.tweens.add({ targets: crater, alpha: 0, delay: 1800, duration: 700, onComplete: () => crater.destroy() });
     sfx.crunch();
+    sfx.quake();
   },
   onUpdate(ctx, p) {
     if (p.data.slam) {
