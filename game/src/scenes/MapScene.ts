@@ -35,6 +35,8 @@ export default class MapScene extends Phaser.Scene {
   private pulse: { box: Phaser.GameObjects.Container }[] = [];
   private dailyCountdownText?: Phaser.GameObjects.Image;
   private nextCountdownTime = 0;
+  /** Bumped on every create and shutdown so a slow server-time answer cannot draw into a scene that has gone. */
+  private buildId = 0;
   private cachedServerTime = Date.now();
   private page = 0;
 
@@ -50,6 +52,10 @@ export default class MapScene extends Phaser.Scene {
 
   create(): void {
     this.pulse = [];
+    this.dailyCountdownText = undefined; // scene.restart() keeps the instance; the old image is already destroyed
+    this.nextCountdownTime = 0;
+    this.buildId++;
+    this.events.once('shutdown', () => { this.buildId++; });
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
     coinCounter(this, 12, 13);
 
@@ -77,7 +83,7 @@ export default class MapScene extends Phaser.Scene {
     }
 
     if (data.config.features?.daily !== false) {
-      this.drawDaily(PANEL_Y0);
+      this.drawDaily(PANEL_Y0, this.buildId);
     }
 
     makeButton(this, Math.round(W * 0.12), H - 16, 76, 24, 'Shop', 'go', () => { sfx.click(); goTo(this, 'shop'); }, 6);
@@ -87,10 +93,11 @@ export default class MapScene extends Phaser.Scene {
     irisOpen(this);
   }
 
-  private async drawDaily(y0: number): Promise<void> {
+  private async drawDaily(y0: number, build: number): Promise<void> {
     const x = W - 132;
     const w = 124;
     const h = 202;
+    if (build !== this.buildId) return;
     panel(this, x, y0, w, h, '8', '9', 'f', 1);
 
     let nowMs = Date.now();
@@ -99,6 +106,7 @@ export default class MapScene extends Phaser.Scene {
     } catch {
       nowMs = Date.now();
     }
+    if (build !== this.buildId) return; // the scene was restarted or left while the server time was on its way
     this.cachedServerTime = nowMs;
     const { dateStr } = getDailySeed(nowMs);
     const dInfo = profile.daily;
@@ -142,7 +150,7 @@ export default class MapScene extends Phaser.Scene {
   }
 
   private tickDailyCountdown(): void {
-    if (!this.dailyCountdownText) return;
+    if (!this.dailyCountdownText?.scene) return;
     this.cachedServerTime += 1000;
     const str = this.formatCountdown(this.cachedServerTime);
     setText(this.dailyCountdownText, this, str, C('b'), C('0'));

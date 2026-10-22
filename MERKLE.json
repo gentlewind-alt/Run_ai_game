@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "34ddf0b883aef4bf22c3aba352065a8715edb030f4eaabd68fb2701e34b886f1",
+  "hash": "bf1a1f889b63a6d4ff42e2d8d7e09bb0f571215ee83015ee08ec09e28cb766f4",
   "children": [
     {
       "name": ".gitignore",
@@ -101,13 +101,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "012c4be7b683bd8aa06e4719a1a56d5dc43bc448a7856c956dd68b6d6fea2281",
+      "hash": "e20b5f94d1f360d8ff74b1682dd059408ade193cf28c359e52888f5860b3257e",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "f169f311ef49cc1876a64abfdaaad1af1b9ac7396c291cd6ac7bc841643d2ad7",
+          "hash": "41d1c20ceec9f229652551d5b24e5094e157e64c25fa2ffa2311bd734b01fcc6",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -330,8 +330,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "336f10113a84a7da3968be33549039302efeaafdd60653b94ad4151cc345cd9c",
-              "size": 114316
+              "hash": "c2579f379cf484ca6fad9d3e61ccc9e7ac1c31772e7fd619166de51fa7f5d757",
+              "size": 115742
             },
             {
               "name": "ref",
@@ -1957,8 +1957,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "82868b51902c9bc7fca6269d70a63747911cf462c9a7e52daa78d45776a76560",
-              "size": 10523
+              "hash": "3a1f588042346171e4932b70d7784d627e33da1124ef6468d9f0983376787839",
+              "size": 10506
             }
           ]
         },
@@ -2110,7 +2110,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "a35bbb62efdb97a98382f60cf89ee6905314033c5f70d545e565212b36d4eeb8",
+      "hash": "ff335dfdc3c683155bb5a6617a73e296f1e2129adb2f1996dbcd3f360ad4f41c",
       "children": [
         {
           "name": ".gitignore",
@@ -2890,7 +2890,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "0708fbbd2087382965f8ab4b43e8720ce68cb073b9bd46f45322e29e07eb89f2",
+          "hash": "7f86e944467e146f5743646b1220bdb20c7bc6b865e51016d995ca8a96156975",
           "children": [
             {
               "name": "art",
@@ -3743,7 +3743,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "953ae50d0928fd75a5c6d798ba57f752af812355651a68c4de94f0f0af9940ee",
+              "hash": "1a6de0f3e19188c97de48f821c3dc50f85d800a2e2ac57aa5346c09deaae1305",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -3784,8 +3784,8 @@
                   "name": "MapScene.ts",
                   "path": "game/src/scenes/MapScene.ts",
                   "type": "file",
-                  "hash": "4eead62ccffa81ae4356a9affc83af1c7bb171a206e1ddfa7a29a605a5d05e3c",
-                  "size": 9354
+                  "hash": "d7f4693ef8c5e4ee002528037944e21bd60bd2e7b7eb90f66184ef2d06541d5b",
+                  "size": 9907
                 },
                 {
                   "name": "ResultsScene.ts",
