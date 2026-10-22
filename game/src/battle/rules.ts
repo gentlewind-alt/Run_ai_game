@@ -5,7 +5,7 @@ import { discard } from './damage';
 import { popWord } from './fx';
 import { finalize } from './score';
 import { kindFor } from '../content/levelKinds';
-import { loadNext } from './sling';
+import { addToQueue, loadNext } from './sling';
 import type { Ent } from './BattleCtx';
 import type { BattleState } from './state';
 
@@ -58,4 +58,15 @@ export function finish(b: BattleState, won: boolean, why: 'shots' | 'escaped' = 
   } else {
     b.events.emit('level:lost', { levelId: b.levelId, reason: why, score: b.score, coins: b.coins });
   }
+}
+
+/** Rewarded-ad shots: after an out-of-shots loss, put more weapons in the line and carry on with the same battle. */
+export function grantShots(b: BattleState, ids: string[]): boolean {
+  if (b.state !== 'lost' || ids.length === 0) return false;
+  b.state = 'settling';
+  b.endTimer = 0;
+  b.loadout.push(...ids);
+  addToQueue(b, ids);
+  loadNext(b);
+  return true;
 }

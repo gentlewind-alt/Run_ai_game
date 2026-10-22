@@ -11,7 +11,10 @@ import { iconKey } from '../art/icons';
 import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { pressConsumable } from '../battle/consumables';
-import { hasSeenHint, markHintSeen, setMuted } from '../core/profile';
+import { hasSeenHint, markHintSeen, profile, setMuted } from '../core/profile';
+import { adRules, extraShotsReady } from '../core/ads';
+import { grantShots } from '../battle/rules';
+import type { ExtraShotsData } from './ExtraShotsScene';
 import { goTo } from '../core/flow';
 import { createHud, type Hud } from '../ui/hud';
 
@@ -109,7 +112,38 @@ export default class BattleScene extends Phaser.Scene {
       });
     };
     events.on('level:won', (e) => results(true, 'shots', e.stars));
-    events.on('level:lost', (e) => results(false, e.reason, 0));
+    let offered = false;
+    events.on('level:lost', (e) => {
+      if (e.reason === 'shots' && !offered) {
+        offered = true;
+        void this.offerExtraShots(b, () => results(false, e.reason, 0));
+        return;
+      }
+      results(false, e.reason, 0);
+    });
+  }
+
+  /** Out of shots: if an ad is available, offer 2 more shots chosen from the player's arsenal (once per battle). */
+  private async offerExtraShots(b: BattleState, decline: () => void): Promise<void> {
+    if (!(await extraShotsReady()) || !this.scene.isActive()) {
+      decline();
+      return;
+    }
+    this.scene.pause();
+    const data: ExtraShotsData = {
+      count: adRules().extraShots,
+      owned: profile.owned.weapons.slice(),
+      onGrant: (ids) => {
+        this.scene.resume();
+        if (!grantShots(b, ids)) decline();
+        else this.hud.hidePause();
+      },
+      onDecline: () => {
+        this.scene.resume();
+        decline();
+      },
+    };
+    this.scene.launch('extrashots', data);
   }
 
   /** Pause the battle (menu, Escape, or the host sending the game to the background). */

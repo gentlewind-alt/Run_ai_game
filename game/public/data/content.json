@@ -1567,6 +1567,12 @@
       "common": 300,
       "rare": 800,
       "legendary": 1500
+    },
+    "ads": {
+      "coinReward": 300,
+      "perWindow": 3,
+      "windowHours": 5,
+      "extraShots": 2
     }
   }
 }

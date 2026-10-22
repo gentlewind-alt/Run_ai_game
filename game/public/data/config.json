@@ -74,7 +74,7 @@
     "daily": true,
     "leaderboard": true,
     "share": true,
-    "ads": false,
+    "ads": true,
     "iap": false,
     "tutorial": true,
     "music": true,

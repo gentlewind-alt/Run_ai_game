@@ -35,6 +35,7 @@ export function sanitize(raw: Record<string, unknown>): Profile {
   if (isObj(raw.flags)) for (const [k, v] of Object.entries(raw.flags)) if (typeof v === 'boolean') flags[k] = v;
   const statsObj = isObj(raw.stats) ? raw.stats : {};
   const bossLosses = numMap(statsObj.bossLosses);
+  const adWatches = Array.isArray(statsObj.adWatches) ? statsObj.adWatches.filter((t): t is number => typeof t === 'number' && Number.isFinite(t) && t > 0).slice(-20) : [];
   const weapons = strs(owned.weapons);
   const starterWeapon = (weapons.length ? weapons[0] : d.owned.weapons[0]) ?? 'w_militia_blade';
   const rawLoadout = strs(eq.loadout);
@@ -69,6 +70,7 @@ export function sanitize(raw: Record<string, unknown>): Profile {
     flags,
     stats: {
       bossLosses,
+      adWatches,
     },
     settings: { muted: typeof st.muted === 'boolean' ? st.muted : false, musicOn: typeof st.musicOn === 'boolean' ? st.musicOn : true },
   };

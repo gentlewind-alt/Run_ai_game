@@ -6,7 +6,9 @@ import { pixText } from '../art/pix';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
+import { adRules, adsEnabled, coinAdStatus, formatWait, watchForCoins } from '../core/ads';
 import { goTo, irisOpen } from '../core/flow';
+import { platform } from '../platform';
 import {
   GOLD_QUIVER, buyArtifact, buyConsumable, buyWeapon, consumableCount, economy, equipSlingSkin, owns, profile, reachedLevel, upgradeCost, upgradeMult,
   upgradeWeapon, weaponLevel, weaponUnlockLevel,
@@ -64,7 +66,33 @@ export default class ShopScene extends Phaser.Scene {
     this.body = this.add.container(0, 0);
     makeButton(this, W / 2, H - 16, 110, 22, 'Back to map', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
     this.render();
+    this.adButton();
     irisOpen(this);
+  }
+
+  /** "+300 coins (Ad) 3/3": a few free-coin ads per rolling window, counted on the server clock. */
+  private adButton(): void {
+    if (!adsEnabled()) return;
+    const r = adRules();
+    const btn = makeButton(this, W - 62, 12, 108, 16, `+${r.coinReward} coins (Ad)`, 'go', async () => {
+      sfx.click();
+      btn.setEnabled(false);
+      const got = await watchForCoins();
+      if (got > 0) {
+        sfx.coin();
+        this.toast(`+${got} coins`, C('4'));
+      }
+      void refresh();
+    }, 6);
+    const refresh = async (): Promise<void> => {
+      let t = Date.now();
+      try { t = await platform.serverTime(); } catch { /* local clock */ }
+      if (!this.scene.isActive()) return;
+      const s = coinAdStatus(t);
+      btn.setLabel(s.left > 0 ? `+${r.coinReward} coins ${s.left}/${r.perWindow}` : `Next ad ${formatWait(s.waitMs)}`);
+      btn.setEnabled(s.left > 0);
+    };
+    void refresh();
   }
 
   private render(): void {

@@ -42,7 +42,8 @@
     "stats": {
       "type": "object", "additionalProperties": false,
       "properties": {
-        "bossLosses": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } }
+        "bossLosses": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "adWatches": { "type": "array", "items": { "type": "number", "minimum": 0 }, "maxItems": 20 }
       }
     },
     "settings": {

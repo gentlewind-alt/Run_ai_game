@@ -10,7 +10,7 @@ export interface Platform {
   safeArea(): { top: number; bottom: number; left: number; right: number };
   leaderboard: { submit(board: string, score: number, seconds?: number): Promise<void>; top(board: string, n: number): Promise<Row[]>; myRank(board: string): Promise<Row | null> };
   share(text: string, params?: Record<string, string>): Promise<boolean>;
-  ads: { rewardedReady(): Promise<boolean>; showRewarded(): Promise<boolean> };
+  ads: { rewardedReady(): Promise<boolean>; showRewarded(placementId?: string, placementName?: string): Promise<boolean> };
   iap: { available(): boolean; buy(itemId: string): Promise<boolean>; owned(itemId: string): Promise<boolean> };
   lifecycle: { onPause(f: () => void): void; onResume(f: () => void): void; onSleep(f: () => void): void; onQuit(f: () => void): void };
   haptic(kind: 'light' | 'heavy'): void;

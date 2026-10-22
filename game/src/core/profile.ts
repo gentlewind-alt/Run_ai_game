@@ -24,6 +24,8 @@ export interface DailyInfo {
 
 export interface ProfileStats {
   bossLosses: Record<string, number>;
+  /** Times (ms, server clock) of the free-coin ads watched in the current window. */
+  adWatches?: number[];
 }
 
 export interface Profile {

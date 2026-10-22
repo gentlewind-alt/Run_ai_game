@@ -94,18 +94,16 @@ export const rundotPlatform: Platform = {
   ads: {
     async rewardedReady(): Promise<boolean> {
       try {
-        const dev = safe(() => RundotGameAPI.system.getDevice(), undefined);
-        if (!dev || dev.deviceType === 'desktop') return false;
         return await RundotGameAPI.ads.isRewardedAdReadyAsync();
       } catch {
         return false;
       }
     },
-    async showRewarded(): Promise<boolean> {
+    async showRewarded(placementId = 'double_coins', placementName = 'Double Battle Coins'): Promise<boolean> {
       try {
         return await RundotGameAPI.ads.showRewardedAdAsync({
-          adDisplayId: 'double_coins',
-          adDisplayName: 'Double Battle Coins',
+          adDisplayId: placementId,
+          adDisplayName: placementName,
         });
       } catch {
         return false;

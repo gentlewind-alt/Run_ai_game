@@ -5,6 +5,7 @@ import CreditsScene from './scenes/CreditsScene';
 import LeaderboardScene from './scenes/LeaderboardScene';
 import LoadoutScene from './scenes/LoadoutScene';
 import MapScene from './scenes/MapScene';
+import ExtraShotsScene from './scenes/ExtraShotsScene';
 import ResultsScene from './scenes/ResultsScene';
 import ShopScene from './scenes/ShopScene';
 import TitleScene from './scenes/TitleScene';
@@ -49,7 +50,7 @@ async function bootstrap(): Promise<void> {
       backgroundColor: '#1a1c2c',
       pixelArt: S.display.pixelArt,
       roundPixels: true,
-      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, BattleScene, ResultsScene, CreditsScene, LeaderboardScene],
+      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, BattleScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
       physics: {
         default: 'matter',
         matter: {

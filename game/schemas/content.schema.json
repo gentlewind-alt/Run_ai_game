@@ -84,7 +84,17 @@
         "dailyStreakRewardDay": { "type": "integer", "minimum": 1 },
         "dailyStreakRewardCoins": { "type": "number", "minimum": 0 },
         "relicPityLosses": { "type": "integer", "minimum": 1, "description": "Boss losses required to unlock boss relic in relic market." },
-        "relicMarketPrice": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } }
+        "relicMarketPrice": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } },
+        "ads": {
+          "type": "object", "additionalProperties": false,
+          "required": ["coinReward", "perWindow", "windowHours", "extraShots"],
+          "properties": {
+            "coinReward": { "type": "number", "minimum": 0 },
+            "perWindow": { "type": "integer", "minimum": 0 },
+            "windowHours": { "type": "number", "minimum": 0.1 },
+            "extraShots": { "type": "integer", "minimum": 1, "maximum": 6 }
+          }
+        }
       }
     },
     "weapon": {

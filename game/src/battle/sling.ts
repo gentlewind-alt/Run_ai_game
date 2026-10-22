@@ -40,7 +40,14 @@ export function weaponReadyRotation(weaponId?: string): number {
 
 /** Puts the waiting weapons beside the sling. */
 export function buildQueue(b: BattleState): void {
-  b.loadout.forEach((id, i) => {
+  addToQueue(b, b.loadout);
+}
+
+/** Adds weapons to the end of the waiting line (`ids` are already, or about to be, in `b.loadout`). */
+export function addToQueue(b: BattleState, ids: string[]): void {
+  const first = b.queue.length;
+  ids.forEach((id, k) => {
+    const i = first + k;
     const wpn = weaponImpl(weaponDef(id));
     const baseScale = weaponScale(b.scene, wpn.texture, 'queue', weaponDef(id));
     const yOff = Math.round(weaponHeight(b.scene, wpn.texture, baseScale) / 3);
