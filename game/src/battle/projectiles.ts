@@ -55,6 +55,8 @@ export function spawnPellet(b: BattleState, o: PelletOpts): void {
       return slow > 30 || steps > 240 || body.position.x > b.worldW + 40 || body.position.x < -40 || body.position.y > Math.max(H, b.groundY) + 60 || body.position.y < -400;
     },
     destroy: () => {
+      const { x, y } = body.position;
+      if (o.onEnd && x > 0 && x < b.worldW && y < b.groundY + 20) o.onEnd(x, y);
       b.scene.matter.world.remove(body);
       sprite.destroy();
     },

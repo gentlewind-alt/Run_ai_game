@@ -577,6 +577,7 @@ async function run() {
       const discImpl = b.wpn;
       const mockP = {
         def: b.wdef,
+        wid: 'w_bulwark_disc',
         body: { proj: { mul: 1 }, position: { x: 200, y: 200 } },
         data: { bounces: 0 }
       };

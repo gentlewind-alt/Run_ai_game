@@ -36,6 +36,14 @@ export const bulwarkDisc: WeaponImpl = {
     sfx.ping();
     ctx.fx.pingStar?.(p.body.position.x, p.body.position.y);
     ctx.fx.sparks(p.body.position.x, p.body.position.y, ['c', '4', 'b'], 12);
+
+    // The last bounce rings out as a shield blast, once
+    if (p.data.bounces === maxBounces) {
+      const b = p.body.position;
+      ctx.blast(b.x, b.y, P.finalRadius, P.finalMult, p.wid);
+      ctx.fx.ring(b.x, b.y, P.finalRadius, C('4'));
+      ctx.fx.shake(0.012);
+    }
   },
   onUpdate(_ctx, p) {
     // Record trail positions for dithered ghost copies

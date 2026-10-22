@@ -207,7 +207,7 @@
       "unlock": "level 4",
       "price": 200,
       "launch": "Medium weight, clean arc.",
-      "tap": "Bursts into 5 pellets in a cone; each pellet rolls burn, slow or knockback.",
+      "tap": "Bursts into 5 pellets in a cone; each pellet rolls burn, slow or knockback and pops in a small blast where it lands.",
       "physics": {
         "radius": 4,
         "density": 0.02,
@@ -228,7 +228,9 @@
         "pelletMult": 0.35,
         "statusSteps": 180,
         "knockMult": 0.8,
-        "knockLift": 1
+        "knockLift": 1,
+        "popRadius": 12,
+        "popMult": 0.2
       }
     },
     {
@@ -398,7 +400,7 @@
       },
       "price": 1500,
       "launch": "Concentric rune shield that ricochets with escalating force.",
-      "tap": "Redirects once toward the nearest monster.",
+      "tap": "Redirects once toward the nearest monster. The sixth bounce rings out as a shield blast.",
       "physics": {
         "radius": 4,
         "density": 0.012,
@@ -416,7 +418,9 @@
       "params": {
         "maxBounces": 6,
         "bounceDamageBonus": 0.1,
-        "redirectSpeed": 7
+        "redirectSpeed": 7,
+        "finalRadius": 26,
+        "finalMult": 0.5
       }
     },
     {

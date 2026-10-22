@@ -7,7 +7,7 @@ const KINDS = ['burn', 'slow', 'knock'];
 
 export const scattergun: WeaponImpl = {
   texture: weaponTexture('w_scrapheap_scattergun'),
-  // Bursts into pellets in a cone; each pellet rolls burn, slow or knockback.
+  // Cluster: bursts into pellets in a cone; each pellet rolls burn, slow or knockback and pops in a small blast where it lands.
   onAbility(ctx, p) {
     const P = p.def.params;
     const b = p.body;
@@ -19,6 +19,10 @@ export const scattergun: WeaponImpl = {
       ctx.spawnPellet({
         x: b.position.x, y: b.position.y, vx: Math.cos(a) * sp * P.pelletSpeedMult, vy: Math.sin(a) * sp * P.pelletSpeedMult,
         radius: P.pelletRadius, density: P.pelletDensity, mul: P.pelletMult, wid: p.wid, color: 'c', status: KINDS[ctx.rng.int(0, KINDS.length - 1)],
+        onEnd: (x, y) => {
+          ctx.blast(x, y, P.popRadius, P.popMult, p.wid);
+          ctx.fx.sparks(x, y, ['4', '3'], 3);
+        },
       });
     }
     ctx.fx.ring(b.position.x, b.position.y, 14, C('4'));

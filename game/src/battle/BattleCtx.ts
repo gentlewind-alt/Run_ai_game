@@ -89,6 +89,8 @@ export interface Actor {
 export interface PelletOpts {
   x: number; y: number; vx: number; vy: number; radius: number; density: number; mul: number; wid: string;
   color: string; status?: string; gravity?: number; texture?: string; scale?: number;
+  /** Called with where the pellet came to rest, when it ends inside the world (not when it flies out). */
+  onEnd?: (x: number, y: number) => void;
 }
 
 /** Numbers artifacts and consumables adjust during a battle. */

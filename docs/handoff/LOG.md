@@ -2,6 +2,12 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Scattergun Cluster and Disc final blast (v1.22.0, private)
+- **Scattergun "Cluster":** new optional `onEnd(x, y)` on `PelletOpts` (called when a pellet ends inside the world); each pellet pops in a small blast (`popRadius 12`, `popMult 0.2`).
+- **Bulwark Disc:** the sixth bounce rings out as a shield blast, once (`finalRadius 26`, `finalMult 0.5`). `tools/regress.mjs` disc mock projectile now carries `wid`.
+- **Checks:** `regress:quick` fully green (bands 1/4/8/12/16/20/24, relic section, console clean).
+- **Open:** Maul chain lightning, Fists spikes, projectile re-hit damage, sound build (plan only).
+
 ## 2026-10-22 · claude · Boomerang Rebound and scene smoke test (v1.21.0, private)
 - **Boomerang "Rebound":** the return pass now slices everything along its path (`sliceEvery 8`, `sliceRadius 12`, `sliceMult 0.15`); bands for levels 17-23 still pass.
 - **`tools/test_scenes.sh`:** opens Map page 2 and the Leaderboard scene on every tab under `?mock=1`, checks the scenes come up (no crash). It does not check row contents.
