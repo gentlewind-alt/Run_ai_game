@@ -2,6 +2,12 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · cloud · Goblin Hills played by hand, relic scale confirmed
+- **Played levels 1-4 in the real UI.** L1 3 stars, L2 2 stars, L3 3 stars (the chest gave the Steersong Arrow), **L4 lost 4 of 4** to escaping runners. No console errors.
+- **Relic weapons are about 3x too big:** 32x32 sprites drawn at 1.5x (48 px), next to 16 px normal weapons and 16 px goblins. The hitbox is still about 10 px. Contact sheet: `docs/handoff/shots/review/relic_size_sheet.png`.
+- **Brief for the fix:** `docs/handoff/agy_task_relic_scale.md` covers size from `config.json` px, the relic card layout, L4 runner fairness, the fixed-loadout display, and text overlaps.
+- **Questions for owner:** which L4 runner fix do you want (start on first shot, slower and later, or keep the door in view)?
+
 ## 2026-10-22 · cloud · Hands-on playtest of v1.23 (headless Chromium, 844x390 landscape, mouse, `?mock=1`)
 - **Played:** Title → Map → Level 1 loadout → Level 1 (won 3 stars, score 950, in 2-3 shots, with real drags and the Whirl button) → Next level → Level 2 → pause/resume → Map → Shop (85 coins) → Daily Mash (lost). No console errors anywhere.
 - **Works well:** the shot feel (drag, dotted aim, hit-stop, fort collapse), tutorial speech hints, the ability button, the results screen, pause/resume (the world stays intact under the panel), the shop tabs and prices, and the Daily leaderboard panel (mock rows).
