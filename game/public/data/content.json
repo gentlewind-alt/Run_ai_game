@@ -51,6 +51,7 @@
     "minPull": 8,
     "debrisMinSpeed": 1.5,
     "projMinSpeed": 1.2,
+    "bossRehitSteps": 20,
     "hitCooldownSteps": 5,
     "minImpactDamage": 2,
     "impactBase": 0.5,
@@ -1062,7 +1063,7 @@
     {
       "id": "goblin_chief",
       "name": "Goblin Chief",
-      "hp": 70,
+      "hp": 140,
       "weak": "hellfire",
       "resist": null,
       "boss": true,
@@ -1178,7 +1179,7 @@
     {
       "id": "iron_warlord",
       "name": "Iron Warlord",
-      "hp": 680,
+      "hp": 340,
       "weak": "void",
       "resist": "physical",
       "behavior": "iron_warlord",
@@ -1188,7 +1189,7 @@
       "score": 2500,
       "note": "Boss. Visor weak point takes 2x. Throws boulders at your side of the map, which only adds visual shake.",
       "params": {
-        "armour": 14,
+        "armour": 6,
         "maxHitDamage": 272,
         "initialDelay": 180,
         "visorOpenEvery": 220,
@@ -1231,7 +1232,7 @@
     {
       "id": "frost_giant",
       "name": "Frost Giant",
-      "hp": 900,
+      "hp": 480,
       "weak": "hellfire",
       "resist": null,
       "boss": true,
@@ -1242,7 +1243,7 @@
       "density": 0.004,
       "sprite": "sprites/monsters/frost_giant",
       "params": {
-        "armour": 16,
+        "armour": 8,
         "stompEvery": 300,
         "weakEvery": 360,
         "weakDuration": 120,
@@ -1286,7 +1287,7 @@
     {
       "id": "forge_tyrant",
       "name": "Forge Tyrant",
-      "hp": 1100,
+      "hp": 520,
       "weak": "void",
       "resist": "hellfire",
       "boss": true,
@@ -1297,7 +1298,7 @@
       "density": 0.004,
       "sprite": "sprites/monsters/forge_tyrant",
       "params": {
-        "armour": 18,
+        "armour": 8,
         "stompEvery": 360,
         "weakEvery": 420,
         "weakDuration": 120,
@@ -1339,7 +1340,7 @@
     {
       "id": "storm_sovereign",
       "name": "Storm Sovereign",
-      "hp": 2200,
+      "hp": 700,
       "weak": "void",
       "resist": "radiant",
       "boss": true,
@@ -1350,7 +1351,7 @@
       "density": 0.004,
       "sprite": "sprites/monsters/storm_sovereign",
       "params": {
-        "armour": 24,
+        "armour": 10,
         "stompEvery": 330,
         "weakEvery": 420,
         "weakDuration": 120,

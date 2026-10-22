@@ -55,6 +55,14 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
 - **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
 
+## 2026-10-22 · claude · X8b collapsible boss fortresses and the boss re-hit fix
+- **Fortresses (levels 4, 8, 12, 16, 20, 24):** `build_levels.py` has a `frame()` helper (pillars on a base plus one thin floor); each boss level is now 2-3 stacked frames (wood and stone for 4/8, stone and iron for 12, stone and crystal for 16, iron and stone for 20, iron, stone and crystal for 24). No block is wider and taller than 14 px except thin floors, small iron caps and crystal posts; the boss stands in the ground bay, so a falling tier can crush it. Same monsters and counts as before.
+- **Stand-still check (300 steps at spawn):** 0 blocks moved and 0 monsters dead on all six (level 8 needed the imp moved and the keep shifted off the slope edge).
+- **Collapse check (best single shot out of a 84-shot grid of angle, power, ability): % of blocks moved more than 8 px or broken:** L4 100, L8 87, L12 90, L16 100, L20 100, L24 100 (brief required 40).
+- **Boss re-hit fix (review B2):** `bossRehitSteps: 20`: a projectile resting on a boss damages it once per 20 steps (was every contact: a landed Cleaver drained 1300 HP). With the fix the old boss HP was far too high, so bosses were retuned with `tools/solve_levels.sh`: goblin chief 70 -> 140, iron warlord 680 -> 340 (armour 6), frost giant 900 -> 480 (armour 8), forge tyrant 1100 -> 520 (armour 8), storm sovereign 2200 -> 700 (armour 10). Solver bands (default loadout): L4 3, L8 4, L12 4, L16 4, L20 5, L24 5; `regress:quick` green.
+- The owner said level 12's boss was too tough with base weapons: its HP is now about half and its armour 6 instead of 14.
+- Screenshots: `docs/handoff/shots/x8b/`.
+
 ## 2026-10-22 · claude · Rewarded ads: free coins and extra shots (not deployed yet)
 - **Owner request:** ads for coins (300 each, 3 per 5 h) and, when a battle runs out of shots, one ad gives 2 shots chosen from the player's own arsenal. `features.ads` is now `true` (the existing "2x coins (Ad)" button on Results comes back with it).
 - **Free coins:** Shop header button "+300 coins 3/3" -> "Next ad 4h 12m". Rolling window on the **server clock** (`platform.serverTime`), timestamps in `profile.stats.adWatches` (schema `save.schema.json` updated, sanitizer in `core/save.ts`; optional field with default, so no save-version bump). Numbers are data: `economy.ads { coinReward 300, perWindow 3, windowHours 5, extraShots 2 }` (schema updated).

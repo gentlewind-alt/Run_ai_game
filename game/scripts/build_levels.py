@@ -48,6 +48,18 @@ def tower(cx, base, w=44, tiers=1, pillar='stone', ph=30, floor='wood'):
     return blocks, y
 
 
+def frame(base, xs, ph, pillar, floor, pw=10, pillars=None):
+    """One tier of a collapsible fort: pillars standing on `base`, one thin floor across them.
+    xs = pillar centres; pillars = optional per-pillar materials. Returns (blocks, top of the floor = the next base)."""
+    blocks = []
+    for i, x in enumerate(xs):
+        m = pillars[i] if pillars else pillar
+        blocks.append(blk(m, x, base - ph / 2, pw, ph))
+    x0, x1 = min(xs) - pw / 2 - 3, max(xs) + pw / 2 + 3
+    blocks.append(blk(floor, (x0 + x1) / 2, base - ph - 3, x1 - x0, 6))
+    return blocks, base - ph - 6
+
+
 def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target, chests=None, **extra):
     shots = extra.pop('shots', 4 if n <= 3 else (5 if n <= 7 else 6))
     d = {
@@ -97,18 +109,16 @@ write(3, 'Run, skeleton, run', 'goblin_hills', 'runner', 540, ['Stop the runners
        mon('skeleton_runner', 284, stand(GROUND), dir=1, speed=0.7, delay=1.1)],
       1700, chests=c3, escapeLimit=1, exit={'x': 520, 'y': GROUND - 13})
 
-# 4 Hill fort: a plateau fort with chief in the bay, grunts on top, runners waiting beyond the slope.
+# 4 Hill fort: a two-tier frame fort on the plateau (stone feet, wood above). Chief and bomber in the lower bays, grunts upstairs.
 P4 = 288
-b4 = [blk('stone', x, P4 - 14, 12, 28) for x in (192, 226, 260)]
-b4 += [blk('stone', 274, P4 - 14, 12, 28)]
-b4 += [blk('wood', 233, P4 - 31, 98, 6)]
-b4 += [blk('wood', x, P4 - 44, 6, 20) for x in (204, 226, 248)]
-b4 += [blk('wood', 226, P4 - 57, 52, 6), blk('stone', 208, P4 - 66, 12, 12), blk('stone', 244, P4 - 66, 12, 12)]
+f4a, t4a = frame(P4, [190, 226, 262], 28, 'stone', 'wood')
+f4b, t4b = frame(t4a, [190, 226, 262], 24, 'wood', 'wood')
+b4 = f4a + f4b + [blk('stone', 208, t4b - 6, 12, 12), blk('stone', 244, t4b - 6, 12, 12)]
 write(4, 'Hill fort', 'goblin_hills', 'boss', 600, ['Runners bolt after your first shot!'],
       [[0, 320], [140, 320], [176, P4], [270, P4], [300, 320], [600, 320]],
       b4,
-      [mon('goblin_chief', 209, stand(P4, 21)), mon('goblin_bomber', 243, stand(P4)), mon('goblin_grunt', 226, stand(P4 - 60)),
-       mon('goblin_grunt', 242, stand(P4 - 60)), mon('goblin_grunt', 120, stand(GROUND)), mon('goblin_grunt', 256, stand(P4)),
+      [mon('goblin_chief', 208, stand(P4, 21)), mon('goblin_bomber', 244, stand(P4)), mon('goblin_grunt', 208, stand(t4a)),
+       mon('goblin_grunt', 244, stand(t4a)), mon('goblin_grunt', 120, stand(GROUND)), mon('goblin_grunt', 181, stand(P4)),
        mon('skeleton_runner', 312, stand(GROUND), dir=1, speed=0.55, delay=0.8), mon('skeleton_runner', 330, stand(GROUND), dir=1, speed=0.5, delay=1.2)],
       1350, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13}, shots=5, runnersStartOnShot=True,
       loadout=['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun', 'w_militia_blade'])
@@ -157,18 +167,19 @@ write(7, 'Hexer court', 'dark_elf_wood', 'siege', 432, ['Hurt the hexer to drop 
        mon('goblin_grunt', 325, stand(P7)), mon('imp', 260, 205), mon('imp', 210, 195)],
       1350, chests=c7, shots=5)
 
-# 8 Elf bastion: a stepped cliff, a two-tier keep on the upper step, a lower outpost. Everything at once.
+# 8 Elf bastion: a stepped cliff, a three-tier frame keep on the upper step with a bridge floor, a lower outpost.
 P8a, P8b = 300, 268
-tE, topE = tower(275, P8b, 56, 2, 'stone', 28)
-b8 = tE + [
+f8a, t8a = frame(P8b, [238, 272, 306], 28, 'wood', 'wood')
+f8b, t8b = frame(t8a, [238, 272, 306], 26, 'wood', 'wood')
+f8c, t8c = frame(t8b, [238, 272, 306], 22, 'wood', 'wood')
+b8 = f8a + f8b + f8c + [
     blk('stone', 160, P8a - 20, 12, 40), blk('stone', 174, P8a - 20, 12, 40), blk('stone', 167, P8a - 46, 26, 12),
-    blk('wood', 324, P8b - 14, 8, 28), blk('wood', 324, P8b - 31, 24, 6), blk('stone', 275, topE - 10, 12, 20)
 ]
 write(8, 'Elf bastion', 'dark_elf_wood', 'boss', 432, ['Defeat the Dark Elf Matron.'],
       [[0, 320], [110, 320], [126, P8a], [196, P8a], [220, P8b], [336, P8b], [356, 320], [432, 320]],
       b8,
-      [mon('dark_elf_matron', 275, stand(P8b, 20)), mon('dark_elf_archer', 275, stand(topE - 20)), mon('goblin_grunt', 275, stand(P8b - 34)),
-       mon('dark_elf_hexer', 324, stand(P8b)), mon('dark_elf_archer', 190, stand(P8a)), mon('imp', 235, 195),
+      [mon('dark_elf_matron', 255, stand(P8b, 20)), mon('dark_elf_archer', 255, stand(t8b)), mon('goblin_grunt', 255, stand(t8a)),
+       mon('dark_elf_hexer', 289, stand(P8b)), mon('dark_elf_archer', 190, stand(P8a)), mon('imp', 205, 150),
        mon('goblin_grunt', 167, stand(P8a - 52))],
       1400, shots=6)
 
@@ -226,24 +237,18 @@ write(11, 'Furnace bastion', 'iron_keep', 'runner', 648, ['Curse with the Scepte
        mon('skeleton_runner', 300, stand(P11b), dir=1, speed=0.4, delay=1.8)],
       1300, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13}, shots=6)
 
-# 12 Iron Throne: boss arena for the Iron Warlord.
+# 12 Iron Throne: a two-tier frame keep, iron feet, stone above; the Iron Warlord holds the ground bay.
 P12 = 280
-b12 = [
-    blk('stone', 150, P12 - 14, 10, 28),
-    blk('iron', 205, P12 - 16, 12, 32), blk('iron', 265, P12 - 16, 12, 32),
-    blk('stone', 235, P12 - 35, 72, 6),
-    blk('stone', 215, P12 - 46, 8, 16), blk('stone', 255, P12 - 46, 8, 16),
-    blk('stone', 235, P12 - 57, 48, 6),
-    blk('stone', 305, P12 - 14, 10, 28), blk('stone', 330, P12 - 14, 10, 28),
-    blk('stone', 317.5, P12 - 35, 40, 6), blk('stone', 317.5, P12 - 48, 12, 20)
-]
+f12a, t12a = frame(P12, [196, 248, 300], 36, 'stone', 'stone', pillars=['stone', 'stone', 'iron'])
+f12b, t12b = frame(t12a, [196, 248, 300], 28, 'stone', 'stone')
+b12 = f12a + f12b + [blk('iron', 248, t12b - 6, 36, 12), blk('stone', 150, P12 - 14, 10, 28)]
 write(12, 'Iron Throne', 'iron_keep', 'boss', 648,
       ['Wait for the visor to open for 2x.', 'Boulders shake the ground. Stay steady.'],
       [[0, 320], [110, 320], [135, P12], [330, P12], [360, 320], [648, 320]],
       b12,
-      [mon('iron_warlord', 235, stand(P12, 30)),
-       mon('dark_elf_hexer', 150, stand(P12)),
-       mon('goblin_grunt', 235, stand(P12 - 60))],
+      [mon('iron_warlord', 222, stand(P12, 30)),
+       mon('dark_elf_hexer', 168, stand(P12)),
+       mon('goblin_grunt', 222, stand(t12a))],
       1400,
       shots=6,
       loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube', 'w_scrapheap_scattergun'])
@@ -291,19 +296,18 @@ write(15, 'Ice cathedral', 'frost_peaks', 'siege', 540, ['Shatter the pillars, d
       1550, shots=6,
       loadout=['w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_blast_tube', 'w_scrapheap_scattergun', 'w_hunters_boomerang'])
 
-# 16 Frost throne: the Frost Giant on a shelf, ringed by ice and stone. Hit the glowing chest crystal for 2x.
+# 16 Frost throne: a three-tier frame fort, stone feet, crystal above. The Frost Giant holds the hall; hit the chest crystal for 2x.
 P16 = 296
-b16 = [
-    blk('stone', 168, P16 - 22, 12, 44), blk('stone', 302, P16 - 22, 12, 44),
-    blk('crystal', 188, P16 - 19, 8, 38), blk('crystal', 282, P16 - 19, 8, 38),
-    blk('stone', 235, P16 - 44 - 3, 144, 6), blk('crystal', 205, P16 - 53, 8, 20), blk('crystal', 265, P16 - 53, 8, 20),
-]
+f16a, t16a = frame(P16, [180, 290], 52, 'stone', 'stone')
+f16b, t16b = frame(t16a, [205, 265], 30, 'crystal', 'crystal', pw=8)
+f16c, t16c = frame(t16b, [235], 24, 'crystal', 'crystal', pw=8)
+b16 = f16a + f16b + f16c + [blk('crystal', 198, P16 - 19, 8, 38), blk('crystal', 272, P16 - 19, 8, 38)]
 write(16, 'Frost throne', 'frost_peaks', 'boss', 648,
       ['Hit the glowing chest crystal for 2x.', 'Icicles fall in a band. Stay steady.'],
       [[0, 320], [110, 320], [135, P16], [340, P16], [370, 320], [648, 320]],
       b16,
-      [mon('frost_giant', 235, stand(P16, 46)), mon('dark_elf_archer', 205, stand(P16 - 50)),
-       mon('dark_elf_archer', 265, stand(P16 - 50))],
+      [mon('frost_giant', 235, stand(P16, 46)), mon('dark_elf_archer', 220, stand(t16a)),
+       mon('dark_elf_archer', 250, stand(t16a))],
       1100, shots=6,
       loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube', 'w_scrapheap_scattergun'])
 
@@ -347,19 +351,18 @@ write(19, 'Anvil hall', 'ember_forge', 'siege', 540, ['A chest hides in the rubb
        mon('lava_imp', 210, top19 - 40), mon('lava_imp', 255, top19 - 46), mon('dark_elf_hexer', 165, stand(P19 - 36))],
       1900, chests=c19, shots=6, loadout=LOAD5)
 
-# 20 Forge throne: the Forge Tyrant on a shelf ringed by stone and iron. The anvil on its back opens for 2x.
+# 20 Forge throne: a three-tier frame keep, iron and stone. The Forge Tyrant holds the hall; the anvil on its back opens for 2x.
 P20 = 296
-b20 = [
-    blk('stone', 168, P20 - 22, 12, 44), blk('stone', 302, P20 - 22, 12, 44),
-    blk('iron', 188, P20 - 19, 8, 38), blk('iron', 282, P20 - 19, 8, 38),
-    blk('stone', 235, P20 - 44 - 3, 144, 6), blk('stone', 205, P20 - 53, 10, 20), blk('stone', 265, P20 - 53, 10, 20),
-]
+f20a, t20a = frame(P20, [180, 290], 52, 'iron', 'stone')
+f20b, t20b = frame(t20a, [205, 265], 30, 'stone', 'stone', pw=8)
+f20c, t20c = frame(t20b, [235], 24, 'stone', 'stone', pw=8)
+b20 = f20a + f20b + f20c + [blk('stone', 198, P20 - 19, 8, 38), blk('stone', 272, P20 - 19, 8, 38), blk('iron', 235, t20c - 6, 36, 12)]
 write(20, 'Forge throne', 'ember_forge', 'boss', 648,
       ['Hit the glowing anvil for 2x.', 'Lava surges in a band. Stay steady.'],
       [[0, 320], [110, 320], [135, P20], [340, P20], [370, 320], [648, 320]],
       b20,
-      [mon('forge_tyrant', 235, stand(P20, 46)), mon('lava_imp', 205, P20 - 80), mon('lava_imp', 265, P20 - 84),
-       mon('forge_ogre', 160, stand(P20, 34))],
+      [mon('forge_tyrant', 235, stand(P20, 46)), mon('lava_imp', 205, 140), mon('lava_imp', 265, 144),
+       mon('forge_ogre', 148, stand(P20, 34))],
       2600, shots=6, loadout=LOAD5)
 
 # ---------------------------------------------------------------- Sky Citadel
@@ -403,17 +406,16 @@ write(23, 'Thunder hall', 'sky_citadel', 'siege', 540, ['Mages shield the ogres.
        mon('storm_mage', 300, stand(P23, 14))],
       2100, chests=c23, shots=6, loadout=LOAD5)
 
-# 24 Storm throne: the Storm Sovereign on a shelf ringed by stone and iron. The eye on its chest opens for 2x.
+# 24 Storm throne: the citadel, a three-tier frame keep with iron feet, stone and crystal above. The eye on its chest opens for 2x.
 P24 = 296
-b24 = [
-    blk('stone', 168, P24 - 22, 12, 44), blk('stone', 302, P24 - 22, 12, 44),
-    blk('iron', 188, P24 - 19, 8, 38), blk('iron', 282, P24 - 19, 8, 38),
-    blk('stone', 235, P24 - 44 - 3, 144, 6), blk('stone', 205, P24 - 53, 10, 20), blk('stone', 265, P24 - 53, 10, 20),
-]
+f24a, t24a = frame(P24, [165, 305], 52, 'iron', 'stone')
+f24b, t24b = frame(t24a, [190, 280], 30, 'stone', 'stone', pw=8)
+f24c, t24c = frame(t24b, [215, 255], 24, 'crystal', 'crystal', pw=8)
+b24 = f24a + f24b + f24c + [blk('stone', 190, P24 - 19, 8, 38), blk('stone', 280, P24 - 19, 8, 38), blk('iron', 235, t24c - 6, 36, 12)]
 write(24, 'Storm throne', 'sky_citadel', 'boss', 648,
       ['Hit the glowing eye for 2x.', 'Lightning falls in a band. Stay steady.'],
       [[0, 320], [110, 320], [135, P24], [340, P24], [370, 320], [648, 320]],
       b24,
-      [mon('storm_sovereign', 235, stand(P24, 46)), mon('cloud_harpy', 205, P24 - 80), mon('cloud_harpy', 265, P24 - 84),
-       mon('storm_mage', 160, stand(P24, 14))],
+      [mon('storm_sovereign', 235, stand(P24, 46)), mon('cloud_harpy', 205, 130), mon('cloud_harpy', 265, 134),
+       mon('storm_mage', 148, stand(P24, 14))],
       3600, shots=6, loadout=LOAD5)

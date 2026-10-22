@@ -86,6 +86,11 @@ function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y
   }
   if (!t || t.dead) return;
   if (rel < b.tune.projMinSpeed && !info.status) return;
+  if (t.def?.boss) {
+    const last = (info.lastHit ??= {});
+    if (b.steps - (last[ob.id] ?? -1e9) < b.tune.bossRehitSteps) return;
+    last[ob.id] = b.steps;
+  }
   const R = b.rules;
   const { dmg, tag } = weaponDamage(b, t, info.wid, Phaser.Math.Clamp(b.tune.impactBase + rel / b.maxSpeed, R.impactFactorMin, R.impactFactorMax), info.mul);
   if (info.status && t.kind === 'monster') {

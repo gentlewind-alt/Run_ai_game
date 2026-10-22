@@ -63,6 +63,8 @@ export interface ProjInfo {
   status?: string;
   pierce?: number;
   hit?: Set<number>;
+  /** Step of the last contact damage per boss body id: a projectile resting on a boss hurts it once per `bossRehitSteps`. */
+  lastHit?: Record<number, number>;
 }
 
 /** The shot in the air. `data` is scratch space for the weapon's own state. */

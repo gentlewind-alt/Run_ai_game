@@ -64,6 +64,7 @@ export interface Tuning {
   minPull: number;
   debrisMinSpeed: number;
   projMinSpeed: number;
+  bossRehitSteps: number;
   hitCooldownSteps: number;
   minImpactDamage: number;
   impactBase: number;

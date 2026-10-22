@@ -3,3 +3,4 @@ INCOMPLETE agy_task_x2_slots6_balance
 INCOMPLETE agy_task_x3b_tests
 DONE agy_task_x8a_concept_art (agy partial, claude finished)
 INCOMPLETE agy_task_x9_omnitrix_alien
+DONE agy_task_x8b_boss_fortresses (built directly by claude, agy out of credits)
