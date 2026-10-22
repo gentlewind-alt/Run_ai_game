@@ -4,7 +4,7 @@ import type { WeaponImpl } from './types';
 
 export const boomerang: WeaponImpl = {
   texture: weaponTexture('w_hunters_boomerang'),
-  // Flies out, then curves back on its own; the return pass deals extra damage.
+  // Rebound: flies out, then curves back on its own; the return pass deals extra damage and slices everything along its path.
   onAbility(_ctx, p) {
     p.data.returning = true;
   },
@@ -13,6 +13,10 @@ export const boomerang: WeaponImpl = {
     if (p.steps > P.returnAfter) p.data.returning = true;
     if (!p.data.returning) return;
     p.body.proj.mul = P.returnMult;
+    if (p.steps % P.sliceEvery === 0) {
+      ctx.damageAround(p.body.position.x, p.body.position.y, P.sliceRadius, P.sliceMult, p.wid);
+      ctx.fx.sparks(p.body.position.x, p.body.position.y, ['4', 'c'], 1);
+    }
     ctx.setGravity(p.body, 0);
     const b = p.body;
     const dx = ctx.sling.x - b.position.x;

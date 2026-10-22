@@ -2,6 +2,11 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · Boomerang Rebound and scene smoke test (v1.21.0, private)
+- **Boomerang "Rebound":** the return pass now slices everything along its path (`sliceEvery 8`, `sliceRadius 12`, `sliceMult 0.15`); bands for levels 17-23 still pass.
+- **`tools/test_scenes.sh`:** opens Map page 2 and the Leaderboard scene on every tab under `?mock=1`, checks the scenes come up (no crash). It does not check row contents.
+- **Open:** Scattergun Cluster (needs a pellet impact callback), relic add-ons, projectile re-hit damage, sound build (plan in `10_sfx_plan.md`).
+
 ## 2026-10-22 · claude · Pocket Tanks batch 2, weapon smoke test, SFX plan (v1.20.0, private)
 - **Abilities:** Horned Scepter "Hellbrand" leaves a fire pool where it lands (`poolSteps/poolRadius/poolTick/poolBurnSteps`, burn only: any direct pool damage broke the level 16 band because the boss was standing in it). Hunters Pike "Driller" blasts the first solid it meets after piercing (`drillRadius/drillMult`, kept small for the same reason).
 - **Fixes found by looking:** Rolling Millstone showed the Blade sprite because `params.behavior` bypasses the weapon's own texture; the row now uses its own behaviour file. Hailstorm Cauldron dropped on block tops and did almost nothing: half the drops now seek monsters in the band, drops fall faster, `dropMult` 1.2.

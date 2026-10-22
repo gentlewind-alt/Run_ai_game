@@ -270,7 +270,7 @@
       "unlock": "level 6",
       "price": 300,
       "launch": "Flies out, then curves back on its own.",
-      "tap": "Recall early. The return pass deals double damage. Hitting a Hexer interrupts its shield.",
+      "tap": "Recall early. The return pass deals double damage and slices everything along its path. Hitting a Hexer interrupts its shield.",
       "physics": {
         "radius": 4,
         "density": 0.02,
@@ -286,7 +286,10 @@
         "returnMult": 2,
         "returnSpeed": 6,
         "returnTurn": 0.08,
-        "catchRadius": 10
+        "catchRadius": 10,
+        "sliceEvery": 8,
+        "sliceRadius": 12,
+        "sliceMult": 0.15
       }
     },
     {
