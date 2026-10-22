@@ -24,6 +24,7 @@ const LIGHT: Record<string, { sky: string[]; ground: string; edge: string; dots:
   wood: { sky: ['1', '8', '7'], ground: 'o', edge: '7', dots: 'b', dotCount: 14 },
   keep: { sky: ['f', 'q', '3'], ground: 'm', edge: 'e', dots: '4', dotCount: 12 },
   frost: { sky: ['8', '9', 'a'], ground: 'c', edge: 'd', dots: 'c', dotCount: 16 },
+  sky: { sky: ['8', '9', 'a'], ground: 'm', edge: 'q', dots: 'b', dotCount: 16 },
   ember: { sky: ['1', '2', '3'], ground: 'f', edge: '3', dots: '4', dotCount: 16 },
 };
 

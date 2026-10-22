@@ -2,6 +2,14 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · X6b realm 6 Sky Citadel, six weapons, generated Omnitrix arms (v1.19.0, private)
+- **Realm 6** `sky_citadel` (levels 21-24: Cloud dock, Gale bridge, Thunder hall, Storm throne): background `sky`, Map lighting `sky`, monsters `cloud_harpy` (imp behaviour), `storm_mage` (hexer, shield 60), boss `storm_sovereign` (HP 2200, armour 24, reuses `frost_giant` with `params.storm = 1`; the theme table in `frostGiant.ts` now holds ice, lava and storm words and colours).
+- **Weapons:** Pinata MIRV (chest c_l21), Earthworm Drill (c_l22), Chain Rod (c_l23), Hailstorm Cauldron (unlock level 22), Rolling Millstone (level 23, reuses the Blade roll via `params.behavior`), Black Hole Marble (legendary, drops from `storm_sovereign`). Numbers are in the data rows; behaviours in `src/content/weapons/` (`util.ts` has the shared `landingY`).
+- **Omnitrix arms:** five RUN CLI generated forearm sprites processed into `game/public/sprites/arms/` and wired through `extraSprites`; they replace the hand-drawn ones (checked on screen).
+- **Balance finding:** a projectile that comes to rest on a monster hurts it on every physics contact, so a Cleaver landing on a boss drained 1300 HP in 110 steps (found by hooking `hp` setter in `tools/probe.mjs`). A global re-hit cooldown (20 steps) broke the bands for levels 16, 20, 22 and 24, so it was reverted; bosses are sturdier instead. Worth a proper fix later with the whole band table re-tuned.
+- **Checks:** `check`, `tsc`, solver bands for 21-24 pass (21 in 2 shots, band 2-5; 22, 23 pass; 24 in 3 shots).
+- **Still open:** on-screen look at each new weapon, sound pass (X7), Pocket Tanks remainder, X3b headless tests.
+
 ## 2026-10-22 · claude · X6a realm 5 Ember Forge and the Omnitrix Dial (v1.18.0, private)
 - **Realm 5** `ember_forge` (levels 17-20: Cinder gate, Molten bridge, Anvil hall, Forge throne): background `ember`, Map lighting `ember`, monsters `lava_imp` (reuses the `imp` behaviour), `forge_ogre` (HP 330, reuses `goblin_chief`: armour 10, stomp), boss `forge_tyrant` (HP 1100, reuses `frost_giant` with `params.lava = 1`: LAVA SURGE and ANVIL OPEN words and colours, weak point 2x), generated sprites. `Params` is numbers only, so string options are flags.
 - **Omnitrix Dial** (legendary, chest `c_l19` in level 19): the tap flashes green, five alien forearms (fire, brute, crystal, stone, lightning) fall staggered 6 steps apart across a 150 px band centred on the nearest monster, each lands on the first block or monster under it, hits (kind effect: burn, knock flat, crystal and iron bonus, heavy stone, stun), bounces once for a second hit at 60%, then retracts into the sky; the projectile ends when all five are gone. One charge. `art/omnitrixTextures.ts` (hand-drawn arms), `sfx.omnitrix()`.

@@ -361,3 +361,59 @@ write(20, 'Forge throne', 'ember_forge', 'boss', 648,
       [mon('forge_tyrant', 235, stand(P20, 46)), mon('lava_imp', 205, P20 - 80), mon('lava_imp', 265, P20 - 84),
        mon('forge_ogre', 160, stand(P20, 34))],
       2600, shots=6, loadout=LOAD5)
+
+# ---------------------------------------------------------------- Sky Citadel
+# 21 Cloud dock: harpies circle a stone tower, a storm mage shields its foot. A chest holds the Pinata MIRV.
+P21 = 300
+b21, top21 = tower(225, P21, w=60, tiers=3, pillar='stone', ph=26, floor='wood')
+b21 += [blk('stone', 168, P21 - 12, 10, 24), blk('iron', 225, P21 - 6, 36, 12)]
+c21 = [chst('c_l21', 318, P21 - 8, 'w_pinata_mirv', 40)]
+write(21, 'Cloud dock', 'sky_citadel', 'siege', 540, ['Harpies swoop. A mage shields the rest.', 'Break the tower.'],
+      [[0, 320], [130, 320], [160, P21], [310, P21], [340, 320], [540, 320]],
+      b21,
+      [mon('forge_ogre', 225, stand(P21 - 12, 34)), mon('forge_ogre', 288, stand(P21, 34)), mon('cloud_harpy', 200, P21 - 150), mon('cloud_harpy', 255, P21 - 155),
+       mon('storm_mage', 255, stand(P21, 14)), mon('dark_elf_archer', 205, stand(top21))],
+      1800, chests=c21, shots=6, loadout=LOAD5)
+
+# 22 Gale bridge: a pit between two tower shelves, skeletons racing the far side, harpies above.
+LO22, PIT22 = 300, 336
+b22 = [
+    blk('stone', 185, LO22 - 15, 10, 30), blk('stone', 225, LO22 - 15, 10, 30), blk('wood', 205, LO22 - 33, 50, 6),
+    blk('stone', 372, LO22 - 15, 10, 30), blk('stone', 412, LO22 - 15, 10, 30), blk('stone', 392, LO22 - 33, 50, 6),
+]
+c22 = [chst('c_l22', 440, LO22 - 8, 'w_earthworm_drill', 40)]
+write(22, 'Gale bridge', 'sky_citadel', 'runner', 648, ['Skeletons race the bridge.', 'Stop them before the exit.'],
+      [[0, 320], [120, 320], [150, LO22], [250, LO22], [270, PIT22], [340, PIT22], [360, LO22], [450, LO22], [480, 320], [648, 320]],
+      b22,
+      [mon('forge_ogre', 392, stand(LO22, 34)), mon('cloud_harpy', 205, LO22 - 70), mon('cloud_harpy', 372, LO22 - 80),
+       mon('storm_mage', 205, stand(LO22 - 37)),
+       mon('skeleton_runner', 300, stand(PIT22), dir=1, speed=0.8, delay=0.8), mon('skeleton_runner', 320, stand(PIT22), dir=1, speed=0.7, delay=1.3)],
+      1700, chests=c22, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13}, shots=6, loadout=LOAD5)
+
+# 23 Thunder hall: a tall stone-and-iron hall; mages shield two ogres. A chest holds the Chain Rod.
+P23 = 296
+b23, top23 = tower(230, P23, w=60, tiers=3, pillar='stone', ph=26, floor='stone')
+b23 += [blk('iron', 230, P23 - 6, 36, 12), blk('stone', 165, P23 - 18, 12, 36), blk('iron', 292, P23 - 18, 10, 36)]
+c23 = [chst('c_l23', 330, P23 - 8, 'w_chain_rod', 40)]
+write(23, 'Thunder hall', 'sky_citadel', 'siege', 540, ['Mages shield the ogres.', 'A chest hides in the rubble.'],
+      [[0, 320], [120, 320], [150, P23], [320, P23], [350, 320], [540, 320]],
+      b23,
+      [mon('forge_ogre', 230, stand(P23 - 12, 34)), mon('forge_ogre', 230, stand(P23 - 12 - 32, 34)),
+       mon('cloud_harpy', 210, top23 - 40), mon('cloud_harpy', 255, top23 - 46), mon('storm_mage', 165, stand(P23 - 36)),
+       mon('storm_mage', 300, stand(P23, 14))],
+      2100, chests=c23, shots=6, loadout=LOAD5)
+
+# 24 Storm throne: the Storm Sovereign on a shelf ringed by stone and iron. The eye on its chest opens for 2x.
+P24 = 296
+b24 = [
+    blk('stone', 168, P24 - 22, 12, 44), blk('stone', 302, P24 - 22, 12, 44),
+    blk('iron', 188, P24 - 19, 8, 38), blk('iron', 282, P24 - 19, 8, 38),
+    blk('stone', 235, P24 - 44 - 3, 144, 6), blk('stone', 205, P24 - 53, 10, 20), blk('stone', 265, P24 - 53, 10, 20),
+]
+write(24, 'Storm throne', 'sky_citadel', 'boss', 648,
+      ['Hit the glowing eye for 2x.', 'Lightning falls in a band. Stay steady.'],
+      [[0, 320], [110, 320], [135, P24], [340, P24], [370, 320], [648, 320]],
+      b24,
+      [mon('storm_sovereign', 235, stand(P24, 46)), mon('cloud_harpy', 205, P24 - 80), mon('cloud_harpy', 265, P24 - 84),
+       mon('storm_mage', 160, stand(P24, 14))],
+      3600, shots=6, loadout=LOAD5)

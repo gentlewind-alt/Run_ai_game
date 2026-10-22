@@ -631,6 +631,213 @@
         "crystalBonusMult": 1.0,
         "stunSteps": 60,
         "armHeight": 56
+      },
+      "extraSprites": [
+        "sprites/arms/omni_arm_fire",
+        "sprites/arms/omni_arm_brute",
+        "sprites/arms/omni_arm_crystal",
+        "sprites/arms/omni_arm_stone",
+        "sprites/arms/omni_arm_lightning"
+      ]
+    },
+    {
+      "id": "w_pinata_mirv",
+      "sprite": "sprites/relics/w_pinata_mirv",
+      "name": "Pinata MIRV",
+      "archetype": "bomb",
+      "element": "hellfire",
+      "rarity": "epic",
+      "baseDamage": 30,
+      "unlock": {
+        "chest": "c_l21",
+        "level": 21
+      },
+      "price": 900,
+      "launch": "Round paper pinata that tumbles in a high arc.",
+      "tap": "Bursts into five candy bombs that rain down in a fan.",
+      "physics": {
+        "radius": 5,
+        "density": 0.02,
+        "spin": 0.2,
+        "gravity": 1.0
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Burst"
+      },
+      "params": {
+        "bombs": 5,
+        "spread": 0.9,
+        "speedMult": 0.5,
+        "minSpeed": 1.5,
+        "gravity": 1.0,
+        "bombRadius": 20,
+        "bombMult": 0.55
+      }
+    },
+    {
+      "id": "w_hailstorm_cauldron",
+      "sprite": "sprites/relics/w_hailstorm_cauldron",
+      "name": "Hailstorm Cauldron",
+      "archetype": "cauldron",
+      "element": "radiant",
+      "rarity": "epic",
+      "baseDamage": 26,
+      "unlock": "level 22",
+      "price": 1000,
+      "launch": "Small iron pot that sloshes as it flies.",
+      "tap": "Tips out twelve scalding stew drops over a wide band.",
+      "physics": {
+        "radius": 5,
+        "density": 0.02,
+        "spin": 0.15,
+        "gravity": 1.0
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Pour"
+      },
+      "params": {
+        "drops": 12,
+        "dropEvery": 4,
+        "bandWidth": 120,
+        "dropSpeed": 4,
+        "dropRadius": 14,
+        "dropMult": 0.45
+      }
+    },
+    {
+      "id": "w_rolling_millstone",
+      "sprite": "sprites/relics/w_rolling_millstone",
+      "name": "Rolling Millstone",
+      "archetype": "wheel",
+      "element": "physical",
+      "rarity": "rare",
+      "baseDamage": 24,
+      "unlock": "level 23",
+      "price": 700,
+      "launch": "Heavy stone wheel that tumbles when thrown.",
+      "tap": "Rolls along the ground for 2 s, crushing everything in its path.",
+      "physics": {
+        "radius": 6,
+        "density": 0.05,
+        "spin": 0.2,
+        "gravity": 1.0
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Roll"
+      },
+      "params": {
+        "behavior": "w_militia_blade",
+        "sawSteps": 96,
+        "sawSpin": 0.4,
+        "sawSpeed": 2.4,
+        "tickSteps": 6,
+        "tickRadius": 15,
+        "tickMult": 0.16
+      }
+    },
+    {
+      "id": "w_earthworm_drill",
+      "sprite": "sprites/relics/w_earthworm_drill",
+      "name": "Earthworm Drill",
+      "archetype": "drill",
+      "element": "physical",
+      "rarity": "rare",
+      "baseDamage": 28,
+      "unlock": {
+        "chest": "c_l22",
+        "level": 22
+      },
+      "price": 750,
+      "launch": "Armoured worm with a drill snout.",
+      "tap": "Dives steeply, drills in, then erupts under the fort.",
+      "physics": {
+        "radius": 4,
+        "density": 0.025,
+        "spin": 0.1,
+        "gravity": 1.0
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Drill"
+      },
+      "params": {
+        "diveForward": 0.2,
+        "diveSpeed": 8,
+        "drillSpin": 0.6,
+        "eruptRadius": 40,
+        "eruptMult": 1.2,
+        "eruptPush": 2.5
+      }
+    },
+    {
+      "id": "w_chain_rod",
+      "sprite": "sprites/relics/w_chain_rod",
+      "name": "Chain Rod",
+      "archetype": "rod",
+      "element": "radiant",
+      "rarity": "rare",
+      "baseDamage": 22,
+      "unlock": {
+        "chest": "c_l23",
+        "level": 23
+      },
+      "price": 800,
+      "launch": "Copper rod crackling with static.",
+      "tap": "Lightning jumps between up to four monsters, weaker each time.",
+      "physics": {
+        "radius": 4,
+        "density": 0.02,
+        "spin": 0.2,
+        "gravity": 1.0
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Zap"
+      },
+      "params": {
+        "jumps": 4,
+        "jumpRange": 90,
+        "jumpMult": 1.0,
+        "jumpFalloff": 0.8
+      }
+    },
+    {
+      "id": "w_black_hole_marble",
+      "sprite": "sprites/relics/w_black_hole_marble",
+      "name": "Black Hole Marble",
+      "archetype": "orb",
+      "element": "void",
+      "rarity": "legendary",
+      "baseDamage": 40,
+      "unlock": {
+        "boss": "storm_sovereign",
+        "level": 24
+      },
+      "price": 1600,
+      "launch": "A dark marble that bends the light around it.",
+      "tap": "Hangs a singularity that drags everything in, then collapses.",
+      "physics": {
+        "radius": 4,
+        "density": 0.03,
+        "spin": 0.1,
+        "gravity": 1.0
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Crush",
+        "charges": 1
+      },
+      "params": {
+        "holeSteps": 90,
+        "holeRadius": 80,
+        "pullStrength": 0.6,
+        "tickSteps": 15,
+        "tickMult": 0.2,
+        "collapseRadius": 60,
+        "collapseMult": 1.6
       }
     }
   ],
@@ -1064,6 +1271,59 @@
         "weakMult": 2,
         "lava": 1
       }
+    },
+    {
+      "id": "cloud_harpy",
+      "name": "Cloud Harpy",
+      "hp": 30,
+      "weak": "radiant",
+      "resist": null,
+      "note": "Flying harpy that swoops over the citadel.",
+      "behavior": "imp",
+      "sprite": "sprites/monsters/cloud_harpy",
+      "params": {
+        "ampX": 26,
+        "ampY": 12,
+        "freqX": 1.8,
+        "freqY": 3,
+        "selfMoving": 1
+      }
+    },
+    {
+      "id": "storm_mage",
+      "name": "Storm Mage",
+      "hp": 45,
+      "weak": "void",
+      "resist": "radiant",
+      "note": "Raises a shield on neighbours that absorbs 60 damage.",
+      "behavior": "hexer",
+      "sprite": "sprites/monsters/storm_mage",
+      "params": {
+        "shield": 60,
+        "radius": 52
+      }
+    },
+    {
+      "id": "storm_sovereign",
+      "name": "Storm Sovereign",
+      "hp": 2200,
+      "weak": "void",
+      "resist": "radiant",
+      "boss": true,
+      "coins": 500,
+      "score": 3500,
+      "note": "Armoured boss. The eye in its chest opens for 2x hits now and then.",
+      "behavior": "frost_giant",
+      "density": 0.004,
+      "sprite": "sprites/monsters/storm_sovereign",
+      "params": {
+        "armour": 24,
+        "stompEvery": 330,
+        "weakEvery": 420,
+        "weakDuration": 120,
+        "weakMult": 2,
+        "storm": 1
+      }
     }
   ],
   "materials": [
@@ -1190,6 +1450,25 @@
       "palette": "red, plum, orange glow",
       "name": "Ember Forge",
       "background": "ember"
+    },
+    {
+      "id": "sky_citadel",
+      "levels": [
+        21,
+        22,
+        23,
+        24
+      ],
+      "monsters": [
+        "cloud_harpy",
+        "storm_mage",
+        "forge_ogre",
+        "dark_elf_archer",
+        "storm_sovereign"
+      ],
+      "palette": "slate, cyan, gold lightning",
+      "name": "Sky Citadel",
+      "background": "sky"
     }
   ],
   "cosmetics": [

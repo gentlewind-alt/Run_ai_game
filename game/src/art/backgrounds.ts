@@ -55,6 +55,13 @@ STYLES.ember = {
   grass: ['3', 'f', '0'], dirt: 'f', dirtDark: '0', pebble: '2',
 };
 
+// Sky Citadel: high slate sky, pale cloud banks, cold stone ground and drifting sparks of static.
+STYLES.sky = {
+  sky: ['8', '9', 'a'], edges: [85, 190], far: ['q', 'f'], mid: ['f', 'm'], near: ['m', 'f'],
+  trees: { fill: 'f', light: 'm', trunk: 'f', kind: 'none' }, clouds: true, stars: false, moon: false, motes: 'b',
+  grass: ['c', 'f', 'm'], dirt: 'm', dirtDark: 'f', pebble: 'q',
+};
+
 export const styleFor = (realm: string): RealmStyle => STYLES[realm] ?? STYLES.hills;
 
 const hash = (n: number): number => {

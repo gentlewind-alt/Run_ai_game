@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.18.0 (realm 5 Ember Forge, Omnitrix Dial), private
+**Current build:** v1.19.0 (realm 6 Sky Citadel, six new weapons, generated Omnitrix arms), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -75,7 +75,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | X4 | Score leaderboards (daily, per level, overall) | X2 | review | claude | 10-22 | Scores screen, rank on Results, board routing; host boards untested until deploy |
 | X5 | Pocket Tanks ability pass | X2 | doing | claude | 10-22 | batch 1 done (Blade, Cleaver, Blast Tube, Staff); Pike, Boomerang, Scepter, Scattergun and relic add-ons remain |
 | X6a | Realm 5 Ember Forge (levels 17-20) + Omnitrix Dial | X3 | review | claude | 10-22 | built directly; arms use hand-drawn sprites until the generated ones are swapped in |
-| X6b | Realm 6 Sky Citadel (21-24) + Hailstorm Cauldron, Millstone, Pinata MIRV, Drill, Chain Rod, Black Hole Marble | X6a | todo | | | art ready; brief `agy_task_x6b_realm6_weapons.md` |
+| X6b | Realm 6 Sky Citadel (21-24) + Hailstorm Cauldron, Millstone, Pinata MIRV, Drill, Chain Rod, Black Hole Marble | X6a | review | claude | 10-22 | built directly (agy out of credits); L21 band 2-5; each weapon needs an on-screen look |
 | X7 | Sound pass (RUN `generate sfx` plus WebAudio) | X5 | todo | | | plan in `09_expansion_design.md` section 7 |
 
 ## Waiting on owner

@@ -1,0 +1,174 @@
+{
+  "id": 23,
+  "name": "Thunder hall",
+  "realm": "sky_citadel",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 6,
+  "hints": [
+    "Mages shield the ogres.",
+    "A chest hides in the rubble."
+  ],
+  "scoreTarget": 2100,
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ],
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      120,
+      320
+    ],
+    [
+      150,
+      296
+    ],
+    [
+      320,
+      296
+    ],
+    [
+      350,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "stone",
+      "x": 205.0,
+      "y": 283.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 255.0,
+      "y": 283.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 230,
+      "y": 267,
+      "w": 60,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 205.0,
+      "y": 251.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 255.0,
+      "y": 251.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 230,
+      "y": 235,
+      "w": 60,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 205.0,
+      "y": 219.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 255.0,
+      "y": 219.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 230,
+      "y": 203,
+      "w": 60,
+      "h": 6
+    },
+    {
+      "m": "iron",
+      "x": 230,
+      "y": 290,
+      "w": 36,
+      "h": 12
+    },
+    {
+      "m": "stone",
+      "x": 165,
+      "y": 278,
+      "w": 12,
+      "h": 36
+    },
+    {
+      "m": "iron",
+      "x": 292,
+      "y": 278,
+      "w": 10,
+      "h": 36
+    }
+  ],
+  "monsters": [
+    {
+      "t": "forge_ogre",
+      "x": 230,
+      "y": 267.0
+    },
+    {
+      "t": "forge_ogre",
+      "x": 230,
+      "y": 235.0
+    },
+    {
+      "t": "cloud_harpy",
+      "x": 210,
+      "y": 160
+    },
+    {
+      "t": "cloud_harpy",
+      "x": 255,
+      "y": 154
+    },
+    {
+      "t": "storm_mage",
+      "x": 165,
+      "y": 253.0
+    },
+    {
+      "t": "storm_mage",
+      "x": 300,
+      "y": 289.0
+    }
+  ],
+  "chests": [
+    {
+      "id": "c_l23",
+      "x": 330,
+      "y": 288,
+      "hp": 40,
+      "reward": "w_chain_rod"
+    }
+  ]
+}

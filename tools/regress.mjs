@@ -767,7 +767,7 @@ async function run() {
   // =========================================================================
   // 3. ASSERT CAMPAIGN LEVELS (Solver, Balance Bands, 0 One-Shot Wins)
   // =========================================================================
-  const levelsToTest = process.env.LEVELS ? process.env.LEVELS.split(',').map(Number) : (isQuick ? [1, 4, 8, 12, 16, 20] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+  const levelsToTest = process.env.LEVELS ? process.env.LEVELS.split(',').map(Number) : (isQuick ? [1, 4, 8, 12, 16, 20, 24] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]);
   console.log(`--- 3. ASSERTING LEVELS ${levelsToTest.join(', ')} PLAYTHROUGH & BALANCE BANDS ---`);
   const tSec3 = performance.now();
   const defaultLoadout = ['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_scrapheap_scattergun', 'w_blast_tube'];
@@ -1183,7 +1183,7 @@ async function run() {
   // =========================================================================
   console.log(`--- 6. ASSERTING SLINGSHOT & FORT FRAMING (BUG 3)${isQuick ? ' (QUICK: L1, 4, 8, 12 + Daily)' : ''} ---`);
   const tSec6 = performance.now();
-  const framingLevels = isQuick ? [1, 4, 8, 12, 16, 20] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+  const framingLevels = isQuick ? [1, 4, 8, 12, 16, 20, 24] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
   try {
     const b3Res = await evalCode(`(async () => {
       const checks = [];

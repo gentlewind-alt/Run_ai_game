@@ -11,6 +11,12 @@ import { pike } from './pike';
 import { scattergun } from './scattergun';
 import { scepter } from './scepter';
 import { silklineShooters } from './silklineShooters';
+import { blackHoleMarble } from './blackHoleMarble';
+import { chainRod } from './chainRod';
+import { earthwormDrill } from './earthwormDrill';
+import { hailstormCauldron } from './hailstormCauldron';
+import { pinataMirv } from './pinataMirv';
+import { rollingMillstone } from './rollingMillstone';
 import { skyforgeMaul } from './skyforgeMaul';
 import { staff } from './staff';
 import { steersongArrow } from './steersongArrow';
@@ -35,6 +41,12 @@ export const WEAPONS: Record<string, WeaponImpl> = {
   w_kinetic_palms: kineticPalms,
   w_brahmastra_arrow: brahmastraArrow,
   w_omnitrix_dial: omnitrixDial,
+  w_pinata_mirv: pinataMirv,
+  w_hailstorm_cauldron: hailstormCauldron,
+  w_rolling_millstone: rollingMillstone,
+  w_earthworm_drill: earthwormDrill,
+  w_chain_rod: chainRod,
+  w_black_hole_marble: blackHoleMarble,
 };
 
 /** The behaviour for a weapon row: `params.behavior` names another weapon's behaviour to reuse, otherwise the row's own id. */

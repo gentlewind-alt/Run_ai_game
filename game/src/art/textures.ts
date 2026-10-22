@@ -188,6 +188,9 @@ export const MONSTER_ART: Record<string, MonsterArt> = {
   lava_imp: { w: 12, h: 12, size: 24 },
   forge_ogre: { w: 30, h: 34, size: 40 },
   forge_tyrant: { w: 36, h: 46, size: 56 },
+  cloud_harpy: { w: 14, h: 12, size: 24 },
+  storm_mage: { w: 12, h: 14, size: 24 },
+  storm_sovereign: { w: 36, h: 46, size: 56 },
 };
 
 export const WEAPON_IDS = [
