@@ -2,6 +2,19 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · cloud · Hands-on playtest of v1.23 (headless Chromium, 844x390 landscape, mouse, `?mock=1`)
+- **Played:** Title → Map → Level 1 loadout → Level 1 (won 3 stars, score 950, in 2-3 shots, with real drags and the Whirl button) → Next level → Level 2 → pause/resume → Map → Shop (85 coins) → Daily Mash (lost). No console errors anywhere.
+- **Works well:** the shot feel (drag, dotted aim, hit-stop, fort collapse), tutorial speech hints, the ability button, the results screen, pause/resume (the world stays intact under the panel), the shop tabs and prices, and the Daily leaderboard panel (mock rows).
+- **Bugs found:**
+  1. **The Daily Mash can't be won by a new player.** The fort is an Orc Brute and a Hexer behind shields, and a fresh save owns only the Blade. Six Blade shots did not get through. On a loss, `core/profile.ts` `recordResult` never calls `recordDailyResult`, so **streak and best stay 0** ("Streak 0d", "Best 0" after scoring 515). The stickiness feature never starts for new players. Fix options: count any finished daily attempt for the streak and best; gate the Daily until Goblin Hills is cleared; or give the Daily a fixed loadout that can beat its fort (the generator knows the monster mix).
+  2. **The Daily date falls back to the device clock.** `recordResult` uses `getDailySeed(Date.now())` when `r.dateStr` is missing. The brief requires server time (`platform.serverTime()`), otherwise changing the phone clock farms streaks.
+  3. **Boss level ids are hard-coded** in `recordResult`: `r.levelId === 4 || 8 || 12`. That breaks golden rules 1 and 2; use `level.kind === 'boss'` or the monsters' `boss` flag (both already checked on the same line).
+  4. **Results:** the "Level rank #N" line is half covered by the Next level and Retry buttons.
+  5. **Loadout L1:** the hint is clipped to "Drag back from the sling, then let" (it should end "let go.").
+  6. **Map:** the "Clear Goblin Hills to enter" text is drawn over the locked level nodes and is hard to read. Put it on a dark band or above the nodes.
+  7. **Shop:** the tab label "Items." looks truncated or has a stray dot.
+- **Not tested:** touch or pinch input, real RUN host APIs, audio (headless), levels past 2.
+
 ## 2026-10-22 · cloud · Review of aeb9206..f31fed7 (v1.11 to v1.23)
 - **Full findings:** `docs/handoff/review_2026-10-22.md`.
 - **Checks:** check and build pass. Quick regress on Linux: levels 1/4/8/16 in band; **12, 20 and 24 fail their bands** (2, 6 and 2 shots), although they passed locally. Section 3c hung and hit the 20-minute timeout.
