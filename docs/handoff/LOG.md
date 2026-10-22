@@ -2,6 +2,10 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · cloud · Bulwark Disc solver results (follow-up)
+- **Solver with the disc first, levels 4-11:** L4 3 shots, L5 4, L6 4, L7 4, L8 4, L10 4, L11 5, all won. **L9 did not finish** within 12 attempts (3 shots made, not done) and a rerun with 60 attempts produced no result before I stopped it. The project's relic assertion only needs at least 2 shots, which L9 meets, but I have not seen L9 won with the disc. The previous 1-jump version won L9 in 3 shots, so the weaker disc may need more shots there, or the greedy solver is just slow on L9.
+- **Not run:** the full `regress` (hangs on the cloud box). Someone with the local machine should run `npm run regress:quick` once and watch the relic sections.
+
 ## 2026-10-22 · cloud · Bulwark Disc: more targets, lower damage (owner's choice)
 - **Change:** the disc now ricochets up to `ricochetJumps` 3 times within `ricochetRange` 100 px, and each jump hits softer: damage multiplier `ricochetFalloff` 0.6 per jump (x0.6, x0.36, x0.22). The old +10% per bounce bonus is off (`bounceDamageBonus` 0). Launch text updated. All in the `w_bulwark_disc` data row.
 - **Checks:** `check`, `tsc`, build pass. Sweep (disc first, standard loadout) shows **0 one-shot wins on levels 1-12** (4 jumps at 0.7 gave 1 on level 3, so it was tightened). Traces show three jumps with the expected multipliers. `tools/regress.mjs` disc assertion updated (no falloff without jumps, so multiplier 1).
