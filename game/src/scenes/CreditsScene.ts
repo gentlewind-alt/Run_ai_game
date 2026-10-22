@@ -20,27 +20,35 @@ export default class CreditsScene extends Phaser.Scene {
 
     const col1 = [
       {
-        title: 'Built for RUN.world',
-        names: ['Monster Mash Jam 2026'],
+        title: 'Boss (cracked the whip)',
+        names: ['YuYungfu', 'Ideas, playtests, deadlines'],
       },
       {
-        title: 'Design & Code',
-        names: ['agy (Google DeepMind Antigravity)', 'Claude (Anthropic) & Jam Owner'],
+        title: 'Code (share of lines)',
+        names: ['agy (Antigravity)  65%', 'Claude (Anthropic) 35%'],
+      },
+      {
+        title: 'Art and Audio',
+        names: ['RUN AI sprites, concepts', 'Mash32 pixel kit, chiptunes'],
       },
     ];
 
     const col2 = [
       {
-        title: 'Art & Audio',
-        names: ['16-Bit Mash32 Palette', '120 BPM Chiptune Engine'],
+        title: 'Built on RUN.world',
+        names: ['RUN SDK 5.28.1, RUN CLI', 'Monster Mash Jam 2026'],
       },
       {
-        title: 'Powered by',
-        names: ['Phaser 3 & RUN SDK 5.28.1'],
+        title: 'Engine',
+        names: ['Phaser 3, Matter.js', 'Vite, TypeScript'],
+      },
+      {
+        title: 'Nods to',
+        names: ['Angry Birds, Pocket Tanks', 'Ben 10, Marvel, Brahmastra'],
       },
     ];
 
-    let y1 = 66;
+    let y1 = 60;
     for (const sec of col1) {
       text(this, 130, y1, sec.title, C('4'), 1, C('0')).setDepth(2);
       y1 += 13;
@@ -51,7 +59,7 @@ export default class CreditsScene extends Phaser.Scene {
       y1 += 8;
     }
 
-    let y2 = 66;
+    let y2 = 60;
     for (const sec of col2) {
       text(this, 350, y2, sec.title, C('4'), 1, C('0')).setDepth(2);
       y2 += 13;
