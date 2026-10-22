@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C, rarityColor, rarityStroke } from '../art/palette';
-import { text } from '../art/font5x7';
+import { text, textBlock } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { goTo } from '../core/flow';
@@ -94,9 +94,9 @@ export default class ResultsScene extends Phaser.Scene {
     const go = (key: string, payload?: object): void => { sfx.click(); goTo(this, key, payload); };
 
     if (d.won) {
-      const y1 = py + 145;
-      const y2 = py + 176;
-      const y3 = py + 205;
+      const y1 = py + 153; // the rank line sits at py + 131 and the buttons are 24 tall, so keep clear of it
+      const y2 = py + 182;
+      const y3 = py + 210;
 
       if (hasNext) {
         makeButton(this, W / 2 - 64, y1, 116, 24, 'Next level', 'go', () => go('loadout', { level: next }), 3);
@@ -177,20 +177,23 @@ export default class ResultsScene extends Phaser.Scene {
     const t1 = text(this, W / 2, py + 18, 'RELIC FOUND!', rarityColor(w.rarity), 2, C('0')).setDepth(22);
     group.push(t1);
 
-    const ico = this.add.image(W / 2, py + 56, weaponTexture(w.id)).setScale(2.5).setDepth(22);
+    // The art fits a 44 px box between the title (py + 18) and the name (py + 86); long items shrink to fit.
+    const texKey = weaponTexture(w.id);
+    const ico = this.add.image(W / 2, py + 54, texKey).setDepth(22);
+    ico.setScale(Math.min(1.4, 44 / ico.width, 44 / ico.height));
     group.push(ico);
 
     const t2 = text(this, W / 2, py + 86, w.name, rarityColor(w.rarity), 1, C('0')).setDepth(22);
     group.push(t2);
 
-    const t3 = text(this, W / 2, py + 102, (w.rarity ?? 'rare').toUpperCase(), C('d'), 1).setDepth(22);
+    const t3 = text(this, W / 2, py + 100, (w.rarity ?? 'rare').toUpperCase(), C('d'), 1).setDepth(22);
     group.push(t3);
 
-    const eff = (w.tap || w.launch || '').slice(0, 32);
-    const t4 = text(this, W / 2, py + 120, eff, C('c'), 1).setDepth(22);
-    group.push(t4);
+    // Whole description, word-wrapped inside the card (up to 3 lines of 12 px).
+    const eff = (w.tap || w.launch || '');
+    group.push(...textBlock(this, W / 2, py + 114, eff, C('c'), 166).slice(0, 3).map((l) => l.setDepth(22)));
 
-    const btn = makeButton(this, W / 2, py + 156, 100, 24, 'Claim', 'go', () => {
+    const btn = makeButton(this, W / 2, py + 164, 100, 22, 'Claim', 'go', () => {
       sfx.click();
       group.forEach((g) => g.destroy());
     }, 22);

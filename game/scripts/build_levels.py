@@ -70,7 +70,7 @@ def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target
 # ---------------------------------------------------------------- Goblin Hills
 
 # 1 First fort: a low hill, a stone-footed wooden fort at mid range.
-write(1, 'First fort', 'goblin_hills', 'siege', 432, ['Drag back from the sling, then let go.'],
+write(1, 'First fort', 'goblin_hills', 'siege', 432, ['Drag back from the sling, let go.'],
       [[0, 320], [110, 320], [140, 308], [190, 308], [216, 320], [432, 320]],
       [blk('stone', 232, 306, 10, 28), blk('stone', 268, 306, 10, 28), blk('wood', 250, 289, 56, 6), blk('wood', 236, 276, 6, 20),
        blk('wood', 264, 276, 6, 20), blk('wood', 250, 263, 48, 6), blk('stone', 238, 254, 12, 12), blk('wood', 290, 313, 14, 14),
@@ -104,13 +104,13 @@ b4 += [blk('stone', 274, P4 - 14, 12, 28)]
 b4 += [blk('wood', 233, P4 - 31, 98, 6)]
 b4 += [blk('wood', x, P4 - 44, 6, 20) for x in (204, 226, 248)]
 b4 += [blk('wood', 226, P4 - 57, 52, 6), blk('stone', 208, P4 - 66, 12, 12), blk('stone', 244, P4 - 66, 12, 12)]
-write(4, 'Hill fort', 'goblin_hills', 'boss', 600, ['Defeat the Goblin Chief!'],
+write(4, 'Hill fort', 'goblin_hills', 'boss', 600, ['Runners bolt after your first shot!'],
       [[0, 320], [140, 320], [176, P4], [270, P4], [300, 320], [600, 320]],
       b4,
       [mon('goblin_chief', 209, stand(P4, 21)), mon('goblin_bomber', 243, stand(P4)), mon('goblin_grunt', 226, stand(P4 - 60)),
        mon('goblin_grunt', 242, stand(P4 - 60)), mon('goblin_grunt', 120, stand(GROUND)), mon('goblin_grunt', 256, stand(P4)),
-       mon('skeleton_runner', 312, stand(GROUND), dir=1, speed=0.8, delay=0.8), mon('skeleton_runner', 330, stand(GROUND), dir=1, speed=0.7, delay=1.2)],
-      1350, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13}, shots=5,
+       mon('skeleton_runner', 312, stand(GROUND), dir=1, speed=0.55, delay=0.8), mon('skeleton_runner', 330, stand(GROUND), dir=1, speed=0.5, delay=1.2)],
+      1350, escapeLimit=1, exit={'x': 580, 'y': GROUND - 13}, shots=5, runnersStartOnShot=True,
       loadout=['w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun', 'w_militia_blade'])
 
 # ---------------------------------------------------------------- Dark Elf Wood (dusk): archers, hexers, imps

@@ -77,8 +77,11 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | X6a | Realm 5 Ember Forge (levels 17-20) + Omnitrix Dial | X3 | review | claude | 10-22 | built directly; arms use hand-drawn sprites until the generated ones are swapped in |
 | X6b | Realm 6 Sky Citadel (21-24) + Hailstorm Cauldron, Millstone, Pinata MIRV, Drill, Chain Rod, Black Hole Marble | X6a | review | claude | 10-22 | built directly (agy out of credits); L21 band 2-5; all six checked on screen and by `tools/test_weapons.sh` |
 | X7 | Sound pass (RUN `generate sfx` plus WebAudio) | X5 | todo | | | plan in `09_expansion_design.md` section 7 |
+| X8 | Relic scale + L4 runners + loadout/results UI (playtest 10-22) | | review | claude | 10-22 | done in the cloud session at the owner's request; see LOG |
 
 ## Waiting on owner
+
+- **Review 10-22 (`docs/handoff/review_2026-10-22.md`):** approve renaming "Omnitrix Dial" (B1). Decide whether to fix the boss re-hit damage and retune, or keep it (B2).
 
 - Phone test of v1.3.0: does the shot feel good? Does pinch zoom work? Does the ability button feel natural? Is the zoomed-out home view readable?
 - Approve: try `rundot game set-public` after S2 to learn the review turnaround (it can be undone with `set-private`).

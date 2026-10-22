@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import { sfx } from '../../audio/sfx';
 import { C } from '../../art/palette';
 import { weaponTexture } from '../../art/textures';
@@ -23,19 +24,45 @@ export const bulwarkDisc: WeaponImpl = {
     ctx.fx.ring(p.body.position.x, p.body.position.y, 16, C('b'));
     sfx.saw();
   },
-  onImpact(ctx, p) {
+  onImpact(ctx, p, hit) {
     const P = p.def.params;
     const maxBounces = P.maxBounces ?? 6;
+    // Only a real knock counts as a bounce: resting or rolling contact on the ground does not.
+    if (hit && hit.rel < (P.minBounceSpeed ?? 1.5)) return;
+    if (ctx.step - (p.data.lastBounce ?? -9999) < (P.bounceGapSteps ?? 8)) return;
+    p.data.lastBounce = ctx.step;
     p.data.bounces = (p.data.bounces ?? 0) + 1;
     const bCount = Math.min(p.data.bounces, maxBounces);
 
-    // Each bounce damages what it touches at +10% per bounce, with a spark and a ping
-    const bonus = P.bounceDamageBonus ?? 0.10;
-    p.body.proj.mul = 1 + bCount * bonus;
+    // Damage per bounce: an optional bonus (bounceDamageBonus, 0 in the data now) times the ricochet falloff, so each jump hits
+    // a little softer than the last: ricochetFalloff ^ jumps so far.
+    const bonus = P.bounceDamageBonus ?? 0;
+    p.body.proj.mul = (1 + bCount * bonus) * Math.pow(P.ricochetFalloff ?? 0.7, p.data.jumps ?? 0);
 
     sfx.ping();
     ctx.fx.pingStar?.(p.body.position.x, p.body.position.y);
     ctx.fx.sparks(p.body.position.x, p.body.position.y, ['c', '4', 'b'], 12);
+
+    // Ricochet: after knocking a monster or a block, fly on to the next monster (not the one just hit) within range.
+    if (hit?.target && p.data.bounces < maxBounces && (p.data.jumps ?? 0) < (P.ricochetJumps ?? 2)) {
+      const b = p.body.position;
+      const range = P.ricochetRange ?? 150;
+      const next = ctx.nearestMonsters(b.x, b.y, 3).find((m) => m !== hit.target && Math.hypot(m.body.position.x - b.x, m.body.position.y - b.y) <= range);
+      if (next) {
+        // A lob, not a straight line: the thing just hit is usually between the disc and the next monster. The new velocity
+        // is applied in onUpdate, after the physics solver has finished with this contact, or the solver would cancel it.
+        const g = P.ricochetGravity ?? 0.25;
+        const dx = next.body.position.x - b.x;
+        const dy = next.body.position.y - b.y;
+        const lift = Math.max(P.ricochetLift ?? 4.5, dy < 0 ? Math.sqrt(-2 * g * dy) + 0.5 : 0);
+        const t = (lift + Math.sqrt(lift * lift + 2 * g * dy)) / g; // steps to arrive
+        const maxSp = P.ricochetSpeed ?? 7;
+        p.data.jumps = (p.data.jumps ?? 0) + 1;
+        p.body.proj.mul = (1 + bCount * (P.bounceDamageBonus ?? 0)) * Math.pow(P.ricochetFalloff ?? 0.7, p.data.jumps);
+        p.data.ricochet = { x: Phaser.Math.Clamp(dx / t, -maxSp, maxSp), y: -lift };
+        ctx.fx.ring(b.x, b.y, 12, C('b'));
+      }
+    }
 
     // The last bounce rings out as a shield blast, once
     if (p.data.bounces === maxBounces) {
@@ -45,7 +72,12 @@ export const bulwarkDisc: WeaponImpl = {
       ctx.fx.shake(0.012);
     }
   },
-  onUpdate(_ctx, p) {
+  onUpdate(ctx, p) {
+    const r = p.data.ricochet as { x: number; y: number } | undefined;
+    if (r) {
+      ctx.M.Body.setVelocity(p.body, r);
+      p.data.ricochet = undefined;
+    }
     // Record trail positions for dithered ghost copies
     const trail = p.data.trail as { x: number; y: number }[];
     if (trail) {

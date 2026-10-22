@@ -2,6 +2,59 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · cloud · Bulwark Disc solver results (follow-up)
+- **Solver with the disc first, levels 4-11:** L4 3 shots, L5 4, L6 4, L7 4, L8 4, L10 4, L11 5, all won. **L9 did not finish** within 12 attempts (3 shots made, not done) and a rerun with 60 attempts produced no result before I stopped it. The project's relic assertion only needs at least 2 shots, which L9 meets, but I have not seen L9 won with the disc. The previous 1-jump version won L9 in 3 shots, so the weaker disc may need more shots there, or the greedy solver is just slow on L9.
+- **Not run:** the full `regress` (hangs on the cloud box). Someone with the local machine should run `npm run regress:quick` once and watch the relic sections.
+
+## 2026-10-22 · cloud · Bulwark Disc: more targets, lower damage (owner's choice)
+- **Change:** the disc now ricochets up to `ricochetJumps` 3 times within `ricochetRange` 100 px, and each jump hits softer: damage multiplier `ricochetFalloff` 0.6 per jump (x0.6, x0.36, x0.22). The old +10% per bounce bonus is off (`bounceDamageBonus` 0). Launch text updated. All in the `w_bulwark_disc` data row.
+- **Checks:** `check`, `tsc`, build pass. Sweep (disc first, standard loadout) shows **0 one-shot wins on levels 1-12** (4 jumps at 0.7 gave 1 on level 3, so it was tightened). Traces show three jumps with the expected multipliers. `tools/regress.mjs` disc assertion updated (no falloff without jumps, so multiplier 1).
+- **Not yet done when this was committed:** the solver run on levels 4-11 (needs at least 2 shots) was still running. The earlier 1-jump version passed levels 4-11 in 3-5 shots, and this version is weaker per hit, so I expect it to pass. Not run: the full `regress`.
+
+## 2026-10-22 · cloud · Bulwark Disc now really ricochets
+- **Report:** the owner saw the disc not ricocheting. **Cause (measured):** the disc had no ricochet rule, only plain physics bounce (restitution 0.6). That works on steep flat-ground landings, but the disc usually hits planks, monsters and slopes at a glancing angle and just drops. Its "bounce" counter also counted rolling on the ground (2 to 8 "bounces" while resting), so the sixth-bounce shield blast could fire with no real ricochet.
+- **Fix** (`content/weapons/bulwarkDisc.ts`, numbers in the `w_bulwark_disc` data row): after knocking a monster or block, the disc lobs on to the nearest other monster within `ricochetRange` (90 px), for up to `ricochetJumps` (1) times, arriving by a ballistic arc (`ricochetLift` 4.5, `ricochetGravity` 0.25, capped at `ricochetSpeed` 7). The new velocity is applied in `onUpdate`, after the solver, because `collisionstart` fires before the solver and cancels a velocity set there. Only knocks faster than `minBounceSpeed` (1.5) and at least `bounceGapSteps` (8) apart count as bounces.
+- **Plumbing:** `WeaponImpl.onImpact` now gets a third argument `{ target?, rel, x, y }` (what was hit and how fast). Other weapons ignore it.
+- **Balance:** first try (3+ jumps, 150 px) made one-shot wins on levels 1, 2, 3 and 11, which breaks the rule of zero. With 1 jump and 90 px the sweep shows 0 one-shot wins on levels 1-12, and the solver wins levels 4-11 with the disc in 3-5 shots (level 12 with the disc first was not won in 6; the standard level 12 loadout has no disc). Not run: the full `regress` (hangs on the cloud box).
+- **Test change:** `tools/regress.mjs` disc assertion now resets `lastBounce` between its 8 mock impacts (the gap rule). Same expected values (8 bounces, x1.6).
+- **Questions for owner:** is one ricochet jump enough, or should the disc reach more targets at lower damage? Both are data values (`ricochetJumps`, `ricochetRange`).
+
+## 2026-10-22 · cloud · Fixes from the Goblin Hills playtest (X8)
+The owner asked for these fixes to be made in the cloud session, not through agy, so `agy_task_relic_scale.md` is marked done.
+- **Relic scale:** new `config.display.weapon` (`flightPx 16`, `slingPx 24`, `queuePx 24`, `relicBonus 1.25`) and `src/art/weaponScale.ts`. `sling.ts` no longer has the `w >= 32 ? 1.5 : 1.5` helpers; relics now draw at about 20 px in flight and 30 px on the sling (they were 48 px). The queue rests on the ground by sprite height instead of a constant. Optional `weapon.display.px`. Steersong split arrows use `params.splitScale` (0.5) instead of the literal 1.2 (they were 38 px). Collision radii are unchanged, so no balance band moves. Before/after sheet: `docs/handoff/shots/review/relic_size_after.png`.
+- **Relic Found card:** the art fits a 44 px box, and the whole description wraps inside the card.
+- **Level 4 runners:** new level flag `runnersStartOnShot` (runner behaviour waits for the first shot), runner speed 0.8/0.7 to 0.55/0.5, hint now "Runners bolt after your first shot!", HUD label "Runners out 0/1". Greedy solver still wins in 3 shots (band 3-5). By hand, 3 of 5 first shots at the runners cleared both of them. Edited through `scripts/build_levels.py`; only levels 1 and 4 changed.
+- **Loadout screen:** a level with its own `loadout` (level 4) shows its slots locked with a short message, and never overwrites the player's saved loadout. Weapon descriptions stack by measured height (no overlap). Level 1's hint fits one line.
+- **Results screen:** buttons moved down so "Level rank" is no longer covered.
+- **Checks:** `npm run check` and `npm run build` pass, `tsc` clean. I did not run the full `regress` (it hangs in section 3c on the cloud box). Not verified: touch input, a phone, the real RUN host.
+- **Still open:** B1 rename "Omnitrix Dial", B2 projectile re-hit damage, B3 regress cleanup, the Daily Mash streak and server-time bugs, the "Clear Goblin Hills to enter" text on the map, and the "Items." tab label.
+
+## 2026-10-22 · cloud · Goblin Hills played by hand, relic scale confirmed
+- **Played levels 1-4 in the real UI.** L1 3 stars, L2 2 stars, L3 3 stars (the chest gave the Steersong Arrow), **L4 lost 4 of 4** to escaping runners. No console errors.
+- **Relic weapons are about 3x too big:** 32x32 sprites drawn at 1.5x (48 px), next to 16 px normal weapons and 16 px goblins. The hitbox is still about 10 px. Contact sheet: `docs/handoff/shots/review/relic_size_sheet.png`.
+- **Brief for the fix:** `docs/handoff/agy_task_relic_scale.md` covers size from `config.json` px, the relic card layout, L4 runner fairness, the fixed-loadout display, and text overlaps.
+- **Questions for owner:** which L4 runner fix do you want (start on first shot, slower and later, or keep the door in view)?
+
+## 2026-10-22 · cloud · Hands-on playtest of v1.23 (headless Chromium, 844x390 landscape, mouse, `?mock=1`)
+- **Played:** Title → Map → Level 1 loadout → Level 1 (won 3 stars, score 950, in 2-3 shots, with real drags and the Whirl button) → Next level → Level 2 → pause/resume → Map → Shop (85 coins) → Daily Mash (lost). No console errors anywhere.
+- **Works well:** the shot feel (drag, dotted aim, hit-stop, fort collapse), tutorial speech hints, the ability button, the results screen, pause/resume (the world stays intact under the panel), the shop tabs and prices, and the Daily leaderboard panel (mock rows).
+- **Bugs found:**
+  1. **The Daily Mash can't be won by a new player.** The fort is an Orc Brute and a Hexer behind shields, and a fresh save owns only the Blade. Six Blade shots did not get through. On a loss, `core/profile.ts` `recordResult` never calls `recordDailyResult`, so **streak and best stay 0** ("Streak 0d", "Best 0" after scoring 515). The stickiness feature never starts for new players. Fix options: count any finished daily attempt for the streak and best; gate the Daily until Goblin Hills is cleared; or give the Daily a fixed loadout that can beat its fort (the generator knows the monster mix).
+  2. **The Daily date falls back to the device clock.** `recordResult` uses `getDailySeed(Date.now())` when `r.dateStr` is missing. The brief requires server time (`platform.serverTime()`), otherwise changing the phone clock farms streaks.
+  3. **Boss level ids are hard-coded** in `recordResult`: `r.levelId === 4 || 8 || 12`. That breaks golden rules 1 and 2; use `level.kind === 'boss'` or the monsters' `boss` flag (both already checked on the same line).
+  4. **Results:** the "Level rank #N" line is half covered by the Next level and Retry buttons.
+  5. **Loadout L1:** the hint is clipped to "Drag back from the sling, then let" (it should end "let go.").
+  6. **Map:** the "Clear Goblin Hills to enter" text is drawn over the locked level nodes and is hard to read. Put it on a dark band or above the nodes.
+  7. **Shop:** the tab label "Items." looks truncated or has a stray dot.
+- **Not tested:** touch or pinch input, real RUN host APIs, audio (headless), levels past 2.
+
+## 2026-10-22 · cloud · Review of aeb9206..f31fed7 (v1.11 to v1.23)
+- **Full findings:** `docs/handoff/review_2026-10-22.md`.
+- **Checks:** check and build pass. Quick regress on Linux: levels 1/4/8/16 in band; **12, 20 and 24 fail their bands** (2, 6 and 2 shots), although they passed locally. Section 3c hung and hit the 20-minute timeout.
+- **Blockers before set-public:** B1, rename "Omnitrix Dial" (Ben 10 trademark, jam is original-only). B2, projectile re-hit damage makes boss fights machine-dependent: fix it and retune the bosses.
+- **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
+- **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
+
 ## 2026-10-22 · claude · Projectile re-hit damage investigated (no change shipped)
 - A projectile that rests on a monster damages it on every physics contact. Tried a 20-step cooldown limited to bosses only (`bossRehitSteps`): bosses on levels 12, 16, 20 and 24 then became unwinnable for the greedy solver within 6 shots. So **all boss HP pools are balanced around that sustained contact damage**; a real fix means lowering boss HP (and armour) to match, then re-tuning bands 4-24. Reverted; behaviour unchanged. Do this after the jam if at all: it is the same feel players already know.
 

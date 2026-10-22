@@ -48,7 +48,7 @@ export const steersongArrow: WeaponImpl = {
           wid: p.wid,
           color: '2',
           texture: 'wpn_w_steersong_arrow',
-          scale: 1.2,
+          scale: p.def.params.splitScale ?? 0.5, // 32 px art: 0.5 draws the split arrows at 16 px, a little smaller than the main arrow
           gravity: p.def.physics.gravity,
         });
       });

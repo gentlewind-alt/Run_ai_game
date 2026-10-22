@@ -405,7 +405,7 @@
         "level": 8
       },
       "price": 1500,
-      "launch": "Concentric rune shield that ricochets with escalating force.",
+      "launch": "Concentric rune shield. Each hit ricochets it on to another monster, a little softer every time.",
       "tap": "Redirects once toward the nearest monster. The sixth bounce rings out as a shield blast.",
       "physics": {
         "radius": 4,
@@ -423,8 +423,16 @@
       },
       "params": {
         "maxBounces": 6,
-        "bounceDamageBonus": 0.1,
+        "bounceDamageBonus": 0,
+        "ricochetFalloff": 0.6,
         "redirectSpeed": 7,
+        "ricochetSpeed": 7,
+        "ricochetJumps": 3,
+        "ricochetRange": 100,
+        "ricochetGravity": 0.25,
+        "ricochetLift": 4.5,
+        "minBounceSpeed": 1.5,
+        "bounceGapSteps": 8,
         "finalRadius": 26,
         "finalMult": 0.5
       }
@@ -499,6 +507,7 @@
         "label": "Arm"
       },
       "params": {
+        "splitScale": 0.5,
         "blastRadius": 24,
         "blastMult": 0.85,
         "splitAngleDeg": 8,

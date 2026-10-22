@@ -57,12 +57,13 @@ function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y
   const t: Ent | undefined = ob.ent;
   const p = b.proj && b.proj.body === pb ? b.proj : null;
   if (p) {
+    const hit = { target: t, rel, x, y };
     if (!p.tapped && b.wdef.ability.mode !== 'button' && b.wpn.onImpact) {
       p.tapped = true;
-      b.wpn.onImpact(b.ctx, p);
+      b.wpn.onImpact(b.ctx, p, hit);
       return;
     } else if (b.wpn.onImpact) {
-      b.wpn.onImpact(b.ctx, p);
+      b.wpn.onImpact(b.ctx, p, hit);
     }
     if (p.tapped && b.wpn.onPostImpact && !p.data.postDone) {
       p.data.postDone = true;

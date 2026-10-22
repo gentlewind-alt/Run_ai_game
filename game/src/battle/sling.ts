@@ -1,6 +1,7 @@
 // The slingshot: weapon queue, aim input, pull, launch, ability trigger and the dotted preview.
 import Phaser from 'phaser';
 import { C } from '../art/palette';
+import { weaponHeight, weaponScale } from '../art/weaponScale';
 import { sfx } from '../audio/sfx';
 import { beatBob, beatPulse } from '../audio/beat';
 import { weaponImpl } from '../content/weapons';
@@ -37,32 +38,12 @@ export function weaponReadyRotation(weaponId?: string): number {
   }
 }
 
-function weaponPipScale(scene: Phaser.Scene, textureKey: string): number {
-  const tex = scene.textures.get(textureKey);
-  const w = tex?.getSourceImage()?.width ?? 16;
-  return w >= 32 ? 1.5 : 1.5; // pips at 24 px or more (~48px for 32px hero relics)
-}
-
-function weaponSlingScale(scene: Phaser.Scene, textureKey: string): number {
-  const tex = scene.textures.get(textureKey);
-  const w = tex?.getSourceImage()?.width ?? 16;
-  return w >= 32 ? 1.5 : 1.5; // loaded on sling at 24 px or more (~48px for hero relics at scale 1.5)
-}
-
-function weaponFlightScale(scene: Phaser.Scene, textureKey: string): number {
-  const tex = scene.textures.get(textureKey);
-  const w = tex?.getSourceImage()?.width ?? 16;
-  return w >= 32 ? 1.5 : 1.0; // ~48px hero relics in flight
-}
-
 /** Puts the waiting weapons beside the sling. */
 export function buildQueue(b: BattleState): void {
   b.loadout.forEach((id, i) => {
     const wpn = weaponImpl(weaponDef(id));
-    const baseScale = weaponPipScale(b.scene, wpn.texture);
-    const tex = b.scene.textures.get(wpn.texture);
-    const tw = tex?.getSourceImage()?.width ?? 16;
-    const yOff = tw >= 32 ? 14 : 8;
+    const baseScale = weaponScale(b.scene, wpn.texture, 'queue', weaponDef(id));
+    const yOff = Math.round(weaponHeight(b.scene, wpn.texture, baseScale) / 3);
     const q = b.scene.add.image(slotX(b, i), groundAt(b, slotX(b, i)) - yOff, wpn.texture).setDepth(3).setScale(baseScale);
     q.setData('phase', i * 1.3);
     q.setData('baseScale', baseScale);
@@ -97,7 +78,7 @@ export function loadNext(b: BattleState): void {
   setWeapon(b, b.loadout[b.shotIdx]);
   b.ui.setAbilityLabel(b.wdef.ability.label);
   const first = b.queue.shift()!;
-  const readyScale = weaponSlingScale(b.scene, b.wpn.texture);
+  const readyScale = weaponScale(b.scene, b.wpn.texture, 'sling', b.wdef);
   const readyRot = weaponReadyRotation(b.wdef.id);
   first.setDepth(7).setScale((first.getData('baseScale') as number) || 1.5);
   b.queue.forEach((q, i) => {
@@ -125,7 +106,7 @@ export function skipToReady(b: BattleState): void {
   if (b.shotIdx >= b.loadout.length) return;
   setWeapon(b, b.loadout[b.shotIdx]);
   b.ui.setAbilityLabel(b.wdef.ability.label);
-  const readyScale = weaponSlingScale(b.scene, b.wpn.texture);
+  const readyScale = weaponScale(b.scene, b.wpn.texture, 'sling', b.wdef);
   const readyRot = weaponReadyRotation(b.wdef.id);
   b.readySprite.setTexture(b.wpn.texture).setVisible(true).setRotation(readyRot).setScale(readyScale);
   b.pouch.set(b.slingX, b.slingY);
@@ -285,7 +266,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   setGravity(body, phys.gravity ?? 1);
   MatterLib.Body.setVelocity(body, { x: actualVel.x, y: actualVel.y });
   MatterLib.Body.setAngularVelocity(body, phys.spin);
-  const flightScale = weaponFlightScale(b.scene, b.wpn.texture);
+  const flightScale = weaponScale(b.scene, b.wpn.texture, 'flight', b.wdef);
   const sprite = b.scene.add.image(b.pouch.x, b.pouch.y, b.wpn.texture).setDepth(4).setScale(flightScale);
   const pData: Record<string, any> = {};
   if (speedMult > 1) pData.speedLines = true;
@@ -324,7 +305,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
           setGravity(tBody, tPhys.gravity ?? 1);
           MatterLib.Body.setVelocity(tBody, { x: twinVel.x, y: twinVel.y });
           MatterLib.Body.setAngularVelocity(tBody, tPhys.spin);
-          const tFlightScale = weaponFlightScale(b.scene, twinWpn.texture);
+          const tFlightScale = weaponScale(b.scene, twinWpn.texture, 'flight', twinWdef);
           const tSprite = b.scene.add.image(launchPos.x, launchPos.y, twinWpn.texture).setDepth(4).setScale(tFlightScale);
           const tProj: Proj = { body: tBody, sprite: tSprite, wid: twinId, def: twinWdef, steps: 0, slow: 0, tapped: false, t: 0, data: {} };
           sfx.launch();
