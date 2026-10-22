@@ -97,7 +97,6 @@ async function run() {
       if (chrome && chrome.pid) {
         try { spawn('taskkill', ['/F', '/T', '/PID', String(chrome.pid)]); } catch (e) {}
       }
-      try { spawn('taskkill', ['/F', '/IM', 'chrome.exe']); } catch (e) {}
       try { chrome.kill(); } catch (e) {}
       if (devProc && devProc.pid) {
         try { spawn('taskkill', ['/F', '/T', '/PID', String(devProc.pid)]); } catch (e) {}

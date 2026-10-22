@@ -70,12 +70,12 @@ def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target
 # ---------------------------------------------------------------- Goblin Hills
 
 # 1 First fort: a low hill, a stone-footed wooden fort at mid range.
-write(1, 'First fort', 'goblin_hills', 'siege', 432, ['Drag back from the sling, let go.'],
+write(1, 'First fort', 'goblin_hills', 'siege', 432, ['Drag back from the sling, then let go.'],
       [[0, 320], [110, 320], [140, 308], [190, 308], [216, 320], [432, 320]],
       [blk('stone', 232, 306, 10, 28), blk('stone', 268, 306, 10, 28), blk('wood', 250, 289, 56, 6), blk('wood', 236, 276, 6, 20),
        blk('wood', 264, 276, 6, 20), blk('wood', 250, 263, 48, 6), blk('stone', 238, 254, 12, 12), blk('wood', 290, 313, 14, 14),
        blk('stone', 315, 306, 10, 28), blk('wood', 315, 289, 28, 6)],
-      [mon('goblin_grunt', 250, 313), mon('goblin_grunt', 260, 253), mon('goblin_grunt', 308, 313), mon('goblin_grunt', 315, stand(286))], 720)
+      [mon('goblin_grunt', 250, 313), mon('goblin_grunt', 260, 253), mon('goblin_grunt', 308, 313), mon('goblin_grunt', 325, 281)], 720)
 
 # 2 Bomb squad: a hump hides the base. Bombers chain when one goes.
 write(2, 'Bomb squad', 'goblin_hills', 'siege', 432, ['Press the ability button mid-flight.'],

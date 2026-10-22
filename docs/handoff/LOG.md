@@ -55,6 +55,13 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
 - **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
 
+## 2026-10-22 · claude · Merge of the cloud review, hygiene fixes (v1.24.0, private)
+- Merged `claude/brave-johnson-j555ql` (cloud review: relic scale, Relic Found card, level 4 runners, Disc ricochet; `review_2026-10-22.md`). Resolved with no conflicts.
+- **Done from the review:** B3 `tools/regress.mjs` no longer kills every Chrome (only its own PID); B4 logs and the commercial-game reference screenshot removed from git, `*.log` and `gen_log.txt` ignored; B6 leaderboard `duration` is real play seconds (`ResultsData.seconds`, `submit(board, score, seconds)`).
+- **Level 1 drift:** the cloud commit regenerated `level_01.json` with the grunt moved to x 315, which let Comet Fists one-shot level 1. `build_levels.py` now matches the committed level (grunt at 325, 281, hint text), so regenerating no longer changes it.
+- **Not done, need the owner:** B1 rename of "Omnitrix Dial" (the review flags it as the Ben 10 trademark and the jam asks for original ideas; the owner's goal names it, so it is their call); B2 boss re-hit retune (see the investigation entry: bosses are balanced around it); B5 phone orientation check on the deployed build.
+- `regress:quick` green.
+
 ## 2026-10-22 · claude · Projectile re-hit damage investigated (no change shipped)
 - A projectile that rests on a monster damages it on every physics contact. Tried a 20-step cooldown limited to bosses only (`bossRehitSteps`): bosses on levels 12, 16, 20 and 24 then became unwinnable for the greedy solver within 6 shots. So **all boss HP pools are balanced around that sustained contact damage**; a real fix means lowering boss HP (and armour) to match, then re-tuning bands 4-24. Reverted; behaviour unchanged. Do this after the jam if at all: it is the same feel players already know.
 

@@ -9,21 +9,21 @@ export function overallScore(): number {
 }
 
 /** Submits the level's best score and the new overall total. */
-export async function submitBests(levelId: number): Promise<void> {
+export async function submitBests(levelId: number, seconds?: number): Promise<void> {
   try {
     const best = profile.best[String(levelId)] ?? 0;
-    if (best > 0) await platform.leaderboard.submit(levelBoard(levelId), best);
+    if (best > 0) await platform.leaderboard.submit(levelBoard(levelId), best, seconds);
     const total = overallScore();
-    if (total > 0) await platform.leaderboard.submit(OVERALL_BOARD, total);
+    if (total > 0) await platform.leaderboard.submit(OVERALL_BOARD, total, seconds);
   } catch {
     /* scores are a bonus: never block the game */
   }
 }
 
 /** "Level rank #N" for the Results screen, or null when scores are unavailable. */
-export async function levelRankLine(levelId: number): Promise<string | null> {
+export async function levelRankLine(levelId: number, seconds?: number): Promise<string | null> {
   try {
-    await submitBests(levelId);
+    await submitBests(levelId, seconds);
     const me = await platform.leaderboard.myRank(levelBoard(levelId));
     return me && me.rank > 0 ? `Level rank #${me.rank}` : null;
   } catch {

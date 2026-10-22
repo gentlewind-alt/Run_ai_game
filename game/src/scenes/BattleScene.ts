@@ -105,6 +105,7 @@ export default class BattleScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('results', {
         levelId: this.levelId, won, why, stars, score: b.score, target: b.level.scoreTarget ?? 0, loadout: b.loadout, relicUnlocked: b.relicUnlocked,
+        seconds: Math.round(b.steps / 60),
       });
     };
     events.on('level:won', (e) => results(true, 'shots', e.stars));

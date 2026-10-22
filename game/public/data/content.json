@@ -364,7 +364,7 @@
       },
       "price": 1500,
       "launch": "Two heavy gauntlets hurled in tandem.",
-      "tap": "Dive-slam causing an earthquake wave, then two rock spikes burst from the ground ahead.",
+      "tap": "Dive-slam causing an earthquake wave, then a rock spike bursts from the ground ahead.",
       "physics": {
         "radius": 5,
         "density": 0.015,
@@ -384,11 +384,11 @@
         "quakeHopVy": 0,
         "quakeDamageMult": 0.1,
         "quakeStunSteps": 36,
-        "spikes": 2,
+        "spikes": 1,
         "spikeGap": 26,
         "spikeEvery": 8,
         "spikeRadius": 12,
-        "spikeMult": 0.08,
+        "spikeMult": 0.05,
         "spikePush": 0.5
       }
     },

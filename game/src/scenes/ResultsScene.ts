@@ -23,6 +23,8 @@ export interface ResultsData {
   target: number;
   loadout: string[];
   relicUnlocked?: string;
+  /** Play time of the attempt, sent with the score. */
+  seconds?: number;
 }
 
 /** Results overlay: stars, score, coins, and Next / Retry / Map. */
@@ -84,7 +86,7 @@ export default class ResultsScene extends Phaser.Scene {
 
     if (d.won && d.levelId > 0) {
       const rankTxt = text(this, W / 2, py + 131, ' ', C('d')).setDepth(2);
-      void levelRankLine(d.levelId).then((line) => {
+      void levelRankLine(d.levelId, d.seconds).then((line) => {
         if (line && rankTxt.scene) setText(rankTxt, this, line, C('d'));
       });
     }

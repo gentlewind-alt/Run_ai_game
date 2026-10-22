@@ -6,7 +6,7 @@
   "worldW": 432,
   "shots": 4,
   "hints": [
-    "Drag back from the sling, let go."
+    "Drag back from the sling, then let go."
   ],
   "scoreTarget": 720,
   "terrain": [
@@ -125,8 +125,8 @@
     },
     {
       "t": "goblin_grunt",
-      "x": 315,
-      "y": 279.0
+      "x": 325,
+      "y": 281
     }
   ]
 }

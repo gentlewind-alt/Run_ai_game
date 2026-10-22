@@ -8,7 +8,7 @@ export interface Platform {
   serverTime(): Promise<number>; // ms epoch
   profile(): Promise<{ id: string; name: string; avatarUrl?: string }>;
   safeArea(): { top: number; bottom: number; left: number; right: number };
-  leaderboard: { submit(board: string, score: number): Promise<void>; top(board: string, n: number): Promise<Row[]>; myRank(board: string): Promise<Row | null> };
+  leaderboard: { submit(board: string, score: number, seconds?: number): Promise<void>; top(board: string, n: number): Promise<Row[]>; myRank(board: string): Promise<Row | null> };
   share(text: string, params?: Record<string, string>): Promise<boolean>;
   ads: { rewardedReady(): Promise<boolean>; showRewarded(): Promise<boolean> };
   iap: { available(): boolean; buy(itemId: string): Promise<boolean>; owned(itemId: string): Promise<boolean> };

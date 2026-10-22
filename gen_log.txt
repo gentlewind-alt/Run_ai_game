@@ -1,9 +1,0 @@
-retry disc (1): VenusServerApiException: Rate limited; retry in 9 seconds.
-ok disc: Used 90 credits ú 109,730 remaining
-retry arrow (1): VenusServerApiException: Rate limited; retry in 9 seconds.
-ok arrow: Used 90 credits ú 109,640 remaining
-retry shooters (1): VenusServerApiException: Rate limited; retry in 6 seconds.
-ok shooters: Used 90 credits ú 109,550 remaining
-retry palms (1): VenusServerApiException: Rate limited; retry in 6 seconds.
-ok palms: Used 90 credits ú 109,460 remaining
-DONE

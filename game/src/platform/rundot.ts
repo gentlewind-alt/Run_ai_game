@@ -52,9 +52,9 @@ export const rundotPlatform: Platform = {
     onQuit: (f) => safe(() => RundotGameAPI.lifecycles.onQuit(f), undefined),
   },
   leaderboard: {
-    async submit(board: string, score: number): Promise<void> {
+    async submit(board: string, score: number, seconds?: number): Promise<void> {
       try {
-        await RundotGameAPI.leaderboard.submitScore({ score, duration: 60, ...boardRoute(board) });
+        await RundotGameAPI.leaderboard.submitScore({ score, duration: Math.max(1, seconds ?? 60), ...boardRoute(board) });
       } catch (e) {
         console.warn('leaderboard submit failed', e);
       }
