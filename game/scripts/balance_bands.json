@@ -1,15 +1,67 @@
 {
-  "_note": "Expected shot count bands for greedy solver per level (1-12). Used by tools/regress.mjs.",
-  "1": { "min": 2, "max": 3 },
-  "2": { "min": 2, "max": 3 },
-  "3": { "min": 2, "max": 3 },
-  "4": { "min": 3, "max": 5 },
-  "5": { "min": 3, "max": 5 },
-  "6": { "min": 3, "max": 5 },
-  "7": { "min": 3, "max": 5 },
-  "8": { "min": 3, "max": 5 },
-  "9": { "min": 3, "max": 5 },
-  "10": { "min": 3, "max": 5 },
-  "11": { "min": 3, "max": 5 },
-  "12": { "min": 3, "max": 5 }
+  "_note": "Expected shot count bands for greedy solver per level (1-16). Used by tools/regress.mjs.",
+  "1": {
+    "min": 2,
+    "max": 3
+  },
+  "2": {
+    "min": 2,
+    "max": 3
+  },
+  "3": {
+    "min": 2,
+    "max": 3
+  },
+  "4": {
+    "min": 3,
+    "max": 5
+  },
+  "5": {
+    "min": 3,
+    "max": 5
+  },
+  "6": {
+    "min": 3,
+    "max": 5
+  },
+  "7": {
+    "min": 3,
+    "max": 5
+  },
+  "8": {
+    "min": 3,
+    "max": 5
+  },
+  "9": {
+    "min": 3,
+    "max": 5
+  },
+  "10": {
+    "min": 3,
+    "max": 5
+  },
+  "11": {
+    "min": 3,
+    "max": 5
+  },
+  "12": {
+    "min": 3,
+    "max": 5
+  },
+  "13": {
+    "min": 3,
+    "max": 5
+  },
+  "14": {
+    "min": 3,
+    "max": 5
+  },
+  "15": {
+    "min": 3,
+    "max": 5
+  },
+  "16": {
+    "min": 3,
+    "max": 5
+  }
 }

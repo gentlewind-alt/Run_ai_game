@@ -1,6 +1,7 @@
 import { blade } from './blade';
 import { blastTube } from './blastTube';
 import { boomerang } from './boomerang';
+import { brahmastraArrow } from './brahmastraArrow';
 import { bulwarkDisc } from './bulwarkDisc';
 import { cleaver } from './cleaver';
 import { cometFists } from './cometFists';
@@ -31,6 +32,7 @@ export const WEAPONS: Record<string, WeaponImpl> = {
   w_steersong_arrow: steersongArrow,
   w_silkline_shooters: silklineShooters,
   w_kinetic_palms: kineticPalms,
+  w_brahmastra_arrow: brahmastraArrow,
 };
 
 /** The behaviour for a weapon row: `params.behavior` names another weapon's behaviour to reuse, otherwise the row's own id. */

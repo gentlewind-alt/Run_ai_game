@@ -1,0 +1,129 @@
+{
+  "id": 14,
+  "name": "Glacier steps",
+  "realm": "frost_peaks",
+  "kind": "runner",
+  "worldW": 648,
+  "shots": 6,
+  "hints": [
+    "Frost wolves are fast. Stop them early.",
+    "Fire melts ice golems."
+  ],
+  "scoreTarget": 900,
+  "escapeLimit": 1,
+  "exit": {
+    "x": 620,
+    "y": 307
+  },
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      120,
+      320
+    ],
+    [
+      150,
+      300
+    ],
+    [
+      240,
+      300
+    ],
+    [
+      255,
+      276
+    ],
+    [
+      335,
+      276
+    ],
+    [
+      365,
+      320
+    ],
+    [
+      648,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "stone",
+      "x": 185,
+      "y": 285,
+      "w": 10,
+      "h": 30
+    },
+    {
+      "m": "stone",
+      "x": 225,
+      "y": 285,
+      "w": 10,
+      "h": 30
+    },
+    {
+      "m": "wood",
+      "x": 205,
+      "y": 267,
+      "w": 50,
+      "h": 6
+    },
+    {
+      "m": "crystal",
+      "x": 270,
+      "y": 262,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "crystal",
+      "x": 312,
+      "y": 262,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 291,
+      "y": 245,
+      "w": 52,
+      "h": 6
+    }
+  ],
+  "monsters": [
+    {
+      "t": "ice_golem",
+      "x": 291,
+      "y": 261.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 205,
+      "y": 293.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 291,
+      "y": 232.0
+    },
+    {
+      "t": "frost_wolf",
+      "x": 395,
+      "y": 313.0,
+      "dir": 1,
+      "speed": 0.9,
+      "delay": 0.8
+    },
+    {
+      "t": "frost_wolf",
+      "x": 430,
+      "y": 313.0,
+      "dir": 1,
+      "speed": 1.0,
+      "delay": 1.4
+    }
+  ]
+}

@@ -2,6 +2,14 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-22 · claude · X3 realm 4 Frost Peaks built directly (v1.15.0, private)
+- **Why direct:** agy gemini and claude-sonnet both return `RESOURCE_EXHAUSTED: AI credits balance too low`; the routing rule falls through to Claude.
+- **Built:** realm `frost_peaks` (levels 13-16, background style `frost`, Map page 2 via "More realms >"), monsters `frost_wolf` (runner), `ice_golem` (shatters on death, shard blast), boss `frost_giant` (armour 16, icicle volley visual, chest crystal weak point 2x), generated art from the RUN CLI loaded through a new monster `sprite` field, weapon `w_brahmastra_arrow` (legendary, unlock boss `frost_giant`): the tap freezes the arrow and fires a 240 px beam for 90 steps sweeping 10 degrees (`fx.beam`, `DamageOpts.ignoreArmour`, wood x1.5, crystal x3, one charge), synthesized `sfx.brahmastra()`.
+- **Levels:** `scripts/build_levels.py` (13 Frozen pass, 14 Glacier steps, 15 Ice cathedral, 16 Frost throne); levels 13 and 15 have a recommended loadout (the solver otherwise used the legendary weapons). Greedy solver: 4 / 5 / 4 / 3 shots, no one-shot wins, bands 3-5 in `balance_bands.json`, score targets about 70% of solver score. `regress.mjs` now covers levels up to 16 (`LEVELS=13,14` env override for tuning).
+- **Checks:** `check`, `build`, `regress:quick` pass.
+- **Not covered by a headless assertion yet:** the Brahmastra beam (tick count, armour ignored, charge), the Frost Giant weak point and death, Map page 2 navigation, the boss unlocking the weapon. Level 1 JSON was restored to its committed version (the generator output differed slightly).
+- **Left:** X4 leaderboards, X5 Pocket Tanks ability pass, X6 realms 5-6, Omnitrix Dial and the other new weapons, sound pass (design in `docs/monster_mash/09_expansion_design.md`).
+
 ## 2026-10-22 · claude · agy quota exhausted; X1 done, X2 reviewed, handoff (v1.14.0 private)
 - **agy cannot run:** every agy call since 05:26 fails with `RESOURCE_EXHAUSTED: Your AI credits balance is too low` on both `gemini-3.8-flash-high` and `claude-sonnet-4-6`. `tools/agy_chain.sh` stopped at X2 (`INCOMPLETE agy_task_x2_slots6_balance`). Per the routing rule Claude now does the work directly. RUN credits are separate and fine (about 108,800).
 - **X1 (agy, done):** relic sprites at 1.5x on field/sling/queue in natural poses, shop info panel without overlap, locked silhouettes, dead procedural art removed, real effect captures.

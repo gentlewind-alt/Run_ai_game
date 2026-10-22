@@ -1,0 +1,164 @@
+{
+  "id": 15,
+  "name": "Ice cathedral",
+  "realm": "frost_peaks",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 6,
+  "hints": [
+    "Shatter the pillars, drop the spire."
+  ],
+  "scoreTarget": 1550,
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ],
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      120,
+      320
+    ],
+    [
+      150,
+      296
+    ],
+    [
+      320,
+      296
+    ],
+    [
+      350,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "stone",
+      "x": 205.0,
+      "y": 283.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 255.0,
+      "y": 283.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 230,
+      "y": 267,
+      "w": 60,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 205.0,
+      "y": 251.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 255.0,
+      "y": 251.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 230,
+      "y": 235,
+      "w": 60,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 205.0,
+      "y": 219.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 255.0,
+      "y": 219.0,
+      "w": 10,
+      "h": 26
+    },
+    {
+      "m": "stone",
+      "x": 230,
+      "y": 203,
+      "w": 60,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 165,
+      "y": 278,
+      "w": 12,
+      "h": 36
+    },
+    {
+      "m": "stone",
+      "x": 295,
+      "y": 278,
+      "w": 12,
+      "h": 36
+    },
+    {
+      "m": "iron",
+      "x": 230,
+      "y": 290,
+      "w": 36,
+      "h": 12
+    }
+  ],
+  "monsters": [
+    {
+      "t": "ice_golem",
+      "x": 230,
+      "y": 269.0
+    },
+    {
+      "t": "ice_golem",
+      "x": 230,
+      "y": 237.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 210,
+      "y": 193.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 250,
+      "y": 193.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 165,
+      "y": 253.0
+    },
+    {
+      "t": "ice_golem",
+      "x": 275,
+      "y": 281.0
+    }
+  ]
+}

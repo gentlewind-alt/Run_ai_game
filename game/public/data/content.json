@@ -545,6 +545,44 @@
         "recoilVx": -1.5,
         "recoilVy": -0.6
       }
+    },
+    {
+      "id": "w_brahmastra_arrow",
+      "sprite": "sprites/relics/w_brahmastra_arrow",
+      "name": "Brahmastra Arrow",
+      "archetype": "bow",
+      "element": "radiant",
+      "rarity": "legendary",
+      "baseDamage": 52,
+      "unlock": {
+        "boss": "frost_giant",
+        "level": 16
+      },
+      "price": 1500,
+      "launch": "Golden arrow that flies true.",
+      "tap": "Hangs in the air and fires a focused beam of light that ignores armour.",
+      "physics": {
+        "radius": 4,
+        "density": 0.012,
+        "spin": 0,
+        "gravity": 0.8,
+        "align": true
+      },
+      "ability": {
+        "mode": "button",
+        "label": "Beam",
+        "charges": 1
+      },
+      "params": {
+        "beamSteps": 90,
+        "beamLength": 240,
+        "beamWidth": 6,
+        "sweepDeg": 10,
+        "tickSteps": 6,
+        "tickMult": 0.25,
+        "woodMult": 1.5,
+        "crystalMult": 3
+      }
     }
   ],
   "stretchWeapons": [
@@ -869,6 +907,58 @@
         "visorMult": 2,
         "boulderEvery": 240
       }
+    },
+    {
+      "id": "frost_wolf",
+      "name": "Frost Wolf",
+      "hp": 30,
+      "weak": "hellfire",
+      "resist": null,
+      "note": "RUNS fast across the level toward the exit.",
+      "behavior": "runner",
+      "sprite": "sprites/monsters/frost_wolf",
+      "params": {
+        "speed": 1.1,
+        "selfMoving": 1
+      }
+    },
+    {
+      "id": "ice_golem",
+      "name": "Ice Golem",
+      "hp": 220,
+      "weak": "hellfire",
+      "resist": null,
+      "coins": 60,
+      "score": 500,
+      "note": "Shatters into ice shards when destroyed.",
+      "behavior": "ice_golem",
+      "density": 0.004,
+      "sprite": "sprites/monsters/ice_golem",
+      "params": {
+        "shatterRadius": 42,
+        "shatterDamage": 30
+      }
+    },
+    {
+      "id": "frost_giant",
+      "name": "Frost Giant",
+      "hp": 900,
+      "weak": "hellfire",
+      "resist": null,
+      "boss": true,
+      "coins": 300,
+      "score": 2500,
+      "note": "Armoured boss. The crystal in its chest glows now and then: hit it for 2x.",
+      "behavior": "frost_giant",
+      "density": 0.004,
+      "sprite": "sprites/monsters/frost_giant",
+      "params": {
+        "armour": 16,
+        "stompEvery": 300,
+        "weakEvery": 360,
+        "weakDuration": 120,
+        "weakMult": 2
+      }
     }
   ],
   "materials": [
@@ -957,6 +1047,25 @@
       "palette": "grey, red, orange glow",
       "name": "Iron Keep",
       "background": "keep"
+    },
+    {
+      "id": "frost_peaks",
+      "levels": [
+        13,
+        14,
+        15,
+        16
+      ],
+      "monsters": [
+        "frost_wolf",
+        "ice_golem",
+        "dark_elf_archer",
+        "dark_elf_hexer",
+        "frost_giant"
+      ],
+      "palette": "icy blue, white, cyan",
+      "name": "Frost Peaks",
+      "background": "frost"
     }
   ],
   "cosmetics": [

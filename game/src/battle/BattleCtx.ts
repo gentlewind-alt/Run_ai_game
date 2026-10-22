@@ -15,6 +15,7 @@ export interface DamageOpts {
   tag: DamageTag;
   fall?: boolean;
   quiet?: boolean; // no numbers or words (burn ticks)
+  ignoreArmour?: boolean; // skips the target's behaviour rules (armour, weak points): the Brahmastra beam
 }
 
 /** A block or a monster. */
@@ -159,5 +160,6 @@ export interface BattleCtx {
     webStrand?(x0: number, y0: number, x1: number, y1: number, steps?: number): void;
     webSplat?(x: number, y: number, steps?: number): void;
     muzzleFlash?(x: number, y: number): void;
+    beam?(seg: () => { x0: number; y0: number; x1: number; y1: number } | null, steps: number): void;
   };
 }

@@ -8,6 +8,8 @@ import { runner } from './runner';
 import { troll } from './troll';
 import { ironWarlord } from './ironWarlord';
 import { goblinChief } from './goblinChief';
+import { iceGolem } from './iceGolem';
+import { frostGiant } from './frostGiant';
 import { darkElfMatron } from './darkElfMatron';
 import type { MonsterBehavior } from './types';
 
@@ -17,6 +19,8 @@ export const MONSTERS: Record<string, MonsterBehavior> = {
   iron_warlord: ironWarlord,
   goblin_chief: goblinChief,
   dark_elf_matron: darkElfMatron,
+  ice_golem: iceGolem,
+  frost_giant: frostGiant,
 };
 
 export const behaviorFor = (def: MonsterDef): MonsterBehavior => MONSTERS[def.behavior ?? def.id] ?? basic;

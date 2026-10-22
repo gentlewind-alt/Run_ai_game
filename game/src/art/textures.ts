@@ -166,7 +166,7 @@ const ICONS: Record<string, string[]> = {
 export interface MonsterArt {
   w: number; // physics body width
   h: number; // physics body height
-  size: 16 | 24 | 32;
+  size: number;
 }
 
 export const MONSTER_ART: Record<string, MonsterArt> = {
@@ -181,6 +181,9 @@ export const MONSTER_ART: Record<string, MonsterArt> = {
   iron_warlord: { w: 26, h: 30, size: 32 },
   goblin_chief: { w: 18, h: 21, size: 24 },
   dark_elf_matron: { w: 17, h: 20, size: 24 },
+  frost_wolf: { w: 22, h: 14, size: 32 },
+  ice_golem: { w: 28, h: 30, size: 40 },
+  frost_giant: { w: 36, h: 46, size: 56 },
 };
 
 export const WEAPON_IDS = [

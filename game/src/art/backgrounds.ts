@@ -41,6 +41,13 @@ export const STYLES: Record<string, RealmStyle> = {
   },
 };
 
+// Frost Peaks: cold blue dusk, snowy ridges, drifting snowflakes, snow-covered ground.
+STYLES.frost = {
+  sky: ['8', '9', 'a'], edges: [80, 185], far: ['d', 'c'], mid: ['e', 'd'], near: ['f', 'e'],
+  trees: { fill: 'e', light: 'd', trunk: 'f', kind: 'pine' }, clouds: false, stars: true, moon: false, motes: 'c',
+  grass: ['c', 'd', 'e'], dirt: 'e', dirtDark: 'f', pebble: 'd',
+};
+
 export const styleFor = (realm: string): RealmStyle => STYLES[realm] ?? STYLES.hills;
 
 const hash = (n: number): number => {

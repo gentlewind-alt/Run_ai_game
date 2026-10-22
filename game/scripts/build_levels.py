@@ -246,3 +246,62 @@ write(12, 'Iron Throne', 'iron_keep', 'boss', 648,
       1400,
       shots=6,
       loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube', 'w_scrapheap_scattergun'])
+
+# ---------------------------------------------------------------- Frost Peaks
+
+# 13 Frozen pass: an ice tower on a snowy shelf. Ice (crystal) shatters at a touch, the stone floors do not.
+P13 = 300
+b13, top13 = tower(225, P13, w=56, tiers=2, pillar='stone', ph=28, floor='stone')
+b13 += [blk('stone', 168, P13 - 12, 10, 24)]
+write(13, 'Frozen pass', 'frost_peaks', 'siege', 540, ['Ice shatters easily. Stone does not.'],
+      [[0, 320], [130, 320], [160, P13], [310, P13], [340, 320], [540, 320]],
+      b13,
+      [mon('ice_golem', 225, stand(P13, 30)),
+       mon('dark_elf_archer', 205, stand(top13)), mon('dark_elf_archer', 245, stand(top13)),
+       mon('dark_elf_hexer', 168, stand(P13 - 24)), mon('ice_golem', 282, stand(P13, 30))],
+      1300, shots=6,
+      loadout=['w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_blast_tube', 'w_scrapheap_scattergun', 'w_hunters_boomerang'])
+
+# 14 Glacier steps: two shelves, wolves racing for the exit, a golem on the high shelf.
+LOW14, HIGH14 = 300, 276
+b14 = [
+    blk('stone', 185, LOW14 - 15, 10, 30), blk('stone', 225, LOW14 - 15, 10, 30), blk('wood', 205, LOW14 - 33, 50, 6),
+    blk('crystal', 270, HIGH14 - 14, 8, 28), blk('crystal', 312, HIGH14 - 14, 8, 28), blk('stone', 291, HIGH14 - 31, 52, 6),
+]
+write(14, 'Glacier steps', 'frost_peaks', 'runner', 648, ['Frost wolves are fast. Stop them early.', 'Fire melts ice golems.'],
+      [[0, 320], [120, 320], [150, LOW14], [240, LOW14], [255, HIGH14], [335, HIGH14], [365, 320], [648, 320]],
+      b14,
+      [mon('ice_golem', 291, stand(HIGH14, 30)), mon('dark_elf_hexer', 205, stand(LOW14)),
+       mon('dark_elf_archer', 291, stand(HIGH14 - 37)),
+       mon('frost_wolf', 395, stand(GROUND), dir=1, speed=0.9, delay=0.8),
+       mon('frost_wolf', 430, stand(GROUND), dir=1, speed=1.0, delay=1.4)],
+      900, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13}, shots=6)
+
+# 15 Ice cathedral: a tall crystal-and-stone spire with golems at the base and on the second floor.
+P15 = 296
+b15, top15 = tower(230, P15, w=60, tiers=3, pillar='stone', ph=26, floor='stone')
+b15 += [blk('stone', 165, P15 - 18, 12, 36), blk('stone', 295, P15 - 18, 12, 36), blk('iron', 230, P15 - 6, 36, 12)]
+write(15, 'Ice cathedral', 'frost_peaks', 'siege', 540, ['Shatter the pillars, drop the spire.'],
+      [[0, 320], [120, 320], [150, P15], [320, P15], [350, 320], [540, 320]],
+      b15,
+      [mon('ice_golem', 230, stand(P15 - 12, 30)), mon('ice_golem', 230, stand(P15 - 12 - 32, 30)),
+       mon('dark_elf_archer', 210, stand(top15)), mon('dark_elf_archer', 250, stand(top15)),
+       mon('dark_elf_hexer', 165, stand(P15 - 36)), mon('ice_golem', 275, stand(P15, 30))],
+      1550, shots=6,
+      loadout=['w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_blast_tube', 'w_scrapheap_scattergun', 'w_hunters_boomerang'])
+
+# 16 Frost throne: the Frost Giant on a shelf, ringed by ice and stone. Hit the glowing chest crystal for 2x.
+P16 = 296
+b16 = [
+    blk('stone', 168, P16 - 22, 12, 44), blk('stone', 302, P16 - 22, 12, 44),
+    blk('crystal', 188, P16 - 19, 8, 38), blk('crystal', 282, P16 - 19, 8, 38),
+    blk('stone', 235, P16 - 44 - 3, 144, 6), blk('crystal', 205, P16 - 53, 8, 20), blk('crystal', 265, P16 - 53, 8, 20),
+]
+write(16, 'Frost throne', 'frost_peaks', 'boss', 648,
+      ['Hit the glowing chest crystal for 2x.', 'Icicles fall in a band. Stay steady.'],
+      [[0, 320], [110, 320], [135, P16], [340, P16], [370, 320], [648, 320]],
+      b16,
+      [mon('frost_giant', 235, stand(P16, 46)), mon('dark_elf_archer', 205, stand(P16 - 50)),
+       mon('dark_elf_archer', 265, stand(P16 - 50))],
+      1100, shots=6,
+      loadout=['w_iron_cleaver', 'w_horned_scepter', 'w_hunters_pike', 'w_ashwood_staff', 'w_blast_tube', 'w_scrapheap_scattergun'])

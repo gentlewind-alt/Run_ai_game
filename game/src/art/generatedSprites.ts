@@ -9,6 +9,7 @@ const flightKey = (id: string): string => `gen_${id}`;
 const cardKey = (id: string): string => `gen_card_${id}`;
 
 export function preloadGeneratedSprites(scene: Phaser.Scene): void {
+  for (const m of data.content.monsters) if (m.sprite) scene.load.image(`gen_mon_${m.id}`, `${m.sprite}.png`);
   for (const w of data.content.weapons) {
     if (!w.sprite) continue;
     scene.load.image(flightKey(w.id), `${w.sprite}.png`);
@@ -25,6 +26,7 @@ function replace(scene: Phaser.Scene, key: string, from: string): void {
 
 /** Call after registerArt(): swaps in the generated art, including the state variants (charged, armed, split, planted) so a weapon never changes look mid-flight. */
 export function applyGeneratedSprites(scene: Phaser.Scene): void {
+  for (const m of data.content.monsters) if (m.sprite) replace(scene, m.id, `gen_mon_${m.id}`);
   for (const w of data.content.weapons) {
     if (!w.sprite) continue;
     const base = weaponTexture(w.id);

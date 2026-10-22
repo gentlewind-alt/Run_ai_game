@@ -3,8 +3,7 @@ import Phaser from 'phaser';
 import { blast, damage, damageAround, directHit, explode, push } from './damage';
 import {
   bolt, popWord, ring, shake, burst, electricField, quakeRings,
-  pingStar, flameBlast, webStrand, webSplat, muzzleFlash,
-} from './fx';
+  pingStar, flameBlast, webStrand, webSplat, muzzleFlash, beam } from './fx';
 import { MatterLib } from './matter';
 import { endProj, setGravity, spawnPellet } from './projectiles';
 import { escape } from './rules';
@@ -76,6 +75,7 @@ export function makeCtx(b: BattleState): BattleCtx {
       webStrand: (x0, y0, x1, y1, steps) => webStrand(b, x0, y0, x1, y1, steps),
       webSplat: (x, y, steps) => webSplat(b, x, y, steps),
       muzzleFlash: (x, y) => muzzleFlash(b, x, y),
+      beam: (seg, steps) => beam(b, seg, steps),
     },
   };
 }

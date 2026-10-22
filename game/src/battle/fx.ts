@@ -401,3 +401,42 @@ export function popWord(b: BattleState, x: number, y: number, word: string): voi
   const t = text(b.scene, x, y, word, C('4'), 1, C('q')).setDepth(13).setAngle(Phaser.Math.Between(-8, 8));
   b.scene.tweens.add({ targets: t, y: y - 14, scale: 1.4, alpha: 0, duration: 520, ease: 'Cubic.out', onComplete: () => t.destroy() });
 }
+
+/** A focused beam of light: white-gold core, soft halo, lens-flare star and a glyph ring at the muzzle; the screen dims while it lasts. */
+export function beam(b: BattleState, seg: () => { x0: number; y0: number; x1: number; y1: number } | null, steps: number): void {
+  const g = b.scene.add.graphics().setDepth(14);
+  const dim = b.scene.add.rectangle(b.worldW / 2, 135, b.worldW + 200, 400, 0x0b0b1a, 0).setDepth(13);
+  let t = 0;
+  b.actors.push({
+    update: () => {
+      t++;
+      const s = seg();
+      g.clear();
+      const fade = Math.max(0, Math.min(1, t / 8, (steps - t) / 12));
+      dim.setAlpha(0.15 * fade);
+      if (!s || t >= steps) {
+        g.destroy();
+        dim.destroy();
+        return true;
+      }
+      const pulse = 0.85 + 0.15 * Math.sin(t / 3);
+      g.lineStyle(11 * fade * pulse, C('4'), 0.3).lineBetween(s.x0, s.y0, s.x1, s.y1);
+      g.lineStyle(7 * fade, C('t'), 0.8).lineBetween(s.x0, s.y0, s.x1, s.y1);
+      g.lineStyle(3 * fade + 1, C('c'), 1).lineBetween(s.x0, s.y0, s.x1, s.y1);
+      // lens-flare star and a ring of glyph dots turning around the muzzle
+      g.lineStyle(1, C('c'), fade);
+      g.lineBetween(s.x0 - 9, s.y0, s.x0 + 9, s.y0).lineBetween(s.x0, s.y0 - 9, s.x0, s.y0 + 9);
+      g.lineBetween(s.x0 - 6, s.y0 - 6, s.x0 + 6, s.y0 + 6).lineBetween(s.x0 - 6, s.y0 + 6, s.x0 + 6, s.y0 - 6);
+      g.fillStyle(C('c'), 1).fillCircle(s.x0, s.y0, 3);
+      for (let k = 0; k < 8; k++) {
+        const a = (k / 8) * Math.PI * 2 + t / 12;
+        g.fillStyle(C('4'), fade).fillCircle(s.x0 + Math.cos(a) * 11, s.y0 + Math.sin(a) * 11, 1);
+      }
+      return false;
+    },
+    destroy: () => {
+      g.destroy();
+      dim.destroy();
+    },
+  });
+}

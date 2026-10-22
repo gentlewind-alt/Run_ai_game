@@ -1,0 +1,124 @@
+{
+  "id": 13,
+  "name": "Frozen pass",
+  "realm": "frost_peaks",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 6,
+  "hints": [
+    "Ice shatters easily. Stone does not."
+  ],
+  "scoreTarget": 1300,
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ],
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      130,
+      320
+    ],
+    [
+      160,
+      300
+    ],
+    [
+      310,
+      300
+    ],
+    [
+      340,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "stone",
+      "x": 202.0,
+      "y": 286.0,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 248.0,
+      "y": 286.0,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 225,
+      "y": 269,
+      "w": 56,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 202.0,
+      "y": 252.0,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 248.0,
+      "y": 252.0,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 225,
+      "y": 235,
+      "w": 56,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 168,
+      "y": 288,
+      "w": 10,
+      "h": 24
+    }
+  ],
+  "monsters": [
+    {
+      "t": "ice_golem",
+      "x": 225,
+      "y": 285.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 205,
+      "y": 225.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 245,
+      "y": 225.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 168,
+      "y": 269.0
+    },
+    {
+      "t": "ice_golem",
+      "x": 282,
+      "y": 285.0
+    }
+  ]
+}

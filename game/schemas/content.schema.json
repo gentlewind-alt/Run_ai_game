@@ -189,6 +189,7 @@
         "weak": { "$ref": "#/$defs/elementOrNull" },
         "resist": { "$ref": "#/$defs/elementOrNull" },
         "behavior": { "type": "string", "description": "Behaviour registry key; defaults to the monster id, then 'basic'." },
+        "sprite": { "type": "string", "description": "Generated art path under public/ without extension, e.g. sprites/monsters/frost_wolf" },
         "size": {
           "type": "object", "additionalProperties": false, "required": ["w", "h"],
           "properties": { "w": { "type": "number", "exclusiveMinimum": 0 }, "h": { "type": "number", "exclusiveMinimum": 0 } }

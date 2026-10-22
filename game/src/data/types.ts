@@ -28,6 +28,7 @@ export interface MonsterDef {
   hp: number;
   weak: Element | null;
   resist: Element | null;
+  sprite?: string; // generated art under public/ without extension (see art/generatedSprites.ts)
   behavior?: string;
   density?: number;
   boss?: boolean;

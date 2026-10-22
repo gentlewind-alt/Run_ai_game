@@ -127,7 +127,7 @@ export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: numb
     }
     if (dmg <= 0) return;
   }
-  dmg = t.behavior?.onDamaged?.(b.ctx, t, dmg) ?? dmg;
+  if (!o.ignoreArmour) dmg = t.behavior?.onDamaged?.(b.ctx, t, dmg) ?? dmg;
   t.hp -= dmg;
   t.cool = b.tune.hitCooldownSteps;
   t.hurt = 14;

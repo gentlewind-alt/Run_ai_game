@@ -23,7 +23,10 @@ const LIGHT: Record<string, { sky: string[]; ground: string; edge: string; dots:
   hills: { sky: ['9', 'a', 'b'], ground: 'n', edge: '6', dots: 'c', dotCount: 8 },
   wood: { sky: ['1', '8', '7'], ground: 'o', edge: '7', dots: 'b', dotCount: 14 },
   keep: { sky: ['f', 'q', '3'], ground: 'm', edge: 'e', dots: '4', dotCount: 12 },
+  frost: { sky: ['8', '9', 'a'], ground: 'c', edge: 'd', dots: 'c', dotCount: 16 },
 };
+
+const REALMS_PER_PAGE = 3;
 
 /** Level nodes in three realm strips, lit by realm, with Daily card to the side. */
 export default class MapScene extends Phaser.Scene {
@@ -31,9 +34,16 @@ export default class MapScene extends Phaser.Scene {
   private dailyCountdownText?: Phaser.GameObjects.Image;
   private nextCountdownTime = 0;
   private cachedServerTime = Date.now();
+  private page = 0;
 
   constructor() {
     super('map');
+  }
+
+  init(d?: { page?: number }): void {
+    const realms = data.content.realms;
+    const furthest = realms.reduce((best, r, i) => (r.levels.some((id) => levelUnlocked(id)) ? i : best), 0);
+    this.page = d?.page ?? Math.floor(furthest / REALMS_PER_PAGE);
   }
 
   create(): void {
@@ -46,14 +56,23 @@ export default class MapScene extends Phaser.Scene {
     const got = realms.reduce((n, r) => n + r.levels.reduce((m, id) => m + starsFor(id), 0), 0);
     text(this, W - 12, 13, `Stars ${got} of ${total}`, C('4'), 1, C('0')).setOrigin(1, 0.5);
 
-    realms.forEach((realm, ri) => {
-      const y0 = PANEL_Y0 + ri * (PANEL_H + PANEL_GAP);
+    realms.slice(this.page * REALMS_PER_PAGE, (this.page + 1) * REALMS_PER_PAGE).forEach((realm, li) => {
+      const ri = this.page * REALMS_PER_PAGE + li;
+      const y0 = PANEL_Y0 + li * (PANEL_H + PANEL_GAP);
       const light = LIGHT[realm.background ?? 'hills'] ?? LIGHT.hills;
       const open = realm.levels.some((id) => levelUnlocked(id));
       const prev = ri > 0 ? realms[ri - 1].name ?? realms[ri - 1].id : '';
       this.drawRealm(y0, light, realm.name ?? realm.id, open, prev);
       realm.levels.forEach((id, k) => this.node(id, k, y0, open));
     });
+
+    if (realms.length > REALMS_PER_PAGE) {
+      const lastPage = this.page >= Math.ceil(realms.length / REALMS_PER_PAGE) - 1;
+      makeButton(this, W / 2, 13, 96, 16, lastPage ? '< First realms' : 'More realms >', 'plain', () => {
+        sfx.click();
+        this.scene.restart({ page: lastPage ? 0 : this.page + 1 });
+      }, 6);
+    }
 
     if (data.config.features?.daily !== false) {
       this.drawDaily(PANEL_Y0);
