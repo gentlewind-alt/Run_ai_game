@@ -30,13 +30,20 @@ function iris(scene: Phaser.Scene, from: number, to: number, done?: () => void, 
     if (r > 0.5) hole.fillPoints(starPoints(W / 2, H / 2, r), true);
   };
   draw(from);
+  // An opening iris must never leave its black cover up if the scene's clock stalls (the host throttles, the scene restarts).
+  if (to >= R_MAX - 1) {
+    setTimeout(() => {
+      if (cover.active) cover.destroy();
+      if (hole.active) hole.destroy();
+    }, IRIS_MS + 500);
+  }
   scene.tweens.addCounter({
     from: 0, to: 1, duration: IRIS_MS, ease: 'Cubic.inOut',
     onUpdate: (tw) => draw(from + (to - from) * (tw.getValue() ?? 0)),
     onComplete: () => {
       if (to >= R_MAX - 1) {
-        cover.destroy();
-        hole.destroy();
+        if (cover.active) cover.destroy();
+        if (hole.active) hole.destroy();
       }
       done?.();
     },
@@ -50,7 +57,10 @@ export function irisOpen(scene: Phaser.Scene, wrap?: Wrap): void {
 
 /** Transition to another scene with the iris. Stops all other running scenes first. */
 export function goTo(from: Phaser.Scene, key: string, data?: object): void {
-  iris(from, R_MAX, 0, () => {
+  let went = false;
+  const go = (): void => {
+    if (went) return;
+    went = true;
     const mgr = from.scene.manager;
     for (const s of mgr.scenes) {
       if (s !== from && s.scene.key !== 'boot') {
@@ -58,5 +68,8 @@ export function goTo(from: Phaser.Scene, key: string, data?: object): void {
       }
     }
     from.scene.start(key, data);
-  });
+  };
+  iris(from, R_MAX, 0, go);
+  // The iris is a tween: if the host throttles or stalls the scene's clock the transition must still happen.
+  setTimeout(go, IRIS_MS + 400);
 }

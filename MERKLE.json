@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "d9cf5848d513ddced0f33fbb4557e6ea1aafb42c1e490867017c3a6f2029f6e9",
+  "hash": "34ddf0b883aef4bf22c3aba352065a8715edb030f4eaabd68fb2701e34b886f1",
   "children": [
     {
       "name": ".gitignore",
@@ -101,13 +101,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "2975e1212c066c843c1c6b28df0cf4a3a7f7b6025a78fce609db84bed92a0e78",
+      "hash": "012c4be7b683bd8aa06e4719a1a56d5dc43bc448a7856c956dd68b6d6fea2281",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "ef9cd13cf3eaec29b140af21390138c610a189e54592664d7a7373e36d107ac1",
+          "hash": "f169f311ef49cc1876a64abfdaaad1af1b9ac7396c291cd6ac7bc841643d2ad7",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -330,8 +330,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "9154fc48eb38e6f5fb40641bb691c66b9905e41973cff92000210ca98ac142e1",
-              "size": 113372
+              "hash": "336f10113a84a7da3968be33549039302efeaafdd60653b94ad4151cc345cd9c",
+              "size": 114316
             },
             {
               "name": "ref",
@@ -1957,8 +1957,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "cda72f30bb2647bb5ac06aa46645a1e813ec60796894a817c173cdc21b01244f",
-              "size": 10515
+              "hash": "82868b51902c9bc7fca6269d70a63747911cf462c9a7e52daa78d45776a76560",
+              "size": 10523
             }
           ]
         },
@@ -2110,7 +2110,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "bafe0df4d7bd5f31dbdb847b03bc9a79348b8ac5f6b7641c598baf63340b6114",
+      "hash": "a35bbb62efdb97a98382f60cf89ee6905314033c5f70d545e565212b36d4eeb8",
       "children": [
         {
           "name": ".gitignore",
@@ -2890,7 +2890,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "bb9128dc1c28d2b23a9c0904cf8a16bb37081ef1405eb7e066f81b9c1359ac92",
+          "hash": "0708fbbd2087382965f8ab4b43e8720ce68cb073b9bd46f45322e29e07eb89f2",
           "children": [
             {
               "name": "art",
@@ -3585,7 +3585,7 @@
               "name": "core",
               "path": "game/src/core",
               "type": "dir",
-              "hash": "b844c835a991ca50cba5724540641f406c4807e5266c783028d3fa43dee79968",
+              "hash": "eef8f9c3ea1493d1f726a2f6c5becabb97a9f7073684fcd226addbfdd382f226",
               "children": [
                 {
                   "name": "economy.ts",
@@ -3605,8 +3605,8 @@
                   "name": "flow.ts",
                   "path": "game/src/core/flow.ts",
                   "type": "file",
-                  "hash": "7039df07db1848bbefaac3a51ae84bf1c60c5d7eec6a1afdd70dcc2d83c32a33",
-                  "size": 2325
+                  "hash": "194bdd01788f095af55f1ecef2d95a3542fdea17683586bce168dbabf408d1bd",
+                  "size": 2867
                 },
                 {
                   "name": "leaderboards.ts",

@@ -55,6 +55,11 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
 - **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
 
+## 2026-10-22 · claude · Stuck "Back to map" on the host (v1.25.0, private + review)
+- **Report:** on the deployed build, Paused > Back to map left the pause menu up with a dark world (owner screenshot). Not reproducible headless (works from levels 4, 8, 12, mid-flight, with ability active), so the cause is host timing: the iris transition is a tween, and if the scene clock stalls the tween never completes, so the scene never starts (and an opening iris never removes its black cover: the same mechanism fits the "Retry blank screen" the refactor session saw).
+- **Fix (`core/flow.ts`):** `goTo` also starts the target scene from a `setTimeout` (iris time + 400 ms) once-only; an opening iris destroys its cover from a `setTimeout` as well. Verified headless with `tweens.pauseAll()`: the transition still reaches the map. Not verified on the RUN host itself; the owner should retry Back to map and Retry there.
+- `regress:quick` green.
+
 ## 2026-10-22 · claude · Merge of the cloud review, hygiene fixes (v1.24.0, private)
 - Merged `claude/brave-johnson-j555ql` (cloud review: relic scale, Relic Found card, level 4 runners, Disc ricochet; `review_2026-10-22.md`). Resolved with no conflicts.
 - **Done from the review:** B3 `tools/regress.mjs` no longer kills every Chrome (only its own PID); B4 logs and the commercial-game reference screenshot removed from git, `*.log` and `gen_log.txt` ignored; B6 leaderboard `duration` is real play seconds (`ResultsData.seconds`, `submit(board, score, seconds)`).
