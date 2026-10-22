@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { registerIcons } from '../art/icons';
-import { applyGeneratedSprites, preloadGeneratedSprites } from '../art/generatedSprites';
+import { applyGeneratedSprites, ensureMonsterTextures, preloadGeneratedSprites } from '../art/generatedSprites';
 import { registerArt } from '../art/textures';
 import { gridTexture } from '../art/pix';
 import { PAUSE_ICON, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../art/sprites';
@@ -14,14 +14,28 @@ export default class BootScene extends Phaser.Scene {
     super('boot');
   }
 
+  private failed: { key: string; url: string }[] = [];
+  private retries = 0;
+
   preload(): void {
+    this.load.on('loaderror', (f: Phaser.Loader.File) => this.failed.push({ key: f.key, url: String(f.url) }));
     preloadGeneratedSprites(this);
   }
 
   create(): void {
+    // A sprite that failed to load (blocked or a network hiccup) gets two more tries before the placeholder art is used.
+    if (this.failed.length && this.retries++ < 2) {
+      const again = this.failed;
+      this.failed = [];
+      again.forEach((f) => this.load.image(f.key, f.url));
+      this.load.once('complete', () => this.create());
+      this.load.start();
+      return;
+    }
     if ((import.meta as any).env?.DEV) checkRegistries();
     registerArt(this);
     applyGeneratedSprites(this);
+    ensureMonsterTextures(this);
     registerIcons(this);
     gridTexture(this, 'spk_on', SPK_ON);
     gridTexture(this, 'spk_off', SPK_OFF);

@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "bf1a1f889b63a6d4ff42e2d8d7e09bb0f571215ee83015ee08ec09e28cb766f4",
+  "hash": "0c6b87d04ab1e2a7659ee1ae8517735cfdf5abb21139659314a55ff6ff5ea5a2",
   "children": [
     {
       "name": ".gitignore",
@@ -101,13 +101,13 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "e20b5f94d1f360d8ff74b1682dd059408ade193cf28c359e52888f5860b3257e",
+      "hash": "687ee7daeac43aa9a548e226fa304917ad395962ae980e59c22e44042c6ad764",
       "children": [
         {
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "41d1c20ceec9f229652551d5b24e5094e157e64c25fa2ffa2311bd734b01fcc6",
+          "hash": "ccfbbd306e281f5555e2a0364533bf466d4c47938157bd6ddc425f64db407ec6",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -330,8 +330,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "c2579f379cf484ca6fad9d3e61ccc9e7ac1c31772e7fd619166de51fa7f5d757",
-              "size": 115742
+              "hash": "4d4b774dc2273937d2ce8338de9841002dd6bfb9f1c338bf6044499ee608c409",
+              "size": 116792
             },
             {
               "name": "ref",
@@ -387,7 +387,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "6609aa70d83381239d862dfa942ea3cbba501e4f77ce96e89f5a71d00e9df993",
+              "hash": "12a0d391384aa26564db75331cdc02b50e884ca59ca6bd00f9edf41e5a60f67f",
               "children": [
                 {
                   "name": "01_title.png",
@@ -604,7 +604,7 @@
                   "name": "gen",
                   "path": "docs/handoff/shots/gen",
                   "type": "dir",
-                  "hash": "7fd246bed15ef91ef1b57664b91ea81fccbda9072f25a7601a787b4fe09b4cfc",
+                  "hash": "294d499b5c90a92be067a864c21f4519b2fcedcbc44da85e18fe8c06a48ca60e",
                   "children": [
                     {
                       "name": "arrow.png",
@@ -682,6 +682,13 @@
                       "type": "file",
                       "hash": "c7c7c1e9791daa56f730b41476be21e6b9ebf44fd72d86f2483721b031092bb8",
                       "size": 530
+                    },
+                    {
+                      "name": "fallback_tyrant.png",
+                      "path": "docs/handoff/shots/gen/fallback_tyrant.png",
+                      "type": "file",
+                      "hash": "a91dbb267a07e9acc560658fcea2381b136cb83d3689c5433cc63625fcb31a55",
+                      "size": 80583
                     },
                     {
                       "name": "fists.png",
@@ -1957,8 +1964,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "3a1f588042346171e4932b70d7784d627e33da1124ef6468d9f0983376787839",
-              "size": 10506
+              "hash": "c44e66d5e01c47e340714ac9714a1607bdd23e48b6dcfec5f9d8019f81f6a7cf",
+              "size": 10513
             }
           ]
         },
@@ -2110,7 +2117,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "ff335dfdc3c683155bb5a6617a73e296f1e2129adb2f1996dbcd3f360ad4f41c",
+      "hash": "09231972bd4cccb9c82a09406306e338fa88fe3c371e01da3c5aafba8c40927d",
       "children": [
         {
           "name": ".gitignore",
@@ -2890,13 +2897,13 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "7f86e944467e146f5743646b1220bdb20c7bc6b865e51016d995ca8a96156975",
+          "hash": "3ad8301b8bb37712c0cdfa50c6a84e2610e53d1f7172e472b595e126440245ca",
           "children": [
             {
               "name": "art",
               "path": "game/src/art",
               "type": "dir",
-              "hash": "48203621be5c02a878ae092da65c4ef52048a32b2b5df48bae74f8f9fec74a31",
+              "hash": "876872e5f7084456edc2ec54cdadb59781307f598fe02c926de427a3d73ab376",
               "children": [
                 {
                   "name": "backgrounds.ts",
@@ -2916,8 +2923,8 @@
                   "name": "generatedSprites.ts",
                   "path": "game/src/art/generatedSprites.ts",
                   "type": "file",
-                  "hash": "e58fc362dfa7bf55023a863bd5f337d902a2665a35c8ff45ff44731438278792",
-                  "size": 2012
+                  "hash": "add914c42ac6f8c8230b7bba9311e6b452e73cb5544be83213476c455ffbbd48",
+                  "size": 2964
                 },
                 {
                   "name": "icons.ts",
@@ -3743,7 +3750,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "1a6de0f3e19188c97de48f821c3dc50f85d800a2e2ac57aa5346c09deaae1305",
+              "hash": "e2d312d298bbdcc219a4d3b1e3c8f1d987eb460f5c86c1bb22f04ac5989e70d0",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -3756,8 +3763,8 @@
                   "name": "BootScene.ts",
                   "path": "game/src/scenes/BootScene.ts",
                   "type": "file",
-                  "hash": "61398f31cbc1c6d5d3abf50ca7d5e2b107be22ed84c6117e11a7dff4e1a8d3f9",
-                  "size": 1952
+                  "hash": "7857cadb32ea040f5cbd30840b87c639bb57e45741cbc53f56b48f6e06e34afe",
+                  "size": 2589
                 },
                 {
                   "name": "CreditsScene.ts",
