@@ -2,3 +2,4 @@ vite_dev.log
 *.log
 gen_log.txt
 docs/concepts/
+docs/research/
