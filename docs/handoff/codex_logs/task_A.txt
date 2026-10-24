@@ -1,0 +1,3 @@
+Task A’s design note is drafted at [11_physics_pcg_notes.md](/C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/docs/monster_mash/11_physics_pcg_notes.md) (492 words).
+
+`npm run check` passed, with the existing level 99 warning. `npm run build` failed: esbuild hit “Access is denied” reading `../../../../../../..` while loading the Vite config. I stopped there as requested. The note is **not committed** because the required build check failed.

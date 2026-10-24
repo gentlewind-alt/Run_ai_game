@@ -3,3 +3,6 @@ vite_dev.log
 gen_log.txt
 docs/concepts/
 docs/research/
+game/scripts/generated/level_*_candidate.json
+game/scripts/__pycache__/
+docs/handoff/codex_logs/*.log

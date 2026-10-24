@@ -1,0 +1,5 @@
+Added [12_level_archetypes.md](C:/Users/samar/OneDrive/Desktop/Run_ai_game/.claude/worktrees/new-session-c737a3/docs/monster_mash/12_level_archetypes.md) with 12 buildable alternatives for levels 13–24, each with a visual reference, ASCII layout, intended first-shot trap, existing weapon solution, and 4–5-shot target. Updated the Task C entry in LOG.md and its STATUS.md card. No code or level files were changed.
+
+**Checks:** `npm run check` passed; Python and Node syntax checks passed; the document coverage check passed; `git diff --check` passed; Merkle seal and verify passed. `npm run build` failed at Vite because esbuild was denied access while resolving `vite.config.ts`.
+
+I couldn’t stage or commit: Git was denied permission to create `.git/worktrees/new-session-c737a3/index.lock`. The required commit subject is `Level archetype concepts via codex`. The dev server and headless Chrome probes weren’t run because this task changed no game code or levels. Existing Task B work in the worktree was left untouched.

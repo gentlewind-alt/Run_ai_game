@@ -1,28 +1,29 @@
 # Merkle Index
 
-Root hash: `4b97d8b2b8afb68586176e4bebc82f274b9a82689be6937ea91956589c1c3d12`
+Root hash: `24ef48cba216861c877ff579186cdc79ab6a29db0307986f1d0d9f66f8eaf43a`
 
 | Directory | Hash | Files | Purpose |
 |---|---|---|---|
-| `.` | `4b97d8b2` | 571 | MONSTER MASH: Slingshot Siege project root |
+| `.` | `24ef48cb` | 613 | MONSTER MASH: Slingshot Siege project root |
 | `architecture` | `37dc656f` | 5 | System design, module boundaries, data schemas, and agent workflow |
 | `catalogue` | `8baca4d1` | 3 | Four Realms source items (weapons, gear, consumables) for porting |
-| `docs` | `6398ac75` | 293 | Project documentation, design briefs, status, and agent logs |
+| `docs` | `f2685a63` | 330 | Project documentation, design briefs, status, and agent logs |
 | `docs/concepts` | `5745669f` | 1 | - |
 | `docs/concepts/weapons` | `468d3109` | 1 | - |
-| `docs/handoff` | `7d54e6e8` | 274 | Agent coordination: status board, append-only logs, and task briefs |
+| `docs/handoff` | `c1995204` | 309 | Agent coordination: status board, append-only logs, and task briefs |
+| `docs/handoff/codex_logs` | `f044e8db` | 3 | - |
 | `docs/handoff/ref` | `fe95b7a4` | 3 | - |
-| `docs/handoff/shots` | `94eeaeeb` | 231 | - |
-| `docs/monster_mash` | `2e316f23` | 11 | Design briefs, math models, platform reports, and review history |
+| `docs/handoff/shots` | `d9009f5c` | 262 | - |
+| `docs/monster_mash` | `4dfa9d97` | 13 | Design briefs, math models, platform reports, and review history |
 | `docs/release` | `a54b4b49` | 7 | - |
-| `game` | `e623ba76` | 230 | Phaser 3 + Vite game client (RUN project template) |
-| `game/public` | `f4fc7974` | 82 | Static assets, data files, level JSONs, and CDN assets |
+| `game` | `749c6ac6` | 231 | Phaser 3 + Vite game client (RUN project template) |
+| `game/public` | `b581411d` | 82 | Static assets, data files, level JSONs, and CDN assets |
 | `game/public/cdn-assets` | `64b4c5bd` | 3 | Public CDN-hosted image and sprite assets |
-| `game/public/data` | `78215f3a` | 27 | Game balance data: config, content catalog, and authored levels |
+| `game/public/data` | `7be8c534` | 27 | Game balance data: config, content catalog, and authored levels |
 | `game/public/sprites` | `7bae00af` | 49 | - |
 | `game/rundot` | `8f41ac4c` | 4 | RUN SDK configuration, textGen, and CLI hook manifests |
 | `game/schemas` | `3b12a4ba` | 4 | JSON schemas validating config, content, levels, and save files |
-| `game/scripts` | `bbd937f0` | 4 | Build scripts, level generator, and data validation tools |
+| `game/scripts` | `204cb66b` | 5 | Build scripts, level generator, and data validation tools |
 | `game/src` | `43a44f0e` | 121 | TypeScript source code for MONSTER MASH |
 | `game/src/art` | `6b84cd60` | 13 | Pixel art generators, palette definitions, textures, and 5x7 font |
 | `game/src/audio` | `354b8b8a` | 3 | Audio engine: beat clock synchronization and synthesized SFX |
@@ -35,4 +36,4 @@ Root hash: `4b97d8b2b8afb68586176e4bebc82f274b9a82689be6937ea91956589c1c3d12`
 | `game/src/platform` | `b4652aa4` | 5 | Platform abstraction layer and RUN SDK / local mock adapters |
 | `game/src/scenes` | `fd8a4399` | 10 | Phaser scenes: Boot, Title, Map, Battle, Loadout, Shop, Results |
 | `game/src/ui` | `0931ffed` | 4 | UI widgets, HUD overlays, coin animations, and buttons |
-| `tools` | `a274f4e1` | 35 | Repository maintenance, indexing, and verification tools |
+| `tools` | `a97b7f82` | 39 | Repository maintenance, indexing, and verification tools |

@@ -81,6 +81,10 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | X8b | Collapsible boss fortresses for levels 4, 8, 12, 16, 20, 24 | X8a | review | agy | 10-22 | brief `agy_task_x8b_boss_fortresses.md`; frames not slabs, stand-still and collapse checks |
 | X9 | Omnitrix Dial: one four-armed alien drops, splash + earthquake, leaps back to the sky | X8b | review | agy | 10-22 | brief `agy_task_x9_omnitrix_alien.md`; sprite `shots/gen/omni_alien.png` |
 | X8 | Relic scale + L4 runners + loadout/results UI (playtest 10-22) | | review | claude | 10-22 | done in the cloud session at the owner's request; see LOG |
+| PCG-A | Design note for physics PCG ideas | | review | codex | 10-25 | Deferred; only Task B was implemented in this run. |
+| PCG-B | Procedural fort generator and solver gate | | review | codex | 10-25 | Generator, static stability check, candidate-only mode and gate added; in-game candidate runs need Vite/headless Chrome. |
+| PCG-C | Level archetype concepts for later realms | | review | codex | 10-25 | 12 buildable alternatives for levels 13–24; Chapter 8 archetypes and thesis visual references documented in `docs/monster_mash/12_level_archetypes.md`. |
+| PCG-D | Daily Mash difficulty tiers | | review | codex | 10-25 | Deferred; only Task B was implemented in this run. |
 
 ## Waiting on owner
 

@@ -2,6 +2,18 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-25 · codex · PCG-C later-realm level archetypes
+- **Changed:** wrote `docs/monster_mash/12_level_archetypes.md` with one alternative for each level 13–24, covering the six Chapter 8 deception types, visual references, words-and-ASCII layouts, greedy-shot failure, existing weapon/ability solution, and a 4–5-shot authoring target. All concepts use current content; no new content, code, or level files were added.
+- **Checks:** `npm run check` passed (0 errors; existing level 99 warning, Daily Mash determinism and TypeScript passed); Python and Node syntax checks passed; `git diff --check` passed. `npm run build` stopped at Vite because esbuild could not resolve `game/vite.config.ts` (`Access is denied`).
+- **Not done:** Tasks A and D remain deferred. The existing Task B work remains outside this Task C commit. No gameplay probe was needed for this documentation-only task.
+
+## 2026-10-25 · local · PCG-B procedural fort generator and gate
+- **Changed:** added `game/scripts/fort_gen.py` with deterministic bottom-up frames, a pure-Python overlap/support/centre-of-mass check, and up to 50 seed retries. `build_levels.py --candidates --seed N --satellites` writes only six ignored candidate files; committed levels remain untouched. Added `tools/gate_level.mjs` for the 300-step stand-still, best-shot collapse, and solver-band gate. Added the Task B visual-reference notes and commands in `docs/monster_mash/11_physics_pcg_notes.md`.
+- **Checks:** `npm run check` passed (0 errors; existing level 99 warning); Python compile, deterministic/stability/clear-opening checks, six-candidate metadata/roster/dimension/spawn-separation checks, `node --check tools/gate_level.mjs`, and `git status --short game/public/data/levels` passed.
+- **Blocked:** `npm run build` and `npm run dev -- --host 127.0.0.1 --port 5212 --strictPort` reached Vite but esbuild could not resolve `game/vite.config.ts` (`Access is denied`). A level 4 candidate gate attempt stalled in `tools/probe.mjs` before `Runtime.enable` returned. No candidate is marked as passing and no first-three-passing-candidates table is claimed yet.
+- **Restore:** the temporary level 4 copy was restored byte-for-byte from `HEAD` after `git checkout --` could not write the shared worktree index; `git diff -- game/public/data/levels` is clean.
+- **Not done:** Task A, C and D were not part of this run. No level file, content balance, or deployed build was changed.
+
 ## 2026-10-22 · cloud · Bulwark Disc solver results (follow-up)
 - **Solver with the disc first, levels 4-11:** L4 3 shots, L5 4, L6 4, L7 4, L8 4, L10 4, L11 5, all won. **L9 did not finish** within 12 attempts (3 shots made, not done) and a rerun with 60 attempts produced no result before I stopped it. The project's relic assertion only needs at least 2 shots, which L9 meets, but I have not seen L9 won with the disc. The previous 1-jump version won L9 in 3 shots, so the weaker disc may need more shots there, or the greedy solver is just slow on L9.
 - **Not run:** the full `regress` (hangs on the cloud box). Someone with the local machine should run `npm run regress:quick` once and watch the relic sections.
@@ -54,6 +66,12 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Blockers before set-public:** B1, rename "Omnitrix Dial" (Ben 10 trademark, jam is original-only). B2, projectile re-hit damage makes boss fights machine-dependent: fix it and retune the bosses.
 - **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
 - **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
+
+## 2026-10-25 · claude + codex · Generated boss forts adopted for levels 4, 8, 16
+- **Codex task B** (`game/scripts/fort_gen.py`, `tools/gate_level.mjs`, `build_levels.py --candidates [--seed N] [--satellites]`) wrote a bottom-up fort generator with a static stability check; its sandbox could not run the browser gate, so the gate was run here (`tools/seed_search.sh` tries seeds).
+- **Gate results (stand-still, collapse >= 40%, solver band):** seed 1 with a satellite spire passes for levels 4 (3 shots, 100%), 8 (4 shots, 82%) and 16 (3 shots, 94%). Levels 12 (6 shots), 20 and 24 (3 blocks drift at spawn) never passed in 11 seeds, so their hand-built forts stay.
+- **Adopted:** `ADOPTED = {4: 1, 8: 1, 16: 1}` in `build_levels.py` (use `--no-adopt` for the hand-written ones). Boss forts for 4, 8, 16 are now taller, with a separate satellite spire as in the thesis pictures. `regress:quick` green (4: 3 shots, 8: 4, 16: 3). Screenshots: `docs/handoff/shots/generated_vs_current.png`.
+- Codex logs are git-ignored; task A note: `docs/monster_mash/11_physics_pcg_notes.md`. Tasks C (level concepts) and D (Daily tiers, flag off) are still with Codex.
 
 ## 2026-10-22 · claude · X9 Omnitrix alien drop
 - Replaced the five forearms with one giant four-armed alien (generated sprite `omni_alien`, processed to `game/public/sprites/arms/omni_alien.png`, 64 px; the `omni_arm_brute` art is the fallback if it fails to load): tap -> green flash, dial hangs; alien falls onto the nearest monster; impact = splash (`blast`, radius 40, 1.4x), earthquake (blocks hop, monsters hurt, stunned 60 steps and knocked flat within 110 px), three green rings, quake rings, shake, hit stop, squash; after 18 steps it leaps back up and leaves the screen, then `endProj`. All numbers in the data row (`alienHeight`, `fallSpeed`, `splashRadius`, `splashMult`, `quakeRangeX`, `quakeMult`, `quakeHopVy`, `stunSteps`, `knockX`, `holdSteps`, `bounceSpeed`, `bounceGravity`).

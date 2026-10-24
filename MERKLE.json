@@ -2,14 +2,14 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "4b97d8b2b8afb68586176e4bebc82f274b9a82689be6937ea91956589c1c3d12",
+  "hash": "24ef48cba216861c877ff579186cdc79ab6a29db0307986f1d0d9f66f8eaf43a",
   "children": [
     {
       "name": ".gitignore",
       "path": ".gitignore",
       "type": "file",
-      "hash": "69f085e606b1e3f5aeff8d1ab01dbf065ef394076739f80c610ec79c428447b2",
-      "size": 46
+      "hash": "6c8b7feadba0c25eae7788d76185efe12100e8a373687833b16f39d4edf7cf74",
+      "size": 163
     },
     {
       "name": "AGENTS.md",
@@ -101,7 +101,7 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "6398ac75eba6c80311e76e18b7976af296464b5ce13aef2a5c0d0b4f2a4aa93c",
+      "hash": "f2685a63b97209ac4eb5c71d345416dda457fd7cc0cdacd5434cf38e18490a34",
       "children": [
         {
           "name": "concepts",
@@ -130,7 +130,7 @@
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "7d54e6e863a234fa7233f6b3af1b918a9a3d324e251f9c619d6e94507c8230a0",
+          "hash": "c1995204d3047cffe2e3c905b89cd8f3abe2cfbdd2aedf392a15cc6b80630c2e",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -371,6 +371,42 @@
               "size": 4613
             },
             {
+              "name": "codex_logs",
+              "path": "docs/handoff/codex_logs",
+              "type": "dir",
+              "hash": "f044e8db114ab12b80bf875a557ce001592171503aa34a892d8e9583b019c1bb",
+              "children": [
+                {
+                  "name": "task_A.txt",
+                  "path": "docs/handoff/codex_logs/task_A.txt",
+                  "type": "file",
+                  "hash": "959e8a6e062471829f99aa4f979b3db93df7879dfb12ec836f1fcf67916cf5ca",
+                  "size": 483
+                },
+                {
+                  "name": "task_B.txt",
+                  "path": "docs/handoff/codex_logs/task_B.txt",
+                  "type": "file",
+                  "hash": "c6d4e9a51cf38965d6eeea6631a0e5f565cdab233f10da56a09d3081482dcb8f",
+                  "size": 1647
+                },
+                {
+                  "name": "task_C.txt",
+                  "path": "docs/handoff/codex_logs/task_C.txt",
+                  "type": "file",
+                  "hash": "a4f30338978bf6a7b9ca52aba2f523073471582e165239d1d2cb29a2c4a19316",
+                  "size": 1034
+                }
+              ]
+            },
+            {
+              "name": "codex_tasks_pcg.md",
+              "path": "docs/handoff/codex_tasks_pcg.md",
+              "type": "file",
+              "hash": "129e038d683b4098497c0db3f2b1fb97fa2b7e92a7e42a58e83da6176c07489d",
+              "size": 9691
+            },
+            {
               "name": "HANDOFF_2026-10-22.md",
               "path": "docs/handoff/HANDOFF_2026-10-22.md",
               "type": "file",
@@ -381,8 +417,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "5e0ec1783edd0c7f64017c6bacbdeea3aa1c9f3b4d3d6bd2f9ede4e738800a97",
-              "size": 122972
+              "hash": "92a51cd6843dfee9da72f085b5e6c0eced2dadcad4025434728ea9fc493003c7",
+              "size": 126580
             },
             {
               "name": "ref",
@@ -438,7 +474,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "94eeaeebd9b7e56e4a86fce92b63b2b22283097fefa8fc28ef0acee7bcd3876d",
+              "hash": "d9009f5c96b4ab4546fec30f58b22223c0facd5f5e2e388d5151a3492ea48293",
               "children": [
                 {
                   "name": "01_title.png",
@@ -1214,6 +1250,13 @@
                   ]
                 },
                 {
+                  "name": "generated_vs_current.png",
+                  "path": "docs/handoff/shots/generated_vs_current.png",
+                  "type": "file",
+                  "hash": "19d5387c3432026ca31f27cd8859a1b33f2175927e8cd58a3969538fb11d1eca",
+                  "size": 414367
+                },
+                {
                   "name": "land",
                   "path": "docs/handoff/shots/land",
                   "type": "dir",
@@ -1479,6 +1522,224 @@
                   "type": "file",
                   "hash": "9ca95a7df2ba14b64fe95412ff0df782fbfd37f0178a3902b5ca962d69baf0f9",
                   "size": 39465
+                },
+                {
+                  "name": "levels",
+                  "path": "docs/handoff/shots/levels",
+                  "type": "dir",
+                  "hash": "83b94ac1055909be169f4a051580cc24905e2aacc9f696bd33dcb0f369c15b8a",
+                  "children": [
+                    {
+                      "name": "level_01.png",
+                      "path": "docs/handoff/shots/levels/level_01.png",
+                      "type": "file",
+                      "hash": "718b54164408e770211b0d097c2b5af3ef93292e1e69af8bd96e0735c1ba527c",
+                      "size": 82755
+                    },
+                    {
+                      "name": "level_02.png",
+                      "path": "docs/handoff/shots/levels/level_02.png",
+                      "type": "file",
+                      "hash": "5340cd767ee5f8fb67fec53e53381cfc08336628e803045a9ae5b8f3f2de1894",
+                      "size": 83079
+                    },
+                    {
+                      "name": "level_03.png",
+                      "path": "docs/handoff/shots/levels/level_03.png",
+                      "type": "file",
+                      "hash": "4e984366d398df359bc42ea36d0c185aa2618695947e547b96aab8eac3a214da",
+                      "size": 84182
+                    },
+                    {
+                      "name": "level_04.png",
+                      "path": "docs/handoff/shots/levels/level_04.png",
+                      "type": "file",
+                      "hash": "2256651c376e8d9b212a50e7ab319b3dd40127d8b031fe710050dcf4c2ef8da9",
+                      "size": 85789
+                    },
+                    {
+                      "name": "level_05.png",
+                      "path": "docs/handoff/shots/levels/level_05.png",
+                      "type": "file",
+                      "hash": "08e26f1869a7d72f581f4923c65385bb3a8f42c926132b013e27d4681872f7b0",
+                      "size": 90907
+                    },
+                    {
+                      "name": "level_06.png",
+                      "path": "docs/handoff/shots/levels/level_06.png",
+                      "type": "file",
+                      "hash": "90ad4dd390b97360f0de4836979d1109291c4a857cd664a4c7780bf784aa10b4",
+                      "size": 91368
+                    },
+                    {
+                      "name": "level_07.png",
+                      "path": "docs/handoff/shots/levels/level_07.png",
+                      "type": "file",
+                      "hash": "349f37f86950f18ae17f60ad1506d33b06dab4352b9ec2c6b04f2e7509b58dac",
+                      "size": 90740
+                    },
+                    {
+                      "name": "level_08.png",
+                      "path": "docs/handoff/shots/levels/level_08.png",
+                      "type": "file",
+                      "hash": "ff0fae33e06e20e03e71db838b3977ccdad08d8a3ea3499f7c31f5cbfbdbacfd",
+                      "size": 92834
+                    },
+                    {
+                      "name": "level_09.png",
+                      "path": "docs/handoff/shots/levels/level_09.png",
+                      "type": "file",
+                      "hash": "e3e2f7bb40de011009093732ee31c2428984456f1288f5ca8d73cc88f9706d9f",
+                      "size": 82735
+                    },
+                    {
+                      "name": "level_10.png",
+                      "path": "docs/handoff/shots/levels/level_10.png",
+                      "type": "file",
+                      "hash": "85a76371a13e43d1bd975051c92787ac9e57de7aca0bcf7033d0a602afcde611",
+                      "size": 84668
+                    },
+                    {
+                      "name": "level_11.png",
+                      "path": "docs/handoff/shots/levels/level_11.png",
+                      "type": "file",
+                      "hash": "9dfca90ee8d2192fbb3b5904a96f559cee4fd7a695a0af5e110d89cda6579dba",
+                      "size": 86004
+                    },
+                    {
+                      "name": "level_12.png",
+                      "path": "docs/handoff/shots/levels/level_12.png",
+                      "type": "file",
+                      "hash": "cbe36bfd471190b27d52a106749216fc1f5b2e2140af09e9083293a5f4e2fdfd",
+                      "size": 82938
+                    },
+                    {
+                      "name": "level_13.png",
+                      "path": "docs/handoff/shots/levels/level_13.png",
+                      "type": "file",
+                      "hash": "4695cf899e1e5e3913a212ab2d8daca8bc6be9ac068a63f7dbcbed21fe0e0892",
+                      "size": 90606
+                    },
+                    {
+                      "name": "level_14.png",
+                      "path": "docs/handoff/shots/levels/level_14.png",
+                      "type": "file",
+                      "hash": "17f1ba6e4ed0bb668abccb30022b9d9a2289edbc9b54ff880f7f1175efdfa773",
+                      "size": 93669
+                    },
+                    {
+                      "name": "level_15.png",
+                      "path": "docs/handoff/shots/levels/level_15.png",
+                      "type": "file",
+                      "hash": "8f98d84853cdd2264de332989ad5f779655ec6694b1b0b176dfb694911630842",
+                      "size": 95698
+                    },
+                    {
+                      "name": "level_16.png",
+                      "path": "docs/handoff/shots/levels/level_16.png",
+                      "type": "file",
+                      "hash": "49e68beb58bdd4b3981b84b6a582ebc2aecc3d1c75dcfa85d696bfec0064fb77",
+                      "size": 93313
+                    },
+                    {
+                      "name": "level_17.png",
+                      "path": "docs/handoff/shots/levels/level_17.png",
+                      "type": "file",
+                      "hash": "703593cae766b80727f991d3b74a2d5c0d17fe4d261b93ce0bee36e1bfb42a0f",
+                      "size": 87781
+                    },
+                    {
+                      "name": "level_18.png",
+                      "path": "docs/handoff/shots/levels/level_18.png",
+                      "type": "file",
+                      "hash": "e68c9256b7d02f6b7b566bee15b7bf8d136cd54467bafb59c838d905a480d5b9",
+                      "size": 87883
+                    },
+                    {
+                      "name": "level_19.png",
+                      "path": "docs/handoff/shots/levels/level_19.png",
+                      "type": "file",
+                      "hash": "3f4f24d69c78c99e5ae67904cb70371c02314f9e290f551f1cc3d7a5b3ac516b",
+                      "size": 88504
+                    },
+                    {
+                      "name": "level_20.png",
+                      "path": "docs/handoff/shots/levels/level_20.png",
+                      "type": "file",
+                      "hash": "0fab5175be98abb1eaa33d713cab8ff6953c6e188c8bf8f7ba0bff8c34e59df7",
+                      "size": 89321
+                    },
+                    {
+                      "name": "level_21.png",
+                      "path": "docs/handoff/shots/levels/level_21.png",
+                      "type": "file",
+                      "hash": "38ae3998da75ab855ff8f934293c69b742b4782f4050a78a48e4a7c58f87767c",
+                      "size": 97382
+                    },
+                    {
+                      "name": "level_22.png",
+                      "path": "docs/handoff/shots/levels/level_22.png",
+                      "type": "file",
+                      "hash": "f45f67f8d98e8ae196e56f926509a64210b5b5998d767e44ec61ab04e90a9810",
+                      "size": 92402
+                    },
+                    {
+                      "name": "level_23.png",
+                      "path": "docs/handoff/shots/levels/level_23.png",
+                      "type": "file",
+                      "hash": "e4d17b29b0f47088e8fa49b65b71702028261b1c4775679431a61bdff2c08126",
+                      "size": 94844
+                    },
+                    {
+                      "name": "level_24.png",
+                      "path": "docs/handoff/shots/levels/level_24.png",
+                      "type": "file",
+                      "hash": "b7c376d31e0c2fb866e0ca21321801127e2cd1061985d8599348068e77425de2",
+                      "size": 91763
+                    },
+                    {
+                      "name": "realm_dark_elf_wood.png",
+                      "path": "docs/handoff/shots/levels/realm_dark_elf_wood.png",
+                      "type": "file",
+                      "hash": "fd7186b8c4da78d3a72cec64ad6e4976b151ef3f88f07414650c3c2898cce670",
+                      "size": 194050
+                    },
+                    {
+                      "name": "realm_ember_forge.png",
+                      "path": "docs/handoff/shots/levels/realm_ember_forge.png",
+                      "type": "file",
+                      "hash": "5dd397e028d949f83236eb1e846658c84d6d91fb1acd14527688dff1b1f995bf",
+                      "size": 161900
+                    },
+                    {
+                      "name": "realm_frost_peaks.png",
+                      "path": "docs/handoff/shots/levels/realm_frost_peaks.png",
+                      "type": "file",
+                      "hash": "d7e68152f1d4cf2995a9c8e680d8a11b24099145d61d7b2f7806830700e57aa7",
+                      "size": 216416
+                    },
+                    {
+                      "name": "realm_goblin_hills.png",
+                      "path": "docs/handoff/shots/levels/realm_goblin_hills.png",
+                      "type": "file",
+                      "hash": "0b1ea4243fc0233835880d713311b56a9942a07894a1f687d14180373bdea8b3",
+                      "size": 175332
+                    },
+                    {
+                      "name": "realm_iron_keep.png",
+                      "path": "docs/handoff/shots/levels/realm_iron_keep.png",
+                      "type": "file",
+                      "hash": "79b2758acb554b7eb5d6ec0e9add89eaae8ebf588077fb7bb0c964f9ea4a17e5",
+                      "size": 172210
+                    },
+                    {
+                      "name": "realm_sky_citadel.png",
+                      "path": "docs/handoff/shots/levels/realm_sky_citadel.png",
+                      "type": "file",
+                      "hash": "1b03c7e94772e630bae4476e7df7ca4bbaf04c2d92593390e1c6cfc14aab5cff",
+                      "size": 183420
+                    }
+                  ]
                 },
                 {
                   "name": "omnitrix_a.png",
@@ -2143,8 +2404,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "b88378e81de00fd6f5e89c239b3cfc0fdc8dffd528caefbe60813b1572680c38",
-              "size": 11109
+              "hash": "a6007be09f82f62cc2fb30304db73c214b7cde156ce3f6a33e7aa4d1cd36fcef",
+              "size": 11796
             }
           ]
         },
@@ -2152,7 +2413,7 @@
           "name": "monster_mash",
           "path": "docs/monster_mash",
           "type": "dir",
-          "hash": "2e316f23f2cdc3cd3d1d6da7b742a641e7a368a0f9ab53a8965eaf8c45612db4",
+          "hash": "4dfa9d97f30b6314d2c1fc530b0c53d0e4982eb199461b9bd21871544c3dc074",
           "children": [
             {
               "name": "00_local_kickoff.md",
@@ -2230,6 +2491,20 @@
               "type": "file",
               "hash": "8619a12be1f93877222479841fad8b6a6c3be0204a6ee9831d32b7152ec394e9",
               "size": 3393
+            },
+            {
+              "name": "11_physics_pcg_notes.md",
+              "path": "docs/monster_mash/11_physics_pcg_notes.md",
+              "type": "file",
+              "hash": "3479cfaa4f39c02d22e4e9616fcb7703d93d886397505d395dc71461d17e196f",
+              "size": 6471
+            },
+            {
+              "name": "12_level_archetypes.md",
+              "path": "docs/monster_mash/12_level_archetypes.md",
+              "type": "file",
+              "hash": "b708ed8323e2dcdb3eff32ff9d7fb10e3d4f019bb97542f1cb32fd297fb37da4",
+              "size": 12863
             }
           ]
         },
@@ -2296,7 +2571,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "e623ba766a059d76fa8104dc453a0eab5a6e7b19a43770b3d53eeb1ae0d40f92",
+      "hash": "749c6ac61b06a3804d2622a33fb0434541335d663b865cf28378d809edbe7e49",
       "children": [
         {
           "name": ".gitignore",
@@ -2372,7 +2647,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "f4fc7974918ad039b66965496ced16317b455f0769260af3bf179588f8e4cba6",
+          "hash": "b581411d0102b5439c1f2628198b05648ef3b494dffa557adcb89ad369bfbeb3",
           "children": [
             {
               "name": "cdn-assets",
@@ -2407,7 +2682,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "78215f3aaead5d921f971e5be4716126e9620b35d9c3df5eb0e5924af2fa9021",
+              "hash": "7be8c534a85629186a2764cc7a44662dfb098e224764c0be851d826b59cb42f9",
               "children": [
                 {
                   "name": "config.json",
@@ -2427,7 +2702,7 @@
                   "name": "levels",
                   "path": "game/public/data/levels",
                   "type": "dir",
-                  "hash": "bc9e88d067762a2d7aee1fdbb568d2ca408a58fdeee26922fb89d2d081470d03",
+                  "hash": "7da15c4b50022eeb6facbc85b554d8e39bc4a89add795f7b92d4c646dfedaf66",
                   "children": [
                     {
                       "name": "level_01.json",
@@ -2454,8 +2729,8 @@
                       "name": "level_04.json",
                       "path": "game/public/data/levels/level_04.json",
                       "type": "file",
-                      "hash": "440e8e5a177ac1e64a647d71aa77fe958a4eb6378606f5f2b553afaa0a46ab8b",
-                      "size": 2345
+                      "hash": "746e2113379ad6f0b019480038cc4c6cf8fee1779f91c8cb741c18785bf6cf24",
+                      "size": 3158
                     },
                     {
                       "name": "level_05.json",
@@ -2482,8 +2757,8 @@
                       "name": "level_08.json",
                       "path": "game/public/data/levels/level_08.json",
                       "type": "file",
-                      "hash": "aeb570ae5419dac19412f084b87c7964ab879023df004e680220522d54f122b5",
-                      "size": 2453
+                      "hash": "a1599b102ab5608a66d54d27d49b7d2105279530154ad8f5d63c13c867e31dbd",
+                      "size": 2697
                     },
                     {
                       "name": "level_09.json",
@@ -2538,8 +2813,8 @@
                       "name": "level_16.json",
                       "path": "game/public/data/levels/level_16.json",
                       "type": "file",
-                      "hash": "4c8b5aa38da0938f9d8522111f95fde50df6ff3aaef2ee28a9f49fe4f7fc7b20",
-                      "size": 1856
+                      "hash": "9e72a20d0516fb743e14cab983361c395f1b4e23df37c3c24a8761dbf855c472",
+                      "size": 2670
                     },
                     {
                       "name": "level_17.json",
@@ -3097,7 +3372,7 @@
           "name": "scripts",
           "path": "game/scripts",
           "type": "dir",
-          "hash": "bbd937f0954babb420500fb2fa513a4040dbe1ebc3a807da454207e4967581aa",
+          "hash": "204cb66b8d6f45d807c2c2037975aa4a40e7db30936678705d52908dfa4ca74b",
           "children": [
             {
               "name": "balance_bands.json",
@@ -3110,8 +3385,8 @@
               "name": "build_levels.py",
               "path": "game/scripts/build_levels.py",
               "type": "file",
-              "hash": "c28d791cfb064439228d6d58cbfaa1f01b39f82028d3c283fb5160ce79121d1a",
-              "size": 26393
+              "hash": "1fdcfcdb3849e2d4c30d529573f75bfa8b7e4e0aadb6971e91580bd8e4c1eae2",
+              "size": 33200
             },
             {
               "name": "check-daily.mjs",
@@ -3126,6 +3401,13 @@
               "type": "file",
               "hash": "9b1c561d93c4985ac6bac39c62cbe2f6d70a212b84a3b8018f2048651f58aa27",
               "size": 8749
+            },
+            {
+              "name": "fort_gen.py",
+              "path": "game/scripts/fort_gen.py",
+              "type": "file",
+              "hash": "d39b0e968f48cb88675508fe286e175a0a7f48f726d331fe896e758019452008",
+              "size": 7599
             }
           ]
         },
@@ -4160,7 +4442,7 @@
       "name": "tools",
       "path": "tools",
       "type": "dir",
-      "hash": "a274f4e1199cfb2670de6d8c78cfda94f4a0a97a98e3af68fe72a65c532632fc",
+      "hash": "a97b7f82975140682e3c7b88950926170d01936a5e6455af69e17174d9c702aa",
       "children": [
         {
           "name": "agy_chain.sh",
@@ -4203,6 +4485,13 @@
           "type": "file",
           "hash": "0c7b14455db9b3acab2685e4926d15cf091a64d216bd1dc18a64b248ff0435e7",
           "size": 1183
+        },
+        {
+          "name": "gate_level.mjs",
+          "path": "tools/gate_level.mjs",
+          "type": "file",
+          "hash": "b4166bd9fc11c2e073b0fc465e2fd358e761f2c78ff5b6beee4bbc177e7877b7",
+          "size": 2953
         },
         {
           "name": "gen_all_concepts.py",
@@ -4282,6 +4571,13 @@
           "size": 13397
         },
         {
+          "name": "pdf_pages.mjs",
+          "path": "tools/pdf_pages.mjs",
+          "type": "file",
+          "hash": "0e44c4d20cc0e38fdc266acb1a9687a4a5cf1a9956f49d992a50aa6d6db2f825",
+          "size": 2328
+        },
+        {
           "name": "probe.mjs",
           "path": "tools/probe.mjs",
           "type": "file",
@@ -4331,11 +4627,25 @@
           "size": 10370
         },
         {
+          "name": "run_codex_tasks.ps1",
+          "path": "tools/run_codex_tasks.ps1",
+          "type": "file",
+          "hash": "5a4549bcaee92fe4ed2fd31e5f8d3530b53b443eb10ea1c7fca41118eba1d86c",
+          "size": 1852
+        },
+        {
           "name": "scene_shot.mjs",
           "path": "tools/scene_shot.mjs",
           "type": "file",
           "hash": "615147329f051b6a8672c7de71cd99cabebb7e24771da4976e719a1da266bedd",
           "size": 3233
+        },
+        {
+          "name": "seed_search.sh",
+          "path": "tools/seed_search.sh",
+          "type": "file",
+          "hash": "cac58224c3f0fce4c90cf5e695d943934a991bef526056bdfc8b90768b1476cf",
+          "size": 802
         },
         {
           "name": "solve_levels.sh",

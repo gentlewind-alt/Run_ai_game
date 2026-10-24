@@ -9,11 +9,138 @@ World units are the 216x384 viewport space, y grows downward, the flat ground is
 Reach: a full pull lands about x=336 at ground level, about x=320 on a plateau at y=296, and about x=300 for a target
 at y=230 (measured with the sweep in src/debug/testHook.ts). Anything the player must kill has to sit inside that.
 """
+import argparse
 import json
 import os
+from fort_gen import generate_fort
 
 OUT = os.path.join(os.path.dirname(__file__), '..', 'public', 'data', 'levels')
+GENERATED = os.path.join(os.path.dirname(__file__), 'generated')
 GROUND = 320
+BOSS_LEVELS = {4, 8, 12, 16, 20, 24}
+# Boss levels whose fort comes from fort_gen.py (seed, with a satellite spire). They passed tools/gate_level.mjs: stand-still,
+# collapse >= 40%, solver band. 12, 20 and 24 stay hand-built (no generated seed passed the gate).
+ADOPTED = {4: 1, 8: 1, 16: 1}
+
+
+def _options():
+    parser = argparse.ArgumentParser(description='Build campaign levels or boss fort candidates.')
+    parser.add_argument('--candidates', action='store_true', help='write only boss candidates under scripts/generated')
+    parser.add_argument('--seed', type=int, default=1, help='candidate seed (default: 1)')
+    parser.add_argument('--satellites', action='store_true', help='add one separate satellite frame per boss candidate')
+    parser.add_argument('--no-adopt', action='store_true', help='build the hand-written forts for every level (ignore ADOPTED)')
+    args = parser.parse_args()
+    if args.seed != 1 and not args.candidates:
+        parser.error('--seed requires --candidates')
+    if args.satellites and not args.candidates:
+        parser.error('--satellites requires --candidates')
+    return args
+
+
+OPTIONS = _options()
+
+
+def _ground_fn(terrain):
+    def height_at(x):
+        if x <= terrain[0][0]:
+            return terrain[0][1]
+        for (x0, y0), (x1, y1) in zip(terrain, terrain[1:]):
+            if x <= x1:
+                if x1 == x0:
+                    return y1
+                return y0 + (y1 - y0) * (x - x0) / (x1 - x0)
+        return terrain[-1][1]
+    return height_at
+
+
+def _flat_segments(terrain, worldW):
+    return [(x0, x1, y0) for (x0, y0), (x1, y1) in zip(terrain, terrain[1:])
+            if y0 == y1 and x1 - x0 >= 30 and x0 < worldW]
+
+
+def _entity_box(entity):
+    sizes = {
+        'goblin_grunt': (12, 14), 'goblin_bomber': (12, 14), 'dark_elf_archer': (12, 14),
+        'dark_elf_hexer': (12, 14), 'skeleton_runner': (9, 14), 'imp': (10, 10),
+        'goblin_chief': (18, 21), 'dark_elf_matron': (17, 20), 'iron_warlord': (26, 30),
+        'frost_giant': (36, 46), 'forge_tyrant': (36, 46), 'storm_sovereign': (36, 46),
+        'lava_imp': (12, 12), 'cloud_harpy': (14, 12), 'storm_mage': (12, 14),
+        'forge_ogre': (30, 34),
+    }
+    w, h = sizes.get(entity['t'], (12, 14))
+    return {'x': entity['x'], 'y': entity['y'], 'w': w, 'h': h}
+
+
+def _boxes_intersect(a, b):
+    return (abs(a['x'] - b['x']) * 2 < a['w'] + b['w']
+            and abs(a['y'] - b['y']) * 2 < a['h'] + b['h'])
+
+
+def _candidate_forts(level, terrain, monsters, worldW, seed, satellites=None):
+    satellites = OPTIONS.satellites if satellites is None else satellites
+    ground_fn = _ground_fn(terrain)
+    boss = next((entity for entity in monsters if entity['t'] in {
+        'goblin_chief', 'dark_elf_matron', 'iron_warlord', 'frost_giant', 'forge_tyrant', 'storm_sovereign'
+    }), None)
+    if boss is None:
+        raise ValueError(f'level {level} has no registered boss')
+    base = ground_fn(boss['x'])
+    segment = next(((x0, x1, y) for x0, x1, y in _flat_segments(terrain, worldW)
+                    if x0 <= boss['x'] <= x1 and abs(y - base) < 0.1), None)
+    if segment is None:
+        raise ValueError(f'level {level} boss is not on a flat terrain span')
+    x0, x1, _ = segment
+    x_min, x_max = {
+        4: (193, 260), 8: (235, 326), 12: (183, 320),
+        16: (190, 330), 20: (190, 330), 24: (190, 330),
+    }[level]
+    if x_min < x0 or x_max > x1:
+        raise ValueError(f'level {level} candidate span is outside the boss shelf')
+
+    tier_count = {4: 3, 8: 3, 12: 3, 16: 3, 20: 4, 24: 4}[level]
+    materials = {
+        4:  [('stone', 'wood'), ('stone', 'wood'), ('wood', 'wood')],
+        8:  [('stone', 'stone'), ('wood', 'wood'), ('wood', 'wood')],
+        12: [('iron', 'stone'), ('stone', 'stone'), ('crystal', 'crystal')],
+        16: [('stone', 'stone'), ('stone', 'crystal'), ('crystal', 'crystal')],
+        20: [('iron', 'stone'), ('stone', 'stone'), ('wood', 'wood'), ('crystal', 'crystal')],
+        24: [('iron', 'stone'), ('stone', 'stone'), ('crystal', 'crystal'), ('crystal', 'crystal')],
+    }[level]
+    blocks, _ = generate_fort(seed + level, base, x_min, x_max, tier_count, 2, materials,
+                              [_entity_box(entity) for entity in monsters], ground_fn=ground_fn)
+
+    if satellites:
+        entity_boxes = [_entity_box(entity) for entity in monsters]
+        spans = []
+        for sx0, sx1, sy in _flat_segments(terrain, worldW):
+            for center in range(int(sx0 + 17), int(sx1 - 16), 8):
+                sat_min, sat_max = center - 24, center + 24
+                if sat_min < 70 or sat_min < x_max + 2 and sat_max > x_min - 2:
+                    continue
+                base_y = ground_fn(center)
+                if any(abs(ground_fn(x) - base_y) > 0.1 for x in (sat_min, center, sat_max)):
+                    continue
+                if any(abs(box['x'] - center) < box['w'] / 2 + 22
+                       and box['y'] + box['h'] / 2 > base_y - 120
+                       and box['y'] - box['h'] / 2 < base_y + 2 for box in entity_boxes):
+                    continue
+                spans.append((abs(center - boss['x']), center, base_y))
+        if not spans:
+            raise ValueError(f'level {level} has no clear flat satellite span')
+        sat_tiers = 1 + (seed + level) % 2
+        sat_materials = [('stone', 'stone'), ('crystal', 'crystal')][:sat_tiers]
+        satellite = None
+        for _, center, sat_base in sorted(spans):
+            candidate, _ = generate_fort(seed + level + 1, sat_base, center - 15, center + 15,
+                                          sat_tiers, 1, sat_materials, ground_fn=ground_fn)
+            if (not any(_boxes_intersect(block, box) for block in candidate for box in entity_boxes)
+                    and not any(_boxes_intersect(main, block) for main in blocks for block in candidate)):
+                satellite = candidate
+                break
+        if satellite is None:
+            raise ValueError(f'level {level} has no spawn-clear satellite fort')
+        blocks.extend(satellite)
+    return blocks
 
 
 def blk(m, x, y, w, h):
@@ -61,6 +188,8 @@ def frame(base, xs, ph, pillar, floor, pw=10, pillars=None):
 
 
 def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target, chests=None, **extra):
+    if OPTIONS.candidates and n not in BOSS_LEVELS:
+        return
     shots = extra.pop('shots', 4 if n <= 3 else (5 if n <= 7 else 6))
     d = {
         'id': n, 'name': name, 'realm': realm, 'kind': kind, 'worldW': worldW, 'shots': shots, 'hints': hints,
@@ -68,15 +197,25 @@ def write(n, name, realm, kind, worldW, hints, terrain, blocks, monsters, target
     }
     d.update(extra)
     d['terrain'] = terrain
-    d['blocks'] = blocks
+    if OPTIONS.candidates:
+        d['blocks'] = _candidate_forts(n, terrain, monsters, worldW, OPTIONS.seed)
+    elif n in ADOPTED and not OPTIONS.no_adopt:
+        d['blocks'] = _candidate_forts(n, terrain, monsters, worldW, ADOPTED[n], satellites=True)
+    else:
+        d['blocks'] = blocks
     d['monsters'] = monsters
     if chests:
         d['chests'] = chests
-    os.makedirs(OUT, exist_ok=True)
-    path = os.path.join(OUT, 'level_%02d.json' % n)
+    output = GENERATED if OPTIONS.candidates else OUT
+    os.makedirs(output, exist_ok=True)
+    suffix = '_candidate' if OPTIONS.candidates else ''
+    path = os.path.join(output, 'level_%02d%s.json' % (n, suffix))
     with open(path, 'w', newline='\n') as f:
         json.dump(d, f, indent=2)
-    print('wrote', os.path.normpath(path), '-', len(blocks), 'blocks', len(monsters), 'monsters', len(chests or []), 'chests')
+    if OPTIONS.candidates:
+        print('wrote', os.path.normpath(path), 'seed', OPTIONS.seed, '-', len(d['blocks']), 'blocks')
+    else:
+        print('wrote', os.path.normpath(path), '-', len(blocks), 'blocks', len(monsters), 'monsters', len(chests or []), 'chests')
 
 
 # ---------------------------------------------------------------- Goblin Hills
