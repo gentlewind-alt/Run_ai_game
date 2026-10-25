@@ -41,7 +41,7 @@ monsters = [
 ]
 level = {
     'id': 99, 'name': 'Bastion Ridge', 'realm': 'ember_forge', 'kind': 'siege', 'worldW': 540, 'shots': 6,
-    'hints': ['Thick walls. Find the load-bearing posts.'], 'scoreTarget': 4200,
+    'hints': ['Thick walls. Find the load posts.'], 'scoreTarget': 4200,
     'terrain': terrain, 'blocks': blocks, 'monsters': monsters, 'loadout': LOADOUT,
 }
 out = os.path.join(os.path.dirname(__file__), 'bastion_ridge.json')

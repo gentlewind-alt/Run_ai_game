@@ -1,0 +1,99 @@
+{
+  "id": 26,
+  "name": "Seesaw Hall",
+  "realm": "ember_forge",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 6,
+  "hints": [
+    "Cut the post, not the beam."
+  ],
+  "scoreTarget": 2300,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      130,
+      320
+    ],
+    [
+      160,
+      292
+    ],
+    [
+      310,
+      292
+    ],
+    [
+      340,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "wood",
+      "x": 229,
+      "y": 270.0,
+      "w": 8,
+      "h": 44
+    },
+    {
+      "m": "wood",
+      "x": 229,
+      "y": 245,
+      "w": 128,
+      "h": 6
+    }
+  ],
+  "monsters": [
+    {
+      "t": "dark_elf_archer",
+      "x": 177.0,
+      "y": 235.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 281.0,
+      "y": 235.0
+    },
+    {
+      "t": "forge_ogre",
+      "x": 254.0,
+      "y": 275.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 199,
+      "y": 285.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 215,
+      "y": 285.0
+    },
+    {
+      "t": "lava_imp",
+      "x": 213,
+      "y": 143
+    },
+    {
+      "t": "lava_imp",
+      "x": 297,
+      "y": 160
+    }
+  ],
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ]
+}

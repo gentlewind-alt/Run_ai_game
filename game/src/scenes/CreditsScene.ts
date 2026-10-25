@@ -24,8 +24,8 @@ export default class CreditsScene extends Phaser.Scene {
         names: ['YuYungfu', 'Ideas, playtests, deadlines'],
       },
       {
-        title: 'Code (share of lines)',
-        names: ['agy (Antigravity)  62%', 'Claude (Anthropic) 38%'],
+        title: 'Code and testing',
+        names: ['YuYungfu', 'AI tester and orchestration'],
       },
       {
         title: 'Art and Audio',
@@ -41,10 +41,6 @@ export default class CreditsScene extends Phaser.Scene {
       {
         title: 'Engine',
         names: ['Phaser 3, Matter.js', 'Vite, TypeScript'],
-      },
-      {
-        title: 'Nods to',
-        names: ['Angry Birds, Pocket Tanks', 'Ben 10, Marvel, Brahmastra'],
       },
     ];
 

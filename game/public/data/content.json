@@ -1493,6 +1493,29 @@
       "palette": "slate, cyan, gold lightning",
       "name": "Sky Citadel",
       "background": "sky"
+    },
+    {
+      "id": "bonus_yard",
+      "levels": [
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "monsters": [
+        "cloud_harpy",
+        "storm_mage",
+        "forge_ogre",
+        "dark_elf_archer",
+        "dark_elf_hexer",
+        "ice_golem",
+        "lava_imp",
+        "orc_brute"
+      ],
+      "palette": "all six realms, tougher forts",
+      "name": "Bonus Yard",
+      "background": "ember"
     }
   ],
   "cosmetics": [

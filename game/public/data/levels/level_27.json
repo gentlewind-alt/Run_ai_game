@@ -1,0 +1,86 @@
+{
+  "id": 27,
+  "name": "Loaded Slab",
+  "realm": "frost_peaks",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 6,
+  "hints": [
+    "A heavy weight hangs on one post."
+  ],
+  "scoreTarget": 700,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      130,
+      320
+    ],
+    [
+      160,
+      296
+    ],
+    [
+      310,
+      296
+    ],
+    [
+      340,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "wood",
+      "x": 243,
+      "y": 274.0,
+      "w": 8,
+      "h": 44
+    },
+    {
+      "m": "stone",
+      "x": 234.5,
+      "y": 249,
+      "w": 100,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 269,
+      "y": 239,
+      "w": 14,
+      "h": 14
+    }
+  ],
+  "monsters": [
+    {
+      "t": "ice_golem",
+      "x": 217.0,
+      "y": 281.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 267,
+      "y": 289.0
+    },
+    {
+      "t": "ice_golem",
+      "x": 308,
+      "y": 281.0
+    }
+  ],
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ]
+}

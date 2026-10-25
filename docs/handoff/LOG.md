@@ -2,6 +2,10 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-25 · claude · Bonus Yard: five new levels (25 to 29) and credits change
+- **Added to the campaign** as a new realm `bonus_yard` (Map page 3, unlocked after level 24): 25 Twin Keep (generated, sky), 26 Seesaw Hall (generated, ember; one ogre removed so it is not too hard), 27 Loaded Slab (generated, frost), 28 The Long Fort (generated, frost), 29 Bastion Ridge (hand-built concept, ember; one platform hexer removed). Each level keeps its original realm id for its background; the realm row only drives the Map panel. Files `public/data/levels/level_25..29.json`; `config.json` levels list, `content.json` realm row, `balance_bands.json` (2 to 5) and `rundot/leaderboard.config.json` (level_25..level_29 boards) updated. Solver: 3, 2, 5, 5 and 5 shots; scoreTargets 1900, 2300, 700, 1650, 3900. `regress:quick` passes for 25 to 29 (level 29 failed once at 6 shots before the hexer was removed).
+- **Credits:** removed the "Nods to" block (Angry Birds, Pocket Tanks, Ben 10, Marvel, Brahmastra) and replaced the "Code (share of lines)" block (agy 62%, Claude 38%) with "Code and testing: YuYungfu, AI tester and orchestration", on the owner's instruction.
+
 ## 2026-10-25 · codex · PCG-C later-realm level archetypes
 - **Changed:** wrote `docs/monster_mash/12_level_archetypes.md` with one alternative for each level 13–24, covering the six Chapter 8 deception types, visual references, words-and-ASCII layouts, greedy-shot failure, existing weapon/ability solution, and a 4–5-shot authoring target. All concepts use current content; no new content, code, or level files were added.
 - **Checks:** `npm run check` passed (0 errors; existing level 99 warning, Daily Mash determinism and TypeScript passed); Python and Node syntax checks passed; `git diff --check` passed. `npm run build` stopped at Vite because esbuild could not resolve `game/vite.config.ts` (`Access is denied`).
