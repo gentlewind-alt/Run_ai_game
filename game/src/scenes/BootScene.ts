@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { registerIcons } from '../art/icons';
 import { applyGeneratedSprites, ensureMonsterTextures, preloadGeneratedSprites } from '../art/generatedSprites';
-import { registerArt } from '../art/textures';
+import { makeBattleTextures, registerArt } from '../art/textures';
 import { gridTexture } from '../art/pix';
 import { PAUSE_ICON, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../art/sprites';
 import { sfx } from '../audio/sfx';
@@ -39,6 +39,7 @@ export default class BootScene extends Phaser.Scene {
     }
     if ((import.meta as any).env?.DEV) checkRegistries();
     registerArt(this);
+    makeBattleTextures(this, []);
     applyGeneratedSprites(this);
     ensureMonsterTextures(this);
     registerIcons(this);

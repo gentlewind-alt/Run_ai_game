@@ -1,6 +1,6 @@
 // Builds the level: background, ground, sling, blocks and monsters.
 import { buildBackground } from '../art/backgrounds';
-import { MONSTER_ART } from '../art/textures';
+import { MONSTER_ART, slingTexture } from '../art/textures';
 import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { behaviorFor } from '../content/monsters';
 import { buildTerrain, groundAt } from './terrain';
@@ -27,8 +27,7 @@ export function buildWorld(b: BattleState): void {
 export function populate(b: BattleState): void {
   const s = b.scene;
   const slingSkin = profile.equipped.slingSkin;
-  const skinKey = slingSkin === 's_quicksilver' ? 'sling_quicksilver' :
-                  slingSkin === 's_gemini' ? 'sling_gemini' : slingSkin;
+  const skinKey = slingTexture(slingSkin);
   const slingTex = skinKey && s.textures.exists(skinKey) ? skinKey : 'sling';
   s.add.image(b.slingX, b.slingY + 28, slingTex).setDepth(2);
   const bodies = b.level.blocks.map((blk) => addBlock(b, blk));

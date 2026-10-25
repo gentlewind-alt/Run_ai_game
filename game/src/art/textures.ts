@@ -200,6 +200,16 @@ export const WEAPON_IDS = [
 
 export const weaponTexture = (id: string): string => `wpn_${id}`;
 
+export function slingTexture(id?: string): string {
+  const keys: Record<string, string> = {
+    s_quicksilver: 'sling_quicksilver',
+    s_gemini: 'sling_gemini',
+    s_skin_bone: 'sling_bone',
+    s_skin_iron: 'sling_iron',
+  };
+  return keys[id ?? ''] ?? 'sling';
+}
+
 export const blockKey = (m: string, w: number, h: number, cracked: boolean): string => `blk_${m}_${w}x${h}${cracked ? '_c' : ''}`;
 
 /** Textures a battle needs that depend on the level: one per block size and material (plus a cracked frame), the sling and the exit door. */

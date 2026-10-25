@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { setText, text } from '../art/font5x7';
+import { fitText, setText, text } from '../art/font5x7';
 import { beatPulse } from '../audio/beat';
 import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
@@ -72,7 +72,7 @@ export default class MapScene extends Phaser.Scene {
       const open = realm.levels.some((id) => levelUnlocked(id));
       const prev = ri > 0 ? realms[ri - 1].name ?? realms[ri - 1].id : '';
       this.drawRealm(y0, light, realm.name ?? realm.id, open, prev);
-      realm.levels.forEach((id, k) => this.node(id, k, y0, open));
+      realm.levels.forEach((id, k) => this.node(id, k, y0, open, realm.levels.length));
     });
 
     if (realms.length > REALMS_PER_PAGE) {
@@ -177,25 +177,27 @@ export default class MapScene extends Phaser.Scene {
     for (let i = 0; i < light.dotCount; i++) {
       g.fillRect(x + 8 + ((i * 47) % (w - 16)), y0 + 4 + ((i * 23) % 32), light.dots === 'c' ? 6 : 1, light.dots === 'c' ? 2 : 1);
     }
-    text(this, x + 8, y0 + 8, name, C('c'), 1, C('0')).setOrigin(0, 0.5);
+    text(this, x + 8, y0 + 8, fitText(name, w - 16), C('c'), 1, C('0')).setOrigin(0, 0.5);
     if (!open) {
       this.add.rectangle(x + w / 2, y0 + PANEL_H / 2, w, PANEL_H, C('0'), 0.55);
-      text(this, x + w / 2, y0 + PANEL_H / 2, prev ? `Clear ${prev} to enter` : 'Locked', C('c'), 1, C('0')).setDepth(8);
+      text(this, x + w / 2, y0 + PANEL_H / 2, fitText(prev ? `Clear ${prev} to enter` : 'Locked', w - 16), C('c'), 1, C('0')).setDepth(8);
     }
   }
 
-  private node(id: number, k: number, y0: number, open: boolean): void {
-    const x = 50 + k * 74;
+  private node(id: number, k: number, y0: number, open: boolean, count: number): void {
+    const step = count > 1 ? (PANEL_W - 56) / (count - 1) : 0;
+    const x = count > 1 ? 8 + 28 + k * step : 8 + PANEL_W / 2;
     const y = y0 + 34 + (k % 2 === 0 ? 3 : -3);
     const built = !!data.levels[id];
     const unlocked = open && levelUnlocked(id);
     const cleared = starsFor(id) > 0;
-    if (k < 3) {
+    if (k < count - 1) {
       const g = this.add.graphics();
       g.fillStyle(C('c'), 0.8);
-      const dir = k % 2 === 0 ? -1 : 1;
       for (let i = 1; i < 7; i++) {
-        g.fillRect(Math.round(x + 14 + (i * 46) / 7), Math.round(y + (dir * (i * 6)) / 7), 2, 2);
+        const t = i / 7;
+        const nextY = y0 + 34 + ((k + 1) % 2 === 0 ? 3 : -3);
+        g.fillRect(Math.round(x + 16 + (step - 32) * t), Math.round(y + (nextY - y) * t), 2, 2);
       }
     }
     const kind = cleared ? 'go' : unlocked && id === reachedLevel() ? 'ability' : unlocked ? 'go' : 'plain';

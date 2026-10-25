@@ -137,6 +137,15 @@ export function textWidth(str: string): number {
   return measure(str);
 }
 
+/** Shorten a single-line label to its measured space. */
+export function fitText(str: string, maxWidth: number): string {
+  if (measure(str) <= maxWidth) return str;
+  if (measure('...') > maxWidth) return '';
+  let prefix = str;
+  while (prefix && measure(`${prefix}...`) > maxWidth) prefix = prefix.slice(0, -1);
+  return `${prefix}...`;
+}
+
 /** Word-wrapped text block, centred on x, first line at y. Returns the line images. */
 export function textBlock(
   scene: Phaser.Scene, x: number, y: number, str: string, color = 0xf4f4f4, maxWidth = 196, shade: number | null = null,

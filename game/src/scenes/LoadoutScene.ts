@@ -3,7 +3,7 @@ import { C } from '../art/palette';
 import { text, textBlock } from '../art/font5x7';
 import { iconKey } from '../art/icons';
 import { pixText } from '../art/pix';
-import { weaponTexture } from '../art/textures';
+import { slingTexture, weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { W, H } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
@@ -264,7 +264,7 @@ export default class LoadoutScene extends Phaser.Scene {
     const skin = profile.equipped.slingSkin;
     const def = data.content.cosmetics?.find((c) => c.id === skin);
     const name = def?.name ?? 'Standard Sling';
-    const icon = skin === 's_quicksilver' ? 'sling_quicksilver' : skin === 's_gemini' ? 'sling_gemini' : 'sling';
+    const icon = slingTexture(skin);
     text(this, 274, 210, 'Sling', C('d')).setOrigin(0, 0.5);
     this.add.image(320, 210, icon).setScale(0.5).setDepth(2);
     text(this, 336, 210, name, C('4'), 1, C('0')).setOrigin(0, 0.5);

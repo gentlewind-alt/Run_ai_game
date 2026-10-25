@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.41.0 (six generated levels 30 to 35 in two new realms, Grand Citadels and Citadel Bosses; disc homing ricochet), private
+**Current build:** v1.41.1 (Shop/Forge overflow fixes, wheel and touch Forge scrolling, startup slingshot textures, bounded map nodes), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -92,6 +92,12 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 |---|---|---|---|---|---|
 | BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | review | codex | 10-25 | Private v1.33.0; check/build and 14 browser groups pass. Full campaign solver timed out after L3; hosted device check remains. OpenCode failed before edits; owner approved direct Codex implementation. |
 | BUILDER-02 | Strict square-cell placement, cursor preview, mouse controls and full target picker | doing | codex | 10-25 | Owner playtest follow-up; edge snapping, quarter-turn rotation and the complete target roster. |
+
+## UI fixes
+
+| Card | Title | State | Owner | Updated | Notes |
+|---|---|---|---|---|---|
+| UI-01 | Shop/Forge text and icon overflow, missing sling textures, Forge scrolling and map node bounds | review | codex | 10-26 | Check/build, 20 predeploy checks and 16 browser groups pass; wheel, mouse and real touch tested. Existing unfinished builder checkout preserved. |
 
 ## Waiting on owner
 

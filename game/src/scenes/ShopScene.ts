@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { C, rarityColor } from '../art/palette';
-import { setText, text, textBlock } from '../art/font5x7';
+import { fitText, text, textBlock } from '../art/font5x7';
 import { iconKey } from '../art/icons';
 import { pixText } from '../art/pix';
-import { weaponTexture } from '../art/textures';
+import { slingTexture, weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { adRules, adsEnabled, coinAdStatus, formatWait, watchForCoins } from '../core/ads';
@@ -52,6 +52,14 @@ export default class ShopScene extends Phaser.Scene {
   private tabBtns: Btn[] = [];
   private toastTxt?: Phaser.GameObjects.Image;
   private page = 0;
+  private forgeScroll = 0;
+  private forgeMaxScroll = 0;
+  private forgeList?: Phaser.GameObjects.Container;
+  private forgeMask?: Phaser.GameObjects.Graphics;
+  private forgeThumb?: Phaser.GameObjects.Rectangle;
+  private forgeButtons: { button: Btn; canUpgrade: boolean }[] = [];
+  private forgeDrag?: { y: number; scroll: number };
+  private forgeDragMoved = false;
 
   constructor() {
     super('shop');
@@ -60,14 +68,29 @@ export default class ShopScene extends Phaser.Scene {
   create(): void {
     this.tabBtns = [];
     this.page = 0;
+    this.forgeScroll = 0;
+    this.forgeDragMoved = false;
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
     coinCounter(this, 12, 13);
     text(this, W / 2, 13, 'Shop', C('c'), 1, C('0'));
     this.body = this.add.container(0, 0);
-    makeButton(this, W / 2, H - 16, 110, 22, 'Back to map', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
+    makeButton(this, W / 2, H - 16, 110, 22, 'Back to map', 'plain', () => { if (this.forgeDragMoved) return; sfx.click(); goTo(this, 'map'); }, 6);
     this.render();
     this.adButton();
     irisOpen(this);
+    this.input.on('wheel', this.onForgeWheel, this);
+    this.input.on('pointerdown', this.onForgeDown, this);
+    this.input.on('pointermove', this.onForgeMove, this);
+    this.input.on('pointerup', this.onForgeUp, this);
+    this.input.on('pointerupoutside', this.onForgeUp, this);
+    this.events.once('shutdown', () => {
+      this.input.off('wheel', this.onForgeWheel, this);
+      this.input.off('pointerdown', this.onForgeDown, this);
+      this.input.off('pointermove', this.onForgeMove, this);
+      this.input.off('pointerup', this.onForgeUp, this);
+      this.input.off('pointerupoutside', this.onForgeUp, this);
+      this.clearForge();
+    });
   }
 
   /** "+300 coins (Ad) 3/3": a few free-coin ads per rolling window, counted on the server clock. */
@@ -75,6 +98,7 @@ export default class ShopScene extends Phaser.Scene {
     if (!adsEnabled()) return;
     const r = adRules();
     const btn = makeButton(this, W - 62, 12, 108, 16, `+${r.coinReward} coins (Ad)`, 'go', async () => {
+      if (this.forgeDragMoved) return;
       sfx.click();
       btn.setEnabled(false);
       const got = await watchForCoins();
@@ -96,6 +120,7 @@ export default class ShopScene extends Phaser.Scene {
   }
 
   private render(): void {
+    this.clearForge();
     this.body.removeAll(true);
     this.toastTxt = undefined;
     this.tabBtns.forEach((b) => b.box.destroy());
@@ -111,10 +136,12 @@ export default class ShopScene extends Phaser.Scene {
     let x = (W - totalTabW) / 2;
     tabs.forEach((t) => {
       const b = makeButton(this, x + t.w / 2, 30, t.w, 20, t.label, t.id === this.tab ? 'go' : 'plain', () => {
+        if (this.forgeDragMoved) return;
         sfx.click();
         this.tab = t.id;
         this.selected = null;
         this.page = 0;
+        this.forgeScroll = 0;
         this.render();
       }, 6);
       this.tabBtns.push(b);
@@ -240,7 +267,7 @@ export default class ShopScene extends Phaser.Scene {
       return slingshots.map((sk: CosmeticDef) => {
         const owned = owns('cosmetics', sk.id);
         const isEquipped = profile.equipped.slingSkin === sk.id;
-        const icon = sk.id === 's_quicksilver' ? 'sling_quicksilver' : sk.id === 's_gemini' ? 'sling_gemini' : sk.id;
+        const icon = slingTexture(sk.id);
         const price = sk.priceCoins ?? 0;
         const desc = [
           sk.desc ?? (sk.id === 's_quicksilver' ? '+25% launch speed with speed lines.' : 'Launches queued twin 12 steps behind at 45% damage.'),
@@ -280,11 +307,11 @@ export default class ShopScene extends Phaser.Scene {
       const extra: Phaser.GameObjects.GameObject[] = [];
 
       if (this.tab === 'slingshots') {
-        extra.push(text(this, x + 31, y + 26, it.note, it.note === 'Equipped' ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
+        extra.push(text(this, x + 31, y + 26, fitText(it.note, cardW - 37), it.note === 'Equipped' ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
       } else if (it.state === 'owned') {
         extra.push(text(this, x + 31, y + 26, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
       } else if (it.state === 'locked') {
-        extra.push(this.add.image(x + 35, y + 26, 'icon_lock').setDepth(2), text(this, x + 42, y + 26, it.note.replace('Reach level', 'Level'), C('e')).setOrigin(0, 0.5).setDepth(2));
+        extra.push(this.add.image(x + 35, y + 26, 'icon_lock').setDepth(2), text(this, x + 42, y + 26, fitText(it.note.replace('Reach level', 'Level'), cardW - 48), C('e')).setOrigin(0, 0.5).setDepth(2));
         if (!it.isSilhouette) card.icon.setAlpha(0.4);
       } else {
         extra.push(this.add.image(x + 35, y + 26, 'icon_coin').setDepth(2), pixText(this, x + 42, y + 26, String(it.price), profile.coins >= it.price ? C('4') : C('3')).setOrigin(0, 0.5).setDepth(2));
@@ -296,43 +323,44 @@ export default class ShopScene extends Phaser.Scene {
 
     if (list.length > maxItems) {
       if (this.page > 0) {
-        const prev = makeButton(this, 30, 134, 36, 18, '<', 'plain', () => { sfx.click(); this.page--; this.render(); }, 5);
+        const prev = makeButton(this, W / 2 - 50, 139, 36, 18, '<', 'plain', () => { sfx.click(); this.page--; this.render(); }, 5);
         this.body.add(prev.box);
       }
-      this.body.add(text(this, 80, 134, `${this.page + 1}/${maxPage + 1}`, C('c'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(5));
+      this.body.add(text(this, W / 2, 139, `${this.page + 1}/${maxPage + 1}`, C('c'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(5));
       if (this.page < maxPage) {
-        const next = makeButton(this, 130, 134, 36, 18, '>', 'plain', () => { sfx.click(); this.page++; this.render(); }, 5);
+        const next = makeButton(this, W / 2 + 50, 139, 36, 18, '>', 'plain', () => { sfx.click(); this.page++; this.render(); }, 5);
         this.body.add(next.box);
       }
     }
 
     const it = list.find((x) => x.id === this.selected);
-    const y0 = 132;
+    const y0 = list.length > maxItems ? 155 : 132;
     if (!it) {
       this.body.add(text(this, W / 2, y0 + 16, 'Tap something to see what it does.', C('d'), 1, C('0')));
       return;
     }
     // 1. Title
     const titleCol = it.rarity ? rarityColor(it.rarity) : C('4');
-    this.body.add(text(this, W / 2, y0 + 7, it.name, titleCol, 1, C('0')));
+    this.body.add(text(this, W / 2, y0 + 4, fitText(it.name, W - 40), titleCol, 1, C('0')));
 
     // 2. Rarity and source line
     const metaParts: string[] = [];
     if (it.rarity) metaParts.push(it.rarity.toUpperCase());
     if (it.source) metaParts.push(it.source);
     const metaStr = metaParts.join(' - ');
-    const metaY = y0 + 18;
-    this.body.add(text(this, W / 2, metaY, metaStr, C('d'), 1, C('0')));
+    const metaY = y0 + 15;
+    this.body.add(text(this, W / 2, metaY, fitText(metaStr, W - 40), C('d'), 1, C('0')));
 
     // 3. Description (wrapped, at most 4 lines)
     const descStartY = metaY + 11;
     const lines: Phaser.GameObjects.Image[] = [];
     const maxWidth = 420;
+    const maxLines = list.length > maxItems ? 3 : 4;
     for (const d of it.desc) {
-      if (lines.length >= 4) break;
+      if (lines.length >= maxLines) break;
       const wrapped = textBlock(this, W / 2, 0, d, C('c'), maxWidth);
       for (const wLine of wrapped) {
-        if (lines.length < 4) lines.push(wLine);
+        if (lines.length < maxLines) lines.push(wLine);
         else wLine.destroy();
       }
     }
@@ -342,15 +370,15 @@ export default class ShopScene extends Phaser.Scene {
 
     // 4. Button anchored below with fixed gap
     const descBottom = lines.length > 0 ? descStartY + (lines.length - 1) * lineSpacing + 5 : metaY + 5;
-    const gap = 8;
+    const gap = 6;
     const btnH = 20;
-    const btnY = Math.round(descBottom + gap + btnH / 2);
+    const btnY = Math.min(H - 47, Math.round(descBottom + gap + btnH / 2));
 
     const isSlingEquip = this.tab === 'slingshots' && owns('cosmetics', it.id);
     const label = isSlingEquip ? (profile.equipped.slingSkin === it.id ? 'Equipped' : 'Equip') :
                   it.state === 'owned' ? 'Owned' : it.state === 'locked' ? it.note : it.state === 'full' ? 'Stock full' : `Buy for ${it.price}`;
     const btnEnabled = this.tab === 'slingshots' ? profile.equipped.slingSkin !== it.id : it.state === 'buy';
-    const buy = makeButton(this, W / 2, btnY, 150, btnH, label, 'go', () => this.buy(it), 6);
+    const buy = makeButton(this, W / 2, btnY, 150, btnH, fitText(label, 140), 'go', () => this.buy(it), 6);
     buy.setEnabled(btnEnabled);
     this.body.add(buy.box);
   }
@@ -410,7 +438,7 @@ export default class ShopScene extends Phaser.Scene {
 
   private toast(msg: string, color: number): void {
     this.toastTxt?.destroy();
-    const t = text(this, W / 2, H - 42, msg, color, 1, C('0')).setDepth(20);
+    const t = text(this, W / 2, H - 36, fitText(msg, W - 24), color, 1, C('0')).setDepth(20);
     this.toastTxt = t;
     this.tweens.add({ targets: t, alpha: 0, delay: 1400, duration: 400, onComplete: () => t.destroy() });
   }
@@ -421,42 +449,111 @@ export default class ShopScene extends Phaser.Scene {
     const R = data.content.damageRules;
     const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
     const cardW = 226;
-    const cardH = 32;
+    const cardH = 36;
+    const viewportHeight = 176;
+    this.forgeMaxScroll = Math.max(0, Math.ceil(owned.length / 2) * 40 - 4 - viewportHeight);
+    this.forgeScroll = Phaser.Math.Clamp(this.forgeScroll, 0, this.forgeMaxScroll);
+    const list = this.add.container(0, 46 - this.forgeScroll);
+    this.forgeList = list;
+    this.body.add(list);
+    const mask = this.make.graphics({ x: 0, y: 0 }, false);
+    mask.fillRect(8, 46, W - 16, viewportHeight);
+    list.setMask(mask.createGeometryMask());
+    this.forgeMask = mask;
 
     owned.forEach((w, i) => {
       const col = i % 2;
       const row = Math.floor(i / 2);
       const x = 10 + col * 234;
-      const y = 46 + row * 36;
+      const y = row * 40;
       const lv = weaponLevel(w.id);
       const g = panel(this, x, y, cardW, cardH, '8', '9', 'f', 1);
-      const icon = this.add.image(x + 16, y + 16, weaponTexture(w.id)).setDepth(2);
-      const nameTxt = text(this, x + 34, y + 9, shortWeaponName(w.id, w.name), C('c')).setOrigin(0, 0.5).setDepth(2);
+      const icon = this.add.image(x + 16, y + 18, weaponTexture(w.id)).setDepth(2);
+      icon.setScale(Math.min(1, 24 / icon.width, 28 / icon.height));
+      const nameTxt = text(this, x + 34, y + 10, fitText(shortWeaponName(w.id, w.name), 124), C('c')).setOrigin(0, 0.5).setDepth(2);
 
       const now = Math.round(w.baseDamage * upgradeMult(w.id));
       const cost = upgradeCost(w.id);
       const after = Math.round(w.baseDamage * (1 + R.upgradeDamagePerStep * (lv + 1)));
       const dmgStr = cost === null ? `Dmg ${now} (Max)` : `Dmg ${now} -> ${after}`;
-      const dmgTxt = text(this, x + 34, y + 22, dmgStr, cost === null ? C('4') : C('d')).setOrigin(0, 0.5).setDepth(2);
+      const dmgTxt = text(this, x + 34, y + 26, fitText(dmgStr, 94), cost === null ? C('4') : C('d')).setOrigin(0, 0.5).setDepth(2);
 
       const parts: Phaser.GameObjects.GameObject[] = [g, icon, nameTxt, dmgTxt];
       for (let p = 0; p < R.maxUpgradeLevel; p++) {
-        parts.push(this.add.rectangle(x + 104 + p * 6, y + 9, 4, 6, p < lv ? C('4') : C('f')).setStrokeStyle(1, C('0')).setDepth(2));
+        parts.push(this.add.rectangle(x + 134 + p * 6, y + 26, 4, 6, p < lv ? C('4') : C('f')).setStrokeStyle(1, C('0')).setDepth(2));
       }
 
-      const btn = makeButton(this, x + cardW - 32, y + 16, 50, 20, cost === null ? 'Max' : String(cost), 'go', () => this.upgrade(w.id), 6);
-      btn.setEnabled(cost !== null);
+      const btn = makeButton(this, x + cardW - 32, y + 18, 50, 20, cost === null ? 'Max' : String(cost), 'go', () => this.upgrade(w.id), 6);
+      this.forgeButtons.push({ button: btn, canUpgrade: cost !== null });
       parts.push(btn.box);
-      if (cost !== null) parts.push(this.add.image(x + cardW - 52, y + 16, 'icon_coin').setDepth(8));
-      this.body.add(parts);
+      if (cost !== null) parts.push(this.add.image(x + cardW - 52, y + 18, 'icon_coin').setDepth(8));
+      list.add(parts);
     });
 
     if (owned.length === 0) {
       this.body.add(text(this, W / 2, 80, 'Buy a weapon first.', C('d'), 1, C('0')));
     }
+    if (this.forgeMaxScroll > 0) {
+      this.body.add(this.add.rectangle(W - 4, 46 + viewportHeight / 2, 2, viewportHeight, C('0')));
+      const thumbHeight = Math.max(16, viewportHeight * viewportHeight / (viewportHeight + this.forgeMaxScroll));
+      this.forgeThumb = this.add.rectangle(W - 4, 46 + thumbHeight / 2, 3, thumbHeight, C('d'));
+      this.body.add(this.forgeThumb);
+    }
+    this.scrollForge(this.forgeScroll);
+  }
+
+  private clearForge(): void {
+    this.forgeList?.clearMask(true);
+    this.forgeMask?.destroy();
+    this.forgeList = undefined;
+    this.forgeMask = undefined;
+    this.forgeThumb = undefined;
+    this.forgeButtons = [];
+    this.forgeDrag = undefined;
+  }
+
+  private scrollForge(value: number): void {
+    this.forgeScroll = Phaser.Math.Clamp(value, 0, this.forgeMaxScroll);
+    if (!this.forgeList) return;
+    this.forgeList.y = 46 - this.forgeScroll;
+    for (const { button, canUpgrade } of this.forgeButtons) {
+      const y = this.forgeList.y + button.box.y;
+      const enabled = canUpgrade && y - 13 >= 46 && y + 13 <= 222;
+      button.setEnabled(enabled);
+      if (button.box.input) button.box.input.enabled = enabled;
+    }
+    if (this.forgeThumb) {
+      const h = this.forgeThumb.height;
+      this.forgeThumb.y = 46 + h / 2 + this.forgeScroll / this.forgeMaxScroll * (176 - h);
+    }
+  }
+
+  private inForge(pointer: Phaser.Input.Pointer): boolean {
+    return this.tab === 'forge' && pointer.x >= 8 && pointer.x <= W - 8 && pointer.y >= 46 && pointer.y <= 222;
+  }
+
+  private onForgeWheel(pointer: Phaser.Input.Pointer, _over: unknown, _dx: number, dy: number): void {
+    if (this.inForge(pointer)) this.scrollForge(this.forgeScroll + dy * 0.35);
+  }
+
+  private onForgeDown(pointer: Phaser.Input.Pointer): void {
+    this.forgeDragMoved = false;
+    this.forgeDrag = this.inForge(pointer) ? { y: pointer.y, scroll: this.forgeScroll } : undefined;
+  }
+
+  private onForgeMove(pointer: Phaser.Input.Pointer): void {
+    const drag = this.forgeDrag;
+    if (!drag || !pointer.isDown) return;
+    if (Math.abs(pointer.y - drag.y) > 3) this.forgeDragMoved = true;
+    if (this.forgeDragMoved) this.scrollForge(drag.scroll + drag.y - pointer.y);
+  }
+
+  private onForgeUp(): void {
+    this.forgeDrag = undefined;
   }
 
   private upgrade(id: string): void {
+    if (this.forgeDragMoved) return;
     const r = upgradeWeapon(id);
     if (r === 'ok') {
       sfx.coin();
@@ -468,7 +565,4 @@ export default class ShopScene extends Phaser.Scene {
     }
   }
 
-  update(): void {
-    void setText;
-  }
 }

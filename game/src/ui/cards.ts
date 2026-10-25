@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C, rarityColor, rarityStroke } from '../art/palette';
-import { text } from '../art/font5x7';
+import { fitText, text } from '../art/font5x7';
 import { panel } from './widgets';
 
 export interface CardOptions {
@@ -45,9 +45,11 @@ export function createItemCard(opts: CardOptions): CardResult {
     : opts.icon;
   const tex = opts.scene.textures.get(cardKey);
   const srcW = tex?.getSourceImage()?.width ?? 16;
+  const srcH = tex?.getSourceImage()?.height ?? 16;
   const autoScale = srcW === 24 ? 1.0 : srcW >= 32 ? 0.75 : 1.2;
+  const iconScale = Math.min(opts.iconScale ?? autoScale, 20 / srcW, 26 / srcH);
   const icon = opts.scene.add.image(opts.x + 15, opts.y + 19, cardKey)
-    .setScale(opts.iconScale ?? autoScale).setDepth(2);
+    .setScale(iconScale).setDepth(2);
   const extraObjs: Phaser.GameObjects.GameObject[] = [];
   if (opts.locked && opts.isSilhouette) {
     if (opts.rarity) {
@@ -55,7 +57,7 @@ export function createItemCard(opts: CardOptions): CardResult {
       const offsets = [[-1, 0], [1, 0], [0, -1], [0, 1]];
       for (const [dx, dy] of offsets) {
         const rim = opts.scene.add.image(opts.x + 15 + dx, opts.y + 19 + dy, cardKey)
-          .setScale(opts.iconScale ?? autoScale)
+          .setScale(iconScale)
           .setTint(rimCol)
           .setAlpha(0.45)
           .setDepth(2);
@@ -68,7 +70,7 @@ export function createItemCard(opts: CardOptions): CardResult {
   }
 
   const nameColor = opts.locked ? C('e') : opts.rarity ? rarityColor(opts.rarity) : C('c');
-  const nameTxt = text(opts.scene, opts.x + 31, opts.y + 10, opts.name, nameColor)
+  const nameTxt = text(opts.scene, opts.x + 31, opts.y + 10, fitText(opts.name, opts.w - 36), nameColor)
     .setOrigin(0, 0.5).setDepth(2);
 
   const hit = opts.scene.add.rectangle(opts.x + opts.w / 2, opts.y + h / 2, opts.w, h, 0xffffff, 0)
