@@ -577,7 +577,7 @@ async function run() {
       const mockP = {
         def: b.wdef,
         wid: 'w_bulwark_disc',
-        body: { proj: { mul: 1 }, position: { x: 200, y: 200 } },
+        body: { proj: { mul: 1 }, position: { x: -5000, y: -5000 } }, // far from every monster, so no ricochet jump happens
         data: { bounces: 0 }
       };
       for (let i = 0; i < 8; i++) {
