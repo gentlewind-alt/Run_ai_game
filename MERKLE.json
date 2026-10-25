@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "24ef48cba216861c877ff579186cdc79ab6a29db0307986f1d0d9f66f8eaf43a",
+  "hash": "fb36542eee4e7275e800681674f3a3afde048eefd70ad58e0d47f30b9d7753fb",
   "children": [
     {
       "name": ".gitignore",
@@ -101,7 +101,7 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "f2685a63b97209ac4eb5c71d345416dda457fd7cc0cdacd5434cf38e18490a34",
+      "hash": "fe77747870ef161e0b9e547a7d0e73f8d69c10aa575862bdd453ba7fd9826fd0",
       "children": [
         {
           "name": "concepts",
@@ -130,7 +130,7 @@
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "c1995204d3047cffe2e3c905b89cd8f3abe2cfbdd2aedf392a15cc6b80630c2e",
+          "hash": "bba59362f64f2a1916727f08b94360429aa9a5d5718b050014ccef6042ad8c8f",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -417,8 +417,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "92a51cd6843dfee9da72f085b5e6c0eced2dadcad4025434728ea9fc493003c7",
-              "size": 126580
+              "hash": "27546079b5c5fc71f3a470398cfbea1b0bb4748e7f7aa9a1351135e79e98a135",
+              "size": 127666
             },
             {
               "name": "ref",
@@ -474,7 +474,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "d9009f5c96b4ab4546fec30f58b22223c0facd5f5e2e388d5151a3492ea48293",
+              "hash": "d73134a27b5dd6f61a53a23bbcfb7ccdd75c430db803b21ce2fa0e1185abef58",
               "children": [
                 {
                   "name": "01_title.png",
@@ -686,6 +686,34 @@
                       "size": 76842
                     }
                   ]
+                },
+                {
+                  "name": "c_15.png",
+                  "path": "docs/handoff/shots/c_15.png",
+                  "type": "file",
+                  "hash": "f6fc4177fd98c4072f08587c3ccedea5ffa90e21753a17bf0a4cdfd62972511a",
+                  "size": 91572
+                },
+                {
+                  "name": "c_17.png",
+                  "path": "docs/handoff/shots/c_17.png",
+                  "type": "file",
+                  "hash": "e393c409845ddaf20f62662e1463fadefae29d5f3d284b6cd5d8b587b43c4209",
+                  "size": 86868
+                },
+                {
+                  "name": "c_22.png",
+                  "path": "docs/handoff/shots/c_22.png",
+                  "type": "file",
+                  "hash": "b7910ea4c8a7b5c417505737edd1b56b6b7808fd879bae3a62e065425815573d",
+                  "size": 94271
+                },
+                {
+                  "name": "c_levels_sheet.png",
+                  "path": "docs/handoff/shots/c_levels_sheet.png",
+                  "type": "file",
+                  "hash": "8500c50917b5a093aa6414afcdc2557785dbf29e948d4053a6eb48e7523bc992",
+                  "size": 175109
                 },
                 {
                   "name": "gen",
@@ -2404,8 +2432,8 @@
               "name": "STATUS.md",
               "path": "docs/handoff/STATUS.md",
               "type": "file",
-              "hash": "a6007be09f82f62cc2fb30304db73c214b7cde156ce3f6a33e7aa4d1cd36fcef",
-              "size": 11796
+              "hash": "6ac56a3e296ed4a6fe58046760278cae9fa1df543a541637cc4e4af95d909a2b",
+              "size": 11784
             }
           ]
         },
@@ -2571,7 +2599,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "749c6ac61b06a3804d2622a33fb0434541335d663b865cf28378d809edbe7e49",
+      "hash": "f63d6b6f8253983e54b8b6760c293b814e9743a841804cf2a6e8c79ff4d5af6b",
       "children": [
         {
           "name": ".gitignore",
@@ -2647,7 +2675,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "b581411d0102b5439c1f2628198b05648ef3b494dffa557adcb89ad369bfbeb3",
+          "hash": "824d12397295c1f587bbb8f42002772821a157665efc8b6e0160d9322cb5d529",
           "children": [
             {
               "name": "cdn-assets",
@@ -2682,7 +2710,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "7be8c534a85629186a2764cc7a44662dfb098e224764c0be851d826b59cb42f9",
+              "hash": "028f964b3fac808867c66b19633fab96a8c40adfed85570100a30ce7f946caa2",
               "children": [
                 {
                   "name": "config.json",
@@ -2702,7 +2730,7 @@
                   "name": "levels",
                   "path": "game/public/data/levels",
                   "type": "dir",
-                  "hash": "7da15c4b50022eeb6facbc85b554d8e39bc4a89add795f7b92d4c646dfedaf66",
+                  "hash": "3dd1644411b429b55f425fc3cf7e3076e7eff4e1d3048c000f17f379581304ea",
                   "children": [
                     {
                       "name": "level_01.json",
@@ -2806,8 +2834,8 @@
                       "name": "level_15.json",
                       "path": "game/public/data/levels/level_15.json",
                       "type": "file",
-                      "hash": "667b50f8a8048b115abb247101af09078b433ba40f28f40a9da06b9c8bbfff11",
-                      "size": 2208
+                      "hash": "88f6a0816002695a4bf09f9b7a55bbbc13811408d01ea53f4eade7f44bfffa28",
+                      "size": 1266
                     },
                     {
                       "name": "level_16.json",
@@ -2820,8 +2848,8 @@
                       "name": "level_17.json",
                       "path": "game/public/data/levels/level_17.json",
                       "type": "file",
-                      "hash": "75a120465a8248ef26aaf52bc2d2955fd78974ddb83506b88578448049d6933a",
-                      "size": 2097
+                      "hash": "bf84b00702954fb6e9cfb79298b1e75072b4519672c199bf7e2a69a60ff0a0f0",
+                      "size": 2045
                     },
                     {
                       "name": "level_18.json",
@@ -2855,8 +2883,8 @@
                       "name": "level_22.json",
                       "path": "game/public/data/levels/level_22.json",
                       "type": "file",
-                      "hash": "cf657fa1d6eedd2601d7968cc8e301763ac7516d5bccc88d2c4798db9dcc1126",
-                      "size": 2089
+                      "hash": "b349789b43f494dc4eae3dac02d85b8b8612fb1e96ac82cc68b8201afc6f2e29",
+                      "size": 1799
                     },
                     {
                       "name": "level_23.json",
@@ -3372,21 +3400,21 @@
           "name": "scripts",
           "path": "game/scripts",
           "type": "dir",
-          "hash": "204cb66b8d6f45d807c2c2037975aa4a40e7db30936678705d52908dfa4ca74b",
+          "hash": "40d49b7126e7b5646c092f9cf5fd8d1d9281eea228a306937ad40ee1e399c109",
           "children": [
             {
               "name": "balance_bands.json",
               "path": "game/scripts/balance_bands.json",
               "type": "file",
-              "hash": "09c69e76ae311dfbe3d84d1140fa2f9c39d828612b5a2079c9c034d252ea0f39",
-              "size": 1064
+              "hash": "37509cbae5a1c418443a1f62372bbbb3e219e006a3f7891d26689e13ff936333",
+              "size": 1105
             },
             {
               "name": "build_levels.py",
               "path": "game/scripts/build_levels.py",
               "type": "file",
-              "hash": "1fdcfcdb3849e2d4c30d529573f75bfa8b7e4e0aadb6971e91580bd8e4c1eae2",
-              "size": 33200
+              "hash": "e9a3a9c9b315e56a7598c3c394b0a01f39670edd461c4c9c9af07eea87fe48d2",
+              "size": 33628
             },
             {
               "name": "check-daily.mjs",

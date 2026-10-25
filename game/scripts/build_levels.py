@@ -422,17 +422,20 @@ write(14, 'Glacier steps', 'frost_peaks', 'runner', 648, ['Frost wolves are fast
        mon('frost_wolf', 430, stand(GROUND), dir=1, speed=1.0, delay=1.4)],
       900, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13}, shots=6)
 
-# 15 Ice cathedral: a tall crystal-and-stone spire with golems at the base and on the second floor.
+# 15 The One-Post Choir (thesis p102c, p107 level 15): a long wood beam balanced on a single post. Archers stand on its ends, a golem
+# and a hexer wait under it. A direct shot hits the beam; cutting the post drops everything. Tap time matters for the boomerang.
 P15 = 296
-b15, top15 = tower(230, P15, w=60, tiers=3, pillar='stone', ph=26, floor='stone')
-b15 += [blk('stone', 165, P15 - 18, 12, 36), blk('stone', 295, P15 - 18, 12, 36), blk('iron', 230, P15 - 6, 36, 12)]
-write(15, 'Ice cathedral', 'frost_peaks', 'siege', 540, ['Shatter the pillars, drop the spire.'],
+b15 = [
+    blk('wood', 240, P15 - 19, 8, 38),                    # the post
+    blk('wood', 240, P15 - 38 - 3, 124, 6),               # the beam
+    blk('crystal', 160, P15 - 14, 8, 28),                 # a crystal screen in front
+]
+write(15, 'The One-Post Choir', 'frost_peaks', 'siege', 540, ['Cut the post, not the beam.'],
       [[0, 320], [120, 320], [150, P15], [320, P15], [350, 320], [540, 320]],
       b15,
-      [mon('ice_golem', 230, stand(P15 - 12, 30)), mon('ice_golem', 230, stand(P15 - 12 - 32, 30)),
-       mon('dark_elf_archer', 210, stand(top15)), mon('dark_elf_archer', 250, stand(top15)),
-       mon('dark_elf_hexer', 165, stand(P15 - 36)), mon('ice_golem', 275, stand(P15, 30))],
-      1550, shots=6,
+      [mon('ice_golem', 266, stand(P15, 30)), mon('ice_golem', 306, stand(P15, 30)), mon('dark_elf_hexer', 207, stand(P15)),
+       mon('dark_elf_archer', 192, stand(P15 - 38 - 6)), mon('dark_elf_archer', 288, stand(P15 - 38 - 6))],
+      1900, shots=6,
       loadout=['w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_blast_tube', 'w_scrapheap_scattergun', 'w_hunters_boomerang'])
 
 # 16 Frost throne: a three-tier frame fort, stone feet, crystal above. The Frost Giant holds the hall; hit the chest crystal for 2x.
@@ -453,16 +456,20 @@ write(16, 'Frost throne', 'frost_peaks', 'boss', 648,
 # ---------------------------------------------------------------- Ember Forge
 LOAD5 = ['w_iron_cleaver', 'w_ashwood_staff', 'w_hunters_pike', 'w_blast_tube', 'w_scrapheap_scattergun', 'w_hunters_boomerang']
 
-# 17 Cinder gate: a wooden-floored tower, an ogre at its foot and lava imps wobbling above.
+# 17 The Ember Relay (thesis p102e, p107 levels 25 and 27): two small satellites and a bomber on the ground. Light one Goblin Bomber and
+# the chain runs through all three; the ogre has to be finished by hand.
 P17 = 300
-b17, top17 = tower(225, P17, w=60, tiers=3, pillar='stone', ph=26, floor='stone')
-b17 += [blk('stone', 168, P17 - 12, 10, 24), blk('iron', 225, P17 - 6, 36, 12)]
-write(17, 'Cinder gate', 'ember_forge', 'siege', 540, ['Imps fly. Ogres stomp. Break the tower.'],
+f17a, t17a = frame(P17, [180, 198], 24, 'wood', 'wood')
+f17b, t17b = frame(P17, [244, 260], 28, 'stone', 'stone')
+f17c, t17c = frame(t17b, [244, 260], 22, 'wood', 'wood')
+b17 = f17a + f17b + f17c
+write(17, 'The Ember Relay', 'ember_forge', 'siege', 540, ['Light one bomber. Watch the chain.'],
       [[0, 320], [130, 320], [160, P17], [310, P17], [340, 320], [540, 320]],
       b17,
-      [mon('forge_ogre', 225, stand(P17 - 12, 34)), mon('lava_imp', 200, P17 - 150), mon('lava_imp', 255, P17 - 155),
-       mon('lava_imp', 290, P17 - 70), mon('dark_elf_archer', 205, stand(top17)), mon('forge_ogre', 288, stand(P17, 34))],
-      1400, shots=6, loadout=LOAD5)
+      [mon('goblin_bomber', 189, stand(t17a)), mon('goblin_bomber', 218, stand(P17)), mon('goblin_bomber', 252, stand(t17c)),
+       mon('forge_ogre', 288, stand(P17, 34)),
+       mon('lava_imp', 200, 160), mon('lava_imp', 255, 140), mon('lava_imp', 295, 200), mon('lava_imp', 225, 215)],
+      2600, shots=6, loadout=LOAD5)
 
 # 18 Molten bridge: a pit in the middle, runners racing the far shelf, an ogre guarding it.
 LO18, PIT18 = 300, 336
@@ -517,20 +524,22 @@ write(21, 'Cloud dock', 'sky_citadel', 'siege', 540, ['Harpies swoop. A mage shi
        mon('storm_mage', 255, stand(P21, 14)), mon('dark_elf_archer', 205, stand(top21))],
       1800, chests=c21, shots=6, loadout=LOAD5)
 
-# 22 Gale bridge: a pit between two tower shelves, skeletons racing the far side, harpies above.
-LO22, PIT22 = 300, 336
-b22 = [
-    blk('stone', 185, LO22 - 15, 10, 30), blk('stone', 225, LO22 - 15, 10, 30), blk('wood', 205, LO22 - 33, 50, 6),
-    blk('stone', 372, LO22 - 15, 10, 30), blk('stone', 412, LO22 - 15, 10, 30), blk('stone', 392, LO22 - 33, 50, 6),
+# 22 The Hanging Weather Vane (thesis p102d, p107 levels 19 to 22): a stone slab and a heavy block balanced on one wood post over an
+# ogre and a mage. The chest with the Earthworm Drill sits at the back. Pierce the post and the weight falls through the cluster.
+P22 = 300
+f22, t22 = frame(P22, [158, 174], 40, 'crystal', 'crystal', pw=8)
+b22 = f22 + [
+    blk('wood', 250, P22 - 22, 8, 44),                    # the post
+    blk('stone', 241.4, P22 - 44 - 3, 100, 6),            # the slab, shifted so slab plus block balance over the post
+    blk('stone', 276, P22 - 50 - 7, 14, 14),              # the heavy block near its short end
 ]
-c22 = [chst('c_l22', 440, LO22 - 8, 'w_earthworm_drill', 40)]
-write(22, 'Gale bridge', 'sky_citadel', 'runner', 648, ['Skeletons race the bridge.', 'Stop them before the exit.'],
-      [[0, 320], [120, 320], [150, LO22], [250, LO22], [270, PIT22], [340, PIT22], [360, LO22], [450, LO22], [480, 320], [648, 320]],
+c22 = [chst('c_l22', 322, P22 - 8, 'w_earthworm_drill', 40)]
+write(22, 'The Hanging Weather Vane', 'sky_citadel', 'siege', 540, ['A heavy weight hangs on one post.', 'A chest waits at the back.'],
+      [[0, 320], [120, 320], [150, P22], [330, P22], [360, 320], [540, 320]],
       b22,
-      [mon('forge_ogre', 392, stand(LO22, 34)), mon('cloud_harpy', 205, LO22 - 70), mon('cloud_harpy', 372, LO22 - 80),
-       mon('storm_mage', 205, stand(LO22 - 37)),
-       mon('skeleton_runner', 300, stand(PIT22), dir=1, speed=0.8, delay=0.8), mon('skeleton_runner', 320, stand(PIT22), dir=1, speed=0.7, delay=1.3)],
-      1700, chests=c22, escapeLimit=1, exit={'x': 620, 'y': GROUND - 13}, shots=6, loadout=LOAD5)
+      [mon('forge_ogre', 218, stand(P22, 34)), mon('forge_ogre', 308, stand(P22, 34)), mon('storm_mage', 276, stand(P22)),
+       mon('cloud_harpy', 175, 190), mon('cloud_harpy', 312, 195), mon('cloud_harpy', 240, 150)],
+      2200, chests=c22, shots=6, loadout=LOAD5)
 
 # 23 Thunder hall: a tall stone-and-iron hall; mages shield two ogres. A chest holds the Chain Rod.
 P23 = 296

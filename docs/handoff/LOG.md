@@ -67,6 +67,11 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
 - **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
 
+## 2026-10-25 · claude · Three concept levels built from the thesis study (v1.31.0)
+- Built from `docs/monster_mash/12_level_archetypes.md`: **15 The One-Post Choir** (wood beam balanced on one post, archers on its ends, golems and a hexer under it), **17 The Ember Relay** (three Goblin Bombers in two satellites and on the ground: light one and the chain runs, the ogre needs a second shot) and **22 The Hanging Weather Vane** (stone slab plus a heavy block balanced on one post over two ogres and a mage; the Earthworm Drill chest `c_l22` is kept at the back, the level is no longer a runner level). Concept pictures: thesis p102c, p102d, p102e, p107.
+- Stand-still 0 moved / 0 dead; collapse 100 / 89 / 100%; solver 2 shots each (bands 15 and 22 widened to 2-5 like 17 and 21: the intended solution is a two-shot trick, the first shot at the obvious target fails). Score targets raised to 1900 / 2600 / 2200. Screenshots: `docs/handoff/shots/c_levels_sheet.png`.
+- Codex task D (Daily difficulty tiers) never started: the runner stopped after task C. Not required for the build.
+
 ## 2026-10-25 · claude + codex · Generated boss forts adopted for levels 4, 8, 16
 - **Codex task B** (`game/scripts/fort_gen.py`, `tools/gate_level.mjs`, `build_levels.py --candidates [--seed N] [--satellites]`) wrote a bottom-up fort generator with a static stability check; its sandbox could not run the browser gate, so the gate was run here (`tools/seed_search.sh` tries seeds).
 - **Gate results (stand-still, collapse >= 40%, solver band):** seed 1 with a satellite spire passes for levels 4 (3 shots, 100%), 8 (4 shots, 82%) and 16 (3 shots, 94%). Levels 12 (6 shots), 20 and 24 (3 blocks drift at spawn) never passed in 11 seeds, so their hand-built forts stay.
