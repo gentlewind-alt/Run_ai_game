@@ -42,6 +42,7 @@ export default class BuilderScene extends Phaser.Scene {
   private groupDrag?: GroupDrag;
   private marquee?: { a: Point; b: Point };
   private hover?: Point;
+  private gridGfx?: Phaser.GameObjects.Graphics;
   private running = false;
   private loading = false;
   private restoreGeneration = 0;
@@ -81,6 +82,7 @@ export default class BuilderScene extends Phaser.Scene {
     this.group = undefined;
     this.groupDrag = undefined;
     this.marquee = undefined;
+    this.gridGfx = undefined;
     this.tool = 'piece';
     this.preset = 0;
     this.material = this.config.materials[0];
@@ -713,12 +715,36 @@ export default class BuilderScene extends Phaser.Scene {
     this.blockBodies = [];
     this.monsterBodies = [];
     this.sprites = [];
+    if (this.gridGfx && this.worldRoot) this.worldRoot.remove(this.gridGfx, false);
     this.worldRoot?.clearMask(true);
     this.worldRoot?.destroy();
     this.clip?.destroy();
     this.clip = undefined;
     this.worldRoot = undefined;
     this.overlay = undefined;
+  }
+
+  private drawGrid(scale: number): Phaser.GameObjects.Graphics {
+    const grid = this.add.graphics();
+    grid.fillStyle(C('9'), 1).fillRect(this.config.minX, this.config.minY, this.config.worldW - this.config.minX, this.config.groundY - this.config.minY);
+    const cell = this.config.grid;
+    // every cell carries both diagonals (the crisscross look), faint so pieces stay readable
+    grid.lineStyle(0.5 / scale, C('a'), 0.16);
+    for (let x = this.config.minX; x < this.config.worldW; x += cell) {
+      for (let y = this.config.minY; y < this.config.groundY; y += cell) {
+        grid.lineBetween(x, y, x + cell, y + cell);
+        grid.lineBetween(x + cell, y, x, y + cell);
+      }
+    }
+    for (let i = 0, x = this.config.minX; x <= this.config.worldW; x += cell, i++) {
+      grid.lineStyle(0.5 / scale, C('a'), i % 4 === 0 ? 0.55 : 0.28).lineBetween(x, this.config.minY, x, this.config.groundY);
+    }
+    for (let i = 0, y = this.config.groundY; y >= this.config.minY; y -= cell, i++) {
+      grid.lineStyle(0.5 / scale, C('a'), i % 4 === 0 ? 0.55 : 0.28).lineBetween(this.config.minX, y, this.config.worldW, y);
+    }
+    grid.lineStyle(1 / scale, C('b'), 1).strokeRect(this.config.minX, this.config.minY, this.config.worldW - this.config.minX, this.config.groundY - this.config.minY);
+    grid.lineStyle(3 / scale, C('6'), 1).lineBetween(this.config.minX, this.config.groundY, this.config.worldW, this.config.groundY);
+    return grid;
   }
 
   private renderWorld(doc: BuilderDocument = this.draft): void {
@@ -731,18 +757,8 @@ export default class BuilderScene extends Phaser.Scene {
     clip.fillRect(VIEW.x, VIEW.y, VIEW.w, VIEW.h);
     root.setMask(clip.createGeometryMask());
     this.clip = clip;
-    const grid = this.add.graphics();
-    root.add(grid);
-    grid.fillStyle(C('9'), 1).fillRect(this.config.minX, this.config.minY, this.config.worldW - this.config.minX, this.config.groundY - this.config.minY);
-    const cell = this.config.grid;
-    for (let i = 0, x = this.config.minX; x <= this.config.worldW; x += cell, i++) {
-      grid.lineStyle(0.5 / scale, C('a'), i % 4 === 0 ? 0.55 : 0.28).lineBetween(x, this.config.minY, x, this.config.groundY);
-    }
-    for (let i = 0, y = this.config.groundY; y >= this.config.minY; y -= cell, i++) {
-      grid.lineStyle(0.5 / scale, C('a'), i % 4 === 0 ? 0.55 : 0.28).lineBetween(this.config.minX, y, this.config.worldW, y);
-    }
-    grid.lineStyle(1 / scale, C('b'), 1).strokeRect(this.config.minX, this.config.minY, this.config.worldW - this.config.minX, this.config.groundY - this.config.minY);
-    grid.lineStyle(3 / scale, C('6'), 1).lineBetween(this.config.minX, this.config.groundY, this.config.worldW, this.config.groundY);
+    if (!this.gridGfx) this.gridGfx = this.drawGrid(scale);
+    root.add(this.gridGfx);
     ensureBlockTextures(this, doc.blocks);
     for (const block of doc.blocks) {
       const body = createBlockBody(this, block);

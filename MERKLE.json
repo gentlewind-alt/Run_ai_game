@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "98b279381bdfe1658017a53f7395fc010599323dad8eab2b9e8cf589ba82bc90",
+  "hash": "b5e148c7b00987a7109eb2c653cf83c74988b1862508824008b4ef37edcb2b93",
   "children": [
     {
       "name": ".gitignore",
@@ -3875,7 +3875,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "d911297781ee04024e512e4aa72165ef4199eb7bba69ea4d5eff462145339507",
+      "hash": "8f71fd882a0aaae5bdf93038cc02008d726bbaaf72a938286ebf3c8eb1c88272",
       "children": [
         {
           "name": ".gitignore",
@@ -4839,7 +4839,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "c56c71db2ac3b33aa291151af0157ff2c53703230cb5ec000d442ced444e3d94",
+          "hash": "5647834f1588c6146646f9dadf89d2cda5faa0cb39d6072002f83e2cf568a52c",
           "children": [
             {
               "name": "art",
@@ -5742,7 +5742,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "43bece57904a2f451dd6cfdfb41474ba0e7efed6c09495d43a5cdd07cf2c3078",
+              "hash": "68164ec7740303e62c063b4e1c661f9c9edf715af4c872148ecf2a5ae4b74515",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -5762,8 +5762,8 @@
                   "name": "BuilderScene.ts",
                   "path": "game/src/scenes/BuilderScene.ts",
                   "type": "file",
-                  "hash": "bb8319e094534d80b15f478a95021577e9c8724b0d020797ac5e7dfe68100b37",
-                  "size": 43291
+                  "hash": "5db5c500c50de8b34054f164d3064e6b05b76ae6843c71a613f99a7810f27dc0",
+                  "size": 44015
                 },
                 {
                   "name": "ChallengeScene.ts",
