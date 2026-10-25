@@ -91,6 +91,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | Card | Title | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|
 | BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | review | codex | 10-25 | Private v1.33.0; check/build and 14 browser groups pass. Full campaign solver timed out after L3; hosted device check remains. OpenCode failed before edits; owner approved direct Codex implementation. |
+| BUILDER-02 | Strict square-cell placement, cursor preview, mouse controls and full target picker | doing | codex | 10-25 | Owner playtest follow-up; edge snapping, quarter-turn rotation and the complete target roster. |
 
 ## Waiting on owner
 
