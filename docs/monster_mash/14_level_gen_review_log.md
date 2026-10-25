@@ -59,3 +59,11 @@ Screenshots and sheets: `docs/handoff/shots/levelgen/<round>/`.
 2. Gate and screenshot: `node tools/gate_file.mjs scripts/generated_levels/x.json shot.png 2 5` (needs the dev server), or run a batch with `node tools/level_review.mjs <round> <realms> <archetypes|all> <seeds> <difficulty or arch:d,...>`.
 3. Look at the screenshot (the solver cannot tell if a level is fun), keep the passing ones you like, and copy the JSON into `game/public/data/levels/level_NN.json` with the right `id`, `realm`, `scoreTarget` (about 85% of the solver's score) and, if it has a chest, the chest entry. Add the level number to `config.json` `levels`, a realm row and a band in `scripts/balance_bands.json`. Not done for any generated level yet: the campaign is unchanged.
 4. Known limits: five layout types only (tower, balanced beam, hanging weight, bomber relay, plus the hand-written boss concept in `scripts/concepts/`), no pits or ramps, no chests, no runners, no bosses. About 90% of seeds pass the gate; the rest are simply skipped.
+
+## 2026-10-26 - owner's revised generator files compared and accepted
+The owner supplied revised `fort_gen.py` and `level_gen.py` (battlements, tapered upper tiers, per-pillar materials, a fifth archetype `boss_citadel`, four-tier realm materials). As attached, `level_gen.py` had a stray indent on the `hanging_weight` slab line (IndentationError); fixed by one character.
+Same gates as always (tools/gate_file.mjs: nothing moves, no early deaths, best shot collapses >= 40%, solver wins in 2-5 shots), three realms (frost, keep, wood), seeds 1 and 2, difficulty 2:
+- repo version 23/24, revised version 23/24 (one 1-shot win each). Revised forts are much bigger: 14.5 blocks and 7.3 monsters on average, against 6.5 and 5.2.
+- `boss_citadel` (difficulty 4, revised only): 4/6. The keep realm is the weak one (one unsolved in 6 shots, one 1-shot win).
+- The revised `fort_gen.py` keeps the non-taper path identical: all 24 campaign levels rebuilt by `build_levels.py` are byte-identical to before.
+Accepted both. The old `level_gen.py` is not kept in the repo (it is in git history at 3b331f0).
