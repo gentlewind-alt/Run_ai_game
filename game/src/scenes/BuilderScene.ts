@@ -22,6 +22,8 @@ let nextId = 0;
 type Tool = 'piece' | 'select' | 'target' | 'lock' | 'rope';
 type Selection = { kind: 'block'; id: string } | { kind: 'monster'; index: number };
 type Point = { x: number; y: number };
+interface Group { blocks: Set<string>; monsters: Set<number> }
+interface GroupDrag { start: Point; preview: BuilderDocument; valid: boolean; moved: boolean }
 interface Drag { selection: Selection; offset: Point; preview: BuilderDocument; valid: boolean; moved: boolean; start: Point }
 
 /** A paused authoring view; only Test advances its isolated Matter world. */
@@ -36,6 +38,9 @@ export default class BuilderScene extends Phaser.Scene {
   private selection?: Selection;
   private pending?: { block: string | null; point: Point };
   private drag?: Drag;
+  private group?: Group;
+  private groupDrag?: GroupDrag;
+  private marquee?: { a: Point; b: Point };
   private running = false;
   private loading = false;
   private restoreGeneration = 0;
@@ -72,6 +77,9 @@ export default class BuilderScene extends Phaser.Scene {
     this.selection = undefined;
     this.pending = undefined;
     this.drag = undefined;
+    this.group = undefined;
+    this.groupDrag = undefined;
+    this.marquee = undefined;
     this.tool = 'piece';
     this.preset = 0;
     this.material = this.config.materials[0];
@@ -160,14 +168,16 @@ export default class BuilderScene extends Phaser.Scene {
       const btn = makeButton(this, x, y, w, 24, label, kind, action, 12);
       return btn;
     };
-    button(25, 15, 42, 'Home', () => goTo(this, 'title'));
-    this.undoButton = button(77, 15, 48, 'Undo', () => this.history(false));
-    this.redoButton = button(131, 15, 48, 'Redo', () => this.history(true));
-    this.testButton = button(202, 15, 76, 'Test', () => this.simulate(!this.running), 'go');
-    const play = button(286, 15, 72, 'Play', () => this.play(), 'go');
-    const save = button(366, 15, 64, 'Save', () => { void this.save(true); });
-    const exportBtn = button(437, 15, 66, 'Export', () => this.exportFile());
-    this.editButtons.push(play, save, exportBtn);
+    button(22, 15, 38, 'Home', () => goTo(this, 'title'));
+    this.undoButton = button(63, 15, 40, 'Undo', () => this.history(false));
+    this.redoButton = button(105, 15, 40, 'Redo', () => this.history(true));
+    this.editButtons.push(button(147, 15, 40, 'Clear', () => this.clearAll()));
+    this.testButton = button(199, 15, 56, 'Test', () => this.simulate(!this.running), 'go');
+    const play = button(255, 15, 52, 'Play', () => this.play(), 'go');
+    const save = button(307, 15, 46, 'Save', () => { void this.save(true); });
+    const exportBtn = button(357, 15, 46, 'Export', () => this.exportFile());
+    const challenge = button(436, 15, 76, 'Challenge', () => this.publish());
+    this.editButtons.push(play, save, exportBtn, challenge);
     text(this, 56, 38, 'BLOCKS', C('4')).setDepth(12);
     const names = ['Short', 'Plank', 'Beam', 'Post', 'Square', 'Brick', 'Ball', 'Wedge'];
     this.config.presets.forEach((preset, i) => {
@@ -220,7 +230,7 @@ export default class BuilderScene extends Phaser.Scene {
     this.pending = undefined;
     const hints: Record<Tool, string> = {
       piece: `${this.config.presets[this.preset].name}: tap the grid to place. Select moves pieces.`,
-      select: 'Select a block or target; drag to move. Rotate, Anchor, Delete or Unlink below.',
+      select: 'Select: tap to pick, drag to move. Drag across empty space to box-select many; drag them together.',
       target: 'Tap the grid to place a target. A playable level needs at least one.',
       lock: 'Lock: tap one block, then another. The pair keeps its shape.',
       rope: 'Rope: tap a block or an empty anchor point, then tap the block to hang.',
@@ -263,12 +273,26 @@ export default class BuilderScene extends Phaser.Scene {
     const point = this.worldPoint(pointer);
     const hit = this.selectionAt(point);
     if (this.tool === 'select') {
+      const inGroup = hit && this.group && (hit.kind === 'block' ? this.group.blocks.has(hit.id) : this.group.monsters.has(hit.index));
+      if (inGroup) {
+        this.groupDrag = { start: point, preview: cloneDraft(this.draft), valid: true, moved: false };
+        this.say('Drag to move the whole group. One Undo restores it.');
+        return;
+      }
+      this.group = undefined;
       this.selection = hit;
+      if (!hit) {
+        this.marquee = { a: point, b: point };
+        this.say('Drag a box around pieces to select them.');
+        this.refreshControls();
+        this.renderOverlay(this.draft);
+        return;
+      }
       if (hit) {
         const entity = hit.kind === 'block' ? this.draft.blocks.find((b) => b.id === hit.id)! : this.draft.monsters[hit.index];
         this.drag = { selection: hit, offset: { x: entity.x - point.x, y: entity.y - point.y }, preview: cloneDraft(this.draft), valid: true, moved: false, start: point };
         this.say(hit.kind === 'block' ? 'Block selected. Drag to move; Anchor fixes it in place.' : 'Target selected. Drag to move or Delete.');
-      } else this.say('Tap a block or target to select it.');
+      }
       this.refreshControls();
       this.renderOverlay(this.draft);
       return;
@@ -299,6 +323,12 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private pointerMove(pointer: Phaser.Input.Pointer): void {
+    if (this.marquee && pointer.isDown && !this.running && !this.loading) {
+      this.marquee.b = this.worldPoint(pointer);
+      this.renderOverlay(this.draft);
+      return;
+    }
+    if (this.groupDrag && this.group && pointer.isDown && !this.running && !this.loading) { this.moveGroup(this.worldPoint(pointer)); return; }
     const drag = this.drag;
     if (!drag || this.running || this.loading || !pointer.isDown) return;
     const point = this.worldPoint(pointer);
@@ -320,7 +350,67 @@ export default class BuilderScene extends Phaser.Scene {
     } catch (error) { drag.valid = false; this.say(`${this.error(error)}. Release restores the original position.`); }
   }
 
+  private moveGroup(point: Point): void {
+    const gd = this.groupDrag!;
+    const group = this.group!;
+    if (Math.hypot(point.x - gd.start.x, point.y - gd.start.y) < 2 && !gd.moved) return;
+    gd.moved = true;
+    const dx = this.snap(point.x - gd.start.x);
+    const dy = this.snap(point.y - gd.start.y);
+    const next = cloneDraft(this.draft);
+    for (const b of next.blocks) if (group.blocks.has(b.id!)) { b.x += dx; b.y += dy; }
+    next.monsters.forEach((m, i) => { if (group.monsters.has(i)) { m.x += dx; m.y += dy; } });
+    try {
+      validateDraft(next, this.config);
+      if (this.groupOverlaps(next, group)) throw new Error('Pieces overlap');
+      gd.preview = next;
+      gd.valid = true;
+      this.renderWorld(next);
+      this.say('Release to place the group. One Undo restores this move.');
+    } catch (error) { gd.valid = false; this.say(`${this.error(error)}. Release restores the original positions.`); }
+  }
+
+  private groupOverlaps(next: BuilderDocument, group: Group): boolean {
+    const others = [
+      ...this.blockBodies.filter((_b, i) => !group.blocks.has(this.draft.blocks[i].id!)),
+      ...this.monsterBodies.filter((_b, i) => !group.monsters.has(i)),
+    ];
+    const candidates: any[] = [];
+    try {
+      for (const b of next.blocks) if (group.blocks.has(b.id!)) candidates.push(createBlockBody(this, b));
+      next.monsters.forEach((m, i) => {
+        if (!group.monsters.has(i)) return;
+        const art = MONSTER_ART[m.t];
+        candidates.push(this.matter.add.rectangle(m.x, m.y, art?.w ?? 12, art?.h ?? 14, { isStatic: true }));
+      });
+      return candidates.some((c) => MatterLib.Query.collides(c, others).some((collision: any) => collision.depth > 0.25));
+    } finally { for (const c of candidates) this.matter.world.remove(c); }
+  }
+
+  private finishMarquee(): void {
+    const m = this.marquee!;
+    this.marquee = undefined;
+    const x0 = Math.min(m.a.x, m.b.x), x1 = Math.max(m.a.x, m.b.x), y0 = Math.min(m.a.y, m.b.y), y1 = Math.max(m.a.y, m.b.y);
+    const inBox = (p: Point): boolean => p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1;
+    const blocks = this.draft.blocks.filter(inBox).map((b) => b.id!);
+    const monsters = this.draft.monsters.map((mon, i) => (inBox(mon) ? i : -1)).filter((i) => i >= 0);
+    const total = blocks.length + monsters.length;
+    if (total === 1) this.selection = blocks.length ? { kind: 'block', id: blocks[0] } : { kind: 'monster', index: monsters[0] };
+    else if (total > 1) { this.selection = undefined; this.group = { blocks: new Set(blocks), monsters: new Set(monsters) }; }
+    this.say(total > 1 ? `${total} pieces selected. Drag one to move them all. Delete and Anchor apply to all.` : total === 1 ? 'One piece selected.' : 'Nothing in that box. Drag a bigger box around pieces.');
+    this.refreshControls();
+    this.renderOverlay(this.draft);
+  }
+
   private pointerUp(): void {
+    if (this.marquee) { this.finishMarquee(); return; }
+    const gd = this.groupDrag;
+    if (gd) {
+      this.groupDrag = undefined;
+      if (gd.moved && gd.valid) this.commit(gd.preview, 'Group moved');
+      else if (gd.moved) this.renderWorld();
+      return;
+    }
     const drag = this.drag;
     if (!drag) return;
     this.drag = undefined;
@@ -371,7 +461,7 @@ export default class BuilderScene extends Phaser.Scene {
   private rotate(): void {
     if (this.running || this.loading) return;
     const selected = this.selection;
-    if (selected?.kind !== 'block') { this.say('Select a block to rotate it.'); return; }
+    if (selected?.kind !== 'block') { this.say(this.group ? 'Rotate works on one block at a time.' : 'Select a block to rotate it.'); return; }
     const next = cloneDraft(this.draft);
     const block = next.blocks.find((b) => b.id === selected.id)!;
     block.angle = ((block.angle ?? 0) + 15 + 360) % 360;
@@ -384,6 +474,14 @@ export default class BuilderScene extends Phaser.Scene {
 
   private anchor(): void {
     if (this.running || this.loading) return;
+    if (this.group) {
+      const next = cloneDraft(this.draft);
+      const members = next.blocks.filter((b) => this.group!.blocks.has(b.id!));
+      const fix = members.some((b) => !b.static);
+      for (const b of members) b.static = fix;
+      this.commit(next, fix ? 'Group anchored.' : 'Group freed.');
+      return;
+    }
     const selected = this.selection;
     if (selected?.kind !== 'block') { this.say('Select a block to anchor or free it.'); return; }
     const next = cloneDraft(this.draft);
@@ -394,8 +492,20 @@ export default class BuilderScene extends Phaser.Scene {
 
   private deleteSelection(): void {
     if (this.loading) return;
-    if (this.running || !this.selection) { this.say('Select a block or target to delete it.'); return; }
-    const selected = this.selection;
+    if (this.running || (!this.selection && !this.group)) { this.say('Select a block or target to delete it.'); return; }
+    if (this.group) {
+      const g = this.group;
+      const next = cloneDraft(this.draft);
+      next.blocks = next.blocks.filter((b) => !g.blocks.has(b.id!));
+      next.connections = next.connections.filter((c) => !(c.a && g.blocks.has(c.a)) && !g.blocks.has(c.b));
+      next.monsters = next.monsters.filter((_m, i) => !g.monsters.has(i));
+      this.group = undefined;
+      this.selection = undefined;
+      this.pending = undefined;
+      this.commit(next, 'Deleted the group. Undo restores it.');
+      return;
+    }
+    const selected = this.selection!;
     const next = cloneDraft(this.draft);
     if (selected.kind === 'block') {
       next.blocks = next.blocks.filter((b) => b.id !== selected.id);
@@ -408,11 +518,42 @@ export default class BuilderScene extends Phaser.Scene {
 
   private unlink(): void {
     if (this.running || this.loading) return;
+    if (this.group) {
+      const g = this.group;
+      const next = cloneDraft(this.draft);
+      next.connections = next.connections.filter((c) => !(c.a && g.blocks.has(c.a)) && !g.blocks.has(c.b));
+      this.commit(next, 'Connections removed from the group');
+      return;
+    }
     const selected = this.selection;
     if (selected?.kind !== 'block') { this.say('Select a block to remove its locks and ropes.'); return; }
     const next = cloneDraft(this.draft);
     next.connections = next.connections.filter((c) => c.a !== selected.id && c.b !== selected.id);
     this.commit(next, 'Connections removed from the selected block');
+  }
+
+  private clearAll(): void {
+    if (this.running || this.loading) return;
+    if (!this.draft.blocks.length && !this.draft.monsters.length) { this.say('The grid is already empty.'); return; }
+    const next = cloneDraft(this.draft);
+    next.blocks = [];
+    next.monsters = [];
+    next.connections = [];
+    this.selection = undefined;
+    this.group = undefined;
+    this.pending = undefined;
+    this.commit(next, 'Cleared. Undo brings everything back.');
+  }
+
+  private publish(): void {
+    if (this.running || this.loading) return;
+    try {
+      const safe = validateDraft(this.draft, this.config);
+      if (!safe.monsters.length) { this.say('Add at least one Target before sharing a challenge.'); return; }
+      if (!safe.blocks.length) { this.say('Build a structure before sharing a challenge.'); return; }
+      void this.save(false);
+      goTo(this, 'challengeWeapons', { mode: 'publish', doc: safe });
+    } catch (error) { this.say(this.error(error)); }
   }
 
   private commit(value: unknown, message: string): void {
@@ -439,6 +580,7 @@ export default class BuilderScene extends Phaser.Scene {
     target.push(cloneDraft(this.draft));
     this.draft = next;
     this.selection = undefined;
+    this.group = undefined;
     this.pending = undefined;
     this.renderWorld();
     this.refreshControls();
@@ -500,6 +642,7 @@ export default class BuilderScene extends Phaser.Scene {
         const safe = validateDraft(raw, this.config);
         if (!this.scene.isActive() || this.running || this.loading) return;
         this.selection = undefined;
+        this.group = undefined;
         this.pending = undefined;
         this.commit(safe, 'Imported. Undo returns to the previous design.');
       } catch (error) { if (this.scene.isActive()) this.say(`Import failed: ${this.error(error)}`); }
@@ -626,6 +769,27 @@ export default class BuilderScene extends Phaser.Scene {
         g.lineStyle(1.5 / scale, C('4'), 1).strokeRect(-w / 2 - 2, -h / 2 - 2, w + 4, h + 4);
         g.restore();
       }
+    }
+    const group = this.group;
+    if (group) {
+      g.lineStyle(1.5 / scale, C('4'), 1);
+      for (const b of doc.blocks) if (group.blocks.has(b.id!)) {
+        g.save();
+        g.translateCanvas(b.x, b.y);
+        g.rotateCanvas((b.angle ?? 0) * Math.PI / 180);
+        g.strokeRect(-b.w / 2 - 2, -b.h / 2 - 2, b.w + 4, b.h + 4);
+        g.restore();
+      }
+      doc.monsters.forEach((m, i) => {
+        if (!group.monsters.has(i)) return;
+        const w = MONSTER_ART[m.t]?.w ?? 12, h = MONSTER_ART[m.t]?.h ?? 14;
+        g.strokeRect(m.x - w / 2 - 2, m.y - h / 2 - 2, w + 4, h + 4);
+      });
+    }
+    if (this.marquee) {
+      const { a, b } = this.marquee;
+      g.fillStyle(C('4'), 0.15).fillRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+      g.lineStyle(1 / scale, C('4'), 1).strokeRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(a.x - b.x), Math.abs(a.y - b.y));
     }
     if (this.pending) {
       const point = this.attachment(doc, this.pending.block, this.pending.point);

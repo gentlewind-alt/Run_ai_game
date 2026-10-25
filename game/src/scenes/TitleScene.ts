@@ -53,12 +53,13 @@ export default class TitleScene extends Phaser.Scene {
     });
 
     const btnX = Math.round(W * 0.76);
-    makeButton(this, btnX, 65, 130, 32, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
-    if (feature('builder')) makeButton(this, btnX, 105, 130, 28, 'Create level', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'builder'); }, 6);
-    makeButton(this, btnX, 145, 110, 26, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
+    makeButton(this, btnX, 54, 130, 30, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
+    if (feature('challenges')) makeButton(this, btnX, 118, 130, 26, 'Challenges', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'challenges'); }, 6);
+    if (feature('builder')) makeButton(this, btnX, 87, 130, 26, 'Create level', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'builder'); }, 6);
+    makeButton(this, btnX, 150, 110, 24, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
 
     const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music: off' : 'Music: on');
-    const musicBtn = makeButton(this, btnX, 181, 110, 22, musicLabel(), 'plain', () => {
+    const musicBtn = makeButton(this, btnX, 182, 110, 22, musicLabel(), 'plain', () => {
       sfx.unlock();
       setMusicOn(profile.settings.musicOn === false);
       music.updateVolume();

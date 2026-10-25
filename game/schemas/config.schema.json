@@ -76,6 +76,7 @@
         "map": { "type": "boolean" },
         "shop": { "type": "boolean" },
         "forge": { "type": "boolean" },
+        "challenges": { "type": "boolean" },
         "artifacts": { "type": "boolean" },
         "consumables": { "type": "boolean" },
         "combo": { "type": "boolean" },

@@ -9,6 +9,8 @@ export interface TrackRequest { theme: string; variant?: number; boss?: boolean 
 class MusicPlayer {
   private active?: TrackRequest;
   private musicGain?: GainNode;
+  /** One bus per track: stopping a track silences everything it already scheduled, so a new track starts clean at once. */
+  private bus?: GainNode;
   private isRunning = false;
   private nextPhraseTime = 0;
   private phraseNo = 0;
@@ -47,10 +49,14 @@ class MusicPlayer {
     sfx.unlock();
     const c = this.ctx;
     if (!c) return;
-    this.initGain();
+    const master = this.initGain();
+    if (master) {
+      this.bus = c.createGain();
+      this.bus.connect(master);
+    }
     this.isRunning = true;
     this.phraseNo = 0;
-    this.nextPhraseTime = c.currentTime + 0.05;
+    this.nextPhraseTime = c.currentTime + 0.02;
     this.schedulePhrase();
   }
 
@@ -64,6 +70,14 @@ class MusicPlayer {
   stop(): void {
     this.isRunning = false;
     this.active = undefined;
+    const old = this.bus;
+    const c = this.ctx;
+    this.bus = undefined;
+    if (old && c) {
+      old.gain.cancelScheduledValues(c.currentTime);
+      old.gain.setTargetAtTime(0, c.currentTime, 0.012);
+      setTimeout(() => old.disconnect(), 250);
+    }
     if (this.loopTimer) {
       clearTimeout(this.loopTimer);
       this.loopTimer = undefined;
@@ -83,7 +97,7 @@ class MusicPlayer {
 
   private play1(e: NoteEvent, at: number): void {
     const c = this.ctx;
-    const g = this.initGain();
+    const g = this.bus;
     if (!c || !g || !Number.isFinite(e.freq) || e.freq <= 0) return;
     const start = at + e.t;
     const gain = c.createGain();

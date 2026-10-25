@@ -963,3 +963,10 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Checks:** `npm run check` and `npm run build` pass on `ce5f90e` plus this change. `check-data` prints 0 errors and 13 warnings, which are expected (no config.json yet, `level.weapon` deprecated, levels 2-12 missing). A negative test with injected typos and bad references catches all 7.
 - **For the next agent:** start with **S2-01** (split GameScene, about 800 lines, with no behaviour change), then S2-02 and S2-03. Everything else builds on that layout. The local session's notes in `07_local_reply.md` still apply: tweens are wall-clock, so scripted tests must skip the intro pan.
 - **Questions for owner:** see "Waiting on owner" in STATUS.md.
+
+## 2026-10-25 · local · Global Challenges, builder Clear + multi-select, instant music switch
+- **Builder:** Clear button (one Undo restores). Select tool: drag across empty space to box-select, drag any selected piece to move the whole group; Delete, Anchor and Unlink apply to the group.
+- **Global Challenges** (`features.challenges`): Builder "Challenge" button -> pick allowed weapons and shots -> shared through the RUN UGC store (`platform.ugc`, content type `mm_challenge`). Scenes `challenges` (Top by challengers / New / Mine), `challenge` (rules, board, Play; only the author sees Edit rules and Delete), `challengeWeapons` (author rules, or challenger loadout from weapons they own that the author allows). Logic in `src/core/challenges.ts`.
+- **Boards:** one entry per player per challenge in UGC type `mm_s_<id>` (best score), read back and sorted client-side (top 100 entries). Challenger count = UGC `useCount` via `recordUse`, once per player (saved list in appStorage). Ranking uses `browse(sortBy: mostUsed)`.
+- **Not testable locally:** the hosted UGC calls. Local dev needs `?mock=1` (the SDK mock has no UGC backend). Verify on the private link: share, list, play, score, edit rules, delete.
+- **Music:** each track has its own gain bus; stopping fades it out in about 30 ms, so a scene change switches music at once instead of overlapping the old phrase.

@@ -1,7 +1,7 @@
 // The only file that imports the RUN SDK.
 import RundotGameAPI from '@series-inc/rundot-game-sdk/api';
 import { boardRoute } from './boards';
-import { noopPlatform, type Platform, type Row } from './types';
+import { noopPlatform, type Platform, type Row, type UgcRow } from './types';
 
 const safe = <T>(f: () => T, fallback: T): T => {
   try {
@@ -10,6 +10,11 @@ const safe = <T>(f: () => T, fallback: T): T => {
     return fallback;
   }
 };
+
+const toRow = (e: any): UgcRow => ({
+  id: String(e.id), authorId: String(e.authorId ?? ''), authorName: String(e.authorName ?? 'Player'), title: String(e.title ?? ''),
+  data: (e.data ?? {}) as Record<string, unknown>, uses: Number(e.useCount ?? 0), createdAt: Number(e.createdAt ?? 0), updatedAt: Number(e.updatedAt ?? 0),
+});
 
 export function sdkAvailable(): boolean {
   return safe(() => RundotGameAPI.isAvailable(), false);
@@ -78,6 +83,39 @@ export const rundotPlatform: Platform = {
       } catch {
         return null;
       }
+    },
+  },
+  ugc: {
+    async create(type, title, data) {
+      try {
+        return toRow(await RundotGameAPI.ugc.create({ contentType: type, title, data, isPublic: true }));
+      } catch (e) { console.warn('ugc create failed', e); return null; }
+    },
+    async update(id, patch) {
+      try {
+        return toRow(await RundotGameAPI.ugc.update({ id, ...patch }));
+      } catch (e) { console.warn('ugc update failed', e); return null; }
+    },
+    async remove(id) {
+      try { await RundotGameAPI.ugc.delete(id); return true; } catch (e) { console.warn('ugc delete failed', e); return false; }
+    },
+    async get(id) {
+      try { const e = await RundotGameAPI.ugc.get(id); return e ? toRow(e) : null; } catch { return null; }
+    },
+    async browse(type, sort, limit) {
+      try {
+        const res: any = await RundotGameAPI.ugc.browse({ contentType: type, sortBy: sort, sortOrder: 'desc', limit });
+        return (res?.entries ?? []).map(toRow);
+      } catch { return []; }
+    },
+    async mine(type, limit) {
+      try {
+        const res: any = await RundotGameAPI.ugc.listMine({ contentType: type, limit });
+        return (res?.entries ?? []).map(toRow);
+      } catch { return []; }
+    },
+    async recordUse(id) {
+      try { return (await RundotGameAPI.ugc.recordUse(id)).useCount; } catch { return null; }
     },
   },
   async share(text: string, params?: Record<string, string>): Promise<boolean> {

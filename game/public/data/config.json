@@ -71,6 +71,7 @@
   },
   "features": {
     "builder": true,
+    "challenges": true,
     "map": true,
     "shop": true,
     "forge": true,

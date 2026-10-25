@@ -1,5 +1,17 @@
 export interface Row { rank: number; name: string; score: number }
 
+/** A user-generated entry in the shared community store (the Global Challenge levels and their scores). */
+export interface UgcRow {
+  id: string;
+  authorId: string;
+  authorName: string;
+  title: string;
+  data: Record<string, unknown>;
+  uses: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
 /** The only way game code talks to the host. Every method catches its own errors and returns a safe default. */
 export interface Platform {
   hosted: boolean; // false under the mock
@@ -9,6 +21,16 @@ export interface Platform {
   profile(): Promise<{ id: string; name: string; avatarUrl?: string }>;
   safeArea(): { top: number; bottom: number; left: number; right: number };
   leaderboard: { submit(board: string, score: number, seconds?: number): Promise<void>; top(board: string, n: number): Promise<Row[]>; myRank(board: string): Promise<Row | null> };
+  /** Shared community store. Only the author of an entry can update or remove it (the host enforces this). */
+  ugc: {
+    create(type: string, title: string, data: Record<string, unknown>): Promise<UgcRow | null>;
+    update(id: string, patch: { title?: string; data?: Record<string, unknown> }): Promise<UgcRow | null>;
+    remove(id: string): Promise<boolean>;
+    get(id: string): Promise<UgcRow | null>;
+    browse(type: string, sort: 'mostUsed' | 'recent', limit: number): Promise<UgcRow[]>;
+    mine(type: string, limit: number): Promise<UgcRow[]>;
+    recordUse(id: string): Promise<number | null>;
+  };
   share(text: string, params?: Record<string, string>): Promise<boolean>;
   ads: { rewardedReady(): Promise<boolean>; showRewarded(placementId?: string, placementName?: string): Promise<boolean> };
   iap: { available(): boolean; buy(itemId: string): Promise<boolean>; owned(itemId: string): Promise<boolean> };
@@ -31,6 +53,15 @@ export const noopPlatform = {
     async submit(): Promise<void> { /* later */ },
     async top(): Promise<Row[]> { return []; },
     async myRank(): Promise<Row | null> { return null; },
+  },
+  ugc: {
+    async create(): Promise<UgcRow | null> { return null; },
+    async update(): Promise<UgcRow | null> { return null; },
+    async remove(): Promise<boolean> { return false; },
+    async get(): Promise<UgcRow | null> { return null; },
+    async browse(): Promise<UgcRow[]> { return []; },
+    async mine(): Promise<UgcRow[]> { return []; },
+    async recordUse(): Promise<number | null> { return null; },
   },
   async share(): Promise<boolean> {
     return false;

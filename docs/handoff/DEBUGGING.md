@@ -21,3 +21,5 @@ URL options: `?debug=1&level=24` starts straight in level 24; `?debug=1&sandbox=
 
 ## Soundtrack
 `public/data/music.json` (one theme per realm plus title and map and a boss mix per theme; the level number picks key and tempo drift), `src/audio/trackgen.ts` (notes), `src/audio/music.ts` (Web Audio player). `node tools/render_tracks.mjs` renders every theme, boss mix and level to WAV files in `docs/music/` (git-ignored) and checks all tracks, so you can hear them without the browser.
+
+Global Challenges (share, browse, scores) need `?mock=1` locally: the SDK mock has no UGC backend, the in-memory mock has two seeded challenges.

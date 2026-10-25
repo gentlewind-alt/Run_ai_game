@@ -6,7 +6,8 @@ import { activateAbility, skipToReady, updateCursor } from '../battle/sling';
 import type { BattleState } from '../battle/state';
 import type { Level } from '../data/types';
 import { C } from '../art/palette';
-import { text } from '../art/font5x7';
+import { setText, text } from '../art/font5x7';
+import { challengeBoard, submitScore, type Challenge } from '../core/challenges';
 import { H, W } from '../config/constants';
 import { events } from '../core/events';
 import { irisOpen } from '../core/flow';
@@ -32,15 +33,17 @@ export default class BattleScene extends Phaser.Scene {
   private levelId = 1;
   private loadout: string[] = [];
   private customLevel?: Level;
+  private challenge?: Challenge;
 
   constructor() {
     super('game');
   }
 
-  init(data: { level: number; loadout: string[]; customLevel?: Level }): void {
+  init(data: { level: number; loadout: string[]; customLevel?: Level; challenge?: Challenge }): void {
     this.levelId = data.level ?? 1;
     this.loadout = (data.loadout ?? DEFAULT_LOADOUT).slice();
     this.customLevel = data.customLevel;
+    this.challenge = data.challenge;
   }
 
   create(): void {
@@ -67,7 +70,7 @@ export default class BattleScene extends Phaser.Scene {
       onPause: () => this.setPaused(true),
     });
     b.ui = this.hud.ui;
-    if (b.custom) b.inUi(() => {
+    if (b.custom && !this.challenge) b.inUi(() => {
       makeButton(this, W - 98, 14, 42, 24, 'Edit', 'plain', () => goTo(this, 'builder'), 12);
     });
     this.wireHud(b);
@@ -79,7 +82,7 @@ export default class BattleScene extends Phaser.Scene {
       if (b.paused) {
         b.paused = false;
         this.hud.hidePause();
-        this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel });
+        this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge });
       }
     });
     this.input.keyboard?.on('keydown-M', () => {
@@ -164,8 +167,8 @@ export default class BattleScene extends Phaser.Scene {
     if (on) {
       this.hud.showPause({
         resume: () => this.setPaused(false),
-        restart: () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel }); },
-        map: () => goTo(this, b.custom ? 'builder' : 'map'),
+        restart: () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge }); },
+        map: () => (this.challenge ? goTo(this, 'challenge', { id: this.challenge.id, challenge: this.challenge }) : goTo(this, b.custom ? 'builder' : 'map')),
       });
     } else {
       this.hud.hidePause();
@@ -182,16 +185,42 @@ export default class BattleScene extends Phaser.Scene {
     const b = this.b;
     if (b.custom && !b.paused && (b.state === 'won' || b.state === 'lost')) {
       b.paused = true;
+      if (this.challenge) { this.challengeEnd(b, this.challenge); return; }
       b.inUi(() => {
         this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.78).setDepth(30);
         text(this, W / 2, 83, b.state === 'won' ? 'Level cleared!' : 'Out of shots', C('4'), 2, C('0')).setDepth(31);
         text(this, W / 2, 111, 'Custom playtest', C('c'), 1, C('0')).setDepth(31);
         makeButton(this, W / 2 - 69, 157, 118, 30, 'Edit level', 'go', () => goTo(this, 'builder'), 32);
         makeButton(this, W / 2 + 69, 157, 118, 30, 'Retry', 'plain', () => {
-          this.scene.restart({ level: 1000, loadout: b.loadout, customLevel: this.customLevel });
+          this.scene.restart({ level: 1000, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge });
         }, 32);
       });
     }
+  }
+
+  /** End of a Global Challenge attempt: show the score, keep the player's best on the challenge's own board and show their rank. */
+  private challengeEnd(b: BattleState, c: Challenge): void {
+    const won = b.state === 'won';
+    const score = Math.round(b.score);
+    let line: Phaser.GameObjects.Image | undefined;
+    b.inUi(() => {
+      this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.78).setDepth(30);
+      text(this, W / 2, 70, won ? 'Challenge cleared!' : 'Out of shots', C('4'), 2, C('0')).setDepth(31);
+      text(this, W / 2, 96, c.title.slice(0, 32), C('c'), 1, C('0')).setDepth(31);
+      if (won) text(this, W / 2, 112, `Score ${score}`, C('c'), 1, C('0')).setDepth(31);
+      line = text(this, W / 2, 128, won ? 'Saving your score...' : 'Only a clear counts. Try other weapons!', C('d'), 1, C('0')).setDepth(31);
+      makeButton(this, W / 2 - 128, 165, 118, 30, 'Leaderboard', 'go', () => goTo(this, 'challenge', { id: c.id, challenge: c }), 32);
+      makeButton(this, W / 2, 165, 100, 30, 'Retry', 'plain', () => {
+        this.scene.restart({ level: 1000, loadout: b.loadout, customLevel: this.customLevel, challenge: c });
+      }, 32);
+      makeButton(this, W / 2 + 118, 165, 100, 30, 'Pick weapons', 'plain', () => goTo(this, 'challengeWeapons', { mode: 'play', challenge: c }), 32);
+    });
+    if (!won) return;
+    void submitScore(c, score).then(async (best) => {
+      const board = await challengeBoard(c, 1);
+      if (!this.scene.isActive() || !line) return;
+      setText(line, this, `Your best ${Math.max(best, score)}${board.me ? `   Rank #${board.me.rank}` : ''}`, C('4'), C('0'));
+    });
   }
 
   // ------------------------------------------------------------------ dev and test hooks
