@@ -9,6 +9,7 @@
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string" },
+    "builder": { "$ref": "#/$defs/builder" },
     "tuning": { "$ref": "#/$defs/tuning" },
     "damageRules": { "$ref": "#/$defs/damageRules" },
     "economy": { "$ref": "#/$defs/economy" },
@@ -23,6 +24,149 @@
     "cosmetics": { "type": "array", "items": { "$ref": "#/$defs/cosmetic" } }
   },
   "$defs": {
+    "builder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grid",
+        "worldW",
+        "groundY",
+        "minX",
+        "minY",
+        "maxBlocks",
+        "maxConnections",
+        "maxMonsters",
+        "materials",
+        "targets",
+        "loadout",
+        "physics",
+        "presets"
+      ],
+      "properties": {
+        "grid": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "worldW": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "groundY": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "minX": {
+          "type": "number"
+        },
+        "minY": {
+          "type": "number"
+        },
+        "maxBlocks": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxConnections": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxMonsters": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "materials": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "loadout": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "physics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lockStiffness",
+            "lockSpan",
+            "ropeStiffness",
+            "ropeDamping"
+          ],
+          "properties": {
+            "lockStiffness": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "lockSpan": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "ropeStiffness": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "ropeDamping": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "presets": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "name",
+              "w",
+              "h",
+              "shape"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "w": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "h": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "shape": {
+                "enum": [
+                  "rectangle",
+                  "circle",
+                  "triangle"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "element": { "enum": ["physical", "hellfire", "radiant", "void"] },
     "elementOrNull": { "enum": ["physical", "hellfire", "radiant", "void", null] },
     "rarity": { "enum": ["common", "uncommon", "rare", "epic", "legendary", "mythic"] },

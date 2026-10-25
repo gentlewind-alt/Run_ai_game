@@ -1,23 +1,23 @@
 // Builds the level: background, ground, sling, blocks and monsters.
 import { buildBackground } from '../art/backgrounds';
-import { MONSTER_ART, blockKey, makeBattleTextures } from '../art/textures';
+import { MONSTER_ART } from '../art/textures';
+import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { behaviorFor } from '../content/monsters';
 import { buildTerrain, groundAt } from './terrain';
 import { profile } from '../core/profile';
 import { data } from '../data/load';
 import { materialDef, monsterDef } from '../data/lookup';
-import type { LevelMonster } from '../data/types';
+import type { LevelBlock, LevelMonster } from '../data/types';
 import type Phaser from 'phaser';
 import type { Ent, Kind } from './BattleCtx';
 import type { BattleState } from './state';
 
 // Body defaults when a material or monster row doesn't say (see architecture/DATA.md).
 const DEFAULT_DENSITY = 0.001;
-const BLOCK_FRICTION = 0.7;
 
 export function buildWorld(b: BattleState): void {
   const s = b.scene;
-  makeBattleTextures(s, b.level.blocks);
+  ensureBlockTextures(s, b.level.blocks);
   const realm = data.content.realms.find((r) => r.id === b.level.realm)?.background ?? 'hills';
   buildBackground(s, b.worldW, b.groundY, realm, false);
   buildTerrain(b);
@@ -31,21 +31,20 @@ export function populate(b: BattleState): void {
                   slingSkin === 's_gemini' ? 'sling_gemini' : slingSkin;
   const slingTex = skinKey && s.textures.exists(skinKey) ? skinKey : 'sling';
   s.add.image(b.slingX, b.slingY + 28, slingTex).setDepth(2);
-  for (const blk of b.level.blocks) addBlock(b, blk.m, blk.x, blk.y, blk.w, blk.h);
+  const bodies = b.level.blocks.map((blk) => addBlock(b, blk));
+  if (b.level.connections?.length) b.connections = installConnections(s, b.level.blocks, bodies, b.level.connections);
   for (const c of b.level.chests ?? []) addChest(b, c);
   for (const m of b.level.monsters) addMonster(b, m);
   for (const e of b.ents) if (e.kind === 'monster') e.behavior?.onSpawn?.(b.ctx, e);
   if (b.level.exit) s.add.image(b.level.exit.x, b.level.exit.y ?? groundAt(b, b.level.exit.x) - 13, 'door').setDepth(1);
 }
 
-function addBlock(b: BattleState, mat: string, x: number, y: number, w: number, h: number): void {
-  const def = materialDef(mat)!;
-  const body: any = b.scene.matter.add.rectangle(x, y, w, h, {
-    density: def.density ?? DEFAULT_DENSITY,
-    friction: def.friction ?? BLOCK_FRICTION, frictionStatic: 1, restitution: 0.05, label: 'block',
-  });
-  const sprite = b.scene.add.image(x, y, blockKey(mat, w, h, false)).setDepth(2);
-  b.ents.push(makeEnt(b, 'block', mat, body, sprite, def.hp, def.weak ?? null, null, w, h, 16, {}));
+function addBlock(b: BattleState, block: LevelBlock): any {
+  const def = materialDef(block.m)!;
+  const body = createBlockBody(b.scene, block);
+  const sprite = b.scene.add.image(block.x, block.y, blockTextureKey(block)).setRotation(body.angle).setDepth(2);
+  b.ents.push(makeEnt(b, 'block', block.m, body, sprite, def.hp, def.weak ?? null, null, block.w, block.h, 16, {}));
+  return body;
 }
 
 function addChest(b: BattleState, chest: { id: string; x: number; y: number; hp?: number; reward: string }): void {

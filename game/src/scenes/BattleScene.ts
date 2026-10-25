@@ -4,6 +4,10 @@ import { createBattle, buildBattle, startBattle } from '../battle/setup';
 import { update } from '../battle/loop';
 import { activateAbility, skipToReady, updateCursor } from '../battle/sling';
 import type { BattleState } from '../battle/state';
+import type { Level } from '../data/types';
+import { C } from '../art/palette';
+import { text } from '../art/font5x7';
+import { H, W } from '../config/constants';
 import { events } from '../core/events';
 import { irisOpen } from '../core/flow';
 import { snapshot } from '../battle/snapshot';
@@ -17,6 +21,7 @@ import { grantShots } from '../battle/rules';
 import type { ExtraShotsData } from './ExtraShotsScene';
 import { goTo } from '../core/flow';
 import { createHud, type Hud } from '../ui/hud';
+import { makeButton } from '../ui/widgets';
 
 const DEFAULT_LOADOUT = Array.from({ length: 6 }, () => 'w_militia_blade');
 
@@ -26,23 +31,25 @@ export default class BattleScene extends Phaser.Scene {
   private hud!: Hud;
   private levelId = 1;
   private loadout: string[] = [];
+  private customLevel?: Level;
 
   constructor() {
     super('game');
   }
 
-  init(data: { level: number; loadout: string[] }): void {
+  init(data: { level: number; loadout: string[]; customLevel?: Level }): void {
     this.levelId = data.level ?? 1;
     this.loadout = (data.loadout ?? DEFAULT_LOADOUT).slice();
+    this.customLevel = data.customLevel;
   }
 
   create(): void {
     this.scene.resume();
     events.beginBattle();
-    const b = (this.b = createBattle(this, this.levelId, this.loadout));
+    const b = (this.b = createBattle(this, this.levelId, this.loadout, this.customLevel));
     buildBattle(b);
 
-    const shouldShowHint = b.settings.features.tutorial !== false && !hasSeenHint(this.levelId, 0);
+    const shouldShowHint = !b.custom && b.settings.features.tutorial !== false && !hasSeenHint(this.levelId, 0);
     const hintText = shouldShowHint ? b.level.hints?.[0] : undefined;
     if (hintText) {
       markHintSeen(this.levelId, 0);
@@ -60,6 +67,9 @@ export default class BattleScene extends Phaser.Scene {
       onPause: () => this.setPaused(true),
     });
     b.ui = this.hud.ui;
+    if (b.custom) b.inUi(() => {
+      makeButton(this, W - 98, 14, 42, 24, 'Edit', 'plain', () => goTo(this, 'builder'), 12);
+    });
     this.wireHud(b);
     startBattle(b);
     const bgTheme = (b.level.realm === 'wood' || b.level.realm === 'keep' || b.level.kind === 'boss') ? 'dusk' : 'cheerful';
@@ -70,7 +80,7 @@ export default class BattleScene extends Phaser.Scene {
       if (b.paused) {
         b.paused = false;
         this.hud.hidePause();
-        this.scene.restart({ level: this.levelId, loadout: b.loadout });
+        this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel });
       }
     });
     this.input.keyboard?.on('keydown-M', () => {
@@ -104,6 +114,7 @@ export default class BattleScene extends Phaser.Scene {
     events.on('coins:gained', (e) => this.hud.setCoins(e.total));
     events.on('score:changed', (e) => this.hud.setScore(e.score));
     events.on('combo', (e) => this.hud.mash(e.mult));
+    if (b.custom) return;
     const results = (won: boolean, why: 'shots' | 'escaped', stars: number): void => {
       this.scene.pause();
       this.scene.launch('results', {
@@ -154,8 +165,8 @@ export default class BattleScene extends Phaser.Scene {
     if (on) {
       this.hud.showPause({
         resume: () => this.setPaused(false),
-        restart: () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout }); },
-        map: () => goTo(this, 'map'),
+        restart: () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel }); },
+        map: () => goTo(this, b.custom ? 'builder' : 'map'),
       });
     } else {
       this.hud.hidePause();
@@ -169,6 +180,19 @@ export default class BattleScene extends Phaser.Scene {
   update(_t: number, delta: number): void {
     update(this.b, delta, this.game.getTime());
     updateCursor(this.b);
+    const b = this.b;
+    if (b.custom && !b.paused && (b.state === 'won' || b.state === 'lost')) {
+      b.paused = true;
+      b.inUi(() => {
+        this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.78).setDepth(30);
+        text(this, W / 2, 83, b.state === 'won' ? 'Level cleared!' : 'Out of shots', C('4'), 2, C('0')).setDepth(31);
+        text(this, W / 2, 111, 'Custom playtest', C('c'), 1, C('0')).setDepth(31);
+        makeButton(this, W / 2 - 69, 157, 118, 30, 'Edit level', 'go', () => goTo(this, 'builder'), 32);
+        makeButton(this, W / 2 + 69, 157, 118, 30, 'Retry', 'plain', () => {
+          this.scene.restart({ level: 1000, loadout: b.loadout, customLevel: this.customLevel });
+        }, 32);
+      });
+    }
   }
 
   // ------------------------------------------------------------------ dev and test hooks

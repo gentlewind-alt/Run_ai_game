@@ -4,8 +4,8 @@ import { C } from '../art/palette';
 import { pixText } from '../art/pix';
 import { sfx } from '../audio/sfx';
 import { profile, upgradeMult } from '../core/profile';
-import { weaponDef } from '../data/lookup';
-import { blockKey } from '../art/textures';
+import { materialDef, weaponDef } from '../data/lookup';
+import { blockTextureKey } from '../builder/physics';
 import { artifactMult } from './artifacts';
 import { announce, comboMult, registerKill } from './combo';
 import { burst, popWord, ring } from './fx';
@@ -107,7 +107,10 @@ function impact(b: BattleState, target: Ent | undefined, other: Ent | undefined,
   const T = b.tune;
   let dmg = 0;
   if (other) {
-    dmg = (rel - T.debrisMinSpeed) * Math.sqrt(other.body.mass) * T.debrisK * (target.kind === 'monster' ? 1 : T.blockDebrisFactor);
+    const mass = other.body.isStatic
+      ? (materialDef(other.type)?.density ?? other.body._original.density) * other.body.area
+      : other.body.mass;
+    dmg = (rel - T.debrisMinSpeed) * Math.sqrt(mass) * T.debrisK * (target.kind === 'monster' ? 1 : T.blockDebrisFactor);
     if (target.kind === 'monster' && other.kind === 'block') dmg = Math.max(dmg, (rel - T.fallThreshold) * T.fallK);
   } else if (ob.label === 'ground' && target.kind === 'monster') {
     dmg = (rel - T.fallThreshold) * T.fallK;
@@ -177,12 +180,15 @@ export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: numb
   if (o.strong) b.hitStop = Math.max(b.hitStop, b.tune.hitStopFrames);
 
   if (t.hp <= 0) kill(b, t);
-  else if (t.kind === 'block' && t.hp < t.maxHp * 0.5) t.sprite.setTexture(blockKey(t.type, t.w, t.h, true));
+  else if (t.kind === 'block' && t.hp < t.maxHp * 0.5) {
+    t.sprite.setTexture(blockTextureKey({ m: t.type, w: t.w, h: t.h, shape: t.body.builderShape }, true));
+  }
 }
 
 /** Removes a dead entity's body and sprites. */
 export function discard(b: BattleState, t: Ent): void {
   t.dead = true;
+  b.connections?.removeBody(t.body);
   b.scene.matter.world.remove(t.body);
   t.sprite.destroy();
   t.shieldSprite?.destroy();
@@ -212,7 +218,7 @@ function kill(b: BattleState, t: Ent): void {
   if (t.kind === 'chest') {
     sfx.unlock();
     const rewardId = t.reward || String(t.params?.reward ?? '');
-    if (rewardId) {
+    if (rewardId && !b.custom) {
       if (!profile.owned.weapons.includes(rewardId)) {
         profile.owned.weapons.push(rewardId);
         b.relicUnlocked = rewardId;
@@ -230,7 +236,7 @@ function kill(b: BattleState, t: Ent): void {
   b.events.emit('kill', { target: t, x: px, y: py });
 
   if (t.kind === 'monster') {
-    if (t.def?.boss) {
+    if (t.def?.boss && !b.custom) {
       const bossRelic = b.content.weapons.find(
         (w) => typeof w.unlock === 'object' && w.unlock.boss === t.type
       );

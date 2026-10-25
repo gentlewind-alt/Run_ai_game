@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.32.0 (music on/off toggle; levels 15, 17, 22 from thesis archetypes; generated boss forts 4, 8, 16), private
+**Current build:** v1.33.0 (player level builder with blocks, rigid locks, ropes, anchors and isolated playtests), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -90,7 +90,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 
 | Card | Title | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|
-| BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | doing | codex | 10-25 | Owner-requested; bounded OpenCode implementation, Codex review and physics/browser checks. |
+| BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | review | codex | 10-25 | Private v1.33.0; check/build and 14 browser groups pass. Full campaign solver timed out after L3; hosted device check remains. OpenCode failed before edits; owner approved direct Codex implementation. |
 
 ## Waiting on owner
 

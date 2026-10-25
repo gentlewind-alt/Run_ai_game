@@ -125,6 +125,14 @@ Edit `art/palette.ts`. Sprites index the palette by character, so a palette swap
 
 ---
 
+### Build and test a custom level
+
+1. Choose **Create level** on the Title screen. Pick a block and material, then tap the grid to place it. Use **Select** to drag pieces; **Rotate** turns them in 15-degree steps.
+2. Use **Anchor** for fixed supports. **Lock** joins two tapped blocks at their current relative angle. **Rope** starts on a block or an empty fixed anchor point, then attaches to the second tapped block. **Unlink** removes the selected block's connections.
+3. Add **Target** monsters. Use **Test** to check balance and hanging mechanisms; **Stop** restores the design. Supported stacks still obey physics, so test before sharing.
+4. **Undo/Redo** includes pieces, targets and connections. Drafts save separately through platform storage. **Export/Import** transfers the versioned JSON; malformed imports leave the current draft intact.
+5. **Play** launches an isolated slingshot attempt. **Edit** returns to the draft. Custom attempts award no campaign progress or inventory.
+
 ## Deploy
 
 1. `npm run build`, then `rundot predeploy` (fix what it reports), then `rundot deploy`.

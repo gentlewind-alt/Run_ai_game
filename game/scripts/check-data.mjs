@@ -116,6 +116,14 @@ if (content) {
   const weaponIds = new Set(ids('weapons'));
   const monsterIds = new Set(ids('monsters'));
   const materialIds = new Set(ids('materials'));
+  if (content.builder) {
+    const builder = content.builder;
+    for (const id of builder.materials ?? []) if (!materialIds.has(id)) err('content.json', `builder lists unknown material "${id}"`);
+    for (const id of builder.targets ?? []) if (!monsterIds.has(id)) err('content.json', `builder lists unknown monster "${id}"`);
+    for (const id of builder.loadout ?? []) if (!weaponIds.has(id)) err('content.json', `builder lists unknown weapon "${id}"`);
+    const presets = (builder.presets ?? []).map((p) => p.id);
+    if (new Set(presets).size !== presets.length) err('content.json', 'duplicate builder preset id');
+  }
 
   for (const r of content.realms ?? []) {
     for (const m of r.monsters ?? []) if (!monsterIds.has(m)) err('content.json', `realm ${r.id} lists unknown monster "${m}"`);
@@ -149,6 +157,20 @@ if (content) {
       if (!materialIds.has(b.m)) err(file, `blocks[${i}]: unknown material "${b.m}"`);
       if (b.x - b.w / 2 < 0 || b.x + b.w / 2 > lv.worldW) err(file, `blocks[${i}] is outside worldW ${lv.worldW}`);
     });
+    const blockIds = new Set();
+    for (const block of lv.blocks ?? []) {
+      if (block.id === undefined) continue;
+      if (!block.id || blockIds.has(block.id)) err(file, `duplicate or empty block id "${block.id}"`);
+      blockIds.add(block.id);
+    }
+    const connectionIds = new Set();
+    for (const c of lv.connections ?? []) {
+      if (connectionIds.has(c.id)) err(file, `duplicate connection id "${c.id}"`);
+      connectionIds.add(c.id);
+      if (!blockIds.has(c.b) || (c.a !== null && !blockIds.has(c.a))) err(file, `connection ${c.id} has a missing block`);
+      if (c.a === c.b) err(file, `connection ${c.id} joins a block to itself`);
+      if (c.type === 'lock' && c.a === null) err(file, `lock ${c.id} needs two blocks`);
+    }
     (lv.monsters ?? []).forEach((m, i) => {
       if (!monsterIds.has(m.t)) err(file, `monsters[${i}]: unknown monster "${m.t}"`);
       if (m.x < 0 || m.x > lv.worldW) err(file, `monsters[${i}] is outside worldW ${lv.worldW}`);

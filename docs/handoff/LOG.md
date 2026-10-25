@@ -2,6 +2,15 @@
 
 Newest at the top. Use the template in `architecture/WORKFLOW.md`. Don't edit old entries; add a new one.
 
+## 2026-10-25 · codex · BUILDER-01 player level builder (v1.33.0, review)
+- **What:** Title > Create level. Eight piece presets (planks, beam, post, square, brick, ball, wedge), wood/stone/iron/crystal, snap/drag, rotation, anchored supports, targets, two-pin rigid locks and tension-only ropes. Test/Stop restores authored transforms; Undo/Redo, platform draft storage and validated JSON import/export. Play uses an isolated custom level with Edit/Retry and no campaign rewards, tutorial writes, inventory use or ads. Campaign data and save version unchanged.
+- **Physics:** shared geometry/textures/connections in `src/builder/physics.ts`; full block angle/static/shape supported. Endpoint destruction removes constraints; static-body impact mass stays finite. Test and battle use the same pieces and connections. Draft format/conventions and usage added to DATA/RECIPES.
+- **Checks:** check (data, 30-day deterministic daily, draft boundary and TypeScript), build and all 20 RUN predeploy checks pass. Dedicated headless Chrome acceptance: 14 groups, 0 console errors; real pointer placement/drag/editing, files, simulation resets, Play/Retry/Edit, profile isolation and constant listener counts [7,7,7,7]. Over 600 steps: locked frame drift 0.128 px / 1.34 degrees, rope max 80.37 px for length 80, ordinary supported frame drift <0.155 px. Desktop and narrow landscape reviewed.
+- **Regression limit:** full `npm run regress` stopped at its 180-second bound. Earlier sections (daily, save migration, monsters, relics/slingshots) and levels 1-3 passed, without one-shot wins. Remaining campaign solver results are unverified. Mock platform storage is session memory; real RUN storage reload/device behavior needs its hosted check.
+- **Deployed:** private **v1.33.0**, https://w.run/yuyungfu/monster-mash-slingshot-siege?tag=private&k=cebc9f99a0b809b71bddcc00d5907563 . Server configuration unchanged. Public release unchanged.
+- **Execution:** OpenCode was attempted with a decision-complete exact-file contract and exited 1 before edits/report. Owner explicitly approved direct Codex implementation. Codex implemented and independently reviewed/tested the result; AGY stayed disabled.
+- **Questions for owner:** phone/hosted playtest, then review; no public-release approval requested.
+
 ## 2026-10-25 · codex · PCG-C later-realm level archetypes
 - **Changed:** wrote `docs/monster_mash/12_level_archetypes.md` with one alternative for each level 13–24, covering the six Chapter 8 deception types, visual references, words-and-ASCII layouts, greedy-shot failure, existing weapon/ability solution, and a 4–5-shot authoring target. All concepts use current content; no new content, code, or level files were added.
 - **Checks:** `npm run check` passed (0 errors; existing level 99 warning, Daily Mash determinism and TypeScript passed); Python and Node syntax checks passed; `git diff --check` passed. `npm run build` stopped at Vite because esbuild could not resolve `game/vite.config.ts` (`Access is denied`).

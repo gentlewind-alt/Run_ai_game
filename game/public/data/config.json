@@ -65,6 +65,7 @@
     "zoomOutRise": 0.2
   },
   "features": {
+    "builder": true,
     "map": true,
     "shop": true,
     "forge": true,
