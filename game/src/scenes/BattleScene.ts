@@ -62,8 +62,7 @@ export default class BattleScene extends Phaser.Scene {
     b.ui = this.hud.ui;
     this.wireHud(b);
     startBattle(b);
-    const bgTheme = (b.level.realm === 'wood' || b.level.realm === 'keep' || b.level.kind === 'boss') ? 'dusk' : 'cheerful';
-    music.play(bgTheme);
+    music.playForLevel(this.levelId, b.level.realm ?? '', b.level.kind === 'boss');
     irisOpen(this, (fn) => b.inUi(fn));
     this.input.keyboard?.on('keydown-ESC', () => this.setPaused(!b.paused));
     this.input.keyboard?.on('keydown-R', () => {

@@ -1,0 +1,71 @@
+{
+  "_note": "Soundtrack: one theme per realm plus title and map. src/audio/trackgen.ts turns a theme into notes. progression is a list of scale degrees (one per bar, the chord root); bass and lead patterns are 8 eighth-notes per bar: a number is a scale degree (bass: 0 root, 1 third, 2 fifth, 3 octave; lead: steps above the chord root), null is a rest. drums use 8-character strings, x = hit. Each level's number picks a key shift (transposeByVariant) and a small tempo drift, so levels of one realm sound related but different. Boss levels apply the theme's boss block.",
+  "transposeByVariant": [0, 2, -2, 5],
+  "themes": {
+    "title": {
+      "bpm": 128, "rootMidi": 48, "scale": [0, 2, 4, 5, 7, 9, 11], "progression": [0, 5, 3, 4],
+      "bass": { "wave": "triangle", "vol": 0.9, "pattern": [0, null, 2, 0, 0, null, 2, 3] },
+      "lead": { "wave": "square", "vol": 0.55, "octave": 1, "pattern": [0, 2, 4, 2, 5, 4, 2, null] },
+      "drums": { "kick": "x...x...", "hat": ".x.x.x.x" }
+    },
+    "map": {
+      "bpm": 96, "rootMidi": 48, "scale": [0, 2, 4, 7, 9], "progression": [0, 2, 3, 1],
+      "bass": { "wave": "triangle", "vol": 0.7, "pattern": [0, null, null, 2, null, null, 1, null] },
+      "lead": { "wave": "triangle", "vol": 0.5, "octave": 1, "pattern": [0, null, 2, null, 4, 3, null, 2] },
+      "arp": { "wave": "sine", "vol": 0.25, "octave": 2 }
+    },
+    "hills": {
+      "bpm": 120, "rootMidi": 48, "scale": [0, 2, 4, 5, 7, 9, 11], "progression": [0, 3, 4, 0],
+      "bass": { "wave": "triangle", "vol": 0.9, "pattern": [0, 0, 2, 0, 0, 1, 2, 0] },
+      "lead": { "wave": "square", "vol": 0.55, "octave": 1, "pattern": [0, 2, 4, 5, null, 4, 2, null] },
+      "drums": { "kick": "x...x...", "hat": ".x.x.x.x" },
+      "boss": { "bpmMult": 1.2, "transpose": -3, "leadWave": "sawtooth", "drums": { "kick": "x.x.x.x.", "snare": "..x...x.", "hat": "xxxxxxxx" } }
+    },
+    "wood": {
+      "bpm": 104, "rootMidi": 45, "scale": [0, 2, 3, 5, 7, 8, 10], "progression": [0, 5, 3, 4],
+      "bass": { "wave": "triangle", "vol": 0.95, "pattern": [0, null, 2, null, 0, null, 2, 1] },
+      "lead": { "wave": "sawtooth", "vol": 0.45, "octave": 1, "pattern": [0, null, 2, 4, null, 3, 2, null] },
+      "pad": { "wave": "sine", "vol": 0.18 },
+      "drums": { "kick": "x.......", "hat": "..x...x." },
+      "boss": { "bpmMult": 1.25, "transpose": -2, "drums": { "kick": "x...x...", "snare": "....x...", "hat": ".x.x.x.x" } }
+    },
+    "keep": {
+      "bpm": 112, "rootMidi": 43, "scale": [0, 2, 3, 5, 7, 9, 10], "progression": [0, 6, 5, 6],
+      "bass": { "wave": "square", "vol": 0.7, "pattern": [0, 0, null, 0, 2, null, 0, null] },
+      "lead": { "wave": "sawtooth", "vol": 0.5, "octave": 1, "pattern": [0, null, 0, 2, 4, null, 2, null] },
+      "drums": { "kick": "x.x.x.x.", "snare": "..x...x.", "hat": "x.x.x.x." },
+      "boss": { "bpmMult": 1.2, "transpose": -2, "drums": { "kick": "x.x.x.x.", "snare": "x.x.x.x.", "hat": "xxxxxxxx" } }
+    },
+    "frost": {
+      "bpm": 84, "rootMidi": 50, "scale": [0, 3, 5, 7, 10], "progression": [0, 3, 2, 4],
+      "bass": { "wave": "sine", "vol": 1.0, "pattern": [0, null, null, null, 2, null, null, null] },
+      "lead": { "wave": "triangle", "vol": 0.6, "octave": 2, "pattern": [0, null, 2, null, 4, null, 3, null] },
+      "pad": { "wave": "sine", "vol": 0.22 },
+      "arp": { "wave": "sine", "vol": 0.2, "octave": 3 },
+      "boss": { "bpmMult": 1.3, "transpose": -3, "leadWave": "sawtooth", "drums": { "kick": "x...x...", "snare": "....x...", "hat": ".x.x.x.x" } }
+    },
+    "ember": {
+      "bpm": 132, "rootMidi": 40, "scale": [0, 1, 3, 5, 7, 8, 10], "progression": [0, 1, 0, 5],
+      "bass": { "wave": "sawtooth", "vol": 0.6, "pattern": [0, 0, 0, 2, 0, 0, 3, 2] },
+      "lead": { "wave": "square", "vol": 0.5, "octave": 2, "pattern": [0, 1, 0, null, 2, null, 1, 0] },
+      "drums": { "kick": "x..xx...", "snare": "....x...", "hat": "xxxxxxxx" },
+      "boss": { "bpmMult": 1.15, "transpose": -2, "leadWave": "sawtooth", "drums": { "kick": "x.xxx.xx", "snare": "..x...x.", "hat": "xxxxxxxx" }, "bassVol": 1.25 }
+    },
+    "sky": {
+      "bpm": 140, "rootMidi": 50, "scale": [0, 2, 4, 6, 7, 9, 11], "progression": [0, 4, 5, 3],
+      "bass": { "wave": "triangle", "vol": 0.8, "pattern": [0, null, 2, null, 0, null, 2, null] },
+      "lead": { "wave": "square", "vol": 0.4, "octave": 2, "pattern": [0, 2, 4, 2, 4, 5, 4, 2] },
+      "arp": { "wave": "triangle", "vol": 0.3, "octave": 2 },
+      "drums": { "kick": "x...x...", "hat": ".x.x.x.x" },
+      "boss": { "bpmMult": 1.1, "transpose": -2, "leadWave": "sawtooth", "drums": { "kick": "x.x.x.x.", "snare": "..x...x.", "hat": "xxxxxxxx" } }
+    },
+    "bonus": {
+      "bpm": 126, "rootMidi": 45, "scale": [0, 2, 4, 5, 7, 9, 10], "progression": [0, 4, 3, 5],
+      "bass": { "wave": "triangle", "vol": 0.9, "pattern": [0, 0, 2, 0, 3, 0, 2, 1] },
+      "lead": { "wave": "square", "vol": 0.5, "octave": 1, "pattern": [0, 2, 4, 5, 4, 2, 4, null] },
+      "arp": { "wave": "square", "vol": 0.18, "octave": 2 },
+      "drums": { "kick": "x...x...", "snare": "....x...", "hat": ".x.x.x.x" },
+      "boss": { "bpmMult": 1.15, "transpose": -2, "leadWave": "sawtooth" }
+    }
+  }
+}

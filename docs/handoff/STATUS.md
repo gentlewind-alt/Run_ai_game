@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.32.0 (music on/off toggle; levels 15, 17, 22 from thesis archetypes; generated boss forts 4, 8, 16), private
+**Current build:** v1.33.0 (Bonus Yard levels 25 to 29, a soundtrack per realm and level, local debug mode, credits change), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|

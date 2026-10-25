@@ -143,7 +143,7 @@ export interface Content {
   weapons: WeaponDef[];
   monsters: MonsterDef[];
   materials: MaterialDef[];
-  realms: { id: string; name?: string; levels: number[]; monsters: string[]; background?: string }[];
+  realms: { id: string; name?: string; levels: number[]; monsters: string[]; background?: string; music?: string }[];
 }
 
 export interface LevelMonster { t: string; x: number; y: number; dir?: number; speed?: number; delay?: number; path?: number[][] }

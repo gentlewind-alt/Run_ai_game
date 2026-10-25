@@ -1,9 +1,11 @@
+import type { MusicData } from '../audio/trackgen';
 import type { Config, Content, Level } from './types';
 
 export const data = {
   content: undefined as unknown as Content,
   config: undefined as unknown as Config,
   levels: {} as Record<number, Level>,
+  music: undefined as unknown as MusicData | undefined,
 };
 
 async function getJson<T>(path: string): Promise<T | undefined> {
@@ -21,6 +23,7 @@ export async function loadData(): Promise<void> {
   if (!config || !content) throw new Error('cannot load data/config.json or data/content.json');
   data.config = config;
   data.content = content;
+  data.music = await getJson<MusicData>('data/music.json');
   await Promise.all((config.levels ?? []).map(async (id) => {
     const lv = await getJson<Level>(`data/levels/level_${String(id).padStart(2, '0')}.json`);
     if (lv) data.levels[id] = lv;

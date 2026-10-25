@@ -66,7 +66,7 @@ export default class TitleScene extends Phaser.Scene {
       sfx.unlock();
       music.updateVolume();
     });
-    music.play('cheerful');
+    music.play({ theme: 'title' });
     irisOpen(this);
   }
 

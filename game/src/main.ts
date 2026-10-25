@@ -86,6 +86,10 @@ async function bootstrap(): Promise<void> {
     });
     if ((import.meta as any).env?.DEV) (window as any).__game = game;
     if ((import.meta as any).env?.DEV || DEBUG) void import('./debug/testHook').then((m) => m.installTestHook(game));
+    if (DEBUG) {
+      (window as any).__game = game;
+      void import('./debug/debugPanel').then((m) => m.installDebugPanel(game));
+    }
     platform.track('game_loaded');
     if (!bootStep1Fired) {
       bootStep1Fired = true;

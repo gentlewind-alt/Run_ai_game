@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { setText, text } from '../art/font5x7';
 import { beatPulse } from '../audio/beat';
+import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
@@ -90,6 +91,7 @@ export default class MapScene extends Phaser.Scene {
     makeButton(this, Math.round(W * 0.37), H - 16, 76, 24, 'Scores', 'ability', () => { sfx.click(); goTo(this, 'leaderboards'); }, 6);
     makeButton(this, Math.round(W * 0.63), H - 16, 76, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
     makeButton(this, Math.round(W * 0.88), H - 16, 76, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
+    music.play({ theme: 'map' });
     irisOpen(this);
   }
 

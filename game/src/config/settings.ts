@@ -38,7 +38,9 @@ function merge(target: Obj, src: Obj | undefined): Obj {
 const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 
 const query = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
-export const DEBUG = query.get('debug') === '1';
+const local = typeof location !== 'undefined' && (['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) || location.hostname.endsWith('.localhost'));
+/** Debug mode (cheats, the debug panel, the test hook): ?debug=1, and only on localhost or the dev server, never on the hosted game. */
+export const DEBUG = query.get('debug') === '1' && (local || !!(import.meta as any).env?.DEV);
 
 let config: Config = DEFAULTS;
 let content: Content | undefined;
