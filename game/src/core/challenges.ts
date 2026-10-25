@@ -1,5 +1,6 @@
 // Global Challenges: levels players build, publish to the shared community store, and everyone else can clear with the weapons the
 // author allows. Each challenge has its own score board and a challenger count (used for the ranking). Never throws into the game.
+import { MONSTER_ART } from '../art/textures';
 import { toLevel, validateDraft, type BuilderDocument } from '../builder/document';
 import { data } from '../data/load';
 import type { Level } from '../data/types';
@@ -147,5 +148,5 @@ export async function challengeBoard(c: Challenge, n = 8): Promise<Board> {
 
 /** The battle level for a challenge with the loadout the challenger chose. */
 export function challengeLevel(c: Challenge, loadout: string[]): Level {
-  return { ...toLevel(c.doc, data.content.builder), name: c.title, shots: loadout.length, loadout: loadout.slice() };
+  return { ...toLevel(c.doc, data.content.builder, (t) => ({ w: MONSTER_ART[t]?.w ?? 12, h: MONSTER_ART[t]?.h ?? 14 })), name: c.title, shots: loadout.length, loadout: loadout.slice() };
 }

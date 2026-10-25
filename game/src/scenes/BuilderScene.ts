@@ -3,7 +3,7 @@ import { C } from '../art/palette';
 import { text, setText, textWidth } from '../art/font5x7';
 import { MONSTER_ART } from '../art/textures';
 import { MatterLib } from '../battle/matter';
-import { cloneDraft, newDraft, toLevel, validateDraft, type BuilderDocument } from '../builder/document';
+import { cloneDraft, newDraft, settle, toLevel, validateDraft, type BuilderDocument } from '../builder/document';
 import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { getSettings } from '../config/settings';
 import { H, W } from '../config/constants';
@@ -243,10 +243,17 @@ export default class BuilderScene extends Phaser.Scene {
     this.say(hints[tool]);
   }
 
-  private scaleValue(): number { return Math.min(VIEW.w / (this.config.worldW - this.config.minX), VIEW.h / (this.config.groundY - this.config.minY)); }
+  /** A whole number of screen pixels per grid cell, so every grid line lands on a pixel and the grid stays crisp and even. */
+  private scaleValue(): number {
+    const cell = this.config.grid;
+    const fit = Math.min(VIEW.w / (this.config.worldW - this.config.minX), VIEW.h / (this.config.groundY - this.config.minY));
+    return Math.max(1, Math.floor(fit * cell)) / cell;
+  }
   private offset(): Point {
     const scale = this.scaleValue();
-    return { x: VIEW.x - this.config.minX * scale, y: VIEW.y + (VIEW.h - (this.config.groundY - this.config.minY) * scale) / 2 - this.config.minY * scale };
+    const width = (this.config.worldW - this.config.minX) * scale;
+    const height = (this.config.groundY - this.config.minY) * scale;
+    return { x: VIEW.x + Math.round((VIEW.w - width) / 2) - this.config.minX * scale, y: VIEW.y + Math.round((VIEW.h - height) / 2) - this.config.minY * scale };
   }
   private worldPoint(pointer: Phaser.Input.Pointer): Point {
     const offset = this.offset();
@@ -687,7 +694,7 @@ export default class BuilderScene extends Phaser.Scene {
   private play(): void {
     if (this.running || this.loading) return;
     try {
-      const level = toLevel(this.draft, this.config);
+      const level = toLevel(this.draft, this.config, this.monsterSize);
       if (!level.monsters.length) { this.say('Add at least one Target before Play. Test can check an empty structure.'); return; }
       void this.save(false);
       goTo(this, 'game', { level: 1000, loadout: this.config.loadout.slice(), customLevel: level });
@@ -715,7 +722,6 @@ export default class BuilderScene extends Phaser.Scene {
     this.blockBodies = [];
     this.monsterBodies = [];
     this.sprites = [];
-    if (this.gridGfx && this.worldRoot) this.worldRoot.remove(this.gridGfx, false);
     this.worldRoot?.clearMask(true);
     this.worldRoot?.destroy();
     this.clip?.destroy();
@@ -724,30 +730,37 @@ export default class BuilderScene extends Phaser.Scene {
     this.overlay = undefined;
   }
 
-  private drawGrid(scale: number): Phaser.GameObjects.Graphics {
-    const grid = this.add.graphics();
-    grid.fillStyle(C('9'), 1).fillRect(this.config.minX, this.config.minY, this.config.worldW - this.config.minX, this.config.groundY - this.config.minY);
+  /** The crisscross grid, drawn once in screen pixels: even cells, a brighter line every 4 cells and an X through each cell. */
+  private drawGrid(): Phaser.GameObjects.Graphics {
+    const g = this.add.graphics().setDepth(2);
+    const scale = this.scaleValue();
     const cell = this.config.grid;
-    // every cell carries both diagonals (the crisscross look), faint so pieces stay readable
-    grid.lineStyle(0.5 / scale, C('a'), 0.16);
-    for (let x = this.config.minX; x < this.config.worldW; x += cell) {
-      for (let y = this.config.minY; y < this.config.groundY; y += cell) {
-        grid.lineBetween(x, y, x + cell, y + cell);
-        grid.lineBetween(x + cell, y, x, y + cell);
+    const px = Math.round(cell * scale);
+    const cols = Math.round((this.config.worldW - this.config.minX) / cell);
+    const rows = Math.round((this.config.groundY - this.config.minY) / cell);
+    const o = this.offset();
+    const x0 = Math.round(o.x + this.config.minX * scale);
+    const y0 = Math.round(o.y + this.config.minY * scale);
+    const w = cols * px, h = rows * px;
+    g.fillStyle(C('9'), 1).fillRect(x0, y0, w, h);
+    g.fillStyle(C('a'), 0.2);
+    for (let c = 0; c < cols; c++) {
+      for (let r = 0; r < rows; r++) {
+        for (let k = 1; k < px - 1; k++) {
+          g.fillRect(x0 + c * px + k, y0 + r * px + k, 1, 1);
+          g.fillRect(x0 + c * px + px - 1 - k, y0 + r * px + k, 1, 1);
+        }
       }
     }
-    for (let i = 0, x = this.config.minX; x <= this.config.worldW; x += cell, i++) {
-      grid.lineStyle(0.5 / scale, C('a'), i % 4 === 0 ? 0.55 : 0.28).lineBetween(x, this.config.minY, x, this.config.groundY);
-    }
-    for (let i = 0, y = this.config.groundY; y >= this.config.minY; y -= cell, i++) {
-      grid.lineStyle(0.5 / scale, C('a'), i % 4 === 0 ? 0.55 : 0.28).lineBetween(this.config.minX, y, this.config.worldW, y);
-    }
-    grid.lineStyle(1 / scale, C('b'), 1).strokeRect(this.config.minX, this.config.minY, this.config.worldW - this.config.minX, this.config.groundY - this.config.minY);
-    grid.lineStyle(3 / scale, C('6'), 1).lineBetween(this.config.minX, this.config.groundY, this.config.worldW, this.config.groundY);
-    return grid;
+    for (let c = 0; c <= cols; c++) g.fillStyle(C(c % 4 === 0 ? 'b' : 'a'), c % 4 === 0 ? 0.6 : 0.4).fillRect(x0 + c * px, y0, 1, h + 1);
+    for (let r = 0; r <= rows; r++) g.fillStyle(C((rows - r) % 4 === 0 ? 'b' : 'a'), (rows - r) % 4 === 0 ? 0.6 : 0.4).fillRect(x0, y0 + r * px, w + 1, 1);
+    g.fillStyle(C('6'), 1).fillRect(x0, y0 + h - 1, w + 1, 2);
+    return g;
   }
 
-  private renderWorld(doc: BuilderDocument = this.draft): void {
+  private monsterSize = (type: string): { w: number; h: number } => ({ w: MONSTER_ART[type]?.w ?? 12, h: MONSTER_ART[type]?.h ?? 14 });
+
+  private renderWorld(doc: BuilderDocument = this.running ? settle(this.draft, this.config, this.monsterSize) : this.draft): void {
     this.clearWorld();
     const offset = this.offset();
     const scale = this.scaleValue();
@@ -757,8 +770,7 @@ export default class BuilderScene extends Phaser.Scene {
     clip.fillRect(VIEW.x, VIEW.y, VIEW.w, VIEW.h);
     root.setMask(clip.createGeometryMask());
     this.clip = clip;
-    if (!this.gridGfx) this.gridGfx = this.drawGrid(scale);
-    root.add(this.gridGfx);
+    if (!this.gridGfx) this.gridGfx = this.drawGrid();
     ensureBlockTextures(this, doc.blocks);
     for (const block of doc.blocks) {
       const body = createBlockBody(this, block);

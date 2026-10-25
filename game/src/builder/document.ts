@@ -133,8 +133,46 @@ export function validateDraft(value: unknown, config: BuilderConfig): BuilderDoc
   return { schema: 'monster-mash-builder', version: 1, name: raw.name.trim(), blocks, monsters, connections };
 }
 
-export function toLevel(doc: BuilderDocument, config: BuilderConfig): Level {
-  const safe = validateDraft(doc, config);
+interface Box { l: number; r: number; t: number; b: number }
+const boxOf = (b: LevelBlock): Box => {
+  const rad = (b.angle ?? 0) * Math.PI / 180;
+  const c = Math.abs(Math.cos(rad)), s = Math.abs(Math.sin(rad));
+  const hx = b.shape === 'circle' ? b.w / 2 : c * b.w / 2 + s * b.h / 2;
+  const hy = b.shape === 'circle' ? b.h / 2 : s * b.w / 2 + c * b.h / 2;
+  return { l: b.x - hx, r: b.x + hx, t: b.y - hy, b: b.y + hy };
+};
+
+/**
+ * Strict gravity for the start of play: every free block that is not anchored, locked or roped drops straight down until it rests on
+ * the ground or on a block below, lowest first, so no gaps are left under pieces. Targets drop the same way. Pure: returns a copy.
+ */
+export function settle(doc: BuilderDocument, config: BuilderConfig, sizeOf: (type: string) => { w: number; h: number } = () => ({ w: 12, h: 14 })): BuilderDocument {
+  const out = cloneDraft(doc);
+  const tied = new Set<string>();
+  for (const c of out.connections) { if (c.a) tied.add(c.a); tied.add(c.b); }
+  const overlapsX = (a: Box, b: Box): boolean => Math.min(a.r, b.r) - Math.max(a.l, b.l) > 0.01;
+  const placed: Box[] = out.blocks.filter((b) => b.static || tied.has(b.id!)).map(boxOf);
+  const free = out.blocks.filter((b) => !b.static && !tied.has(b.id!)).sort((a, b) => boxOf(b).b - boxOf(a).b);
+  for (const block of free) {
+    const box = boxOf(block);
+    let drop = config.groundY - box.b;
+    for (const other of placed) if (other.t >= box.b - 0.5 && overlapsX(box, other)) drop = Math.min(drop, other.t - box.b);
+    if (drop > 0) block.y += drop;
+    placed.push(boxOf(block));
+  }
+  const monsters = out.monsters.map((m, i) => ({ m, i, size: sizeOf(m.t) })).sort((a, b) => (b.m.y + b.size.h / 2) - (a.m.y + a.size.h / 2));
+  for (const { m, size } of monsters) {
+    const box: Box = { l: m.x - size.w / 2, r: m.x + size.w / 2, t: m.y - size.h / 2, b: m.y + size.h / 2 };
+    let drop = config.groundY - box.b;
+    for (const other of placed) if (other.t >= box.b - 0.5 && overlapsX(box, other)) drop = Math.min(drop, other.t - box.b);
+    if (drop > 0) m.y += drop;
+    placed.push({ ...box, t: box.t + Math.max(0, drop), b: box.b + Math.max(0, drop) });
+  }
+  return out;
+}
+
+export function toLevel(doc: BuilderDocument, config: BuilderConfig, sizeOf?: (type: string) => { w: number; h: number }): Level {
+  const safe = settle(validateDraft(doc, config), config, sizeOf);
   return {
     id: 1000, name: safe.name, realm: 'goblin_hills', kind: 'siege', worldW: config.worldW,
     terrain: [[0, config.groundY], [config.worldW, config.groundY]], sling: { x: 56, y: config.groundY - 58 },
