@@ -52,12 +52,12 @@ NAMES = {
     'bomber_relay': ['Powder Magazine', 'The Fuse Bastion', 'Chain Reaction Keep'],
     'boss_citadel': ['The Obsidian Citadel', 'Overlord Sanctum', 'Grand Bastion'],
 }
-HINTS = {
-    'tower': 'Shatter the lower load-bearing posts to bring the keep down.',
-    'balanced_beam': 'Cut the central fulcrum post to tip the upper gallery.',
-    'hanging_weight': 'Snap the support post and let the deadfall crush the garrison.',
-    'bomber_relay': 'Ignite one bomber to detonate the entire powder chain.',
-    'boss_citadel': 'Breach the outer watchtower, then collapse the grand colonnade.',
+HINTS = {  # the data check allows 40 characters
+    'tower': 'Break the lower posts.',
+    'balanced_beam': 'Cut the central post.',
+    'hanging_weight': 'Snap the post, drop the weight.',
+    'bomber_relay': 'Light one bomber, chain the rest.',
+    'boss_citadel': 'Breach the tower, then the colonnade.',
 }
 
 

@@ -1,0 +1,141 @@
+{
+  "id": 30,
+  "name": "The One-Post Choir",
+  "realm": "dark_elf_wood",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 6,
+  "hints": [
+    "Cut the central post."
+  ],
+  "scoreTarget": 1600,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      125,
+      320
+    ],
+    [
+      155,
+      292
+    ],
+    [
+      320,
+      292
+    ],
+    [
+      350,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "wood",
+      "x": 253,
+      "y": 270.0,
+      "w": 8,
+      "h": 44
+    },
+    {
+      "m": "wood",
+      "x": 253,
+      "y": 245,
+      "w": 104,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 237,
+      "y": 232,
+      "w": 6,
+      "h": 20
+    },
+    {
+      "m": "stone",
+      "x": 269,
+      "y": 232,
+      "w": 6,
+      "h": 20
+    },
+    {
+      "m": "wood",
+      "x": 253,
+      "y": 219,
+      "w": 40,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 166,
+      "y": 278.0,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 184,
+      "y": 278.0,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 175.0,
+      "y": 261.0,
+      "w": 32.0,
+      "h": 6
+    }
+  ],
+  "monsters": [
+    {
+      "t": "dark_elf_archer",
+      "x": 213.0,
+      "y": 235.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 293.0,
+      "y": 235.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 271.0,
+      "y": 285.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 227,
+      "y": 285.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 175,
+      "y": 251.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 299.0,
+      "y": 285.0
+    },
+    {
+      "t": "imp",
+      "x": 221,
+      "y": 144
+    }
+  ],
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ]
+}

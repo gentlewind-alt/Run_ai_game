@@ -1,29 +1,29 @@
 # Merkle Index
 
-Root hash: `0e6cd0267b70963c59dedcc906599d0785bacf5fb26508472e31a1be32aefeab`
+Root hash: `2f9d0f86ae4c429b39bed1c440a9456cec99f832a081100ba5d089845a79868b`
 
 | Directory | Hash | Files | Purpose |
 |---|---|---|---|
-| `.` | `0e6cd026` | 818 | MONSTER MASH: Slingshot Siege project root |
+| `.` | `2f9d0f86` | 830 | MONSTER MASH: Slingshot Siege project root |
 | `architecture` | `9003f85b` | 5 | System design, module boundaries, data schemas, and agent workflow |
 | `catalogue` | `8baca4d1` | 3 | Four Realms source items (weapons, gear, consumables) for porting |
-| `docs` | `6dc0d8f8` | 506 | Project documentation, design briefs, status, and agent logs |
+| `docs` | `059935eb` | 512 | Project documentation, design briefs, status, and agent logs |
 | `docs/concepts` | `5745669f` | 1 | - |
 | `docs/concepts/weapons` | `468d3109` | 1 | - |
-| `docs/handoff` | `2db0e0bc` | 483 | Agent coordination: status board, append-only logs, and task briefs |
+| `docs/handoff` | `30bc6222` | 489 | Agent coordination: status board, append-only logs, and task briefs |
 | `docs/handoff/codex_logs` | `f044e8db` | 3 | - |
 | `docs/handoff/ref` | `fe95b7a4` | 3 | - |
-| `docs/handoff/shots` | `67e70064` | 435 | - |
+| `docs/handoff/shots` | `734a2a1c` | 441 | - |
 | `docs/monster_mash` | `03cb835e` | 15 | Design briefs, math models, platform reports, and review history |
 | `docs/release` | `a54b4b49` | 7 | - |
-| `game` | `526e1389` | 257 | Phaser 3 + Vite game client (RUN project template) |
-| `game/public` | `18833162` | 88 | Static assets, data files, level JSONs, and CDN assets |
+| `game` | `e7a3c57e` | 263 | Phaser 3 + Vite game client (RUN project template) |
+| `game/public` | `f2de7801` | 94 | Static assets, data files, level JSONs, and CDN assets |
 | `game/public/cdn-assets` | `64b4c5bd` | 3 | Public CDN-hosted image and sprite assets |
-| `game/public/data` | `dd8cfa3c` | 33 | Game balance data: config, content catalog, and authored levels |
+| `game/public/data` | `bc044f9c` | 39 | Game balance data: config, content catalog, and authored levels |
 | `game/public/sprites` | `7bae00af` | 49 | - |
-| `game/rundot` | `f30254bf` | 4 | RUN SDK configuration, textGen, and CLI hook manifests |
+| `game/rundot` | `a71926f5` | 4 | RUN SDK configuration, textGen, and CLI hook manifests |
 | `game/schemas` | `71cfb1ba` | 4 | JSON schemas validating config, content, levels, and save files |
-| `game/scripts` | `8c1126e1` | 15 | Build scripts, level generator, and data validation tools |
+| `game/scripts` | `4a31bcee` | 15 | Build scripts, level generator, and data validation tools |
 | `game/scripts/concepts` | `e2aefc6e` | 8 | - |
 | `game/src` | `b28e1abd` | 131 | TypeScript source code for MONSTER MASH |
 | `game/src/art` | `6b84cd60` | 13 | Pixel art generators, palette definitions, textures, and 5x7 font |

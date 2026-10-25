@@ -1,0 +1,136 @@
+{
+  "id": 32,
+  "name": "Cantilever Hall",
+  "realm": "frost_peaks",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 6,
+  "hints": [
+    "Tip the gallery off its post."
+  ],
+  "scoreTarget": 1600,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      125,
+      320
+    ],
+    [
+      155,
+      296
+    ],
+    [
+      320,
+      296
+    ],
+    [
+      350,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "wood",
+      "x": 254,
+      "y": 276.0,
+      "w": 8,
+      "h": 40
+    },
+    {
+      "m": "wood",
+      "x": 254,
+      "y": 253,
+      "w": 118,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 238,
+      "y": 240,
+      "w": 6,
+      "h": 20
+    },
+    {
+      "m": "stone",
+      "x": 270,
+      "y": 240,
+      "w": 6,
+      "h": 20
+    },
+    {
+      "m": "wood",
+      "x": 254,
+      "y": 227,
+      "w": 40,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 166,
+      "y": 282.0,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 184,
+      "y": 282.0,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 175.0,
+      "y": 265.0,
+      "w": 32.0,
+      "h": 6
+    }
+  ],
+  "monsters": [
+    {
+      "t": "dark_elf_archer",
+      "x": 207.0,
+      "y": 243.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 301.0,
+      "y": 243.0
+    },
+    {
+      "t": "ice_golem",
+      "x": 280.0,
+      "y": 281.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 228,
+      "y": 289.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 175,
+      "y": 255.0
+    },
+    {
+      "t": "ice_golem",
+      "x": 307.0,
+      "y": 281.0
+    }
+  ],
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ]
+}

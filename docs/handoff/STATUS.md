@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.35.0 (Global Challenges: share a built level, owner-set weapon rules, per-level boards, ranked by challengers; builder Clear and drag-box multi-select; instant music switch), private
+**Current build:** v1.41.0 (six generated levels 30 to 35 in two new realms, Grand Citadels and Citadel Bosses; disc homing ricochet), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|

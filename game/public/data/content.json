@@ -1620,6 +1620,44 @@
       "name": "Bonus Yard",
       "background": "ember",
       "music": "bonus"
+    },
+    {
+      "id": "grand_citadels",
+      "levels": [
+        30,
+        31,
+        32,
+        33
+      ],
+      "monsters": [
+        "dark_elf_archer",
+        "dark_elf_hexer",
+        "ice_golem",
+        "goblin_bomber",
+        "imp"
+      ],
+      "palette": "big generated keeps and bomber chains",
+      "name": "Grand Citadels",
+      "background": "frost",
+      "music": "bonus"
+    },
+    {
+      "id": "citadel_bosses",
+      "levels": [
+        34,
+        35
+      ],
+      "monsters": [
+        "dark_elf_matron",
+        "frost_giant",
+        "dark_elf_archer",
+        "dark_elf_hexer",
+        "goblin_bomber"
+      ],
+      "palette": "two boss citadels",
+      "name": "Citadel Bosses",
+      "background": "frost",
+      "music": "bonus"
     }
   ],
   "cosmetics": [
