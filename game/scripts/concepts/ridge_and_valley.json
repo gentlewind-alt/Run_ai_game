@@ -1,0 +1,188 @@
+{
+  "id": 99,
+  "name": "Ridge and Valley",
+  "realm": "ember_forge",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 6,
+  "hints": [
+    "Three heights. Start low, or cut the stick."
+  ],
+  "scoreTarget": 2200,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      130,
+      320
+    ],
+    [
+      150,
+      296
+    ],
+    [
+      225,
+      296
+    ],
+    [
+      238,
+      332
+    ],
+    [
+      268,
+      332
+    ],
+    [
+      290,
+      258
+    ],
+    [
+      345,
+      258
+    ],
+    [
+      365,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "stone",
+      "x": 166,
+      "y": 282.0,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "stone",
+      "x": 188,
+      "y": 282.0,
+      "w": 10,
+      "h": 28
+    },
+    {
+      "m": "wood",
+      "x": 177.0,
+      "y": 265.0,
+      "w": 38.0,
+      "h": 6
+    },
+    {
+      "m": "wood",
+      "x": 166,
+      "y": 250.0,
+      "w": 10,
+      "h": 24
+    },
+    {
+      "m": "wood",
+      "x": 188,
+      "y": 250.0,
+      "w": 10,
+      "h": 24
+    },
+    {
+      "m": "wood",
+      "x": 177.0,
+      "y": 235.0,
+      "w": 38.0,
+      "h": 6
+    },
+    {
+      "m": "wood",
+      "x": 250,
+      "y": 304,
+      "w": 6,
+      "h": 56
+    },
+    {
+      "m": "wood",
+      "x": 250,
+      "y": 273,
+      "w": 26,
+      "h": 6
+    },
+    {
+      "m": "wood",
+      "x": 262,
+      "y": 326,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "m": "wood",
+      "x": 306,
+      "y": 240,
+      "w": 8,
+      "h": 36
+    },
+    {
+      "m": "wood",
+      "x": 306,
+      "y": 219,
+      "w": 52,
+      "h": 6
+    }
+  ],
+  "monsters": [
+    {
+      "t": "dark_elf_archer",
+      "x": 177,
+      "y": 289.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 177,
+      "y": 255.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 177,
+      "y": 225.0
+    },
+    {
+      "t": "orc_brute",
+      "x": 210,
+      "y": 282.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 250,
+      "y": 263.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 292,
+      "y": 209.0
+    },
+    {
+      "t": "dark_elf_hexer",
+      "x": 320,
+      "y": 209.0
+    },
+    {
+      "t": "lava_imp",
+      "x": 235,
+      "y": 165
+    },
+    {
+      "t": "lava_imp",
+      "x": 300,
+      "y": 150
+    }
+  ],
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ]
+}
