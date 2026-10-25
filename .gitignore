@@ -6,3 +6,4 @@ docs/research/
 game/scripts/generated/level_*_candidate.json
 game/scripts/__pycache__/
 docs/handoff/codex_logs/*.log
+game/scripts/generated_levels/

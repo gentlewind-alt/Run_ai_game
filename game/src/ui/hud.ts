@@ -6,7 +6,8 @@ import { setText, text, textBlock } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { msToNextBeat } from '../audio/beat';
 import { H, W } from '../config/constants';
-import { setMuted, profile } from '../core/profile';
+import { music } from '../audio/music';
+import { setMuted, setMusicOn, profile } from '../core/profile';
 import { platform } from '../platform';
 import { makeButton, panel, type Btn } from './widgets';
 import type { BattleUi } from '../battle/state';
@@ -210,11 +211,18 @@ export function createHud(
           muteBtn.setTexture(sfx.muted ? 'spk_off' : 'spk_on');
           sound.setLabel(soundLabel());
         }, 42);
+        const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music is off' : 'Music is on');
+        const musicBtn = makeButton(scene, W / 2, 174, 126, 22, musicLabel(), 'plain', () => {
+          setMusicOn(profile.settings.musicOn === false);
+          music.updateVolume();
+          sfx.click();
+          musicBtn.setLabel(musicLabel());
+        }, 42);
         pauseObjs = [
-          dim, g, title, sound.box,
+          dim, g, title, sound.box, musicBtn.box,
           makeButton(scene, W / 2, 88, 126, 26, 'Resume', 'go', () => { sfx.click(); h.resume(); }, 42).box,
           makeButton(scene, W / 2, 120, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart(); }, 42).box,
-          makeButton(scene, W / 2, 176, 126, 22, 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
+          makeButton(scene, W / 2, 202, 126, 22, 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
         ];
       });
     },

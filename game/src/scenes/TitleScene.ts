@@ -9,6 +9,7 @@ import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { monsterDef } from '../data/lookup';
 import { goTo, irisOpen } from '../core/flow';
+import { profile, setMusicOn } from '../core/profile';
 import { makeButton } from '../ui/widgets';
 
 const CONGA = ['goblin_grunt', 'goblin_bomber', 'dark_elf_archer', 'dark_elf_hexer', 'skeleton_runner', 'imp', 'orc_brute', 'troll'];
@@ -51,6 +52,15 @@ export default class TitleScene extends Phaser.Scene {
     const btnX = Math.round(W * 0.76);
     makeButton(this, btnX, 85, 130, 32, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
     makeButton(this, btnX, 132, 110, 26, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
+
+    const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music: off' : 'Music: on');
+    const musicBtn = makeButton(this, btnX, 168, 110, 22, musicLabel(), 'plain', () => {
+      sfx.unlock();
+      setMusicOn(profile.settings.musicOn === false);
+      music.updateVolume();
+      sfx.click();
+      musicBtn.setLabel(musicLabel());
+    }, 6);
 
     this.input.once('pointerdown', () => {
       sfx.unlock();

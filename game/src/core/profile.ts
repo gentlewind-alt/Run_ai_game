@@ -167,6 +167,11 @@ export function setMuted(m: boolean): void {
   changed('settings');
 }
 
+export function setMusicOn(on: boolean): void {
+  profile.settings.musicOn = on;
+  changed('settings');
+}
+
 export function setFlag(name: string, on = true): void {
   profile.flags[name] = on;
   changed('flags');
