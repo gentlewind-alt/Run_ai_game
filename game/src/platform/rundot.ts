@@ -85,6 +85,9 @@ export const rundotPlatform: Platform = {
       }
     },
   },
+  async role() {
+    try { return await RundotGameAPI.app.getMyRole(); } catch { return 'none'; }
+  },
   ugc: {
     async create(type, title, data) {
       try {
@@ -116,6 +119,15 @@ export const rundotPlatform: Platform = {
     },
     async recordUse(id) {
       try { return (await RundotGameAPI.ugc.recordUse(id)).useCount; } catch { return null; }
+    },
+    async adminRemove(id) {
+      try { await RundotGameAPI.app.adminUgc.removeEntry(id); return true; } catch (e) { console.warn('admin remove failed', e); return false; }
+    },
+    async adminBrowse(type, limit) {
+      try {
+        const res: any = await RundotGameAPI.app.adminUgc.browse({ contentType: type, limit });
+        return (res?.entries ?? []).map(toRow);
+      } catch { return []; }
     },
   },
   async share(text: string, params?: Record<string, string>): Promise<boolean> {

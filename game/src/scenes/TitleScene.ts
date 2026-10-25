@@ -8,6 +8,7 @@ import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { feature } from '../config/settings';
+import { owner, ownerReady } from '../core/owner';
 import { monsterDef } from '../data/lookup';
 import { goTo, irisOpen } from '../core/flow';
 import { profile, setMusicOn } from '../core/profile';
@@ -71,6 +72,9 @@ export default class TitleScene extends Phaser.Scene {
       sfx.unlock();
       music.updateVolume();
     });
+    const ownerTag = (): void => { text(this, W - 6, H - 8, 'Owner build: ` for tools', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(6); };
+    if (owner.is) ownerTag();
+    else void ownerReady.then((is) => { if (is && this.scene.isActive()) ownerTag(); });
     music.play({ theme: 'title' });
     irisOpen(this);
   }

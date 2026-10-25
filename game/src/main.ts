@@ -17,6 +17,7 @@ import './style.css';
 import { sfx } from './audio/sfx';
 import { H, W } from './config/constants';
 import { getSettings, initSettings } from './config/settings';
+import { ownerReady } from './core/owner';
 import { DEBUG, applyDebug, setMuted, wireProfile } from './core/profile';
 import { initResponsive } from './core/responsive';
 import { loadSave, wireSave } from './core/save';
@@ -94,6 +95,12 @@ async function bootstrap(): Promise<void> {
       (window as any).__game = game;
       void import('./debug/debugPanel').then((m) => m.installDebugPanel(game));
     }
+    void ownerReady.then((is) => {
+      if (!is || DEBUG) return;
+      (window as any).__game = game;
+      void import('./debug/testHook').then((m) => m.installTestHook(game));
+      void import('./debug/debugPanel').then((m) => m.installDebugPanel(game));
+    });
     platform.track('game_loaded');
     if (!bootStep1Fired) {
       bootStep1Fired = true;

@@ -5,6 +5,7 @@ import { toLevel, validateDraft, type BuilderDocument } from '../builder/documen
 import { data } from '../data/load';
 import type { Level } from '../data/types';
 import { platform } from '../platform';
+import { owner } from './owner';
 import type { Row, UgcRow } from '../platform/types';
 
 export const CHALLENGE_TYPE = 'mm_challenge';
@@ -73,7 +74,7 @@ export async function publishChallenge(doc: BuilderDocument, allowed: string[], 
     const safe = validateDraft(doc, data.content.builder);
     if (!safe.monsters.length) return { error: 'Add at least one target first.' };
     const mine = await platform.ugc.mine(CHALLENGE_TYPE, MAX_PER_AUTHOR + 1);
-    if (mine.length >= MAX_PER_AUTHOR) return { error: `You can share up to ${MAX_PER_AUTHOR} challenges. Delete one first.` };
+    if (!owner.is && mine.length >= MAX_PER_AUTHOR) return { error: `You can share up to ${MAX_PER_AUTHOR} challenges. Delete one first.` };
     const name = (await platform.profile()).name;
     const title = safe.name === 'My level' ? `${name}'s level ${mine.length + 1}` : safe.name;
     const row = await platform.ugc.create(CHALLENGE_TYPE, title.slice(0, 40), payload({ ...safe, name: title.slice(0, 40) }, allowed, shots));
@@ -92,7 +93,17 @@ export async function updateRules(c: Challenge, allowed: string[], shots: number
 }
 
 export async function removeChallenge(c: Challenge): Promise<boolean> {
-  return c.mine ? platform.ugc.remove(c.id) : false;
+  if (c.mine) return platform.ugc.remove(c.id);
+  return owner.is ? platform.ugc.adminRemove(c.id) : false;
+}
+
+/** Owner only: clears every score on a challenge's board. Returns how many entries were removed. */
+export async function resetBoard(c: Challenge): Promise<number> {
+  if (!owner.is) return 0;
+  const rows = await platform.ugc.adminBrowse(scoreType(c.id), 100);
+  let removed = 0;
+  for (const r of rows) if (await platform.ugc.adminRemove(r.id)) removed++;
+  return removed;
 }
 
 /** Counts the player once as a challenger (the author does not count). */

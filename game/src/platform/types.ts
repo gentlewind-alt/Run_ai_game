@@ -21,6 +21,8 @@ export interface Platform {
   profile(): Promise<{ id: string; name: string; avatarUrl?: string }>;
   safeArea(): { top: number; bottom: number; left: number; right: number };
   leaderboard: { submit(board: string, score: number, seconds?: number): Promise<void>; top(board: string, n: number): Promise<Row[]>; myRank(board: string): Promise<Row | null> };
+  /** The player's role in this game on RUN, checked by the host: 'owner' and 'editor' get the privileged build. */
+  role(): Promise<'owner' | 'editor' | 'none'>;
   /** Shared community store. Only the author of an entry can update or remove it (the host enforces this). */
   ugc: {
     create(type: string, title: string, data: Record<string, unknown>): Promise<UgcRow | null>;
@@ -30,6 +32,9 @@ export interface Platform {
     browse(type: string, sort: 'mostUsed' | 'recent', limit: number): Promise<UgcRow[]>;
     mine(type: string, limit: number): Promise<UgcRow[]>;
     recordUse(id: string): Promise<number | null>;
+    /** Owner and editors only (the host refuses anyone else): remove any entry, list any entries. */
+    adminRemove(id: string): Promise<boolean>;
+    adminBrowse(type: string, limit: number): Promise<UgcRow[]>;
   };
   share(text: string, params?: Record<string, string>): Promise<boolean>;
   ads: { rewardedReady(): Promise<boolean>; showRewarded(placementId?: string, placementName?: string): Promise<boolean> };
@@ -62,7 +67,10 @@ export const noopPlatform = {
     async browse(): Promise<UgcRow[]> { return []; },
     async mine(): Promise<UgcRow[]> { return []; },
     async recordUse(): Promise<number | null> { return null; },
+    async adminRemove(): Promise<boolean> { return false; },
+    async adminBrowse(): Promise<UgcRow[]> { return []; },
   },
+  async role(): Promise<'owner' | 'editor' | 'none'> { return 'none'; },
   async share(): Promise<boolean> {
     return false;
   },
