@@ -86,6 +86,12 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | PCG-C | Level archetype concepts for later realms | | review | codex | 10-25 | 12 buildable alternatives for levels 13–24; Chapter 8 archetypes and thesis visual references documented in `docs/monster_mash/12_level_archetypes.md`. |
 | PCG-D | Daily Mash difficulty tiers | | review | codex | 10-25 | Deferred; only Task B was implemented in this run. |
 
+## Player creation tools
+
+| Card | Title | State | Owner | Updated | Notes |
+|---|---|---|---|---|---|
+| BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | doing | codex | 10-25 | Owner-requested; bounded OpenCode implementation, Codex review and physics/browser checks. |
+
 ## Waiting on owner
 
 - **Review 10-22 (`docs/handoff/review_2026-10-22.md`):** approve renaming "Omnitrix Dial" (B1). Decide whether to fix the boss re-hit damage and retune, or keep it (B2).
