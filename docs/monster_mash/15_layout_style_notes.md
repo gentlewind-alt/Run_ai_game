@@ -20,3 +20,7 @@ Source images (owner's references, not stored in the repo): a modern Angry Birds
 
 ## Next for the generator
 Add a `ridge` archetype: random pit width and ramp height, a stick in the pit, crates, a high-shelf beam; and a floating-platform piece (needs a block that does not fall: not supported by the current physics, so it would be a thin platform on two tall posts).
+
+## Citadel Ridge, the grand version (`game/scripts/concepts/citadel_ridge.py`)
+Ridge and Valley was too simple (two shots), so this one stacks everything at once: a three-tier fort on the plateau with a balanced beam and two shooters on its roof (near, low), a floating platform on two tall posts over a crate stack in the pit (middle, high), and a two-tier tower with a heavy block on the high shelf (far, highest). 23 blocks, 12 monsters (orc brute, archers, hexers, three lava imps overhead). Tested: stands still, 48% of blocks move or break from the best shot, solver wins in 4 shots. Screenshot `docs/handoff/shots/concept_citadel_v3.png`.
+Lessons from building it: tall 6 px posts topple (use 8 px and at most 64 px); a tower must stand well inside a flat shelf: a post near the foot of a steep rise or the end of a steep ramp slides off within a second (first versions had 11 to 14 blocks drifting at spawn).
