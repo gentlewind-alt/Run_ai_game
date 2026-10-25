@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "0ded15c8f53310586354d596d604454318d549fe31ff88fbfdd28a27f926de36",
+  "hash": "db88f67fb2c9e252f94ee28b0e1434a62a634d1b2353bb80d45733be88d2cedf",
   "children": [
     {
       "name": ".gitignore",
@@ -101,7 +101,7 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "b94355aae04c45a7b321bb741c285e758ca79fa3894fc74634ceec53bd5b5c40",
+      "hash": "cf3d950d7fb4d73c69d42e12ff8b78cbe1158c5b9c3fbc5e45ba43450363a8e2",
       "children": [
         {
           "name": "concepts",
@@ -130,7 +130,7 @@
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "c135d7e3b6e02b075c7df610074eb2d5867113372efc9881935fecb3b797b39d",
+          "hash": "0485716c799c5ed6a3dd8393181907e3aad0ed3df5d114f2300e006e30e5eaf9",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -424,8 +424,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "824f4c41019349933fd61bf8db4cb3ca1741393af03611513810eb86419e8a67",
-              "size": 137789
+              "hash": "76392cc7bd3119ca246da17b18d858b557663f2c3fdefec9f690f603100ef684",
+              "size": 138232
             },
             {
               "name": "ref",
@@ -3875,7 +3875,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "0f39b405374cad2e09aa623a20f0f087de56e573faf2f5f905c8bf63fa9245d6",
+      "hash": "8c62b4efdeec8e9e5a212383bd7c1234787d7064b3d005f9267311300c92355f",
       "children": [
         {
           "name": ".gitignore",
@@ -3951,7 +3951,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "cbb01bd63ea5275da8e3e6d228f8e9591e26bd79e16c9b2a8e0840779c17744b",
+          "hash": "7a40602937b5c3bdf1047c7e5344e4c920ed06c8227a43d6db24343221a8e6e0",
           "children": [
             {
               "name": "cdn-assets",
@@ -3986,7 +3986,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "f12fef0de4221d43efb1fc4e0b5425dad043d22ece13479759fcb40699684375",
+              "hash": "497d893b7fb0534c2910beaedb788072ab54bad54611346c60d51ff7c5169467",
               "children": [
                 {
                   "name": "config.json",
@@ -3999,8 +3999,8 @@
                   "name": "content.json",
                   "path": "game/public/data/content.json",
                   "type": "file",
-                  "hash": "ef194bc7ba9175a7f3ba074f08ea4d748cf9c2442f6b5423f15a28bbf58b2e5f",
-                  "size": 40515
+                  "hash": "fd30cdb199c99f5f4f7708f998e7336ff32879167ca78c958a7a547732e9b76a",
+                  "size": 40597
                 },
                 {
                   "name": "levels",
@@ -4839,7 +4839,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "df54affb2d4b951b954307ebb4d5e78121976664309e72e38219a8aa4aba020d",
+          "hash": "b28e1abd7bb406bc73d3f78565d27f9f8c6324c8e88398f0f75889a833686f70",
           "children": [
             {
               "name": "art",
@@ -5172,7 +5172,7 @@
               "name": "content",
               "path": "game/src/content",
               "type": "dir",
-              "hash": "a6113fa53d91a5544b154460eb3ab4957b38b1cccbdca12e31f19eca807f2d73",
+              "hash": "d076a6f0fa3e990d6685bde97fb71ab45f31d6caa006f1f98168d0e9eb46e4cf",
               "children": [
                 {
                   "name": "artifacts",
@@ -5378,7 +5378,7 @@
                   "name": "weapons",
                   "path": "game/src/content/weapons",
                   "type": "dir",
-                  "hash": "cdf758c2b339cf4664f10b4147268b11896690ed1976be7f5b00724c187b0c8a",
+                  "hash": "48f4d668befa02d5d1cc2eb594bd7340d05cd373d9ee18556c1c455b3b40fa7b",
                   "children": [
                     {
                       "name": "blackHoleMarble.ts",
@@ -5419,8 +5419,8 @@
                       "name": "bulwarkDisc.ts",
                       "path": "game/src/content/weapons/bulwarkDisc.ts",
                       "type": "file",
-                      "hash": "e7f5b29e32e47777b2511f8aff5af02de3fbc18431bad8e265153ceb483a9f5b",
-                      "size": 5010
+                      "hash": "d233bde17cdc6f765b9da9d52af18d67a7130131940c15ec2dd8e69fc3ac47f0",
+                      "size": 6599
                     },
                     {
                       "name": "chainRod.ts",

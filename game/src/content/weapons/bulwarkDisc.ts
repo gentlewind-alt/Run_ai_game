@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { sfx } from '../../audio/sfx';
 import { C } from '../../art/palette';
 import { weaponTexture } from '../../art/textures';
+import type { Ent } from '../../battle/BattleCtx';
 import type { WeaponImpl } from './types';
 
 export const bulwarkDisc: WeaponImpl = {
@@ -43,13 +44,16 @@ export const bulwarkDisc: WeaponImpl = {
     ctx.fx.pingStar?.(p.body.position.x, p.body.position.y);
     ctx.fx.sparks(p.body.position.x, p.body.position.y, ['c', '4', 'b'], 12);
 
-    // Ricochet: after knocking a monster or a block, fly on to the next monster (not the one just hit) within range.
-    if (hit?.target && p.data.bounces < maxBounces && (p.data.jumps ?? 0) < (P.ricochetJumps ?? 2)) {
+    // Ricochet: after any real knock (monster, block, ground or wall) fly on to the next monster in range, preferring one not yet hit.
+    if (p.data.bounces < maxBounces && (p.data.jumps ?? 0) < (P.ricochetJumps ?? 4)) {
       const b = p.body.position;
-      const range = P.ricochetRange ?? 150;
-      const next = ctx.nearestMonsters(b.x, b.y, 3).find((m) => m !== hit.target && Math.hypot(m.body.position.x - b.x, m.body.position.y - b.y) <= range);
+      const range = P.ricochetRange ?? 170;
+      const seen = (p.data.seen ??= []) as Ent[];
+      if (hit?.target && hit.target.kind === 'monster' && !seen.includes(hit.target)) seen.push(hit.target);
+      const near = ctx.nearestMonsters(b.x, b.y, 8).filter((m) => m !== hit?.target && Math.hypot(m.body.position.x - b.x, m.body.position.y - b.y) <= range);
+      const next = near.find((m) => !seen.includes(m)) ?? near[0];
       if (next) {
-        // A lob, not a straight line: the thing just hit is usually between the disc and the next monster. The new velocity
+        // A lob first, not a straight line: the thing just hit is usually between the disc and the next monster. The new velocity
         // is applied in onUpdate, after the physics solver has finished with this contact, or the solver would cancel it.
         const g = P.ricochetGravity ?? 0.25;
         const dx = next.body.position.x - b.x;
@@ -60,6 +64,10 @@ export const bulwarkDisc: WeaponImpl = {
         p.data.jumps = (p.data.jumps ?? 0) + 1;
         p.body.proj.mul = (1 + bCount * (P.bounceDamageBonus ?? 0)) * Math.pow(P.ricochetFalloff ?? 0.7, p.data.jumps);
         p.data.ricochet = { x: Phaser.Math.Clamp(dx / t, -maxSp, maxSp), y: -lift };
+        // then the disc steers itself onto the target, so a mis-judged lob still lands
+        p.data.home = next;
+        p.data.homeFrom = ctx.step + (P.homingDelay ?? 10);
+        p.data.homeUntil = ctx.step + (P.homingSteps ?? 70);
         ctx.fx.ring(b.x, b.y, 12, C('b'));
       }
     }
@@ -77,6 +85,23 @@ export const bulwarkDisc: WeaponImpl = {
     if (r) {
       ctx.M.Body.setVelocity(p.body, r);
       p.data.ricochet = undefined;
+    } else if (p.data.home && ctx.step >= p.data.homeFrom && ctx.step <= p.data.homeUntil) {
+      const P = p.def.params;
+      let target = p.data.home as Ent;
+      if (target.dead) {
+        const b = p.body.position;
+        target = ctx.nearestMonsters(b.x, b.y, 1)[0];
+        p.data.home = target;
+      }
+      if (target) {
+        const dx = target.body.position.x - p.body.position.x;
+        const dy = target.body.position.y - p.body.position.y;
+        const d = Math.hypot(dx, dy) || 1;
+        const sp = P.ricochetSpeed ?? 7;
+        const turn = P.homingTurn ?? 0.14;
+        const v = p.body.velocity;
+        ctx.M.Body.setVelocity(p.body, { x: v.x + ((dx / d) * sp - v.x) * turn, y: v.y + ((dy / d) * sp - v.y) * turn });
+      }
     }
     // Record trail positions for dithered ghost copies
     const trail = p.data.trail as { x: number; y: number }[];
@@ -85,7 +110,7 @@ export const bulwarkDisc: WeaponImpl = {
       if (trail.length > 8) trail.pop();
     }
   },
-  drawFx(_ctx, p, g) {
+  drawFx(ctx, p, g) {
     // 1. Dithered ghost trail behind disc
     const trail = p.data.trail as { x: number; y: number }[] | undefined;
     if (trail && trail.length > 1) {
@@ -94,6 +119,12 @@ export const bulwarkDisc: WeaponImpl = {
         g.lineStyle(2, C('b'), alpha).strokeCircle(pt.x, pt.y, 11 - idx * 2);
         g.lineStyle(1, C('c'), alpha * 0.9).strokeCircle(pt.x, pt.y, 7 - idx);
       });
+    }
+
+    // 1b. Faint aim line to the monster it is homing on
+    const home = p.data.home as Ent | undefined;
+    if (home && !home.dead && ctx.step <= (p.data.homeUntil ?? 0)) {
+      g.lineStyle(1, C('b'), 0.45).lineBetween(p.body.position.x, p.body.position.y, home.body.position.x, home.body.position.y);
     }
 
     // 2. Bounce counter pips floating above disc
