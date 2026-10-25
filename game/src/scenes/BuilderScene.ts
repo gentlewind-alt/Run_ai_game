@@ -41,6 +41,7 @@ export default class BuilderScene extends Phaser.Scene {
   private group?: Group;
   private groupDrag?: GroupDrag;
   private marquee?: { a: Point; b: Point };
+  private hover?: Point;
   private running = false;
   private loading = false;
   private restoreGeneration = 0;
@@ -253,6 +254,14 @@ export default class BuilderScene extends Phaser.Scene {
   private inside(pointer: Phaser.Input.Pointer): boolean {
     return pointer.x >= VIEW.x && pointer.x <= VIEW.x + VIEW.w && pointer.y >= VIEW.y && pointer.y <= VIEW.y + VIEW.h;
   }
+  /** Centre for a piece so its bounding-box edges sit on grid lines (strict cell placement). */
+  private snapBox(px: number, py: number, w: number, h: number, angle = 0): Point {
+    const r = angle * Math.PI / 180;
+    const c = Math.abs(Math.cos(r)), s = Math.abs(Math.sin(r));
+    const bw = c * w + s * h, bh = s * w + c * h;
+    const g = this.config.grid;
+    return { x: Math.round((px - bw / 2) / g) * g + bw / 2, y: Math.round((py - bh / 2) / g) * g + bh / 2 };
+  }
   private snap(value: number): number { return Math.round(value / this.config.grid) * this.config.grid; }
   private id(prefix: string): string { return `${prefix}_${Date.now().toString(36)}_${(++nextId).toString(36)}`; }
   private error(error: unknown): string { return error instanceof Error ? error.message : 'Could not use this design'; }
@@ -302,7 +311,8 @@ export default class BuilderScene extends Phaser.Scene {
     const next = cloneDraft(this.draft);
     if (this.tool === 'piece') {
       const preset = this.config.presets[this.preset];
-      const block: LevelBlock = { id: this.id('b'), m: this.material, x: this.snap(point.x), y: this.snap(point.y), w: preset.w, h: preset.h, shape: preset.shape, angle: 0, static: false };
+      const at = this.snapBox(point.x, point.y, preset.w, preset.h);
+      const block: LevelBlock = { id: this.id('b'), m: this.material, x: at.x, y: at.y, w: preset.w, h: preset.h, shape: preset.shape, angle: 0, static: false };
       next.blocks.push(block);
       try {
         validateDraft(next, this.config);
@@ -323,6 +333,10 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private pointerMove(pointer: Phaser.Input.Pointer): void {
+    if (!pointer.isDown && !this.running && !this.loading && (this.tool === 'piece' || this.tool === 'target')) {
+      const next = this.inside(pointer) ? this.worldPoint(pointer) : undefined;
+      if (next?.x !== this.hover?.x || next?.y !== this.hover?.y) { this.hover = next; this.renderOverlay(this.draft); }
+    }
     if (this.marquee && pointer.isDown && !this.running && !this.loading) {
       this.marquee.b = this.worldPoint(pointer);
       this.renderOverlay(this.draft);
@@ -337,8 +351,15 @@ export default class BuilderScene extends Phaser.Scene {
     const next = cloneDraft(this.draft);
     const selection = drag.selection;
     const entity = selection.kind === 'block' ? next.blocks.find((b) => b.id === selection.id)! : next.monsters[selection.index];
-    entity.x = this.snap(point.x + drag.offset.x);
-    entity.y = this.snap(point.y + drag.offset.y);
+    if (selection.kind === 'block') {
+      const blk = entity as LevelBlock;
+      const at = this.snapBox(point.x + drag.offset.x, point.y + drag.offset.y, blk.w, blk.h, blk.angle ?? 0);
+      blk.x = at.x;
+      blk.y = at.y;
+    } else {
+      entity.x = this.snap(point.x + drag.offset.x);
+      entity.y = this.snap(point.y + drag.offset.y);
+    }
     try {
       validateDraft(next, this.config);
       const overlaps = selection.kind === 'block' ? this.overlaps(entity as LevelBlock, selection.id) : this.targetOverlaps(entity as LevelMonster, selection.index);
@@ -464,7 +485,17 @@ export default class BuilderScene extends Phaser.Scene {
     if (selected?.kind !== 'block') { this.say(this.group ? 'Rotate works on one block at a time.' : 'Select a block to rotate it.'); return; }
     const next = cloneDraft(this.draft);
     const block = next.blocks.find((b) => b.id === selected.id)!;
-    block.angle = ((block.angle ?? 0) + 15 + 360) % 360;
+    const extent = (angle: number): Point => {
+      const r = angle * Math.PI / 180;
+      const c = Math.abs(Math.cos(r)), s = Math.abs(Math.sin(r));
+      return { x: block.shape === 'circle' ? block.w : c * block.w + s * block.h, y: block.shape === 'circle' ? block.h : s * block.w + c * block.h };
+    };
+    const from = extent(block.angle ?? 0);
+    const turned = (Math.floor(((block.angle ?? 0) + 1e-6) / 90) + 1) * 90 % 360;
+    const to = extent(turned);
+    block.x = block.x - from.x / 2 + to.x / 2;
+    block.y = block.y - from.y / 2 + to.y / 2;
+    block.angle = turned;
     try {
       validateDraft(next, this.config);
       if (this.overlaps(block, block.id)) throw new Error('Pieces overlap');
@@ -703,9 +734,13 @@ export default class BuilderScene extends Phaser.Scene {
     const grid = this.add.graphics();
     root.add(grid);
     grid.fillStyle(C('9'), 1).fillRect(this.config.minX, this.config.minY, this.config.worldW - this.config.minX, this.config.groundY - this.config.minY);
-    grid.lineStyle(0.5 / scale, C('a'), 0.25);
-    for (let x = this.config.minX; x <= this.config.worldW; x += this.config.grid) grid.lineBetween(x, this.config.minY, x, this.config.groundY);
-    for (let y = this.config.minY; y <= this.config.groundY; y += this.config.grid) grid.lineBetween(this.config.minX, y, this.config.worldW, y);
+    const cell = this.config.grid;
+    for (let i = 0, x = this.config.minX; x <= this.config.worldW; x += cell, i++) {
+      grid.lineStyle(0.5 / scale, C('a'), i % 4 === 0 ? 0.55 : 0.28).lineBetween(x, this.config.minY, x, this.config.groundY);
+    }
+    for (let i = 0, y = this.config.groundY; y >= this.config.minY; y -= cell, i++) {
+      grid.lineStyle(0.5 / scale, C('a'), i % 4 === 0 ? 0.55 : 0.28).lineBetween(this.config.minX, y, this.config.worldW, y);
+    }
     grid.lineStyle(1 / scale, C('b'), 1).strokeRect(this.config.minX, this.config.minY, this.config.worldW - this.config.minX, this.config.groundY - this.config.minY);
     grid.lineStyle(3 / scale, C('6'), 1).lineBetween(this.config.minX, this.config.groundY, this.config.worldW, this.config.groundY);
     ensureBlockTextures(this, doc.blocks);
@@ -768,6 +803,23 @@ export default class BuilderScene extends Phaser.Scene {
         g.rotateCanvas(angle);
         g.lineStyle(1.5 / scale, C('4'), 1).strokeRect(-w / 2 - 2, -h / 2 - 2, w + 4, h + 4);
         g.restore();
+      }
+    }
+    const hover = this.hover;
+    if (hover && !this.running && (this.tool === 'piece' || this.tool === 'target') && !this.drag && !this.marquee) {
+      const grid = this.config.grid;
+      g.lineStyle(1.5 / scale, C('4'), 1).strokeRect(Math.floor(hover.x / grid) * grid, Math.floor(hover.y / grid) * grid, grid, grid);
+      if (this.tool === 'piece') {
+        const preset = this.config.presets[this.preset];
+        const at = this.snapBox(hover.x, hover.y, preset.w, preset.h);
+        const ghost: LevelBlock = { id: 'ghost', m: this.material, x: at.x, y: at.y, w: preset.w, h: preset.h, shape: preset.shape, angle: 0, static: false };
+        let ok = true;
+        try {
+          validateDraft({ ...doc, blocks: [...doc.blocks, ghost] }, this.config);
+          ok = !this.overlaps(ghost);
+        } catch { ok = false; }
+        g.fillStyle(ok ? C('b') : C('2'), 0.35).fillRect(at.x - preset.w / 2, at.y - preset.h / 2, preset.w, preset.h);
+        g.lineStyle(1 / scale, ok ? C('b') : C('2'), 1).strokeRect(at.x - preset.w / 2, at.y - preset.h / 2, preset.w, preset.h);
       }
     }
     const group = this.group;

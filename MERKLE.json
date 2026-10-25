@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "a240f815fd3243549b468ae2982c8e553d952308053eb88cd63d2fabad829e24",
+  "hash": "98b279381bdfe1658017a53f7395fc010599323dad8eab2b9e8cf589ba82bc90",
   "children": [
     {
       "name": ".gitignore",
@@ -101,7 +101,7 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "38718743b1b925fbcf748fb81899ff61d3e3fd78d03a6a55f564268c0de9df18",
+      "hash": "b1c9b018ef1396b5e564c62769d55123ae93e4265070886633607cbf0fc3aa9e",
       "children": [
         {
           "name": "concepts",
@@ -130,7 +130,7 @@
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "4805368d1df8fe3f9b8bca534c0a1b0a71caf2916f0549b260047b7b6a549583",
+          "hash": "0ab35e58e94773c5b181a85aa378df27cec7c6342faf3ee4a9c463143aa7f8bc",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -424,8 +424,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "f422bd390329c16d70bf492e815e426c64049116f165760bd7a74f1e7ca1c040",
-              "size": 136500
+              "hash": "e0ff2ccc754261d6ee0e2dd876934eb0562cd85dff4efacf35c157cb6f116f05",
+              "size": 136811
             },
             {
               "name": "ref",
@@ -3875,7 +3875,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "746fa4d1ef4ec55965bf1e6d9cb0f2c3ffe8c6f870bacbcbd3c699a91fb96493",
+      "hash": "d911297781ee04024e512e4aa72165ef4199eb7bba69ea4d5eff462145339507",
       "children": [
         {
           "name": ".gitignore",
@@ -3951,7 +3951,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "747a7fbad9568abd9493a7594c77d814ef3e6663377344c9ce26e0c4b2fe325c",
+          "hash": "cbb01bd63ea5275da8e3e6d228f8e9591e26bd79e16c9b2a8e0840779c17744b",
           "children": [
             {
               "name": "cdn-assets",
@@ -3986,7 +3986,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "c3607de176ff84f2201013e004337f9826ba4394557703e5322bbe2f9bb37348",
+              "hash": "f12fef0de4221d43efb1fc4e0b5425dad043d22ece13479759fcb40699684375",
               "children": [
                 {
                   "name": "config.json",
@@ -3999,7 +3999,7 @@
                   "name": "content.json",
                   "path": "game/public/data/content.json",
                   "type": "file",
-                  "hash": "fd7c3da2193d611b6e8dab8371c8e45f460fce701cee25b4ce25702dbf9eb15c",
+                  "hash": "ef194bc7ba9175a7f3ba074f08ea4d748cf9c2442f6b5423f15a28bbf58b2e5f",
                   "size": 40515
                 },
                 {
@@ -4839,7 +4839,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "9cb84593c5434f3155838013414a811c5b73de8a79dd20655253150a2e61d8bd",
+          "hash": "c56c71db2ac3b33aa291151af0157ff2c53703230cb5ec000d442ced444e3d94",
           "children": [
             {
               "name": "art",
@@ -5742,7 +5742,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "3cb645027f644998f176e4e05a4a94a4615317691855fc69cc95ab800bda98b4",
+              "hash": "43bece57904a2f451dd6cfdfb41474ba0e7efed6c09495d43a5cdd07cf2c3078",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -5762,8 +5762,8 @@
                   "name": "BuilderScene.ts",
                   "path": "game/src/scenes/BuilderScene.ts",
                   "type": "file",
-                  "hash": "4fb89fdc2e43a3a045475d71f5a28f2b82bb37296de22dbef6d4950261c2f43b",
-                  "size": 40418
+                  "hash": "bb8319e094534d80b15f478a95021577e9c8724b0d020797ac5e7dfe68100b37",
+                  "size": 43291
                 },
                 {
                   "name": "ChallengeScene.ts",
