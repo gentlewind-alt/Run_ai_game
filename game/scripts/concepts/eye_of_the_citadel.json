@@ -1,0 +1,157 @@
+{
+  "id": 99,
+  "name": "The Eye of the Citadel",
+  "realm": "sky_citadel",
+  "kind": "boss",
+  "worldW": 648,
+  "shots": 6,
+  "hints": [
+    "Silence the mage. Open the grille.",
+    "Cut the post to drop the beam.",
+    "Hit the glowing eye for 2x."
+  ],
+  "scoreTarget": 2600,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      110,
+      320
+    ],
+    [
+      135,
+      296
+    ],
+    [
+      335,
+      296
+    ],
+    [
+      365,
+      320
+    ],
+    [
+      648,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "iron",
+      "x": 205,
+      "y": 270,
+      "w": 10,
+      "h": 52
+    },
+    {
+      "m": "iron",
+      "x": 308,
+      "y": 270,
+      "w": 10,
+      "h": 52
+    },
+    {
+      "m": "stone",
+      "x": 256.5,
+      "y": 241,
+      "w": 114,
+      "h": 6
+    },
+    {
+      "m": "wood",
+      "x": 222,
+      "y": 273,
+      "w": 6,
+      "h": 46
+    },
+    {
+      "m": "wood",
+      "x": 236,
+      "y": 273,
+      "w": 6,
+      "h": 46
+    },
+    {
+      "m": "wood",
+      "x": 262,
+      "y": 223,
+      "w": 8,
+      "h": 30
+    },
+    {
+      "m": "wood",
+      "x": 262,
+      "y": 205,
+      "w": 92,
+      "h": 6
+    },
+    {
+      "m": "crystal",
+      "x": 168,
+      "y": 282,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "crystal",
+      "x": 184,
+      "y": 282,
+      "w": 8,
+      "h": 28
+    },
+    {
+      "m": "crystal",
+      "x": 176,
+      "y": 265,
+      "w": 24,
+      "h": 6
+    }
+  ],
+  "monsters": [
+    {
+      "t": "storm_sovereign",
+      "x": 272,
+      "y": 273.0
+    },
+    {
+      "t": "storm_mage",
+      "x": 252,
+      "y": 231.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 230,
+      "y": 195.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 294,
+      "y": 195.0
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 176,
+      "y": 255.0
+    },
+    {
+      "t": "cloud_harpy",
+      "x": 215,
+      "y": 120
+    },
+    {
+      "t": "cloud_harpy",
+      "x": 285,
+      "y": 112
+    }
+  ],
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun",
+    "w_hunters_boomerang"
+  ]
+}

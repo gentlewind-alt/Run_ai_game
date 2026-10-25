@@ -1,0 +1,259 @@
+[
+  {
+    "name": "frost_tower_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 83.3,
+    "shots": 4,
+    "won": true,
+    "score": 1735,
+    "blocks": 12,
+    "pass": true
+  },
+  {
+    "name": "frost_tower_s2",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2210,
+    "blocks": 12,
+    "pass": false
+  },
+  {
+    "name": "frost_balanced_beam_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2500,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "frost_balanced_beam_s2",
+    "moved": 1,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2800,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "frost_hanging_weight_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 1,
+    "won": true,
+    "score": 1900,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "frost_hanging_weight_s2",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 1,
+    "won": true,
+    "score": 1810,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "frost_bomber_relay_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 88.9,
+    "shots": 2,
+    "won": true,
+    "score": 2385,
+    "blocks": 9,
+    "pass": false
+  },
+  {
+    "name": "frost_bomber_relay_s2",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2395,
+    "blocks": 9,
+    "pass": false
+  },
+  {
+    "name": "ember_tower_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 4,
+    "won": true,
+    "score": 1615,
+    "blocks": 12,
+    "pass": true
+  },
+  {
+    "name": "ember_tower_s2",
+    "moved": 0,
+    "dead": 2,
+    "collapse": 100,
+    "shots": 6,
+    "won": false,
+    "score": 1105,
+    "blocks": 12,
+    "pass": false
+  },
+  {
+    "name": "ember_balanced_beam_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2700,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "ember_balanced_beam_s2",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 5,
+    "won": true,
+    "score": 2195,
+    "blocks": 3,
+    "pass": true
+  },
+  {
+    "name": "ember_hanging_weight_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2070,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "ember_hanging_weight_s2",
+    "error": "ValueError: no stable, reachable layout in 40 attempts"
+  },
+  {
+    "name": "ember_bomber_relay_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 88.9,
+    "shots": 5,
+    "won": true,
+    "score": 2170,
+    "blocks": 9,
+    "pass": true
+  },
+  {
+    "name": "ember_bomber_relay_s2",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2910,
+    "blocks": 9,
+    "pass": false
+  },
+  {
+    "name": "sky_tower_s1",
+    "moved": 0,
+    "dead": 2,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2930,
+    "blocks": 12,
+    "pass": false
+  },
+  {
+    "name": "sky_tower_s2",
+    "moved": 0,
+    "dead": 2,
+    "collapse": 8.3,
+    "shots": 6,
+    "won": false,
+    "score": 1050,
+    "blocks": 12,
+    "pass": false
+  },
+  {
+    "name": "sky_balanced_beam_s1",
+    "moved": 1,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 4,
+    "won": true,
+    "score": 2520,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "sky_balanced_beam_s2",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 66.7,
+    "shots": 2,
+    "won": true,
+    "score": 3195,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "sky_hanging_weight_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 1950,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "sky_hanging_weight_s2",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 1950,
+    "blocks": 3,
+    "pass": false
+  },
+  {
+    "name": "sky_bomber_relay_s1",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 88.9,
+    "shots": 6,
+    "won": true,
+    "score": 1520,
+    "blocks": 9,
+    "pass": false
+  },
+  {
+    "name": "sky_bomber_relay_s2",
+    "moved": 0,
+    "dead": 0,
+    "collapse": 100,
+    "shots": 2,
+    "won": true,
+    "score": 2785,
+    "blocks": 9,
+    "pass": false
+  }
+]

@@ -67,6 +67,12 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Should fix:** B3, `tools/regress.mjs` runs `taskkill /F /IM chrome.exe`, which closes the owner's own Chrome. B4, committed logs, `MERKLE.json` churn, 18 MB of screenshots, and an Angry Birds screenshot. B5, confirm the RUN host honours landscape. B6, leaderboard sends a fixed `duration: 60`.
 - **Questions for owner:** approve the B1 rename (suggested "Fivefold Gauntlet"). B2: fix the re-hit and retune bosses, or keep the current feel?
 
+## 2026-10-25 · claude · Level generator, review rounds 1 to 8 and a boss concept
+- `game/scripts/level_gen.py` (four archetypes: tower, balanced_beam, hanging_weight, bomber_relay; six realm palettes; difficulty 1 to 3; stability and reach checks), `tools/gate_file.mjs` (gate and screenshot one JSON through the sandbox slot 99), `tools/level_review.mjs` (batch generate, gate, screenshot, contact sheet), `tools/concept_sheet.ps1`. Generated levels go to the git-ignored `game/scripts/generated_levels/`; no campaign level changed.
+- Eight review rounds with the screenshot sheet read each time; defects and fixes are in `docs/monster_mash/14_level_gen_review_log.md` (8/12, 4/24, 18/24, 22/24, 15/18, 14/18, 22/24 on fresh seeds, 3/3 after the ember fix). One wrong status of mine is recorded there (I said towers generated without reading the output).
+- Boss concept `game/scripts/concepts/eye_of_the_citadel.py` passes the gate (5 shots); not wired into the campaign.
+- Do not run `level_review.mjs` or `gate_file.mjs` at the same time as another probe: they swap `level_99.json` and restore it afterwards (`git status` should be clean after).
+
 ## 2026-10-25 · claude · Music on/off toggle (v1.32.0)
 - `profile.settings.musicOn` already existed and `music.updateVolume()` already honoured it, but no UI changed it. Added `setMusicOn` (`core/profile.ts`), a "Music is on / off" button in the Pause menu (`ui/hud.ts`, between Sound and Back to map; the Back button moved down) and "Music: on / off" on the Title screen. It saves with the profile (no save-shape change) and is independent of the Sound (effects) toggle. Verified in the dev build by pressing both buttons and reading the profile; screenshots `docs/handoff/shots/gen/music_pause.png`, `music_title.png`. `check` and `build` pass; the full regression was not re-run for this UI-only change because a level-generator review was using the dev server.
 

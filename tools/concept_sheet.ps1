@@ -2,7 +2,7 @@
 # usage: powershell -NoProfile -File tools/concept_sheet.ps1 <folder> <out.png> [columns]
 param([string]$Dir, [string]$Out, [int]$Cols = 4)
 Add-Type -AssemblyName System.Drawing
-$files = Get-ChildItem $Dir -Filter *.png | Sort-Object Name
+$files = Get-ChildItem $Dir -Filter *.png | Where-Object { $_.Name -notlike '_*' } | Sort-Object Name
 $tw = 384; $th = 216; $lh = 18
 $rows = [math]::Ceiling($files.Count / $Cols)
 $sheet = New-Object System.Drawing.Bitmap ($Cols * $tw), ($rows * ($th + $lh))

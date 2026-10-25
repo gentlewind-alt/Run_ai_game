@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "937ed79fa62c05f037d6f1625353bb473380f25fed26a5af841e2abc30a48943",
+  "hash": "3048ef4404b7ac3391d76bc7c60abd06417395cbaefec34bb8fbd06a1b04985a",
   "children": [
     {
       "name": ".gitignore",
@@ -101,7 +101,7 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "df13adf66bb0696f1622040326efad93faabca4090249466f1cb591472b90f99",
+      "hash": "50ea10c5c14c3f860989be79d3f7647e53ec7b98251f5f45c54b913ae5f52b13",
       "children": [
         {
           "name": "concepts",
@@ -130,7 +130,7 @@
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "6bd2eb342670b53aa8431ddf0432b75324c1878c6b9f73741a3a8e973ad3f8da",
+          "hash": "b10c978e9ffe10505936b17ecf63f2f107935732651d7d78ffd3ff3d738ac5cf",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -417,8 +417,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "31fc2f63cbb722d7cf8ba9b54c7e08f858ff09b3fd7f1c05d0879d826c3c47ac",
-              "size": 128434
+              "hash": "6f7f55b5c5dd1fb3e453e8507365edf5b3ccb46cb8921babcdef2d97ef9313d8",
+              "size": 129587
             },
             {
               "name": "ref",
@@ -474,7 +474,7 @@
               "name": "shots",
               "path": "docs/handoff/shots",
               "type": "dir",
-              "hash": "4dd87c0a3059cce136f24e8fcb1a7d81180034454f15fd1589725822d1b3659c",
+              "hash": "fa17a2cdc46154382d47602b18cedc9134ad348bec562270702b82a5ff15eaa2",
               "children": [
                 {
                   "name": "01_title.png",
@@ -1583,7 +1583,7 @@
                   "name": "levelgen",
                   "path": "docs/handoff/shots/levelgen",
                   "type": "dir",
-                  "hash": "3da4eabeea8cc961dbc80c464b3412cd5229f0697b9cf7b757e6924abdcb67d0",
+                  "hash": "6556751ce02e21d18a6ab0277cf59a7770919cc0e6538b007e3e40ae597b7773",
                   "children": [
                     {
                       "name": "r1",
@@ -2258,8 +2258,15 @@
                       "name": "r5",
                       "path": "docs/handoff/shots/levelgen/r5",
                       "type": "dir",
-                      "hash": "fa317b62acb92ed7da9a922ef9ac593422717a038cd0f291a41a423e8357ed3d",
+                      "hash": "5f3f5568985f01a042ba51b88b2bc5108ba58c83583aec1d96a789596d96000f",
                       "children": [
+                        {
+                          "name": "_sheet.png",
+                          "path": "docs/handoff/shots/levelgen/r5/_sheet.png",
+                          "type": "file",
+                          "hash": "01d9f0f9ed1d5466148633032a66d0ea4a716ee15f5fa98783577fc6a08add94",
+                          "size": 662029
+                        },
                         {
                           "name": "ember_bomber_relay_s1.png",
                           "path": "docs/handoff/shots/levelgen/r5/ember_bomber_relay_s1.png",
@@ -2345,6 +2352,34 @@
                           "size": 90774
                         },
                         {
+                          "name": "results.json",
+                          "path": "docs/handoff/shots/levelgen/r5/results.json",
+                          "type": "file",
+                          "hash": "1fd51800daad794526c7bfaef264cd1ac6811929fa49a4e67bc169f14ccf3b45",
+                          "size": 3261
+                        },
+                        {
+                          "name": "sky_bomber_relay_s1.png",
+                          "path": "docs/handoff/shots/levelgen/r5/sky_bomber_relay_s1.png",
+                          "type": "file",
+                          "hash": "c1f12a4b1ab2020f08f5180e307934ff90895deb0d94b2661cb82388ac68ec5d",
+                          "size": 91974
+                        },
+                        {
+                          "name": "sky_bomber_relay_s2.png",
+                          "path": "docs/handoff/shots/levelgen/r5/sky_bomber_relay_s2.png",
+                          "type": "file",
+                          "hash": "03ab71008cd2bf7d09bb4ef71b531fafe17329e24255bb0c7fef0ebee78e16af",
+                          "size": 90308
+                        },
+                        {
+                          "name": "sky_bomber_relay_s3.png",
+                          "path": "docs/handoff/shots/levelgen/r5/sky_bomber_relay_s3.png",
+                          "type": "file",
+                          "hash": "756ff3fcb9c6dcb70d9eebc9160179d865f3f95fa7aa911fbd50ed8efe4c8145",
+                          "size": 90350
+                        },
+                        {
                           "name": "sky_tower_s1.png",
                           "path": "docs/handoff/shots/levelgen/r5/sky_tower_s1.png",
                           "type": "file",
@@ -2364,6 +2399,324 @@
                           "type": "file",
                           "hash": "ddb6e2cb40d038bb83ce042dd407154a862316b643fb4cf5cc4db25658f91b36",
                           "size": 84707
+                        }
+                      ]
+                    },
+                    {
+                      "name": "r6",
+                      "path": "docs/handoff/shots/levelgen/r6",
+                      "type": "dir",
+                      "hash": "cab01de4359ab74eb36bc5b2953ff28815c97234f62cc597110e9c6b1531bee1",
+                      "children": [
+                        {
+                          "name": "_sheet.png",
+                          "path": "docs/handoff/shots/levelgen/r6/_sheet.png",
+                          "type": "file",
+                          "hash": "c6c9c43157b2479c52fcadb3eecdd31b22dbe54b3c304a2b24f4f876d13dbf09",
+                          "size": 441944
+                        },
+                        {
+                          "name": "ember_tower_s1.png",
+                          "path": "docs/handoff/shots/levelgen/r6/ember_tower_s1.png",
+                          "type": "file",
+                          "hash": "b6959941b917238063427dd5d59908b49dbdca920913513397f435cdb48b3722",
+                          "size": 88694
+                        },
+                        {
+                          "name": "ember_tower_s2.png",
+                          "path": "docs/handoff/shots/levelgen/r6/ember_tower_s2.png",
+                          "type": "file",
+                          "hash": "a2eead806fdb7fa48827e4d40a6b015e23a0cd428b5741864cb8ee45242fd195",
+                          "size": 89314
+                        },
+                        {
+                          "name": "ember_tower_s3.png",
+                          "path": "docs/handoff/shots/levelgen/r6/ember_tower_s3.png",
+                          "type": "file",
+                          "hash": "ac16ef95649b83da50dfd4babc37c6a7277c0e9f360d2e9b8d2bd55905bd5ab8",
+                          "size": 88992
+                        },
+                        {
+                          "name": "frost_tower_s1.png",
+                          "path": "docs/handoff/shots/levelgen/r6/frost_tower_s1.png",
+                          "type": "file",
+                          "hash": "b875d846e8eddfed1d7e489aa68971bbb704087dc61853e7a5561511a796e465",
+                          "size": 91872
+                        },
+                        {
+                          "name": "frost_tower_s2.png",
+                          "path": "docs/handoff/shots/levelgen/r6/frost_tower_s2.png",
+                          "type": "file",
+                          "hash": "eafac73d74fdebfead293a5805d6ee96f5269ba4635b009c3a22096c6ddac062",
+                          "size": 91911
+                        },
+                        {
+                          "name": "frost_tower_s3.png",
+                          "path": "docs/handoff/shots/levelgen/r6/frost_tower_s3.png",
+                          "type": "file",
+                          "hash": "7281194e4459358419441418245bba0df2eb28e5198c32f7b84afa21a3a50941",
+                          "size": 92200
+                        },
+                        {
+                          "name": "results.json",
+                          "path": "docs/handoff/shots/levelgen/r6/results.json",
+                          "type": "file",
+                          "hash": "6e8b069d27992b3138b491d417685f47a2a389aa9cc1663163367a735e5d0c3a",
+                          "size": 1605
+                        },
+                        {
+                          "name": "sky_tower_s1.png",
+                          "path": "docs/handoff/shots/levelgen/r6/sky_tower_s1.png",
+                          "type": "file",
+                          "hash": "d60b61df02c1dd7a38fe4e4351ae212c2002d61d3ad7f21d17f513c95e6adf7f",
+                          "size": 94351
+                        },
+                        {
+                          "name": "sky_tower_s2.png",
+                          "path": "docs/handoff/shots/levelgen/r6/sky_tower_s2.png",
+                          "type": "file",
+                          "hash": "d6cc9349d1dbd6424b578aecd6920d4a57bbee9341c56fac52eff44aad892846",
+                          "size": 93294
+                        },
+                        {
+                          "name": "sky_tower_s3.png",
+                          "path": "docs/handoff/shots/levelgen/r6/sky_tower_s3.png",
+                          "type": "file",
+                          "hash": "fd7a18db6763f39f4a1fdb066a4a3cc69fca3fdc115cc9f7fe6413313e2220a1",
+                          "size": 94637
+                        }
+                      ]
+                    },
+                    {
+                      "name": "r7",
+                      "path": "docs/handoff/shots/levelgen/r7",
+                      "type": "dir",
+                      "hash": "895ab543b90fbe10dab1f7fb3a20698ecda1ef72beb2c9cb5299c1a1df07b07f",
+                      "children": [
+                        {
+                          "name": "_sheet.png",
+                          "path": "docs/handoff/shots/levelgen/r7/_sheet.png",
+                          "type": "file",
+                          "hash": "761132a19735ad86dd925c75e975c867f013c4101931a75a99dd7dc307e2b7e8",
+                          "size": 738591
+                        },
+                        {
+                          "name": "ember_balanced_beam_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/ember_balanced_beam_s4.png",
+                          "type": "file",
+                          "hash": "03655ee7c304060372449092534f1c0f0d36cbf92db5808aa125254ecfdfa257",
+                          "size": 86183
+                        },
+                        {
+                          "name": "ember_balanced_beam_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/ember_balanced_beam_s5.png",
+                          "type": "file",
+                          "hash": "64f1504444945a0413f25cff3c92850d1dc11d657cda5011d4342e1b9eb4add5",
+                          "size": 86642
+                        },
+                        {
+                          "name": "ember_bomber_relay_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/ember_bomber_relay_s4.png",
+                          "type": "file",
+                          "hash": "ce602c90f21a3c9ab4b26856acc9213bf7eb90bc89688d9e2e65e449ebfc2b34",
+                          "size": 84996
+                        },
+                        {
+                          "name": "ember_bomber_relay_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/ember_bomber_relay_s5.png",
+                          "type": "file",
+                          "hash": "1324dd025e11a4a89269bbf450024c97ea07b5bce5e92bc48b69573e10421d3b",
+                          "size": 85625
+                        },
+                        {
+                          "name": "ember_hanging_weight_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/ember_hanging_weight_s4.png",
+                          "type": "file",
+                          "hash": "cb9e0c568ca1a0cd7c0ad65b1c8c72e3ae5cbf9cb7779c29ae9ab6268852c432",
+                          "size": 84496
+                        },
+                        {
+                          "name": "ember_hanging_weight_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/ember_hanging_weight_s5.png",
+                          "type": "file",
+                          "hash": "34a77c2b4bf7622e0ed82724b136632caab19263f93d48924a108cd236fd81fe",
+                          "size": 84879
+                        },
+                        {
+                          "name": "ember_tower_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/ember_tower_s4.png",
+                          "type": "file",
+                          "hash": "760913469506e5f3c38c69028df60d4d0ad0110fb357f5c5e3aa5cccf9a83f40",
+                          "size": 89296
+                        },
+                        {
+                          "name": "ember_tower_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/ember_tower_s5.png",
+                          "type": "file",
+                          "hash": "8701b41171cfb4af36af163870b87cbc460514c7d2c5222e2cbfbbf4f77406b0",
+                          "size": 89592
+                        },
+                        {
+                          "name": "frost_balanced_beam_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/frost_balanced_beam_s4.png",
+                          "type": "file",
+                          "hash": "9b9b9530a7552f62be543c420a875477ca3c9447e8f6abbef6af05c902a8156e",
+                          "size": 91532
+                        },
+                        {
+                          "name": "frost_balanced_beam_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/frost_balanced_beam_s5.png",
+                          "type": "file",
+                          "hash": "f8469a1cf56f2bc84ed9cfe55b1d0eb6808024ef14658cc16c3160bf14aade6e",
+                          "size": 91139
+                        },
+                        {
+                          "name": "frost_bomber_relay_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/frost_bomber_relay_s4.png",
+                          "type": "file",
+                          "hash": "a3c8f6c966cafb0ddd15049446eb5b7fba64222a227ba683fc0c7433b5081dde",
+                          "size": 90861
+                        },
+                        {
+                          "name": "frost_bomber_relay_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/frost_bomber_relay_s5.png",
+                          "type": "file",
+                          "hash": "31c1d24a4c40740c66fba8123dc953faf2cd9bd918d6ec754e3a8a9a10c76954",
+                          "size": 90400
+                        },
+                        {
+                          "name": "frost_hanging_weight_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/frost_hanging_weight_s4.png",
+                          "type": "file",
+                          "hash": "80988999d675458ed5612af0795b712c6c3538e38b1377081c9b06937622dda5",
+                          "size": 93275
+                        },
+                        {
+                          "name": "frost_hanging_weight_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/frost_hanging_weight_s5.png",
+                          "type": "file",
+                          "hash": "ae66147eed96fe4bf1abf4e1c886619a2e0e93d12e23605e5b2a7d5531929a19",
+                          "size": 93439
+                        },
+                        {
+                          "name": "frost_tower_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/frost_tower_s4.png",
+                          "type": "file",
+                          "hash": "06d9fbb9eeb629e89b9967471a5ef36ee4532a60030fddf78849f4f06a7356a8",
+                          "size": 91157
+                        },
+                        {
+                          "name": "frost_tower_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/frost_tower_s5.png",
+                          "type": "file",
+                          "hash": "ede2175f1c87f13dedc610bf2c16fc0857f12f3c54f1651877f4c777cf747c65",
+                          "size": 92127
+                        },
+                        {
+                          "name": "results.json",
+                          "path": "docs/handoff/shots/levelgen/r7/results.json",
+                          "type": "file",
+                          "hash": "97f60112f356307e6cdbc5ad082b34b16570a7fdd4d43dcb11494cf1c29367b0",
+                          "size": 4388
+                        },
+                        {
+                          "name": "sky_balanced_beam_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/sky_balanced_beam_s4.png",
+                          "type": "file",
+                          "hash": "2d2a8cbf2e8d3db5421520c4aa02211f391ba5348facf0ce26a193b551be8cd6",
+                          "size": 92388
+                        },
+                        {
+                          "name": "sky_balanced_beam_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/sky_balanced_beam_s5.png",
+                          "type": "file",
+                          "hash": "bc6678ad4f769482707ea07405f94e4469a6e44e5c5f84b76538f4ed27aee9d9",
+                          "size": 93142
+                        },
+                        {
+                          "name": "sky_bomber_relay_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/sky_bomber_relay_s4.png",
+                          "type": "file",
+                          "hash": "840fd7b1df78448a959007d122931efa83ebda130f257689db6e0620bb454c41",
+                          "size": 89985
+                        },
+                        {
+                          "name": "sky_bomber_relay_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/sky_bomber_relay_s5.png",
+                          "type": "file",
+                          "hash": "71d20c7fcac669ba0cd90fbe8c88a69937071c3bcdd481db2ac8194bda9495d7",
+                          "size": 89092
+                        },
+                        {
+                          "name": "sky_hanging_weight_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/sky_hanging_weight_s4.png",
+                          "type": "file",
+                          "hash": "aa87568d5c1c3a4a685316b97a8bc90ce006b7e8f42ad075682810e57a5ac288",
+                          "size": 92167
+                        },
+                        {
+                          "name": "sky_hanging_weight_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/sky_hanging_weight_s5.png",
+                          "type": "file",
+                          "hash": "68044ff5b55cf0552e03b33fe9010e1452c8ab60382c712ca1703bc324062296",
+                          "size": 92324
+                        },
+                        {
+                          "name": "sky_tower_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r7/sky_tower_s4.png",
+                          "type": "file",
+                          "hash": "efa65d0255bf7cee525b27db66747e33abc2b83253e390ca4278cf43ea9e3aa4",
+                          "size": 94290
+                        },
+                        {
+                          "name": "sky_tower_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r7/sky_tower_s5.png",
+                          "type": "file",
+                          "hash": "309651e41bf898df55b3c7702dd4beaf9bf13e1384b538afdfefb370dc56f699",
+                          "size": 92051
+                        }
+                      ]
+                    },
+                    {
+                      "name": "r8",
+                      "path": "docs/handoff/shots/levelgen/r8",
+                      "type": "dir",
+                      "hash": "1c4ccb7c69d63fa08ed843c4068bb3de05fa2ef19bbf6825d1d989629f301ec6",
+                      "children": [
+                        {
+                          "name": "_sheet.png",
+                          "path": "docs/handoff/shots/levelgen/r8/_sheet.png",
+                          "type": "file",
+                          "hash": "ece13bface72f5e1734433c9b763f838f6c18637660968b24ef39f92e624c011",
+                          "size": 111063
+                        },
+                        {
+                          "name": "ember_tower_s3.png",
+                          "path": "docs/handoff/shots/levelgen/r8/ember_tower_s3.png",
+                          "type": "file",
+                          "hash": "3e539c4990394e6203267bff1fc6fb23e69d2b62e65108bdd1c42efa6eb7df79",
+                          "size": 89140
+                        },
+                        {
+                          "name": "ember_tower_s4.png",
+                          "path": "docs/handoff/shots/levelgen/r8/ember_tower_s4.png",
+                          "type": "file",
+                          "hash": "36f5aa5779223dbcdeeca0832ad3c7668430467626cbb5e91475a791ffbdb20e",
+                          "size": 89566
+                        },
+                        {
+                          "name": "ember_tower_s5.png",
+                          "path": "docs/handoff/shots/levelgen/r8/ember_tower_s5.png",
+                          "type": "file",
+                          "hash": "698ecefc6b5922c758220f7e36d3f78782f80ec8d1fe04a5e313c8914caa3328",
+                          "size": 89761
+                        },
+                        {
+                          "name": "results.json",
+                          "path": "docs/handoff/shots/levelgen/r8/results.json",
+                          "type": "file",
+                          "hash": "8e1185b1c567f91f0298c6709a4f15e9a6645abaceaf1109a88e7bd91631f543",
+                          "size": 536
                         }
                       ]
                     }
@@ -3259,7 +3612,7 @@
           "name": "monster_mash",
           "path": "docs/monster_mash",
           "type": "dir",
-          "hash": "e56672ef1125827fd4a01b353f731184ef2c857ee15471da515fffaf142fbef7",
+          "hash": "331f9f2da6b555cab1ed53586bb0fc25dee724f0b2c7a2ac68b1c76da251bdfd",
           "children": [
             {
               "name": "00_local_kickoff.md",
@@ -3356,8 +3709,8 @@
               "name": "14_level_gen_review_log.md",
               "path": "docs/monster_mash/14_level_gen_review_log.md",
               "type": "file",
-              "hash": "528d464be7687f6f284e1f86d36f94e38c8ab63f48192210d71a24e7f030656e",
-              "size": 4461
+              "hash": "ee07a0de29c47727606dbfb82959f77e49820c21d3146203bca5770242397d97",
+              "size": 8469
             }
           ]
         },
@@ -3424,7 +3777,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "b285ffca9d603774b2e13d7172b04aa4f98d9af85b9f068aae73b306e2c59440",
+      "hash": "df42676b50d76f2229c5063e06988a1f24fd0d6cf9eae72d342d0d7f2011f6b6",
       "children": [
         {
           "name": ".gitignore",
@@ -3500,7 +3853,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "5a8f4f07fa58d2c92e3989af4292c716e434d7834ffbd6ba6d5933437d892653",
+          "hash": "824d12397295c1f587bbb8f42002772821a157665efc8b6e0160d9322cb5d529",
           "children": [
             {
               "name": "cdn-assets",
@@ -3535,7 +3888,7 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "d2c3aff163b3bb3c1d5be33560b0983463462d4b6030325557669eb744d41bfd",
+              "hash": "028f964b3fac808867c66b19633fab96a8c40adfed85570100a30ce7f946caa2",
               "children": [
                 {
                   "name": "config.json",
@@ -3555,7 +3908,7 @@
                   "name": "levels",
                   "path": "game/public/data/levels",
                   "type": "dir",
-                  "hash": "3e2d6f9f33cf21fd4999ff7e17b0268acf74c9fb9343c62727d6b64162d1bcf5",
+                  "hash": "3dd1644411b429b55f425fc3cf7e3076e7eff4e1d3048c000f17f379581304ea",
                   "children": [
                     {
                       "name": "level_01.json",
@@ -3729,8 +4082,8 @@
                       "name": "level_99.json",
                       "path": "game/public/data/levels/level_99.json",
                       "type": "file",
-                      "hash": "4d3bedd41bc481ee9dbdfe03729b32d5db37a20e13c2b37668cdcb974772ead0",
-                      "size": 2100
+                      "hash": "518276f7732e41916df5308119a5a50622ac8edfae52faab94ed1da183a521f0",
+                      "size": 1137
                     }
                   ]
                 }
@@ -4225,7 +4578,7 @@
           "name": "scripts",
           "path": "game/scripts",
           "type": "dir",
-          "hash": "76754794eea1ecfee65035b176614d2b7893462a251b74dd3c46c098adaaa551",
+          "hash": "236fdeb1736260b27356b101b9c11e555189ecc52204eb60433bd23b98686b42",
           "children": [
             {
               "name": "balance_bands.json",
@@ -4288,8 +4641,8 @@
               "name": "level_gen.py",
               "path": "game/scripts/level_gen.py",
               "type": "file",
-              "hash": "1dc1efdf94eaf14e924a62b63573f4766ba42b9f41623d48348eacb5cdcac02d",
-              "size": 11693
+              "hash": "8d739862b727f7cf9bee13977823958e331b310eaeceb5be88fc1ce7d256489b",
+              "size": 12904
             }
           ]
         },
