@@ -134,6 +134,7 @@ export interface CosmeticDef {
 }
 
 export interface Content {
+  builder: BuilderConfig;
   tuning: Tuning;
   damageRules: DamageRules;
   economy: Economy;
@@ -147,7 +148,26 @@ export interface Content {
 }
 
 export interface LevelMonster { t: string; x: number; y: number; dir?: number; speed?: number; delay?: number; path?: number[][] }
-export interface LevelBlock { m: string; x: number; y: number; w: number; h: number }
+export interface LevelBlock {
+  m: string; x: number; y: number; w: number; h: number;
+  id?: string; angle?: number; static?: boolean; shape?: 'rectangle' | 'circle' | 'triangle';
+}
+export interface LevelConnection {
+  id: string;
+  type: 'lock' | 'rope';
+  a: string | null;
+  b: string;
+  pointA: { x: number; y: number };
+  pointB: { x: number; y: number };
+  length?: number;
+}
+export interface BuilderConfig {
+  grid: number; worldW: number; groundY: number; minX: number; minY: number;
+  maxBlocks: number; maxConnections: number; maxMonsters: number;
+  materials: string[]; targets: string[]; loadout: string[];
+  presets: { id: string; name: string; w: number; h: number; shape: 'rectangle' | 'circle' | 'triangle' }[];
+  physics: { lockStiffness: number; lockSpan: number; ropeStiffness: number; ropeDamping: number };
+}
 export interface LevelChest { id: string; x: number; y: number; hp: number; reward: string }
 export interface Level {
   id: number;
@@ -168,6 +188,7 @@ export interface Level {
   sling?: { x?: number; y?: number };
   overrides?: Record<string, Record<string, unknown>>;
   blocks: LevelBlock[];
+  connections?: LevelConnection[];
   monsters: LevelMonster[];
   chests?: LevelChest[];
 }

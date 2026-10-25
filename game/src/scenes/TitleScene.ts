@@ -7,6 +7,7 @@ import { beatBob, beatPhase } from '../audio/beat';
 import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
+import { feature } from '../config/settings';
 import { monsterDef } from '../data/lookup';
 import { goTo, irisOpen } from '../core/flow';
 import { profile, setMusicOn } from '../core/profile';
@@ -26,6 +27,8 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.letters = [];
+    this.line = [];
     this.ground = Math.round(H * 0.874);
     buildBackground(this, W, this.ground, 'hills');
 
@@ -50,11 +53,12 @@ export default class TitleScene extends Phaser.Scene {
     });
 
     const btnX = Math.round(W * 0.76);
-    makeButton(this, btnX, 85, 130, 32, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
-    makeButton(this, btnX, 132, 110, 26, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
+    makeButton(this, btnX, 65, 130, 32, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
+    if (feature('builder')) makeButton(this, btnX, 105, 130, 28, 'Create level', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'builder'); }, 6);
+    makeButton(this, btnX, 145, 110, 26, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
 
     const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music: off' : 'Music: on');
-    const musicBtn = makeButton(this, btnX, 168, 110, 22, musicLabel(), 'plain', () => {
+    const musicBtn = makeButton(this, btnX, 181, 110, 22, musicLabel(), 'plain', () => {
       sfx.unlock();
       setMusicOn(profile.settings.musicOn === false);
       music.updateVolume();

@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.33.0 (Bonus Yard levels 25 to 29, a soundtrack per realm and level, local debug mode, credits change), private
+**Current build:** v1.34.0 (Bonus Yard levels 25 to 29, soundtrack per realm and level, local debug mode, credits change, plus the Codex player level builder merged from the cloud branch), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -85,6 +85,13 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | PCG-B | Procedural fort generator and solver gate | | review | codex | 10-25 | Generator, static stability check, candidate-only mode and gate added; in-game candidate runs need Vite/headless Chrome. |
 | PCG-C | Level archetype concepts for later realms | | review | codex | 10-25 | 12 buildable alternatives for levels 13–24; Chapter 8 archetypes and thesis visual references documented in `docs/monster_mash/12_level_archetypes.md`. |
 | PCG-D | Daily Mash difficulty tiers | | review | codex | 10-25 | Deferred; only Task B was implemented in this run. |
+
+## Player creation tools
+
+| Card | Title | State | Owner | Updated | Notes |
+|---|---|---|---|---|---|
+| BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | review | codex | 10-25 | Private v1.33.0; check/build and 14 browser groups pass. Full campaign solver timed out after L3; hosted device check remains. OpenCode failed before edits; owner approved direct Codex implementation. |
+| BUILDER-02 | Strict square-cell placement, cursor preview, mouse controls and full target picker | doing | codex | 10-25 | Owner playtest follow-up; edge snapping, quarter-turn rotation and the complete target roster. |
 
 ## Waiting on owner
 

@@ -102,6 +102,15 @@ Minimal level:
 
 Each stage card turns on the flags for what it ships. On deadline day, a broken feature is turned off rather than fixed.
 
+## Player level builder (BUILDER-01)
+
+- `config.features.builder` enables the Title screen's **Create level** button. `content.builder` owns the piece catalogue, materials, build bounds, grid, limits, test loadout and connection physics.
+- Blocks may have stable `id`, `shape` (`rectangle`, `circle`, `triangle`), `angle` (degrees) and `static` fields. Anchored blocks remain breakable. Existing rectangles keep their original physics and texture keys.
+- `level.connections` references block IDs. Each connection has `id`, `type` (`lock` or `rope`), `a`, `b`, `pointA`, `pointB`, and optional rope `length`. Points are body-local; `a: null` means pointA is a fixed world anchor. Locks use two separated pins to preserve angle. Ropes exert tension and allow slack. Destroying either block removes its connections.
+- The draft format is `{ schema: "monster-mash-builder", version: 1, name, blocks, monsters, connections }`. Validate it with `builder/document.ts`. Drafts use the separate platform storage key `monster-mash.builder.v1`; JSON export/import is portable. The campaign save shape and version are unchanged.
+- Custom play uses an ephemeral level (1000), never writes campaign level data, and skips rewards, progress, consumables, artifact installs, tutorials and rewarded ads. **Test** runs the same block/connection physics; **Stop** restores authored positions.
+- Run `npm run check:builder` for malformed-import, geometry, reference, round-trip and conversion checks. It is also part of check/build.
+
 ## Deprecations (keep the game reading both until the card that removes them)
 
 None open. S2-02 removed `level.weapon`, `tuning.sawSteps`, the legacy `public/data/level_NN.json` location and the weapon stats in code.

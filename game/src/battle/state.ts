@@ -9,6 +9,7 @@ import type { Actor, BattleCtx, BattlePhase, Ent, Mods, Proj } from './BattleCtx
 import type { ArtifactImpl } from '../content/artifacts/types';
 import type { ConsumableImpl } from '../content/consumables';
 import type { Params } from '../data/types';
+import type { installConnections } from '../builder/physics';
 
 export interface Particle { s: Phaser.GameObjects.Image; vx: number; vy: number; life: number }
 
@@ -42,6 +43,8 @@ export interface BattleState {
   content: Content;
   level: Level;
   levelId: number;
+  custom?: boolean;
+  connections?: ReturnType<typeof installConnections>;
   loadout: string[];
   settings: Settings;
   tune: Tuning;

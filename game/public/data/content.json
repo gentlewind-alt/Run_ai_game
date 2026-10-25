@@ -1,5 +1,99 @@
 {
   "_note": "Trimmed content for the Monster Mash jam build. Numbers come from data/weapons.json and data/gear.json. 'launch' and 'tap' fields are new: they replace the melee/ranged 'effect' text because weapons are now projectiles on a slingshot.",
+  "builder": {
+    "grid": 4,
+    "worldW": 640,
+    "groundY": 320,
+    "minX": 112,
+    "minY": 64,
+    "maxBlocks": 100,
+    "maxConnections": 100,
+    "maxMonsters": 20,
+    "materials": [
+      "wood",
+      "stone",
+      "iron",
+      "crystal"
+    ],
+    "targets": [
+      "goblin_grunt",
+      "goblin_bomber",
+      "dark_elf_archer",
+      "orc_brute"
+    ],
+    "loadout": [
+      "w_militia_blade",
+      "w_iron_cleaver",
+      "w_ashwood_staff",
+      "w_blast_tube",
+      "w_militia_blade",
+      "w_blast_tube"
+    ],
+    "physics": {
+      "lockStiffness": 1,
+      "lockSpan": 12,
+      "ropeStiffness": 0.95,
+      "ropeDamping": 0.04
+    },
+    "presets": [
+      {
+        "id": "plank_short",
+        "name": "Short plank",
+        "w": 32,
+        "h": 8,
+        "shape": "rectangle"
+      },
+      {
+        "id": "plank",
+        "name": "Plank",
+        "w": 64,
+        "h": 8,
+        "shape": "rectangle"
+      },
+      {
+        "id": "beam",
+        "name": "Long beam",
+        "w": 96,
+        "h": 8,
+        "shape": "rectangle"
+      },
+      {
+        "id": "post",
+        "name": "Post",
+        "w": 8,
+        "h": 64,
+        "shape": "rectangle"
+      },
+      {
+        "id": "square",
+        "name": "Square",
+        "w": 24,
+        "h": 24,
+        "shape": "rectangle"
+      },
+      {
+        "id": "brick",
+        "name": "Brick",
+        "w": 32,
+        "h": 16,
+        "shape": "rectangle"
+      },
+      {
+        "id": "ball",
+        "name": "Ball",
+        "w": 24,
+        "h": 24,
+        "shape": "circle"
+      },
+      {
+        "id": "wedge",
+        "name": "Wedge",
+        "w": 32,
+        "h": 24,
+        "shape": "triangle"
+      }
+    ]
+  },
   "tuning": {
     "_note": "Feel/balance numbers read by the game. Edit here, not in code.",
     "launchK": 0.27,

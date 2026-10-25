@@ -16,13 +16,14 @@ import { groundAtPoints, normalizeTerrain } from './terrain';
 import { onCollide } from './damage';
 import { onDown, onMove, onUp, activateAbility, buildQueue, loadNext, setWeapon } from './sling';
 import { buildWorld, populate } from './world';
+import type { Level } from '../data/types';
 import type { BattleState, BattleUi } from './state';
 
 const noUi: BattleUi = { setAbilityLabel() {}, showAbility() {}, setEscaped() {}, setTargeting() {}, consumableUsed() {}, setBossHp() {} };
 
 /** The state for one battle. Scene objects (graphics, sprites, cameras) are filled in by `buildBattle`. */
-export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[]): BattleState {
-  const level = levelDef(levelId);
+export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[], customLevel?: Level): BattleState {
+  const level = customLevel ? JSON.parse(JSON.stringify(customLevel)) as Level : levelDef(levelId);
   const settings = levelSettings(level);
   const slingSkin = profile.equipped?.slingSkin;
   const slingCosmetic = data.content.cosmetics?.find((c) => c.id === slingSkin);
@@ -33,7 +34,7 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
   const maxShots = level.shots ?? rawLoadout.length;
   const effectiveLoadout = rawLoadout.slice(0, Math.min(rawLoadout.length, maxShots));
   const b = {
-    scene, ui: noUi, events, rng: createRng(level.id), content: data.content, level, levelId,
+    scene, ui: noUi, events, rng: createRng(level.id), content: data.content, level, levelId, custom: !!customLevel,
     loadout: effectiveLoadout, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
     worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
@@ -59,7 +60,7 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
   setWeapon(b, b.loadout[0]);
   b.view.z = homeZoom(b);
   b.view.cx = homeCx(b);
-  buildConsumables(b);
+  if (!b.custom) buildConsumables(b);
   return b;
 }
 
@@ -94,7 +95,7 @@ export function startBattle(b: BattleState): void {
     e?.preventDefault?.();
     if (!b.paused) activateAbility(b);
   });
-  installArtifacts(b);
+  if (!b.custom) installArtifacts(b);
   kindFor(b.level.kind)?.onStart?.(b.ctx, b.level);
   b.events.emit('level:start', { levelId: b.levelId, kind: b.level.kind ?? 'siege' });
   introPan(b, () => loadNext(b));

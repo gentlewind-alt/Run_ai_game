@@ -52,6 +52,7 @@ export function finish(b: BattleState, won: boolean, why: 'shots' | 'escaped' = 
   b.state = won ? 'won' : 'lost';
   won ? sfx.win() : sfx.lose();
   const { stars, shotsLeft } = finalize(b, won);
+  if (b.custom) return;
   if (won) {
     kindFor(b.level.kind)?.onWin?.(b.ctx, b.level);
     b.events.emit('level:won', { levelId: b.levelId, stars, score: b.score, coins: b.coins, shotsLeft });

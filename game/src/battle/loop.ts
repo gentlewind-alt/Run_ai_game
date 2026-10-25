@@ -37,6 +37,7 @@ export function update(b: BattleState, delta: number, nowMs: number): void {
   if (boss) b.ui.setBossHp(boss.hp, boss.maxHp, boss.def?.name ?? boss.type);
   else if (b.level.kind === 'boss' || b.ents.some((e) => e.kind === 'monster' && e.def?.boss)) b.ui.setBossHp(0, 1);
   drawOverlay(b);
+  b.connections?.draw(b.gfx);
 }
 
 function stepLogic(b: BattleState): void {
