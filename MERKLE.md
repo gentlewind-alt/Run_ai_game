@@ -1,16 +1,16 @@
 # Merkle Index
 
-Root hash: `ee803ebd3e7dc31ab9a3001b84329562572929e7d8f30d24e305215f94051fe2`
+Root hash: `61aa63d4e5634816fa76ba5ffdfaf95b9d9bd6983852d42def5967ee55b55310`
 
 | Directory | Hash | Files | Purpose |
 |---|---|---|---|
-| `.` | `ee803ebd` | 793 | MONSTER MASH: Slingshot Siege project root |
+| `.` | `61aa63d4` | 793 | MONSTER MASH: Slingshot Siege project root |
 | `architecture` | `9003f85b` | 5 | System design, module boundaries, data schemas, and agent workflow |
 | `catalogue` | `8baca4d1` | 3 | Four Realms source items (weapons, gear, consumables) for porting |
-| `docs` | `3e90346f` | 495 | Project documentation, design briefs, status, and agent logs |
+| `docs` | `89e8289f` | 495 | Project documentation, design briefs, status, and agent logs |
 | `docs/concepts` | `5745669f` | 1 | - |
 | `docs/concepts/weapons` | `468d3109` | 1 | - |
-| `docs/handoff` | `f936337b` | 472 | Agent coordination: status board, append-only logs, and task briefs |
+| `docs/handoff` | `d6487927` | 472 | Agent coordination: status board, append-only logs, and task briefs |
 | `docs/handoff/codex_logs` | `f044e8db` | 3 | - |
 | `docs/handoff/ref` | `fe95b7a4` | 3 | - |
 | `docs/handoff/shots` | `1c71602f` | 425 | - |

@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "ee803ebd3e7dc31ab9a3001b84329562572929e7d8f30d24e305215f94051fe2",
+  "hash": "61aa63d4e5634816fa76ba5ffdfaf95b9d9bd6983852d42def5967ee55b55310",
   "children": [
     {
       "name": ".gitignore",
@@ -101,7 +101,7 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "3e90346f1479d7ac042f494cfa0eed74a7c0994fbaefdde64c62af830e6b5177",
+      "hash": "89e8289f04cae15dea6e42cfa1182871da8888942d1d6ae68c0ff791314ebbbd",
       "children": [
         {
           "name": "concepts",
@@ -130,7 +130,7 @@
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "f936337b88328911d2884c02183c006ebda71164ac52941f25ae5c49283d83a0",
+          "hash": "d64879272c6094193feec226e5663bbe0fb5eccb554f25a43c9a7701b987bb0b",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -417,8 +417,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "8b5a3dc2726165de4029f0833ee8688a9d3781fd8284233113f1669ce73c4e79",
-              "size": 131881
+              "hash": "8a5a70b315e0180bc47c6785b5c2cc9503e9f7fea2c9cf677692d381e5aaf6c5",
+              "size": 132164
             },
             {
               "name": "ref",
