@@ -49,10 +49,22 @@ class ArenaClient {
     return this.connecting;
   }
 
+  /** The host sometimes needs more than one try (cold room, slow network), so a timed-out join is retried before giving up. */
+  private async join(): Promise<ArenaRoomConnection> {
+    for (let attempt = 1; ; attempt++) {
+      try { return await joinArena(); } catch (error) {
+        if (attempt >= 3 || !/timeout|timed out|network|socket|closed/i.test(error instanceof Error ? error.message : '')) throw error;
+        this.error = `Connection is slow, retrying (${attempt}/2)...`; this.changed();
+        await new Promise((resolve) => setTimeout(resolve, 1500 * attempt));
+      }
+    }
+  }
+
   private async open(): Promise<void> {
     try {
       this.room?.leave();
-      const room = this.room = await joinArena();
+      const room = this.room = await this.join();
+      this.error = '';
       const message = (value: ArenaMessage): void => this.receive(value);
       room.on({
         onMessage: (value) => { if (this.room === room) message(value); },
@@ -69,7 +81,8 @@ class ArenaClient {
       this.changed();
     } catch (error) {
       this.status = 'offline';
-      this.error = error instanceof Error ? error.message : 'Could not connect to Arena. Sign in and try again.';
+      const reason = error instanceof Error ? error.message : '';
+      this.error = /timeout|timed out/i.test(reason) ? 'Arena server did not answer. Tap Connect to try again.' : reason || 'Could not connect to Arena. Sign in and try again.';
       this.changed();
     }
   }
