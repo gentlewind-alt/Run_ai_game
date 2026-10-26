@@ -8,7 +8,8 @@ import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { feature } from '../config/settings';
-import { owner, ownerReady } from '../core/owner';
+import { admin, adminReady, lock, unlock } from '../core/admin';
+import { askAdminCode } from '../ui/adminPrompt';
 import { monsterDef } from '../data/lookup';
 import { goTo, irisOpen } from '../core/flow';
 import { profile, setMusicOn } from '../core/profile';
@@ -72,9 +73,24 @@ export default class TitleScene extends Phaser.Scene {
       sfx.unlock();
       music.updateVolume();
     });
-    const ownerTag = (): void => { text(this, W - 6, H - 8, 'Owner build: ` for tools', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(6); };
-    if (owner.is) ownerTag();
-    else void ownerReady.then((is) => { if (is && this.scene.isActive()) ownerTag(); });
+    const adminTag = (): void => {
+      const tag = text(this, W - 6, H - 8, 'Admin: ` for tools. Tap to lock', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(6).setInteractive();
+      tag.on('pointerdown', () => { void lock().then(() => this.scene.restart()); });
+    };
+    if (admin.is) adminTag();
+    else void adminReady.then((is) => { if (is && this.scene.isActive()) adminTag(); });
+    // hidden door: tap the top-left corner five times quickly to enter the admin code
+    let taps: number[] = [];
+    this.add.rectangle(14, 14, 28, 28, 0xffffff, 0).setDepth(7).setInteractive().on('pointerdown', () => {
+      const now = this.time.now;
+      taps = [...taps.filter((t) => now - t < 4000), now];
+      if (taps.length < 5) return;
+      taps = [];
+      void askAdminCode().then(async (code) => {
+        if (code === null) return;
+        if ((await unlock(code)) && this.scene.isActive()) this.scene.restart();
+      });
+    });
     music.play({ theme: 'title' });
     irisOpen(this);
   }

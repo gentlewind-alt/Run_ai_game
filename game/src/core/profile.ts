@@ -57,7 +57,7 @@ export interface ResultInfo {
 }
 
 const DEFAULT_ECONOMY: Economy = {
-  startCoins: 0, replayCoinFactor: 0.4, lossCoinFactor: 0.25, maxConsumableStack: 5, loadoutSize: 6, artifactSlots: 1,
+  startCoins: 0, replayCoinFactor: 0.4, lossCoinFactor: 0.1625, winCoinFactor: 0.85, maxConsumableStack: 5, loadoutSize: 6, artifactSlots: 1,
   secondArtifactAfterLevel: 8,
 };
 export const economy = (): Economy => ({ ...DEFAULT_ECONOMY, ...(data.content?.economy ?? {}) });
@@ -233,7 +233,7 @@ export function recordResult(r: { levelId: number; won: boolean; stars: number; 
   const key = String(r.levelId);
   const prev = profile.stars[key] ?? 0;
   const first = r.won && prev === 0;
-  const factor = r.won ? (first ? 1 : e.replayCoinFactor) : e.lossCoinFactor;
+  const factor = r.won ? (first ? 1 : e.replayCoinFactor) * (e.winCoinFactor ?? 1) : e.lossCoinFactor;
   const credited = Math.round(r.coins * factor);
   if (r.won) {
     profile.stars[key] = Math.max(prev, r.stars);

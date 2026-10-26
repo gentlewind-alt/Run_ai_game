@@ -6,7 +6,7 @@ import { findDraftOverlaps } from '../builder/geometry';
 import { data } from '../data/load';
 import type { Level } from '../data/types';
 import { platform } from '../platform';
-import { owner } from './owner';
+import { admin } from './admin';
 import type { Row, UgcRow } from '../platform/types';
 
 export const CHALLENGE_TYPE = 'mm_challenge';
@@ -77,7 +77,7 @@ export async function publishChallenge(doc: BuilderDocument, allowed: string[], 
     if (findDraftOverlaps(safe, monsterSize).length) return { error: 'Fix overlapping pieces before sharing. Test can still try the design.' };
     if (!safe.monsters.length) return { error: 'Add at least one target first.' };
     const mine = await platform.ugc.mine(CHALLENGE_TYPE, MAX_PER_AUTHOR + 1);
-    if (!owner.is && mine.length >= MAX_PER_AUTHOR) return { error: `You can share up to ${MAX_PER_AUTHOR} challenges. Delete one first.` };
+    if (!admin.is && mine.length >= MAX_PER_AUTHOR) return { error: `You can share up to ${MAX_PER_AUTHOR} challenges. Delete one first.` };
     const name = (await platform.profile()).name;
     const title = safe.name === 'My level' ? `${name}'s level ${mine.length + 1}` : safe.name;
     const row = await platform.ugc.create(CHALLENGE_TYPE, title.slice(0, 40), payload({ ...safe, name: title.slice(0, 40) }, allowed, shots));
@@ -89,21 +89,29 @@ export async function publishChallenge(doc: BuilderDocument, allowed: string[], 
   }
 }
 
-/** Only the author can do this (the host refuses anyone else). */
-export async function updateRules(c: Challenge, allowed: string[], shots: number): Promise<boolean> {
-  if (!c.mine || !allowed.length) return false;
-  if (findDraftOverlaps(c.doc, monsterSize).length) return false;
-  return (await platform.ugc.update(c.id, { data: payload(c.doc, allowed, shots) })) !== null;
+/**
+ * The author changes the rules in place. Admin can also change someone else's challenge: the host lets only an author edit, so the
+ * admin's copy replaces it (same level and title, new rules, under the admin's name; the old scores are lost). Returns the challenge now live.
+ */
+export async function updateRules(c: Challenge, allowed: string[], shots: number): Promise<Challenge | null> {
+  if (!allowed.length) return null;
+  if (findDraftOverlaps(c.doc, monsterSize).length) return null;
+  if (c.mine) return (await platform.ugc.update(c.id, { data: payload(c.doc, allowed, shots) })) ? { ...c, allowed, shots: clampShots(shots) } : null;
+  if (!admin.is) return null;
+  const row = await platform.ugc.create(CHALLENGE_TYPE, c.title, payload(c.doc, allowed, shots));
+  if (!row) return null;
+  await platform.ugc.adminRemove(c.id);
+  return parse(row, await myId());
 }
 
 export async function removeChallenge(c: Challenge): Promise<boolean> {
   if (c.mine) return platform.ugc.remove(c.id);
-  return owner.is ? platform.ugc.adminRemove(c.id) : false;
+  return admin.is ? platform.ugc.adminRemove(c.id) : false;
 }
 
 /** Owner only: clears every score on a challenge's board. Returns how many entries were removed. */
 export async function resetBoard(c: Challenge): Promise<number> {
-  if (!owner.is) return 0;
+  if (!admin.is) return 0;
   const rows = await platform.ugc.adminBrowse(scoreType(c.id), 100);
   let removed = 0;
   for (const r of rows) if (await platform.ugc.adminRemove(r.id)) removed++;

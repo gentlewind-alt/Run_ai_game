@@ -181,9 +181,9 @@ export default class ChallengeWeaponsScene extends Phaser.Scene {
       if (res.challenge) goTo(this, 'challenge', { id: res.challenge.id, challenge: res.challenge });
       else { this.busy = false; this.say(res.error ?? 'Could not share.'); this.goBtn?.setEnabled(true); }
     } else {
-      const ok = await updateRules(this.challenge!, allowed, this.shots);
+      const next = await updateRules(this.challenge!, allowed, this.shots);
       if (!this.scene.isActive()) return;
-      if (ok) goTo(this, 'challenge', { id: this.challenge!.id });
+      if (next) goTo(this, 'challenge', { id: next.id, challenge: next });
       else { this.busy = false; this.say('Could not save. Try again.'); this.goBtn?.setEnabled(true); }
     }
   }

@@ -85,9 +85,6 @@ export const rundotPlatform: Platform = {
       }
     },
   },
-  async role() {
-    try { return await RundotGameAPI.app.getMyRole(); } catch { return 'none'; }
-  },
   ugc: {
     async create(type, title, data) {
       try {

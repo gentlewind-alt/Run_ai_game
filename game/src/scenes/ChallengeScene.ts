@@ -4,7 +4,7 @@ import { setText, text } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
-import { owner } from '../core/owner';
+import { admin } from '../core/admin';
 import { challengeBoard, getChallenge, removeChallenge, resetBoard, type Board, type Challenge } from '../core/challenges';
 import { goTo, irisOpen } from '../core/flow';
 import { makeButton, panel } from '../ui/widgets';
@@ -61,19 +61,19 @@ export default class ChallengeScene extends Phaser.Scene {
       this.add.image(x, y, tex).setScale(w >= 32 ? 0.5 : 0.9).setDepth(4);
     });
     if (c.allowed.length > 18) text(this, 36 + 9 * 24 - 4, 56, `+${c.allowed.length - 18} more`, C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
-    const canDelete = c.mine || owner.is;
+    const canDelete = c.mine || admin.is;
     const specs: { label: string; w: number; kind: 'go' | 'plain' | 'danger'; run: () => void }[] = [
       { label: 'Play', w: 90, kind: 'go', run: () => goTo(this, 'challengeWeapons', { mode: 'play', challenge: c }) },
     ];
-    if (c.mine) specs.push({ label: 'Edit rules', w: 84, kind: 'plain', run: () => goTo(this, 'challengeWeapons', { mode: 'edit', challenge: c }) });
-    if (owner.is) specs.push({ label: 'Reset board', w: 90, kind: 'plain', run: () => { void resetBoard(c).then(() => { if (this.scene.isActive()) this.scene.restart({ id: c.id }); }); } });
+    if (c.mine || admin.is) specs.push({ label: 'Edit rules', w: 84, kind: 'plain', run: () => goTo(this, 'challengeWeapons', { mode: 'edit', challenge: c }) });
+    if (admin.is) specs.push({ label: 'Reset board', w: 90, kind: 'plain', run: () => { void resetBoard(c).then(() => { if (this.scene.isActive()) this.scene.restart({ id: c.id }); }); } });
     let x = 120;
     for (const spec of specs) {
       const half = spec.w / 2;
       makeButton(this, x + half, H - 22, spec.w, 22, spec.label, spec.kind, () => { sfx.click(); spec.run(); }, 3);
       x += spec.w + 8;
     }
-    if (owner.is) text(this, W - 40, 22, 'OWNER', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
+    if (admin.is) text(this, W - 40, 22, 'ADMIN', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
     if (canDelete) {
       let armed = false;
       const del = makeButton(this, W - 66, H - 22, 70, 22, 'Delete', 'danger', () => {

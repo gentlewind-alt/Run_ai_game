@@ -1792,10 +1792,11 @@
     }
   ],
   "economy": {
-    "_note": "Coins and slots. Replays pay less so grinding level 1 is not the plan.",
+    "_note": "Coins and slots. Replays pay less so grinding level 1 is not the plan. A loss keeps 16.25% of the coins earned (was 25%, 35% less); every win pays 85% (15% less).",
     "startCoins": 0,
     "replayCoinFactor": 0.4,
-    "lossCoinFactor": 0.25,
+    "lossCoinFactor": 0.1625,
+    "winCoinFactor": 0.85,
     "maxConsumableStack": 5,
     "loadoutSize": 6,
     "artifactSlots": 1,

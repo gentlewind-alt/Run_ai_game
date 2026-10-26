@@ -103,6 +103,8 @@ export interface Economy {
   startCoins: number;
   replayCoinFactor: number;
   lossCoinFactor: number;
+  /** Multiplier on every coin payout from a win (first clear and replay); 1 = unchanged. */
+  winCoinFactor?: number;
   maxConsumableStack: number;
   loadoutSize: number;
   artifactSlots: number;

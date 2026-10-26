@@ -61,8 +61,6 @@ const seedUgc = (): void => {
 export const mockPlatform: Platform = {
   ...noopPlatform,
   hosted: false,
-  /** Local testing of the owner build: open with ?owner=1. */
-  async role() { return /[?&]owner=1/.test(location.search) ? 'owner' : 'none'; },
   async init(): Promise<void> { /* nothing to do */ },
   storage: {
     async get(key) { return store.get(key) ?? null; },
@@ -124,7 +122,7 @@ export const mockPlatform: Platform = {
     async mine(type, limit) { seedUgc(); return ugcRows.filter((r) => r.type === type && r.authorId === 'local').slice(0, limit).map((r) => ({ ...r })); },
     async adminRemove(id) {
       const i = ugcRows.findIndex((r) => r.id === id);
-      if (i < 0 || !/[?&]owner=1/.test(location.search)) return false;
+      if (i < 0) return false;
       ugcRows.splice(i, 1);
       return true;
     },
