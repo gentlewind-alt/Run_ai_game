@@ -497,14 +497,18 @@ async function run() {
       mm.run(15);
       const maulProj = b.proj;
       const maulInitialCharges = b.abilityCharges?.['w_skyforge_maul'] ?? 1;
-      const targetMon = b.ctx.nearestMonsters(maulProj.body.position.x, maulProj.body.position.y, 1)[0];
-      const targetHpBefore = targetMon ? targetMon.hp : 0;
+      const maulMonsters = b.ctx.monsters().filter(m => !m.dead && m.hp > 0)
+        .sort((a, c) => a.hp - c.hp || a.body.id - c.body.id);
+      const maulHpBefore = new Map(maulMonsters.map(m => [m.body.id, m.hp]));
+      const rankedTargets = maulMonsters.length <= 4 ? maulMonsters :
+        [maulMonsters[0], maulMonsters[1], maulMonsters[Math.floor((maulMonsters.length - 1) / 2)], maulMonsters[maulMonsters.length - 1]];
+      const rankedIds = new Set(rankedTargets.map(m => m.body.id));
       
       mm.activateAbility(); // Tap 1: lightning + electric field
       const maulChargesAfter = b.abilityCharges?.['w_skyforge_maul'];
       const maulAllowSecondTap = maulProj?.data?.allowSecondTap === true;
       const maulSecondLabel = maulProj?.data?.secondTapLabel === 'Recall';
-      const nearestDamaged = targetMon ? targetMon.hp < targetHpBefore : true;
+      const rankedTargetsDamaged = maulMonsters.every(m => (m.hp < maulHpBefore.get(m.body.id)) === rankedIds.has(m.body.id));
       
       // Step 25 steps to verify field actor tick (tickSteps = 20)
       mm.run(25);
@@ -524,7 +528,7 @@ async function run() {
       mm.settle();
 
       const maulPassed = maulInitialCharges === 1 && maulChargesAfter === 0 &&
-                         maulAllowSecondTap && maulSecondLabel && nearestDamaged &&
+                         maulAllowSecondTap && maulSecondLabel && rankedTargetsDamaged &&
                          maulRecalling && maulAllowSecondAfter && maulShot2Blocked;
 
       // 2. COMET FISTS (Legendary)
@@ -738,7 +742,7 @@ async function run() {
                 shootersPassed && palmsPassed && quicksilverPassed && geminiPassed &&
                 realNamesPassed && shopSlingshotsOk,
         details: {
-          maul: { maulInitialCharges, maulChargesAfter, maulAllowSecondTap, maulSecondLabel, nearestDamaged, maulRecalling, maulAllowSecondAfter, maulShot2Blocked },
+          maul: { maulInitialCharges, maulChargesAfter, maulAllowSecondTap, maulSecondLabel, rankedTargetsDamaged, maulRecalling, maulAllowSecondAfter, maulShot2Blocked },
           fists: { fistSlamming, fistChargesAfter, stunnedMonsters, fistShot2Blocked }
         }
       };
@@ -749,7 +753,7 @@ async function run() {
       console.error('  FAIL', msg);
       failures.push(msg);
     } else {
-      console.log('  ✓ Skyforge Maul: lightning strike + hit-stop, electric field ticks, recall return, charges: 1 disabled on shot 2.');
+      console.log('  ✓ Skyforge Maul: four HP-ranked strikes + hit-stop, electric field ticks, recall return, charges: 1 disabled on shot 2.');
       console.log('  ✓ Comet Fists: dive-slam, earthquake stun + knockdown, charges: 1 disabled on shot 2.');
       console.log('  ✓ Bulwark Disc: bounces counted past the 6th, no bonus without jumps, tap 1 redirect toward monster.');
       console.log('  ✓ Steersong Arrow: armed explosion mode and split-tip 3-arrow fan mode.');

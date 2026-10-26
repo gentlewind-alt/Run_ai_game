@@ -33,6 +33,7 @@ const SHORT: Record<string, string> = {
   w_comet_fists: 'Comet Fists',
   w_bulwark_disc: 'Bulwark Disc',
   w_skyforge_maul: 'Skyforge Maul',
+  w_omnitrix_dial: 'Alien Dial',
   w_steersong_arrow: 'Steersong',
   w_silkline_shooters: 'Silkline',
   w_kinetic_palms: 'Kinetic Palms',

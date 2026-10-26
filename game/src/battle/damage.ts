@@ -175,11 +175,11 @@ export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: numb
           ? ['b', 'c', '4', 'a']
           : ['k', 'l', 'm'];
   burst(b, x, y, colors, Math.min(10, 3 + Math.round(dmg / 6)));
-  sfx.hit(Math.min(1, dmg / 40));
-  b.scene.cameras.main.shake(90, Phaser.Math.Clamp((dmg / 40) * 0.012, 0.002, 0.014));
+  if (!o.silent) sfx.hit(Math.min(1, dmg / 40));
+  if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) b.scene.cameras.main.shake(90, Phaser.Math.Clamp((dmg / 40) * 0.012, 0.002, 0.014));
   if (o.strong) b.hitStop = Math.max(b.hitStop, b.tune.hitStopFrames);
 
-  if (t.hp <= 0) kill(b, t);
+  if (t.hp <= 0) kill(b, t, o.silent);
   else if (t.kind === 'block' && t.hp < t.maxHp * 0.5) {
     t.sprite.setTexture(blockTextureKey({ m: t.type, w: t.w, h: t.h, shape: t.body.builderShape }, true));
   }
@@ -195,7 +195,7 @@ export function discard(b: BattleState, t: Ent): void {
   t.icon?.destroy();
 }
 
-function kill(b: BattleState, t: Ent): void {
+function kill(b: BattleState, t: Ent, silent = false): void {
   const px = t.body.position.x;
   const py = t.body.position.y;
   discard(b, t);
@@ -211,7 +211,7 @@ function kill(b: BattleState, t: Ent): void {
             ? ['b', 'c', '4', 'a']
             : ['k', 'l', 'm'];
   burst(b, px, py, colors, 14);
-  sfx.crunch();
+  if (!silent) sfx.crunch();
   b.hitStop = Math.max(b.hitStop, b.tune.hitStopFrames);
   const coins = b.tune.coins;
 
@@ -231,7 +231,7 @@ function kill(b: BattleState, t: Ent): void {
     }
   } else {
     addCoins(b, t.kind === 'monster' ? coins[t.type] ?? coins.monster : coins[t.type] ?? coins.stone);
-    sfx.coin();
+    if (!silent) sfx.coin();
   }
   b.events.emit('kill', { target: t, x: px, y: py });
 
@@ -283,7 +283,7 @@ export function explode(b: BattleState, x: number, y: number, r: number, base: n
   ring(b, x, y, r, C('4'));
   ring(b, x, y, r * 0.6, C('3'));
   burst(b, x, y, ['4', '3', '2', 'c'], 18);
-  b.scene.cameras.main.shake(180, 0.014);
+  if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) b.scene.cameras.main.shake(180, 0.014);
   b.hitStop = Math.max(b.hitStop, b.tune.explosionHitStop);
   sfx.crunch();
   popWord(b, x, y - 10, 'boom!');

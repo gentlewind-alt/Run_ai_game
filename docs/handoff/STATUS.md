@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.41.1 (Shop/Forge overflow fixes, wheel and touch Forge scrolling, startup slingshot textures, bounded map nodes), private
+**Current build:** v1.42.1 (thick sky beam, four HP-ranked lightning strikes, Alien Dial giant-foot stomp and full-level earthquake), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -99,9 +99,15 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 |---|---|---|---|---|---|
 | UI-01 | Shop/Forge text and icon overflow, missing sling textures, Forge scrolling and map node bounds | review | codex | 10-26 | Check/build, 20 predeploy checks and 16 browser groups pass; wheel, mouse and real touch tested. Existing unfinished builder checkout preserved. |
 
+## Weapon effects
+
+| Card | Title | State | Owner | Updated | Notes |
+|---|---|---|---|---|---|
+| FX-01 | Brahmastra sky beam, four-target hammer lightning and Alien Dial foot stomp | review | codex | 10-26 | Check/build, 20 predeploy checks and 23 browser/gameplay groups pass. Maul L1-L12: zero one-shot clears in 1,344 aims. Default campaign L1-L24 and existing scene/camera/responsive checks pass across bounded batches; full-suite limitation in LOG. |
+
 ## Waiting on owner
 
-- **Review 10-22 (`docs/handoff/review_2026-10-22.md`):** approve renaming "Omnitrix Dial" (B1). Decide whether to fix the boss re-hit damage and retune, or keep it (B2).
+- **Review 10-22 (`docs/handoff/review_2026-10-22.md`):** decide whether to fix the boss re-hit damage and retune, or keep it (B2). B1 rename was approved by the owner and shipped as Alien Dial in v1.42.0.
 
 - Phone test of v1.3.0: does the shot feel good? Does pinch zoom work? Does the ability button feel natural? Is the zoomed-out home view readable?
 - Approve: try `rundot game set-public` after S2 to learn the review turnaround (it can be undone with `set-private`).

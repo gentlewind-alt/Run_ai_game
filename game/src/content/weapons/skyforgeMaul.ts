@@ -4,6 +4,15 @@ import { weaponTexture } from '../../art/textures';
 import type { Actor, Ent } from '../../battle/BattleCtx';
 import type { WeaponImpl } from './types';
 
+/** Two lowest HP, a middle target, and the highest HP, without duplicate strikes. */
+export function selectLightningTargets(monsters: Ent[]): Ent[] {
+  const sorted = [...new Set(monsters.filter((m) => !m.dead && m.hp > 0))]
+    .sort((a, b) => a.hp - b.hp || a.body.id - b.body.id);
+  if (sorted.length <= 4) return sorted;
+  const middle = Math.floor((sorted.length - 1) / 2);
+  return [sorted[0], sorted[1], sorted[middle], sorted[sorted.length - 1]];
+}
+
 export const skyforgeMaul: WeaponImpl = {
   texture: weaponTexture('w_skyforge_maul'),
   onLaunch(_ctx, p) {
@@ -16,8 +25,8 @@ export const skyforgeMaul: WeaponImpl = {
 
     // First tap: lightning bolt + crackling electric field
     if (p.data.taps === 1) {
-      const monsters = ctx.nearestMonsters(p.body.position.x, p.body.position.y, 1);
-      const target = monsters[0];
+      const targets = selectLightningTargets(ctx.monsters());
+      const target = targets.reduce<Ent | undefined>((highest, monster) => !highest || monster.hp > highest.hp || (monster.hp === highest.hp && monster.body.id > highest.body.id) ? monster : highest, undefined);
       const tx = target ? target.body.position.x : p.body.position.x;
       const ty = target ? target.body.position.y : p.body.position.y;
 
@@ -25,31 +34,16 @@ export const skyforgeMaul: WeaponImpl = {
       ctx.flash?.(0xffffff, 70);
       ctx.hitStop?.(P.boltHitStop ?? 3);
 
-      // Lightning strike from top of screen onto the nearest monster
-      ctx.fx.bolt(tx, ty);
       sfx.thunder();
       ctx.fx.shake(0.04);
 
-      // Hit target
-      if (target) {
-        ctx.directHit(target, p.wid, P.boltDamageMult ?? 1.5, tx, ty, true);
-        ctx.addStatus(target, 'chain', 60);
-        // the bolt forks to the nearest monsters from there, a little weaker each jump
-        const hit = new Set<Ent>([target]);
-        let fx = tx;
-        let fy = ty;
-        let fm = P.chainMult;
-        for (let j = 0; j < P.chainJumps; j++) {
-          const next = ctx.nearestMonsters(fx, fy, P.chainJumps + 2).find((m) => !hit.has(m) && Math.hypot(m.body.position.x - fx, m.body.position.y - fy) <= P.chainRange);
-          if (!next) break;
-          hit.add(next);
-          for (let q = 1; q <= 6; q++) ctx.fx.sparks(fx + (next.body.position.x - fx) * q / 6, fy + (next.body.position.y - fy) * q / 6, ['b', 'c'], 1);
-          ctx.directHit(next, p.wid, fm, next.body.position.x, next.body.position.y, false);
-          fm *= P.chainFalloff;
-          fx = next.body.position.x;
-          fy = next.body.position.y;
-        }
+      for (const monster of targets) {
+        const { x, y } = monster.body.position;
+        ctx.fx.bolt(x, y);
+        ctx.directHit(monster, p.wid, monster === target ? P.boltDamageMult : P.chainMult, x, y, monster === target);
+        ctx.addStatus(monster, 'chain', 60);
       }
+      if (!target) ctx.fx.bolt(tx, ty);
 
       // Crackling blue-white electric field around that spot for 3 s (180 steps)
       // that chains damage (a small tick every 20 steps) between monsters and metal blocks within radius

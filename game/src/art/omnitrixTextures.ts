@@ -1,49 +1,39 @@
 import type Phaser from 'phaser';
 import { gridTexture } from './pix';
+import { Px } from './textures';
 
-/** One alien forearm, fist pointing down. 0 = outline, D = dark, M = mid, L = light (replaced per arm kind). */
-const ARM = [
-  '..000000..',
-  '.0DDDDDD0.',
-  '.0LMMMMD0.',
-  '.0LMMMMD0.',
-  '..0DDDD0..',
-  '.0LMMMMD0.',
-  '.0LMMMMD0.',
-  '.0LMMMMD0.',
-  '.0LMLLMD0.',
-  '.0LMMMMD0.',
-  '.0LMMMMD0.',
-  '.0LMMMMD0.',
-  '.0LMLLMD0.',
-  '.0LMMMMD0.',
-  '.0LMMMMD0.',
-  '.0LMMMMD0.',
-  '0LLMMMMDD0',
-  '0LMMMMMMD0',
-  '0LMLMLMMD0',
-  '0LMMMMMMD0',
-  '0MMMMMMMD0',
-  '0MMMMMMDD0',
-  '.0MMMMDD0.',
-  '..0DDDD0..',
-  '...0000...',
-];
+export const ALIEN_FOOT_KEY = 'alien_foot';
 
-/** Palette chars (dark, mid, light) for each of the five arms the Omnitrix Dial drops. */
-export const OMNI_ARM_COLORS: Record<string, [string, string, string]> = {
-  fire: ['2', '3', '4'],
-  brute: ['n', '6', '5'],
-  crystal: ['7', 'a', 'b'],
-  stone: ['e', 'd', 'c'],
-  lightning: ['3', '4', 't'],
-};
-
-export const omniArmKey = (kind: string): string => `omni_arm_${kind}`;
+/** A colossal white-and-red lower leg and broad, three-toed foot. The sole ends at the texture's bottom edge. */
+export function buildAlienFoot(): Px {
+  const p = new Px(96, 192);
+  p.poly([[28, 0], [73, 0], [72, 32], [67, 66], [65, 108], [68, 139], [75, 150], [91, 158], [96, 168], [96, 187], [90, 192], [14, 192], [7, 185], [7, 171], [20, 157], [26, 139], [26, 106], [21, 76], [23, 38]], 'v');
+  p.poly([[32, 0], [68, 0], [67, 32], [62, 67], [60, 109], [63, 141], [72, 154], [87, 162], [91, 170], [91, 185], [87, 187], [17, 187], [12, 182], [12, 173], [24, 160], [31, 140], [31, 105], [26, 76], [28, 39]], 'c');
+  // A black spinal stripe and red armour make the giant leg readable from the zoomed-out game camera.
+  p.poly([[47, 0], [56, 0], [54, 47], [50, 91], [49, 133], [55, 155], [45, 161], [40, 139], [40, 100], [43, 51]], 'v');
+  p.poly([[29, 0], [42, 0], [39, 39], [35, 75], [37, 112], [32, 137], [27, 105], [22, 76], [25, 37]], 'q');
+  p.poly([[32, 0], [39, 0], [36, 40], [31, 74], [34, 107], [31, 119], [27, 76]], '2');
+  p.poly([[58, 0], [65, 0], [64, 30], [59, 68], [56, 107], [56, 137], [51, 126], [52, 91], [56, 47]], '2');
+  p.line(60, 4, 58, 42, '3').line(58, 43, 54, 88, '3');
+  p.poly([[62, 43], [68, 23], [73, 31], [69, 61], [64, 85]], 'd');
+  p.poly([[26, 65], [15, 78], [25, 102], [29, 93]], 'v');
+  p.poly([[25, 72], [20, 79], [26, 94], [27, 87]], '2');
+  p.poly([[57, 113], [62, 103], [65, 138], [72, 151], [63, 153], [57, 139]], 'd');
+  p.poly([[32, 143], [39, 139], [44, 158], [33, 170], [17, 178], [14, 173], [26, 160]], 'd');
+  // The upper foot slopes into three individually outlined toe plates; the heel and sole stay flat.
+  p.poly([[46, 149], [62, 147], [72, 157], [84, 164], [76, 170], [49, 166], [34, 175], [29, 170]], 'v');
+  p.poly([[49, 153], [61, 152], [68, 161], [76, 165], [71, 167], [48, 162], [39, 167]], '2');
+  p.line(50, 153, 61, 154, '3').line(61, 154, 67, 160, '3');
+  p.poly([[57, 169], [73, 168], [87, 169], [91, 173], [91, 177], [77, 177], [70, 175], [56, 176]], 'd');
+  p.poly([[37, 176], [55, 170], [68, 177], [88, 178], [91, 181], [91, 185], [69, 186], [57, 183], [34, 185], [17, 183], [17, 179]], 'c');
+  p.line(71, 168, 73, 177, 'v').line(56, 174, 59, 184, 'v').line(34, 177, 35, 185, 'v');
+  p.line(73, 177, 91, 177, 'v').line(59, 184, 88, 184, 'd');
+  p.line(77, 171, 87, 172, 'c').line(65, 180, 84, 181, 'c');
+  p.rect(17, 188, 73, 4, 'v').rect(20, 188, 65, 1, 'e');
+  p.line(33, 16, 31, 50, 'c').line(35, 107, 35, 130, 'c');
+  return p;
+}
 
 export function registerOmnitrixTextures(scene: Phaser.Scene): void {
-  for (const [kind, [d, m, l]] of Object.entries(OMNI_ARM_COLORS)) {
-    const rows = ARM.map((r) => [...r].map((ch) => (ch === 'D' ? d : ch === 'M' ? m : ch === 'L' ? l : ch)).join(''));
-    gridTexture(scene, omniArmKey(kind), rows);
-  }
+  if (!scene.textures.exists(ALIEN_FOOT_KEY)) gridTexture(scene, ALIEN_FOOT_KEY, buildAlienFoot().rows());
 }

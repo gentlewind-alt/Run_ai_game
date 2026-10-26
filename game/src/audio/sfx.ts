@@ -42,6 +42,7 @@ class Sfx {
     g.gain.setValueAtTime(vol, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + dur);
     o.connect(g).connect(this.master);
+    o.onended = () => { o.disconnect(); g.disconnect(); };
     o.start(t);
     o.stop(t + dur + 0.02);
   }
@@ -60,6 +61,7 @@ class Sfx {
     const g = this.ctx.createGain();
     g.gain.value = vol;
     s.connect(f).connect(g).connect(this.master);
+    s.onended = () => { s.disconnect(); f.disconnect(); g.disconnect(); };
     s.start();
   }
 
@@ -80,6 +82,23 @@ class Sfx {
     for (let i = 0; i < 5; i++) this.tone(95, 0.14, 'sine', 0.3, 45, 0.55 + i * 0.1);
     this.tone(180, 0.35, 'triangle', 0.16, 900, 1.3);
     this.noise(0.45, 0.1, 2600);
+  }
+  alienScreech(): void {
+    // Two bending harmonics and a rough undertone: an inhaling roar before the foot falls.
+    this.tone(620, 0.18, 'sawtooth', 0.12, 1820);
+    this.tone(1240, 0.18, 'triangle', 0.08, 3220, 0.025);
+    this.tone(180, 0.42, 'sawtooth', 0.09, 85);
+    this.tone(1820, 0.34, 'sawtooth', 0.12, 390, 0.18);
+    this.tone(3220, 0.31, 'triangle', 0.07, 780, 0.205);
+    this.noise(0.4, 0.07, 2200);
+  }
+  alienStomp(): void {
+    // A fast crack above a heavy sub-bass fall, followed by short, low debris rumble.
+    this.noise(0.12, 0.22, 2600);
+    this.tone(112, 0.72, 'sine', 0.32, 25);
+    this.tone(65, 0.5, 'triangle', 0.18, 24, 0.025);
+    this.noise(0.85, 0.23, 230);
+    this.tone(41, 0.34, 'sine', 0.12, 22, 0.24);
   }
   brahmastra(): void {
     // rising choral chord, a bright shimmer and a low boom as the beam ends

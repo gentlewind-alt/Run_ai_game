@@ -15,6 +15,7 @@ export interface DamageOpts {
   tag: DamageTag;
   fall?: boolean;
   quiet?: boolean; // no numbers or words (burn ticks)
+  silent?: boolean; // an area attack supplies its own shared impact sound
   ignoreArmour?: boolean; // skips the target's behaviour rules (armour, weak points): the Brahmastra beam
 }
 
@@ -164,6 +165,6 @@ export interface BattleCtx {
     webStrand?(x0: number, y0: number, x1: number, y1: number, steps?: number): void;
     webSplat?(x: number, y: number, steps?: number): void;
     muzzleFlash?(x: number, y: number): void;
-    beam?(seg: () => { x0: number; y0: number; x1: number; y1: number } | null, steps: number): void;
+    beam?(seg: () => { x0: number; y0: number; x1: number; y1: number } | null, steps: number, width?: number, chargeSteps?: number): void;
   };
 }

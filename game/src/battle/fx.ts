@@ -402,9 +402,9 @@ export function popWord(b: BattleState, x: number, y: number, word: string): voi
   b.scene.tweens.add({ targets: t, y: y - 14, scale: 1.4, alpha: 0, duration: 520, ease: 'Cubic.out', onComplete: () => t.destroy() });
 }
 
-/** A focused beam of light: white-gold core, soft halo, lens-flare star and a glyph ring at the muzzle; the screen dims while it lasts. */
-export function beam(b: BattleState, seg: () => { x0: number; y0: number; x1: number; y1: number } | null, steps: number): void {
-  const g = b.scene.add.graphics().setDepth(14);
+/** One solid sky column, preceded by a ground warning and ending in an impact flare. */
+export function beam(b: BattleState, seg: () => { x0: number; y0: number; x1: number; y1: number } | null, steps: number, width = 32, chargeSteps = 0): void {
+  const g = b.scene.add.graphics().setDepth(14).setData('fx', 'sky-beam').setData('width', width);
   const dim = b.scene.add.rectangle(b.worldW / 2, 135, b.worldW + 200, 400, 0x0b0b1a, 0).setDepth(13);
   let t = 0;
   b.actors.push({
@@ -412,31 +412,38 @@ export function beam(b: BattleState, seg: () => { x0: number; y0: number; x1: nu
       t++;
       const s = seg();
       g.clear();
-      const fade = Math.max(0, Math.min(1, t / 8, (steps - t) / 12));
+      const active = t - chargeSteps;
+      const fade = Math.max(0, Math.min(1, active / 6, (steps - t) / 12));
       dim.setAlpha(0.15 * fade);
       if (!s || t >= steps) {
-        g.destroy();
-        dim.destroy();
         return true;
       }
-      const pulse = 0.85 + 0.15 * Math.sin(t / 3);
-      g.lineStyle(11 * fade * pulse, C('4'), 0.3).lineBetween(s.x0, s.y0, s.x1, s.y1);
-      g.lineStyle(7 * fade, C('t'), 0.8).lineBetween(s.x0, s.y0, s.x1, s.y1);
-      g.lineStyle(3 * fade + 1, C('c'), 1).lineBetween(s.x0, s.y0, s.x1, s.y1);
-      // lens-flare star and a ring of glyph dots turning around the muzzle
-      g.lineStyle(1, C('c'), fade);
-      g.lineBetween(s.x0 - 9, s.y0, s.x0 + 9, s.y0).lineBetween(s.x0, s.y0 - 9, s.x0, s.y0 + 9);
-      g.lineBetween(s.x0 - 6, s.y0 - 6, s.x0 + 6, s.y0 + 6).lineBetween(s.x0 - 6, s.y0 + 6, s.x0 + 6, s.y0 - 6);
-      g.fillStyle(C('c'), 1).fillCircle(s.x0, s.y0, 3);
-      for (let k = 0; k < 8; k++) {
-        const a = (k / 8) * Math.PI * 2 + t / 12;
-        g.fillStyle(C('4'), fade).fillCircle(s.x0 + Math.cos(a) * 11, s.y0 + Math.sin(a) * 11, 1);
+      g.setData('segment', { ...s });
+      if (active <= 0) {
+        g.setData('phase', 'charge');
+        const warning = chargeSteps > 0 ? t / chargeSteps : 1;
+        g.lineStyle(2, C('4'), 0.55 + warning * 0.4).strokeEllipse(s.x1, s.y1, width * (1.6 - warning * 0.3), width * 0.45);
+        g.fillStyle(C('t'), 0.15 + warning * 0.15).fillEllipse(s.x1, s.y1, width, width * 0.2);
+        return false;
+      }
+      const descent = Math.min(1, active / 6);
+      const headX = s.x0 + (s.x1 - s.x0) * descent;
+      const headY = s.y0 + (s.y1 - s.y0) * descent;
+      g.setData('phase', descent < 1 ? 'descent' : 'active');
+      g.setData('head', { x: headX, y: headY });
+      g.lineStyle(width + 14, C('4'), 0.2 * fade).lineBetween(s.x0, s.y0, headX, headY);
+      g.lineStyle(width, C('t'), 0.95 * fade).lineBetween(s.x0, s.y0, headX, headY);
+      g.lineStyle(width * 0.78, C('c'), fade).lineBetween(s.x0, s.y0, headX, headY);
+      if (descent === 1) {
+        const pulse = 1 + Math.sin(active / 3) * 0.08;
+        g.fillStyle(C('4'), 0.45 * fade).fillEllipse(s.x1, s.y1, width * 2.1 * pulse, width * 0.7);
+        g.fillStyle(C('c'), fade).fillEllipse(s.x1, s.y1, width * 1.3, width * 0.3);
       }
       return false;
     },
     destroy: () => {
-      g.destroy();
-      dim.destroy();
+      if (g.active) g.destroy();
+      if (dim.active) dim.destroy();
     },
   });
 }

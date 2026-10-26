@@ -75,7 +75,7 @@ export function makeCtx(b: BattleState): BattleCtx {
       webStrand: (x0, y0, x1, y1, steps) => webStrand(b, x0, y0, x1, y1, steps),
       webSplat: (x, y, steps) => webSplat(b, x, y, steps),
       muzzleFlash: (x, y) => muzzleFlash(b, x, y),
-      beam: (seg, steps) => beam(b, seg, steps),
+      beam: (seg, steps, width, chargeSteps) => beam(b, seg, steps, width, chargeSteps),
     },
   };
 }

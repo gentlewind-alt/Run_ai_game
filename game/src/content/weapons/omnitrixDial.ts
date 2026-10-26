@@ -1,110 +1,112 @@
 import { sfx } from '../../audio/sfx';
 import { C } from '../../art/palette';
-import { omniArmKey } from '../../art/omnitrixTextures';
+import { ALIEN_FOOT_KEY } from '../../art/omnitrixTextures';
 import { weaponTexture } from '../../art/textures';
 import type { Actor } from '../../battle/BattleCtx';
 import type { WeaponImpl } from './types';
 import { landingY } from './util';
 
-/**
- * Omnitrix Dial (legendary): the tap flashes the dial green and a giant four-armed alien drops from the sky onto the nearest
- * monster. The landing deals splash damage and sends an earthquake along the ground (blocks hop, monsters are stunned and
- * knocked flat), then the alien leaps back up into the sky. One charge per level. Numbers are in the data row.
- */
+/** Alien Dial keeps its saved weapon ID; its single stomp shakes the whole level. */
 export const omnitrixDial: WeaponImpl = {
   texture: weaponTexture('w_omnitrix_dial'),
   onAbility(ctx, p) {
+    if (p.data.stompActive) return;
     const P = p.def.params;
-    const b = p.body;
-    const target = ctx.nearestMonsters(b.position.x, b.position.y, 1)[0];
-    const x = target ? target.body.position.x : b.position.x + 60;
+    const target = ctx.nearestMonsters(p.body.position.x, p.body.position.y, 1)[0];
+    const x = Math.max(0, Math.min(ctx.worldW, target?.body.position.x ?? p.body.position.x));
     const landY = landingY(ctx, x);
-    // the dial hangs where it was tapped and fades; the alien does the work
-    ctx.M.Body.setVelocity(b, { x: 0, y: 0 });
-    ctx.M.Body.setAngularVelocity(b, 0);
-    ctx.setGravity(b, 0);
-    p.sprite.setAlpha(0.4);
-    ctx.flash?.(0x38b764, 90);
-    ctx.fx.ring(b.position.x, b.position.y, 16, C('5'));
-    ctx.fx.sparks(b.position.x, b.position.y, ['5', '6', 'a'], 10);
-    sfx.omnitrix();
+    const fromY = Math.min(-P.skyGap, landY - P.footHeight - P.skyGap);
+    const range = ctx.worldW * P.quakeRangeFraction;
+    const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches === true;
+    p.data.stompActive = true;
+    ctx.M.Body.setVelocity(p.body, { x: 0, y: 0 });
+    ctx.M.Body.setAngularVelocity(p.body, 0);
+    ctx.M.Body.setPosition(p.body, { x, y: landY - P.markerHeight });
+    p.body.isSensor = true;
+    ctx.setGravity(p.body, 0);
+    p.sprite.setVisible(false);
+    ctx.fx.ring(x, landY, P.splashRadius, C('5'));
+    ctx.fx.word(x, landY - P.markerHeight, 'STOMP!');
+    sfx.alienScreech();
 
-    const img = ctx.fx.image(x, -P.alienHeight, 'omni_alien').setOrigin(0.5, 1).setDepth(12);
-    if (img.texture.key === '__MISSING') img.setTexture(omniArmKey('brute')); // the arm art is the fallback if the sprite never loaded
-    img.setScale(P.alienHeight / img.height);
-    const baseScaleX = img.scaleX;
-    const baseScaleY = img.scaleY;
-    let y = -P.alienHeight;
-    let phase: 'fall' | 'hold' | 'leap' = 'fall';
-    let holdLeft = P.holdSteps;
-    let vy = P.fallSpeed;
+    const foot = ctx.fx.image(x, fromY, ALIEN_FOOT_KEY).setOrigin(0.5, 1).setDepth(12)
+      .setDisplaySize(P.footWidth, P.footHeight).setVisible(false)
+      .setData('fx', 'alien-foot').setData('phase', 'warning');
+    const scaleX = foot.scaleX;
+    const scaleY = foot.scaleY;
+    let phase: 'warning' | 'fall' | 'hold' | 'lift' = 'warning';
+    let elapsed = 0;
+    let quakeElapsed = -1;
+    let impacted = false;
     let finished = false;
 
     const impact = (): void => {
-      ctx.hitStop?.(4);
+      if (impacted) return;
+      impacted = true;
+      p.data.stompImpactStep = ctx.step;
+      quakeElapsed = 0;
+      ctx.hitStop?.(ctx.tune.hitStopFrames);
       ctx.blast(x, landY, P.splashRadius, P.splashMult, p.wid);
-      // the earthquake: blocks hop and take damage, monsters take damage, are stunned and knocked flat
-      for (const blk of ctx.blocks()) {
-        if (blk.dead || Math.abs(blk.body.position.x - x) > P.quakeRangeX) continue;
-        ctx.M.Body.setVelocity(blk.body, { x: blk.body.velocity.x * 0.5, y: P.quakeHopVy });
-        ctx.damage(blk, p.def.baseDamage * P.quakeMult, blk.body.position.x, blk.body.position.y, { strong: false, tag: 'norm', quiet: true });
+      for (const block of ctx.blocks()) {
+        if (block.dead || Math.abs(block.body.position.x - x) > range) continue;
+        if (!block.body.isStatic) ctx.M.Body.setVelocity(block.body, { x: block.body.velocity.x * 0.5, y: P.quakeHopVy });
+        ctx.damage(block, p.def.baseDamage * P.quakeMult, block.body.position.x, block.body.position.y, { strong: false, tag: 'norm', quiet: true, silent: true });
       }
-      for (const m of ctx.monsters()) {
-        if (m.dead || Math.abs(m.body.position.x - x) > P.quakeRangeX) continue;
-        ctx.damage(m, p.def.baseDamage * P.quakeMult, m.body.position.x, m.body.position.y, { strong: false, tag: 'norm' });
-        ctx.addStatus(m, 'stun', P.stunSteps);
-        const dir = m.body.position.x >= x ? 1 : -1;
-        ctx.M.Body.setVelocity(m.body, { x: dir * P.knockX, y: -2.5 });
-        ctx.M.Body.setAngle(m.body, (dir * Math.PI) / 2);
+      for (const monster of ctx.monsters()) {
+        if (monster.dead || Math.abs(monster.body.position.x - x) > range) continue;
+        const dir = monster.body.position.x >= x ? 1 : -1;
+        ctx.damage(monster, p.def.baseDamage * P.quakeMult, monster.body.position.x, monster.body.position.y, { strong: false, tag: 'norm', silent: true });
+        if (monster.dead) continue;
+        ctx.addStatus(monster, 'stun', P.stunSteps);
+        ctx.M.Body.setVelocity(monster.body, { x: dir * P.knockX, y: P.knockY });
+        ctx.M.Body.setAngle(monster.body, dir * Math.PI / 2);
       }
-      ctx.fx.quakeRings?.(x, landY, P.quakeRangeX);
-      [P.splashRadius * 0.6, P.splashRadius, P.splashRadius * 1.5].forEach((r) => ctx.fx.ring(x, landY, r, C('6')));
-      ctx.fx.sparks(x, landY, ['6', '5', 'k', 'm'], 16);
-      ctx.fx.shake(0.03);
-      sfx.quake();
-      img.setScale(baseScaleX * 1.12, baseScaleY * 0.82); // squash on landing (visual only)
+      ctx.fx.quakeRings?.(x, landY, range);
+      for (let i = 0; i < P.dustBursts; i++) {
+        const dustX = ctx.worldW * (i + 0.5) / P.dustBursts;
+        ctx.fx.sparks(dustX, ctx.groundAt(dustX), ['k', 'l', 'm', 'd'], 4);
+      }
+      ctx.fx.ring(x, landY, P.splashRadius, C('c'));
+      if (!reducedMotion) { ctx.fx.shake(P.shakeIntensity); ctx.flash?.(0xdaf7e5, 80); }
+      sfx.alienStomp();
+      foot.setScale(scaleX * 1.08, scaleY * 0.88);
     };
-
     const finish = (): void => {
       if (finished) return;
       finished = true;
+      p.data.stompActive = false;
+      foot.destroy();
       ctx.endProj(p);
     };
-
-    const alien: Actor = {
+    const stomp: Actor = {
+      pos: () => ({ x, y: landY }),
       update() {
-        if (phase === 'fall') {
-          y += vy;
-          if (ctx.rng.next() < 0.6) ctx.fx.sparks(x, y - P.alienHeight * 0.5, ['5', '2'], 1);
-          if (y >= landY) {
-            y = landY;
-            impact();
-            phase = 'hold';
-          }
+        if (finished) return true;
+        elapsed++;
+        if (quakeElapsed >= 0 && quakeElapsed++ < P.shakeSteps && quakeElapsed % P.shakeEverySteps === 0 && !reducedMotion) ctx.fx.shake(P.shakeIntensity * (1 - quakeElapsed / P.shakeSteps));
+        if (phase === 'warning') {
+          if (elapsed >= P.warningSteps) { phase = 'fall'; elapsed = 0; foot.setVisible(true); }
+        } else if (phase === 'fall') {
+          const progress = Math.min(1, elapsed / P.fallSteps);
+          foot.setY(fromY + (landY - fromY) * progress * progress);
+          if (elapsed >= P.fallSteps) { foot.setY(landY); impact(); phase = 'hold'; elapsed = 0; }
         } else if (phase === 'hold') {
-          if (--holdLeft <= 0) {
-            phase = 'leap';
-            vy = -P.bounceSpeed;
-            img.setScale(baseScaleX, baseScaleY);
-          }
+          const progress = Math.min(1, elapsed / P.holdSteps);
+          foot.setScale(scaleX * (1 + 0.08 * (1 - progress)), scaleY * (1 - 0.12 * (1 - progress)));
+          if (elapsed >= P.holdSteps) { phase = 'lift'; elapsed = 0; foot.setScale(scaleX, scaleY); }
         } else {
-          y += vy;
-          vy = Math.min(vy + P.bounceGravity, -2); // slows as it climbs, never stops
-          img.setRotation(img.rotation + 0.04);
-          if (y < -P.alienHeight - 10) {
-            img.destroy();
-            finish();
-            return true;
-          }
+          const progress = Math.min(1, elapsed / P.liftSteps);
+          foot.setY(landY + (fromY - landY) * progress * progress);
+          if (elapsed >= P.liftSteps) { finish(); return true; }
         }
-        img.setY(y);
+        foot.setData('phase', phase);
         return false;
       },
-      destroy() {
-        img.destroy();
-        finish();
-      },
+      destroy: finish,
     };
-    ctx.addActor(alien);
+    ctx.addActor(stomp);
+  },
+  onUpdate(_ctx, p) {
+    if (p.data.stompActive) p.slow = 0;
   },
 };

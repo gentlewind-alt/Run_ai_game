@@ -549,7 +549,7 @@
       },
       "price": 1500,
       "launch": "Spinning hammer that smashes through fortresses.",
-      "tap": "Calls lightning that forks to one more monster, and an electric field. Tap again to recall.",
+      "tap": "Lightning strikes the two lowest-HP monsters, a middle-HP monster and the highest-HP monster. Tap again to recall.",
       "physics": {
         "radius": 5,
         "density": 0.015,
@@ -574,7 +574,7 @@
         "recallDamageMult": 0.3,
         "chainJumps": 1,
         "chainRange": 70,
-        "chainMult": 0.12,
+        "chainMult": 0.04,
         "chainFalloff": 0.7
       }
     },
@@ -692,7 +692,7 @@
       },
       "price": 1500,
       "launch": "Golden arrow that flies true.",
-      "tap": "Hangs in the air and fires a focused beam of light that ignores armour.",
+      "tap": "Calls one thick beam from the sky onto the nearest monster, ignoring armour along its column.",
       "physics": {
         "radius": 4,
         "density": 0.012,
@@ -707,9 +707,10 @@
       },
       "params": {
         "beamSteps": 90,
-        "beamLength": 240,
-        "beamWidth": 6,
-        "sweepDeg": 10,
+        "beamWidth": 32,
+        "beamChargeSteps": 12,
+        "skyTopY": -160,
+        "beamMarkerHeight": 56,
         "tickSteps": 6,
         "tickMult": 0.25,
         "woodMult": 1.5,
@@ -719,7 +720,7 @@
     {
       "id": "w_omnitrix_dial",
       "sprite": "sprites/relics/w_omnitrix_dial",
-      "name": "Omnitrix Dial",
+      "name": "Alien Dial",
       "archetype": "dial",
       "element": "void",
       "rarity": "legendary",
@@ -730,7 +731,7 @@
       },
       "price": 1500,
       "launch": "Heavy green dial that spins as it flies.",
-      "tap": "A giant four-armed alien crashes down: splash damage and an earthquake, then it leaps back into the sky.",
+      "tap": "A giant alien foot stomps from the sky with a screech and an earthquake that reaches the entire level.",
       "physics": {
         "radius": 5,
         "density": 0.014,
@@ -743,22 +744,27 @@
         "charges": 1
       },
       "params": {
-        "alienHeight": 64,
-        "fallSpeed": 9,
+        "footHeight": 220,
+        "footWidth": 112,
+        "markerHeight": 56,
+        "skyGap": 80,
+        "warningSteps": 12,
+        "fallSteps": 24,
+        "liftSteps": 24,
         "splashRadius": 40,
         "splashMult": 1.4,
-        "quakeRangeX": 110,
+        "quakeRangeFraction": 1,
         "quakeMult": 0.35,
         "quakeHopVy": -4,
         "stunSteps": 60,
         "knockX": 3,
+        "knockY": -2.5,
         "holdSteps": 18,
-        "bounceSpeed": 9,
-        "bounceGravity": 0.15
-      },
-      "extraSprites": [
-        "sprites/arms/omni_alien"
-      ]
+        "shakeIntensity": 0.035,
+        "shakeSteps": 30,
+        "shakeEverySteps": 6,
+        "dustBursts": 8
+      }
     },
     {
       "id": "w_pinata_mirv",
