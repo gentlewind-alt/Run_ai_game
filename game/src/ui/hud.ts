@@ -221,7 +221,16 @@ export function createHud(
         const fsLabel = (): string => (platform.fullscreen.active() ? 'Exit full screen' : 'Full screen');
         const fsBtn = platform.fullscreen.available()
           ? makeButton(scene, W / 2, 178, 126, 22, fsLabel(), 'plain', () => {
-            void platform.fullscreen.toggle().then(() => { fsBtn?.setLabel(fsLabel()); sfx.click(); });
+            void platform.fullscreen.toggle().then(() => {
+              fsBtn?.setLabel(fsLabel());
+              sfx.click();
+              const why = platform.fullscreen.note();
+              if (why) {
+                const lines = textBlock(scene, W / 2, 232, why, C('c'), 170, C('0'));
+                lines.forEach((l) => l.setDepth(43));
+                pauseObjs.push(...lines);
+              }
+            });
           }, 42)
           : undefined;
         sound.box.setY(130);

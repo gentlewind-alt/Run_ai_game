@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "27b9cc6818ebfe4954aec06bc93805d12e0862d4a5d07871a8c0f836014433ce",
+  "hash": "01f3f32697b44451db320a9ff1158dff1ff899eb24a2c86755c7d1b5175c9d58",
   "children": [
     {
       "name": ".claude",
@@ -3948,7 +3948,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "f33d67406974ef5a54b623ad4829bce00d81fbf3187d9d25d27520178eb3ef69",
+      "hash": "8a2e3f98e6482f908b388b686c341a7ea4e3793611883dc32c807530e70505b3",
       "children": [
         {
           "name": ".gitignore",
@@ -4961,7 +4961,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "9b72e0fda37adaffad5f9467dc4fb9003c7063abf5b7fd47ac0834b46f7beb6d",
+          "hash": "ddb81c1b2a312a62cb8bf57b102ed0837f0a96ac7db0a296459020f5aad8aa7c",
           "children": [
             {
               "name": "art",
@@ -5835,7 +5835,7 @@
               "name": "platform",
               "path": "game/src/platform",
               "type": "dir",
-              "hash": "ee4e6647e200b377d0051aeaca966d0cf5aa88f9187b22848123cd72a64faab7",
+              "hash": "09bef113a26f2a8912d503b17579886d241541fe7b6a6fc6840a248f2dfe4ddc",
               "children": [
                 {
                   "name": "boards.ts",
@@ -5855,22 +5855,22 @@
                   "name": "mock.ts",
                   "path": "game/src/platform/mock.ts",
                   "type": "file",
-                  "hash": "b2b48db4fc32e5e9dedd8c9025d023db4ffdbfaadadbbc5d342ff5600730ae51",
-                  "size": 7136
+                  "hash": "cb6d7c51491dd0e830f4b48a262dd7d823f684b87d714e195ae192821e345c56",
+                  "size": 7235
                 },
                 {
                   "name": "rundot.ts",
                   "path": "game/src/platform/rundot.ts",
                   "type": "file",
-                  "hash": "f7cdda98474da74270502f07283bae764180648efa18be937d55397053b3505b",
-                  "size": 7683
+                  "hash": "e92a4bd88b9da764005520297ee566e0aadba0383120dc8d5f834513a2e8355a",
+                  "size": 8184
                 },
                 {
                   "name": "types.ts",
                   "path": "game/src/platform/types.ts",
                   "type": "file",
-                  "hash": "4540b3aabd1aa6a87ffd8430d5dc5b02a36669d6118ae261e6659154d7310382",
-                  "size": 4261
+                  "hash": "1bdae55503964efd0a1228402576eac451038d77dd3cd0b1eacb0e3b474c1cc3",
+                  "size": 4347
                 }
               ]
             },
@@ -5878,7 +5878,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "22a7c4b65a4af759d7dd16e8a433b3f059dc19d904401fbf9696667b2f8182a2",
+              "hash": "be6bf2a0a0f980c9c89b2c220d16f1a32e756a26a96d561556def750185f3b8f",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -5975,8 +5975,8 @@
                   "name": "TitleScene.ts",
                   "path": "game/src/scenes/TitleScene.ts",
                   "type": "file",
-                  "hash": "15136be4ea011e1c16c826dd7487e0602e7ebc9ffa41d3ac43eb3c1a552c4d96",
-                  "size": 5596
+                  "hash": "06f7ef6a8bd1610f501db79195bd9f4d4cbccfbfa8aa49aaa211960630ddc998",
+                  "size": 6033
                 }
               ]
             },
@@ -5991,7 +5991,7 @@
               "name": "ui",
               "path": "game/src/ui",
               "type": "dir",
-              "hash": "b4647e6d116faf8be1234d8cb21fca5beafc1eae7e02841dbb9e6f92a237a190",
+              "hash": "d6b0e2a8f441c304d17397c8e3c0fe57f23b1d51b8bdf4a94453f1f824899ecb",
               "children": [
                 {
                   "name": "adminPrompt.ts",
@@ -6018,8 +6018,8 @@
                   "name": "hud.ts",
                   "path": "game/src/ui/hud.ts",
                   "type": "file",
-                  "hash": "ab7d769cf66013f18a33b3260aecd9d63980d67b62e5348b086f36b3f0e3109e",
-                  "size": 10707
+                  "hash": "21c60548222327522f38bec9d972c860c77b36da674e7f77c5b782c7a090539a",
+                  "size": 11024
                 },
                 {
                   "name": "widgets.ts",

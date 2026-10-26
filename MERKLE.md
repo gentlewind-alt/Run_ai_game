@@ -1,10 +1,10 @@
 # Merkle Index
 
-Root hash: `27b9cc6818ebfe4954aec06bc93805d12e0862d4a5d07871a8c0f836014433ce`
+Root hash: `01f3f32697b44451db320a9ff1158dff1ff899eb24a2c86755c7d1b5175c9d58`
 
 | Directory | Hash | Files | Purpose |
 |---|---|---|---|
-| `.` | `27b9cc68` | 837 | MONSTER MASH: Slingshot Siege project root |
+| `.` | `01f3f326` | 837 | MONSTER MASH: Slingshot Siege project root |
 | `.claude` | `090f23cb` | 1 | - |
 | `.claude/agents` | `fcd1eaa9` | 1 | - |
 | `architecture` | `ee01b3b4` | 5 | System design, module boundaries, data schemas, and agent workflow |
@@ -18,7 +18,7 @@ Root hash: `27b9cc6818ebfe4954aec06bc93805d12e0862d4a5d07871a8c0f836014433ce`
 | `docs/handoff/shots` | `734a2a1c` | 441 | - |
 | `docs/monster_mash` | `03cb835e` | 15 | Design briefs, math models, platform reports, and review history |
 | `docs/release` | `a54b4b49` | 7 | - |
-| `game` | `f33d6740` | 266 | Phaser 3 + Vite game client (RUN project template) |
+| `game` | `8a2e3f98` | 266 | Phaser 3 + Vite game client (RUN project template) |
 | `game/public` | `ba76d1a2` | 94 | Static assets, data files, level JSONs, and CDN assets |
 | `game/public/cdn-assets` | `64b4c5bd` | 3 | Public CDN-hosted image and sprite assets |
 | `game/public/data` | `93f24986` | 39 | Game balance data: config, content catalog, and authored levels |
@@ -27,7 +27,7 @@ Root hash: `27b9cc6818ebfe4954aec06bc93805d12e0862d4a5d07871a8c0f836014433ce`
 | `game/schemas` | `7b9b232e` | 4 | JSON schemas validating config, content, levels, and save files |
 | `game/scripts` | `6e029edf` | 16 | Build scripts, level generator, and data validation tools |
 | `game/scripts/concepts` | `e2aefc6e` | 8 | - |
-| `game/src` | `9b72e0fd` | 133 | TypeScript source code for MONSTER MASH |
+| `game/src` | `ddb81c1b` | 133 | TypeScript source code for MONSTER MASH |
 | `game/src/art` | `2e46b63b` | 13 | Pixel art generators, palette definitions, textures, and 5x7 font |
 | `game/src/audio` | `c0f43cfd` | 4 | Audio engine: beat clock synchronization and synthesized SFX |
 | `game/src/battle` | `23b13e91` | 20 | Slingshot physics, combat loop, rules, collision, and camera |
@@ -37,7 +37,7 @@ Root hash: `27b9cc6818ebfe4954aec06bc93805d12e0862d4a5d07871a8c0f836014433ce`
 | `game/src/core` | `75210a49` | 11 | Typed event bus, state flow, RNG, profile, and save migrations |
 | `game/src/data` | `1b36448e` | 3 | Data loading and typed lookup helpers for content and levels |
 | `game/src/debug` | `ead43306` | 2 | Test harness, deterministic sweep solver, and dev hooks |
-| `game/src/platform` | `ee4e6647` | 5 | Platform abstraction layer and RUN SDK / local mock adapters |
-| `game/src/scenes` | `22a7c4b6` | 14 | Phaser scenes: Boot, Title, Map, Battle, Loadout, Shop, Results |
-| `game/src/ui` | `b4647e6d` | 5 | UI widgets, HUD overlays, coin animations, and buttons |
+| `game/src/platform` | `09bef113` | 5 | Platform abstraction layer and RUN SDK / local mock adapters |
+| `game/src/scenes` | `be6bf2a0` | 14 | Phaser scenes: Boot, Title, Map, Battle, Loadout, Shop, Results |
+| `game/src/ui` | `d6b0e2a8` | 5 | UI widgets, HUD overlays, coin animations, and buttons |
 | `tools` | `cf67ad13` | 45 | Repository maintenance, indexing, and verification tools |

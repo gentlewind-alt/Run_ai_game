@@ -87,16 +87,23 @@ export const rundotPlatform: Platform = {
   },
   fullscreen: (() => {
     let on = false;
+    let note = '';
     safe(() => RundotGameAPI.system.onFullscreenStateChange((s) => { on = s.active; }), undefined);
+    const capability = (): string => safe(() => RundotGameAPI.system.getEnvironment().capabilities.fullscreen, 'unavailable') as string;
     return {
-      available: () => safe(() => RundotGameAPI.system.getEnvironment().capabilities.fullscreen === 'toggleable', false),
+      available: () => true, // the button always shows; a refusal is explained on screen
       active: () => on,
+      note: () => note,
       // the request is the first call in the tap handler, so the browser still counts it as the player's own action
       async toggle() {
+        note = '';
+        if (capability() === 'always-on') { note = 'This screen is already full screen.'; return on; }
         try {
           const s = await (on ? RundotGameAPI.system.exitFullscreen() : RundotGameAPI.system.requestFullscreen());
           on = s.active;
-        } catch { /* stays as it was */ }
+        } catch { /* handled below */ }
+        if (!on && capability() !== 'toggleable') note = 'Full screen is not offered on this page. Try the RUN menu, or Add to Home screen in your browser.';
+        else if (!on) note = 'Full screen was refused. Try the RUN menu.';
         return on;
       },
     };

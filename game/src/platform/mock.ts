@@ -135,7 +135,8 @@ export const mockPlatform: Platform = {
     },
   },
   fullscreen: {
-    available: () => typeof document !== 'undefined' && !!document.documentElement.requestFullscreen,
+    available: () => true,
+    note: () => (typeof document !== 'undefined' && typeof document.documentElement.requestFullscreen === 'function' ? '' : 'Full screen is not available in this browser.'),
     active: () => typeof document !== 'undefined' && !!document.fullscreenElement,
     async toggle() {
       try {

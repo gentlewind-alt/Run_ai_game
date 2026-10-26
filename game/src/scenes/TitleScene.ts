@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { text, textWidth } from '../art/font5x7';
+import { text, textBlock, textWidth } from '../art/font5x7';
 import { buildBackground } from '../art/backgrounds';
 import { MONSTER_ART } from '../art/textures';
 import { beatBob, beatPhase } from '../audio/beat';
@@ -76,9 +76,21 @@ export default class TitleScene extends Phaser.Scene {
     });
     if (platform.fullscreen.available()) {
       const label = (): string => (platform.fullscreen.active() ? 'Exit full screen' : 'Full screen');
+      let note: Phaser.GameObjects.Image[] = [];
       const fsBtn = makeButton(this, btnX, 208, 110, 22, label(), 'plain', () => {
         sfx.unlock();
-        void platform.fullscreen.toggle().then(() => { if (this.scene.isActive()) { fsBtn.setLabel(label()); sfx.click(); } });
+        void platform.fullscreen.toggle().then(() => {
+          if (!this.scene.isActive()) return;
+          fsBtn.setLabel(label());
+          sfx.click();
+          note.forEach((n) => n.destroy());
+          const why = platform.fullscreen.note();
+          if (why) {
+            note = textBlock(this, 14, H - 44, why, C('c'), W - 28, C('0'));
+            note.forEach((n) => n.setDepth(20));
+            this.time.delayedCall(4500, () => note.forEach((n) => n.destroy()));
+          }
+        });
       }, 6);
     }
     const adminTag = (): void => {
