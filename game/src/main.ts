@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import BattleScene from './scenes/BattleScene';
 import BuilderScene from './scenes/BuilderScene';
 import ArenaScene from './scenes/ArenaScene';
+import PracticeScene from './scenes/PracticeScene';
 import ChallengeScene from './scenes/ChallengeScene';
 import ChallengesScene from './scenes/ChallengesScene';
 import ChallengeWeaponsScene from './scenes/ChallengeWeaponsScene';
@@ -57,7 +58,7 @@ async function bootstrap(): Promise<void> {
       backgroundColor: '#1a1c2c',
       pixelArt: S.display.pixelArt,
       roundPixels: true,
-      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, BattleScene, BuilderScene, ArenaScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
+      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, BattleScene, BuilderScene, ArenaScene, PracticeScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
       physics: {
         default: 'matter',
         matter: {

@@ -23,15 +23,18 @@ export const practiceConfig = (): NonNullable<typeof data.config.practice> => da
 let coins = -1;
 let match: PracticeMatch | null = null;
 let record = { wins: 0, losses: 0, draws: 0 };
+let outcome: 'win' | 'loss' | 'draw' | null = null;
 
 export const practiceCoins = (): number => (coins < 0 ? (coins = practiceConfig().startCoins) : coins);
 export const practiceRecord = (): typeof record => record;
 export const currentMatch = (): PracticeMatch | null => match;
-export const clearMatch = (): void => { match = null; };
+export const clearMatch = (): void => { match = null; outcome = null; };
+export const matchOutcome = (): typeof outcome => outcome;
 
 export function startMatch(levelId: number, bot: boolean, stake: number): PracticeMatch {
   const staked = bot ? Math.max(0, Math.min(stake, practiceCoins())) : 0; // pass and play is always friendly
   coins = practiceCoins() - staked;
+  outcome = null;
   match = { levelId, bot, stake: staked, turn: 0, results: [null, null] };
   return match;
 }
@@ -60,8 +63,8 @@ export function compare(m: PracticeMatch): number {
 /** Pays out a finished match and updates the record. Returns the outcome from player one's side. */
 export function settle(m: PracticeMatch): 'win' | 'loss' | 'draw' {
   const c = compare(m);
-  if (c === 0) { coins = practiceCoins() + m.stake; record = { ...record, draws: record.draws + 1 }; return 'draw'; }
-  if (c > 0) { coins = practiceCoins() + m.stake * 2; record = { ...record, wins: record.wins + 1 }; return 'win'; }
+  if (c === 0) { coins = practiceCoins() + m.stake; record = { ...record, draws: record.draws + 1 }; return (outcome = 'draw'); }
+  if (c > 0) { coins = practiceCoins() + m.stake * 2; record = { ...record, wins: record.wins + 1 }; return (outcome = 'win'); }
   record = { ...record, losses: record.losses + 1 };
-  return 'loss';
+  return (outcome = 'loss');
 }

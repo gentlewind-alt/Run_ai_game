@@ -7,6 +7,7 @@ import { toLevel } from '../builder/document';
 import { ARENA_STAKES, type ArenaPlayer, type ArenaSetup } from '../arena/types';
 import { H, W } from '../config/constants';
 import { arena } from '../core/arena';
+import { feature } from '../config/settings';
 import { listChallenges, type Challenge } from '../core/challenges';
 import { goTo, irisOpen } from '../core/flow';
 import { data } from '../data/load';
@@ -67,6 +68,7 @@ export default class ArenaScene extends Phaser.Scene {
     this.button(58, 246, 84, 'Back', () => goTo(this, 'title'));
     this.button(424, 246, 84, arena.status === 'online' ? 'Refresh' : 'Connect', () => { if (arena.status === 'online') arena.sync(); else void arena.connect(); }, false, arena.status !== 'connecting');
     if (arena.status !== 'online') {
+      if (feature('practice')) this.button(240, 100, 250, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
       this.label(240, 117, arena.status === 'connecting' ? 'Connecting to Arena...' : arena.status === 'reconnecting' ? 'Reconnecting...' : 'Connect to meet players in this game.', C('c'), 420);
       this.label(240, 146, 'A full attempt each. Clear first, then score.', C('d'), 420);
       this.label(240, 169, 'Wagers are optional. Arena starts with 100 coins.', C('d'), 420);
@@ -95,7 +97,12 @@ export default class ArenaScene extends Phaser.Scene {
     const state = arena.snapshot!;
     const players = state.players.filter((player) => player.id !== state.me);
     const start = this.pages(players.length);
-    if (!players.length) { this.label(240, 129, 'No other players are online.', C('c')); this.label(240, 156, 'Leave the game open or check back shortly.', C('d'), 420); return; }
+    if (!players.length) {
+      this.label(240, 112, 'No other players are online.', C('c'));
+      this.label(240, 134, 'Leave the game open or check back shortly.', C('d'), 420);
+      if (feature('practice')) this.button(240, 176, 270, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
+      return;
+    }
     players.slice(start, start + PAGE_SIZE).forEach((player, i) => {
       const y = 100 + i * 30;
       this.objects.push(this.add.rectangle(240, y + 7, 428, 28, C('9')).setStrokeStyle(1, C('a')).setDepth(2));
@@ -129,7 +136,11 @@ export default class ArenaScene extends Phaser.Scene {
 
   private drawMatch(): void {
     const state = arena.snapshot!, match = state.match;
-    if (!match) { this.label(240, 128, 'No match yet. Invite an online player.', C('c'), 420); return; }
+    if (!match) {
+      this.label(240, 116, 'No match yet. Invite an online player.', C('c'), 420);
+      if (feature('practice')) this.button(240, 160, 270, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
+      return;
+    }
     this.label(240, 96, match.title, C('4'), 420);
     match.names.forEach((name, i) => {
       const result = match.results[i];
