@@ -26,9 +26,17 @@
     "abilities": {
       "title": "Weapon Abilities",
       "pages": [
-        { "title": "Tap in flight", "body": "Every weapon has a tap ability. While it is flying, tap the ability button (or press Space) to trigger it. The weapon card tells you what it does on the Tap line." },
+        { "title": "Step 1: fling", "body": "Drag back from the sling and let go. The weapon flies. Its ability button sits at the bottom of the screen and shows the ability name, for example Whirl." },
+        { "title": "Step 2: tap in flight", "body": "While the weapon is in the air, tap the ability button or press Space. Do it before it hits, near the fort, for the best effect." },
         { "title": "Button, impact, both", "body": "Button: you choose the moment. Both: tap it, or it fires on its first hit. Legendary and Epic abilities have limited charges, so use them on purpose." },
         { "title": "Examples", "body": "Whirl spins the blade through blocks. Volley splits the staff into many bolts. Nuke makes the blast tube explode. Try each one on a quiet level to learn its timing." }
+      ]
+    },
+    "reach": {
+      "title": "Enemies Too Far?",
+      "pages": [
+        { "title": "Swords fall short", "body": "The Militia Blade is heavy and drops early, so it cannot reach the far archers on this level. Pulling harder will not help because the pull is capped." },
+        { "title": "Swap in arrows", "body": "On the loadout screen tap a filled slot to clear it, then pick an arrow such as the Steersong Arrow (a chest on level 3 holds it) or the floaty Ashwood Staff. They fall slower, so they fly farther. Keep the blade for near targets." }
       ]
     },
     "flight": {

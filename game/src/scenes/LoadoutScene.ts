@@ -116,8 +116,8 @@ export default class LoadoutScene extends Phaser.Scene {
     }
 
     this.refresh();
-    helpButton(this, 252, H - 18, ['loadout', 'battle', 'abilities', 'flight', 'damage'], 9);
-    maybeTutorial(this, ['loadout', 'battle', 'abilities', ...(this.level >= 3 ? ['flight'] : []), ...(this.level >= 5 ? ['damage'] : [])]);
+    helpButton(this, 252, H - 18, ['loadout', 'battle', 'abilities', 'flight', 'reach', 'damage'], 9);
+    maybeTutorial(this, ['loadout', 'battle', 'abilities', ...(this.level >= 3 ? ['flight'] : []), ...(this.level >= 5 ? ['damage'] : []), ...(this.level === 5 ? ['reach'] : [])]);
     irisOpen(this);
   }
 
