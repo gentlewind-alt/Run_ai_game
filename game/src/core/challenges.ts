@@ -2,6 +2,7 @@
 // author allows. Each challenge has its own score board and a challenger count (used for the ranking). Never throws into the game.
 import { MONSTER_ART } from '../art/textures';
 import { toLevel, validateDraft, type BuilderDocument } from '../builder/document';
+import { findDraftOverlaps } from '../builder/geometry';
 import { data } from '../data/load';
 import type { Level } from '../data/types';
 import { platform } from '../platform';
@@ -13,6 +14,7 @@ export const MAX_PER_AUTHOR = 10;
 export const SHOTS_MIN = 3;
 export const SHOTS_MAX = 8;
 const JOINED_KEY = 'monster-mash.challenged.v1';
+const monsterSize = (type: string) => ({ w: MONSTER_ART[type]?.w ?? 12, h: MONSTER_ART[type]?.h ?? 14 });
 
 export interface Challenge {
   id: string;
@@ -41,7 +43,7 @@ function parse(row: UgcRow, me: string): Challenge | null {
   try {
     const d = row.data;
     if (d.v !== 1) return null;
-    const doc = validateDraft(d.doc, data.content.builder);
+    const doc = validateDraft(d.doc, data.content.builder, monsterSize);
     if (!doc.monsters.length) return null;
     const known = new Set(data.content.weapons.map((w) => w.id));
     const allowed = Array.isArray(d.allowed) ? (d.allowed as unknown[]).filter((id): id is string => typeof id === 'string' && known.has(id)) : [];
@@ -71,7 +73,8 @@ export async function getChallenge(id: string): Promise<Challenge | null> {
 export async function publishChallenge(doc: BuilderDocument, allowed: string[], shots: number): Promise<{ challenge?: Challenge; error?: string }> {
   try {
     if (!allowed.length) return { error: 'Allow at least one weapon.' };
-    const safe = validateDraft(doc, data.content.builder);
+    const safe = validateDraft(doc, data.content.builder, monsterSize);
+    if (findDraftOverlaps(safe, monsterSize).length) return { error: 'Fix overlapping pieces before sharing. Test can still try the design.' };
     if (!safe.monsters.length) return { error: 'Add at least one target first.' };
     const mine = await platform.ugc.mine(CHALLENGE_TYPE, MAX_PER_AUTHOR + 1);
     if (!owner.is && mine.length >= MAX_PER_AUTHOR) return { error: `You can share up to ${MAX_PER_AUTHOR} challenges. Delete one first.` };
@@ -89,6 +92,7 @@ export async function publishChallenge(doc: BuilderDocument, allowed: string[], 
 /** Only the author can do this (the host refuses anyone else). */
 export async function updateRules(c: Challenge, allowed: string[], shots: number): Promise<boolean> {
   if (!c.mine || !allowed.length) return false;
+  if (findDraftOverlaps(c.doc, monsterSize).length) return false;
   return (await platform.ugc.update(c.id, { data: payload(c.doc, allowed, shots) })) !== null;
 }
 

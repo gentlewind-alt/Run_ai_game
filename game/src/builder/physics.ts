@@ -4,6 +4,7 @@ import { blockKey, makeBattleTextures } from '../art/textures';
 import { MatterLib as M } from '../battle/matter';
 import { data } from '../data/load';
 import type { LevelBlock, LevelConnection } from '../data/types';
+import { blockParts } from './geometry';
 
 type Point = { x: number; y: number };
 const rotate = (p: Point, angle: number): Point => ({
@@ -19,34 +20,39 @@ export function createBlockBody(scene: Phaser.Scene, block: LevelBlock): any {
     frictionStatic: 1, restitution: 0.05, isStatic: block.static ?? false, label: 'block',
   };
   let body: any;
-  if (block.shape === 'circle') {
-    body = M.Bodies.circle(block.x, block.y, block.w / 2, options);
-  } else if (block.shape === 'triangle') {
-    body = M.Bodies.fromVertices(block.x, block.y, [[
-      { x: 0, y: -block.h / 2 }, { x: block.w / 2, y: block.h / 2 }, { x: -block.w / 2, y: block.h / 2 },
-    ]], options);
-    // The editor's origin is the bounding-box centre, shared by its art and attachments.
-    M.Body.translate(body, { x: 0, y: block.h / 6 });
-    M.Body.setCentre(body, { x: block.x, y: block.y });
-  } else {
+  if (!block.variant && (!block.shape || block.shape === 'rectangle')) {
     body = M.Bodies.rectangle(block.x, block.y, block.w, block.h, options);
+  } else {
+    const partOptions = { ...options, isStatic: false };
+    const parts = blockParts(block).map((part) => {
+      if (part.kind === 'circle') return M.Bodies.circle(block.x + part.x, block.y + part.y, part.r, partOptions);
+      const vertices = part.vertices.map((p) => ({ ...p }));
+      const centre = M.Vertices.centre(vertices);
+      return M.Bodies.fromVertices(block.x + centre.x, block.y + centre.y, [vertices], partOptions);
+    });
+    body = parts.length === 1 ? parts[0] : M.Body.create({ ...partOptions, parts });
+    // Keep the authoring origin while leaving every collision vertex in place.
+    M.Body.setCentre(body, { x: block.x, y: block.y });
+    if (block.static) M.Body.setStatic(body, true);
   }
   body.builderShape = block.shape ?? 'rectangle';
+  body.builderVariant = block.variant;
   M.Body.setAngle(body, (block.angle ?? 0) * Math.PI / 180);
   scene.matter.world.add(body);
   return body;
 }
 
-export function blockTextureKey(block: Pick<LevelBlock, 'm' | 'w' | 'h' | 'shape'>, cracked = false): string {
+export function blockTextureKey(block: Pick<LevelBlock, 'm' | 'w' | 'h' | 'shape' | 'variant'>, cracked = false): string {
   const key = blockKey(block.m, block.w, block.h, cracked);
-  return block.shape && block.shape !== 'rectangle' ? `${key}_${block.shape}` : key;
+  const shaped = block.shape && block.shape !== 'rectangle' ? `${key}_${block.shape}` : key;
+  return block.variant ? `${shaped}_${block.variant}` : shaped;
 }
 
 export function ensureBlockTextures(scene: Phaser.Scene, blocks: LevelBlock[]): void {
-  makeBattleTextures(scene, blocks.filter((b) => !b.shape || b.shape === 'rectangle'));
+  makeBattleTextures(scene, blocks.filter((b) => !b.variant && (!b.shape || b.shape === 'rectangle')));
   const tones: Record<string, string[]> = { wood: ['i', 'g', 'h'], stone: ['l', 'k', 'm'], iron: ['c', 'e', 'f'], crystal: ['c', 'b', 'a'] };
   for (const block of blocks) {
-    if (!block.shape || block.shape === 'rectangle') continue;
+    if (!block.variant && (!block.shape || block.shape === 'rectangle')) continue;
     for (const cracked of [false, true]) {
       const key = blockTextureKey(block, cracked);
       if (scene.textures.exists(key)) continue;
@@ -56,7 +62,21 @@ export function ensureBlockTextures(scene: Phaser.Scene, blocks: LevelBlock[]): 
       const g = canvas.getContext('2d')!;
       const [light, fill, shade] = tones[block.m] ?? tones.wood;
       g.beginPath();
-      if (block.shape === 'circle') g.arc(block.w / 2, block.h / 2, block.w / 2 - 0.5, 0, Math.PI * 2);
+      if (block.variant) {
+        for (const part of blockParts(block)) {
+          if (part.kind === 'circle') {
+            const x = part.x + block.w / 2, y = part.y + block.h / 2;
+            g.moveTo(x + part.r, y);
+            g.arc(x, y, part.r, 0, Math.PI * 2);
+          } else {
+            part.vertices.forEach((p, i) => {
+              if (i === 0) g.moveTo(p.x + block.w / 2, p.y + block.h / 2);
+              else g.lineTo(p.x + block.w / 2, p.y + block.h / 2);
+            });
+          }
+          g.closePath();
+        }
+      } else if (block.shape === 'circle') g.arc(block.w / 2, block.h / 2, block.w / 2 - 0.5, 0, Math.PI * 2);
       else { g.moveTo(block.w / 2, 0.5); g.lineTo(block.w - 0.5, block.h - 0.5); g.lineTo(0.5, block.h - 0.5); g.closePath(); }
       g.fillStyle = css(C(fill));
       g.fill();
@@ -68,6 +88,23 @@ export function ensureBlockTextures(scene: Phaser.Scene, blocks: LevelBlock[]): 
       g.fillRect(2, 3, block.w - 4, 2);
       g.fillStyle = css(C(shade));
       g.fillRect(2, block.h - 4, block.w - 4, 2);
+      if (block.variant?.startsWith('wheel')) {
+        const wheel = blockParts(block).find((part) => part.kind === 'circle');
+        if (wheel?.kind === 'circle') {
+          const x = wheel.x + block.w / 2, y = wheel.y + block.h / 2;
+          g.strokeStyle = css(C(light));
+          g.beginPath();
+          for (let i = 0; i < 4; i++) {
+            const angle = i * Math.PI / 4;
+            const dx = Math.cos(angle) * (wheel.r - 2), dy = Math.sin(angle) * (wheel.r - 2);
+            g.moveTo(x - dx, y - dy); g.lineTo(x + dx, y + dy);
+          }
+          g.stroke();
+          g.beginPath(); g.arc(x, y, Math.max(2, wheel.r / 5), 0, Math.PI * 2);
+          g.fillStyle = css(C(shade)); g.fill();
+          g.strokeStyle = css(C('v')); g.stroke();
+        }
+      }
       if (cracked) {
         g.strokeStyle = css(C('v'));
         g.beginPath(); g.moveTo(block.w * 0.6, 0); g.lineTo(block.w * 0.4, block.h * 0.5); g.lineTo(block.w * 0.6, block.h); g.stroke();
@@ -79,12 +116,11 @@ export function ensureBlockTextures(scene: Phaser.Scene, blocks: LevelBlock[]): 
 
 interface ConnectionRecord { def: LevelConnection; bodyA: any; bodyB: any; constraints: any[] }
 
-/** Rigid two-pin locks and strings that exert tension only. */
-export function installConnections(scene: Phaser.Scene, blocks: LevelBlock[], bodies: any[], connections: LevelConnection[]) {
+/** Rigid two-pin locks, rotating pins and strings that exert tension only. */
+export function installConnections(scene: Phaser.Scene, byId: Map<string, any>, connections: LevelConnection[]) {
   const world = scene.matter.world.engine.world;
   const engine = scene.matter.world.engine;
   const config = data.content.builder.physics;
-  const byId = new Map(blocks.map((block, index) => [block.id, bodies[index]]));
   let records: ConnectionRecord[] = [];
   let destroyed = false;
   const endpoint = (body: any, point: Point): Point => {
@@ -115,8 +151,9 @@ export function installConnections(scene: Phaser.Scene, blocks: LevelBlock[], bo
         bodyA, bodyB,
         pointA: bodyA ? { x: a.x - bodyA.position.x, y: a.y - bodyA.position.y } : a,
         pointB: { x: b.x - bodyB.position.x, y: b.y - bodyB.position.y },
-        length: def.length ?? Math.hypot(b.x - a.x, b.y - a.y),
-        stiffness: config.ropeStiffness, damping: config.ropeDamping,
+        length: def.type === 'pin' ? 0 : def.length ?? Math.hypot(b.x - a.x, b.y - a.y),
+        stiffness: def.type === 'pin' ? 1 : config.ropeStiffness,
+        damping: def.type === 'pin' ? 0 : config.ropeDamping,
       }));
     }
     M.Composite.add(world, constraints);
@@ -153,6 +190,10 @@ export function installConnections(scene: Phaser.Scene, blocks: LevelBlock[], bo
           }
           g.strokePath();
           if (!r.bodyA) g.fillStyle(C('c')).fillCircle(a.x, a.y, 3);
+        } else if (r.def.type === 'pin') {
+          g.lineBetween(a.x, a.y, b.x, b.y);
+          g.strokeCircle(a.x, a.y, 4);
+          g.fillStyle(C('c')).fillCircle(a.x, a.y, 1.5);
         } else {
           g.lineBetween(a.x, a.y, b.x, b.y);
           g.fillStyle(C('4')).fillCircle((a.x + b.x) / 2, (a.y + b.y) / 2, 3);
@@ -160,6 +201,7 @@ export function installConnections(scene: Phaser.Scene, blocks: LevelBlock[], bo
       }
     },
     removeBody(body: any): void {
+      body = body.parent ?? body;
       records = records.filter((record) => {
         if (record.bodyA !== body && record.bodyB !== body) return true;
         remove(record);

@@ -3,10 +3,15 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import ts from 'typescript';
 
-const source = readFileSync(new URL('../src/builder/document.ts', import.meta.url), 'utf8');
-const js = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
-const { newDraft, validateDraft, toLevel } = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
-const { builder: config } = JSON.parse(readFileSync(new URL('../public/data/content.json', import.meta.url), 'utf8'));
+const transpile = (name) => ts.transpileModule(readFileSync(new URL(`../src/builder/${name}.ts`, import.meta.url), 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
+const moduleUrl = (js) => `data:text/javascript;base64,${Buffer.from(js).toString('base64')}`;
+const geometryUrl = moduleUrl(transpile('geometry'));
+const { findDraftOverlaps, localToWorld } = await import(geometryUrl);
+const documentJs = transpile('document').replace(/from ['"]\.\/geometry['"]/g, `from '${geometryUrl}'`);
+const { newDraft, validateDraft, toLevel, settle } = await import(moduleUrl(documentJs));
+const content = JSON.parse(readFileSync(new URL('../public/data/content.json', import.meta.url), 'utf8'));
+const config = content.builder;
+const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.001, `${actual} should equal ${expected}`);
 const draft = newDraft();
 draft.blocks = [
   { id: 'post', m: 'wood', x: 240, y: 288, w: 8, h: 64, static: true },
@@ -23,6 +28,8 @@ assert.equal(safe.connections[1].length, 92);
 assert.deepEqual(validateDraft(JSON.parse(JSON.stringify(safe)), config), safe);
 assert.equal(safe.blocks[0].static, true);
 assert.equal(safe.blocks[2].shape, 'circle');
+assert.equal(safe.monsters[0].id, 'target_1');
+assert.equal(validateDraft(draft, config).monsters[0].id, safe.monsters[0].id, 'legacy target IDs are deterministic');
 const rejects = (change) => { const bad = structuredClone(draft); change(bad); assert.throws(() => validateDraft(bad, config)); };
 rejects((d) => { d.version = 2; });
 rejects((d) => { d.blocks[1].id = 'post'; });
@@ -37,9 +44,163 @@ rejects((d) => { d.connections[0].a = null; });
 rejects((d) => { d.connections[0].pointA.x = 99; });
 rejects((d) => { d.connections[1].length = 0; });
 rejects((d) => { d.connections[1].id = 'lock'; });
-rejects((d) => { d.monsters[0].t = 'iron_warlord'; });
+rejects((d) => { d.monsters[0].t = 'unknown_target'; });
 rejects((d) => { d.blocks = Array(config.maxBlocks + 1).fill(d.blocks[0]); });
-const injected = { ...draft, overrides: { features: { iap: true } }, chests: [{ reward: 'w_blast_tube' }] };
+rejects((d) => { d.blocks[2].variant = 'unknown_variant'; });
+rejects((d) => { d.blocks[2].variant = 'hollow'; });
+rejects((d) => { d.blocks[0].variant = 'wheel'; });
+rejects((d) => { d.blocks[2].variant = 'wheel_plank'; });
+rejects((d) => { d.monsters[0].id = 'post'; });
+rejects((d) => { d.monsters.push({ ...d.monsters[0], id: 'duplicate' }); d.monsters[0].id = 'duplicate'; });
+
+const idCollision = structuredClone(draft);
+idCollision.blocks[0].id = 'target_1';
+idCollision.connections[0].a = 'target_1';
+idCollision.monsters.push({ id: 'target_1_m', t: 'goblin_grunt', x: 500, y: 200 });
+const generated = validateDraft(idCollision, config);
+assert.equal(generated.monsters[0].id, 'target_1_m_m', 'generated IDs skip both block IDs and explicit target IDs');
+assert.deepEqual(validateDraft(JSON.parse(JSON.stringify(generated)), config), generated);
+assert.deepEqual(validateDraft(idCollision, config).monsters, generated.monsters);
+
+assert.equal(config.targets.length, 20, 'the builder offers the full target roster');
+assert.deepEqual(new Set(config.targets), new Set(content.monsters.map((m) => m.id)));
+for (const t of config.targets) {
+  const rosterDraft = newDraft();
+  rosterDraft.monsters = [{ t, x: 300, y: 200 }];
+  assert.equal(validateDraft(rosterDraft, config).monsters[0].t, t);
+}
+
+const variants = [
+  { shape: 'rectangle', w: 24, h: 24 },
+  { shape: 'circle', w: 24, h: 24 },
+  { shape: 'triangle', w: 32, h: 24 },
+  { shape: 'rectangle', variant: 'hollow', w: 32, h: 32 },
+  { shape: 'triangle', variant: 'hollow', w: 32, h: 24 },
+  { shape: 'circle', variant: 'wheel', w: 24, h: 24 },
+  { shape: 'circle', variant: 'wheel_plank', w: 48, h: 24 },
+  { shape: 'circle', variant: 'wheel_wedge', w: 48, h: 24 },
+];
+const variantDraft = newDraft();
+variantDraft.blocks = variants.map((variant, i) => ({ id: `variant_${i}`, m: 'wood', x: 160 + i * 64, y: 140, ...variant }));
+const validatedVariants = validateDraft(variantDraft, config);
+assert.deepEqual(validatedVariants.blocks.map((b) => b.variant), variants.map((b) => b.variant));
+assert.deepEqual(validateDraft(JSON.parse(JSON.stringify(validatedVariants)), config), validatedVariants);
+const badWheel = structuredClone(variantDraft);
+badWheel.blocks[6].w = 24;
+assert.throws(() => validateDraft(badWheel, config), /dimensions/);
+
+const shapeEndpoint = (shape, variant, pointB) => {
+  const value = newDraft();
+  value.blocks = [{ id: 'shape', m: 'wood', x: 300, y: 200, w: variant === 'wheel_plank' || variant === 'wheel_wedge' ? 48 : 24, h: 24, shape, ...(variant ? { variant } : {}) }];
+  value.connections = [{ id: 'edge', type: 'rope', a: null, b: 'shape', pointA: { x: 300, y: 80 }, pointB }];
+  return value;
+};
+assert.throws(() => validateDraft(shapeEndpoint('rectangle', 'hollow', { x: 0, y: 0 }), config), /outside its piece/);
+assert.doesNotThrow(() => validateDraft(shapeEndpoint('rectangle', 'hollow', { x: -9, y: 0 }), config));
+assert.throws(() => validateDraft(shapeEndpoint('triangle', undefined, { x: -10, y: -10 }), config), /outside its piece/);
+assert.throws(() => validateDraft(shapeEndpoint('triangle', 'hollow', { x: 0, y: 4 }), config), /outside its piece/);
+assert.throws(() => validateDraft(shapeEndpoint('circle', undefined, { x: 10, y: 10 }), config), /outside its piece/);
+assert.throws(() => validateDraft(shapeEndpoint('circle', 'wheel_plank', { x: -22, y: -10 }), config), /outside its piece/);
+assert.doesNotThrow(() => validateDraft(shapeEndpoint('circle', 'wheel_wedge', { x: 24, y: 0 }), config));
+
+const sizeOf = (type) => type === 'orc_brute' ? { w: 22, h: 28 } : { w: 12, h: 14 };
+const legacyEdges = newDraft();
+legacyEdges.monsters = [
+  { t: 'orc_brute', x: config.minX, y: config.minY },
+  { t: 'orc_brute', x: 300, y: config.groundY - 7 },
+];
+const migratedEdges = validateDraft(legacyEdges, config, sizeOf);
+assert.deepEqual(migratedEdges.monsters, [
+  { id: 'target_1', t: 'orc_brute', x: config.minX + 11, y: config.minY + 14 },
+  { id: 'target_2', t: 'orc_brute', x: 300, y: config.groundY - 14 },
+], 'old-valid target centres migrate inside the actual sprite bounds');
+assert.deepEqual(validateDraft(JSON.parse(JSON.stringify(migratedEdges)), config, sizeOf), migratedEdges);
+const explicitOldEdge = structuredClone(legacyEdges);
+explicitOldEdge.monsters[0].id = 'explicit_orc';
+assert.throws(() => validateDraft(explicitOldEdge, config, sizeOf), /outside the build area/, 'explicit new target IDs keep strict actual-size bounds');
+for (const position of [{ x: config.minX - 1000, y: 200 }, { x: 300, y: config.groundY + 1000 }, { x: config.worldW - 15, y: 200 }]) {
+  const invalidLegacy = newDraft();
+  invalidLegacy.monsters = [{ t: 'orc_brute', ...position }];
+  assert.throws(() => validateDraft(invalidLegacy, config, sizeOf), /outside the build area/, 'migration accepts only centres valid under the old v1 bounds');
+}
+const targetRope = newDraft();
+targetRope.blocks = [{ id: 'support', m: 'wood', x: 300, y: 128, w: 24, h: 24, static: true }];
+targetRope.monsters = [{ id: 'orc_target', t: 'orc_brute', x: 300, y: 240 }];
+targetRope.connections = [{ id: 'target_rope', type: 'rope', a: 'support', b: 'orc_target', pointA: { x: 0, y: 12 }, pointB: { x: 0, y: -14 } }];
+assert.throws(() => validateDraft(targetRope, config), /outside its piece/, 'target endpoints use the supplied target dimensions');
+const safeRope = validateDraft(targetRope, config, sizeOf);
+assert.equal(safeRope.connections[0].length, 86);
+assert.deepEqual(validateDraft(JSON.parse(JSON.stringify(safeRope)), config, sizeOf), safeRope);
+assert.deepEqual(settle(safeRope, config, sizeOf), safeRope, 'connected targets keep their authored position');
+const ropeLevel = toLevel(targetRope, config, sizeOf);
+assert.deepEqual(ropeLevel.connections, safeRope.connections);
+assert.deepEqual(ropeLevel.monsters, safeRope.monsters);
+const reversedRope = structuredClone(targetRope);
+reversedRope.connections[0] = { ...targetRope.connections[0], a: 'orc_target', b: 'support', pointA: { x: 0, y: -14 }, pointB: { x: 0, y: 12 } };
+assert.equal(validateDraft(reversedRope, config, sizeOf).connections[0].length, 86);
+const worldTargetRope = structuredClone(targetRope);
+worldTargetRope.connections[0].a = null;
+worldTargetRope.connections[0].pointA = { x: 300, y: 100 };
+assert.equal(validateDraft(worldTargetRope, config, sizeOf).connections[0].length, 126);
+const invalidTargetEdge = structuredClone(targetRope);
+invalidTargetEdge.connections[0].pointB.y = -14.01;
+assert.throws(() => validateDraft(invalidTargetEdge, config, sizeOf), /outside its piece/);
+const targetAtBoundary = structuredClone(targetRope);
+targetAtBoundary.monsters[0].x = config.minX + 11;
+targetAtBoundary.monsters[0].y = config.groundY - 14;
+assert.doesNotThrow(() => validateDraft(targetAtBoundary, config, sizeOf));
+targetAtBoundary.monsters[0].x -= 0.01;
+assert.throws(() => validateDraft(targetAtBoundary, config, sizeOf), /outside the build area/);
+
+const pins = structuredClone(draft);
+pins.connections.push({ id: 'world_pin', type: 'pin', a: null, b: 'ball', pointA: { x: 400, y: 200 }, pointB: { x: 0, y: 0 } });
+pins.connections.push({ id: 'block_pin', type: 'pin', a: 'post', b: 'beam', pointA: { x: 0, y: -32 }, pointB: { x: -32, y: 0 } });
+assert.deepEqual(validateDraft(pins, config).connections.slice(-2).map((c) => c.type), ['pin', 'pin']);
+for (const type of ['pin', 'lock']) {
+  const wrongDestination = structuredClone(targetRope);
+  wrongDestination.connections[0].type = type;
+  assert.throws(() => validateDraft(wrongDestination, config, sizeOf));
+  const wrongSource = structuredClone(reversedRope);
+  wrongSource.connections[0].type = type;
+  assert.throws(() => validateDraft(wrongSource, config, sizeOf));
+}
+
+const touching = newDraft();
+const first = { id: 'rotated_a', m: 'wood', x: 240, y: 160, w: 40, h: 8, angle: 37 };
+touching.blocks = [first, { ...first, id: 'rotated_b', ...localToWorld(first, { x: 0, y: 8 }) }];
+assert.deepEqual(findDraftOverlaps(validateDraft(touching, config)), [], 'touching rotated edges remain valid');
+const overlapping = structuredClone(touching);
+Object.assign(overlapping.blocks[1], localToWorld(first, { x: 0, y: 7.99 }));
+const safeOverlap = validateDraft(overlapping, config);
+assert.deepEqual(findDraftOverlaps(safeOverlap), [{ a: 'rotated_a', b: 'rotated_b' }]);
+assert.deepEqual(settle(safeOverlap, config), safeOverlap, 'an overlap stays editable at its authored coordinates');
+assert.deepEqual(toLevel(safeOverlap, config).blocks, safeOverlap.blocks, 'Test can start an overlapping draft');
+
+const targetSupport = newDraft();
+targetSupport.blocks = [{ id: 'falling_block', m: 'wood', x: 300, y: 200, w: 8, h: 8 }];
+targetSupport.monsters = [{ id: 'falling_target', t: 'orc_brute', x: 300, y: 260 }];
+const targetSettled = settle(validateDraft(targetSupport, config, sizeOf), config, sizeOf);
+close(targetSettled.monsters[0].y, config.groundY - 14);
+close(targetSettled.blocks[0].y, config.groundY - 32);
+const frameDrop = newDraft();
+frameDrop.blocks = [{ id: 'frame', m: 'wood', x: 320, y: 220, w: 64, h: 64, variant: 'hollow', static: true }];
+frameDrop.monsters = [{ id: 'inside_frame', t: 'goblin_grunt', x: 320, y: 210 }];
+const frameSettled = settle(validateDraft(frameDrop, config), config);
+close(frameSettled.monsters[0].y, 237);
+assert.deepEqual(findDraftOverlaps(frameSettled), [], 'settling respects the frame interior');
+
+const injected = structuredClone(draft);
+Object.assign(injected, { overrides: { features: { iap: true } }, chests: [{ reward: 'w_blast_tube' }], loadout: ['w_fake'], realm: 'untrusted', worldW: 99999 });
+Object.assign(injected.blocks[0], { density: 1000, collisionFilter: { mask: 0 }, parts: [{ circleRadius: 500 }] });
+Object.assign(injected.monsters[0], { hp: 9999, behavior: 'injected', size: 999 });
+Object.assign(injected.connections[1], { stiffness: 0, damping: 999 });
+const safeInjected = validateDraft(injected, config);
+assert.equal(safeInjected.blocks[0].density, undefined);
+assert.equal(safeInjected.blocks[0].collisionFilter, undefined);
+assert.equal(safeInjected.blocks[0].parts, undefined);
+assert.equal(safeInjected.monsters[0].hp, undefined);
+assert.equal(safeInjected.monsters[0].behavior, undefined);
+assert.equal(safeInjected.connections[1].stiffness, undefined);
 const level = toLevel(validateDraft(injected, config), config);
 assert.equal(level.id, 1000);
 assert.equal(level.chests, undefined);
@@ -47,7 +208,9 @@ assert.equal(level.overrides.features.iap, undefined);
 assert.equal(level.overrides.features.consumables, false);
 assert.equal(level.overrides.features.tutorial, false);
 assert.deepEqual(level.loadout, config.loadout);
+assert.equal(level.worldW, config.worldW);
+assert.equal(level.realm, 'goblin_hills');
 level.blocks[0].x = 500;
 assert.equal(draft.blocks[0].x, 240);
 assert.deepEqual(validateDraft(newDraft(), config).blocks, []);
-console.log('check-builder: draft round-trip, references, limits, finite geometry and isolated level conversion passed');
+console.log('check-builder: v1 IDs, variants, filled geometry, full targets, ropes/pins, overlap editing, settling and trusted level conversion passed');

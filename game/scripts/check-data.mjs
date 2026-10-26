@@ -163,13 +163,20 @@ if (content) {
       if (!block.id || blockIds.has(block.id)) err(file, `duplicate or empty block id "${block.id}"`);
       blockIds.add(block.id);
     }
+    const entityIds = new Set(blockIds);
+    for (const monster of lv.monsters ?? []) {
+      if (monster.id === undefined) continue;
+      if (!monster.id || entityIds.has(monster.id)) err(file, `duplicate or empty target id "${monster.id}"`);
+      entityIds.add(monster.id);
+    }
     const connectionIds = new Set();
     for (const c of lv.connections ?? []) {
       if (connectionIds.has(c.id)) err(file, `duplicate connection id "${c.id}"`);
       connectionIds.add(c.id);
-      if (!blockIds.has(c.b) || (c.a !== null && !blockIds.has(c.a))) err(file, `connection ${c.id} has a missing block`);
-      if (c.a === c.b) err(file, `connection ${c.id} joins a block to itself`);
-      if (c.type === 'lock' && c.a === null) err(file, `lock ${c.id} needs two blocks`);
+      if (!entityIds.has(c.b) || (c.a !== null && !entityIds.has(c.a))) err(file, `connection ${c.id} has a missing piece`);
+      if (c.a === c.b) err(file, `connection ${c.id} joins a piece to itself`);
+      if (c.type === 'lock' && (!blockIds.has(c.a) || !blockIds.has(c.b))) err(file, `lock ${c.id} needs two blocks`);
+      if (c.type === 'pin' && (!blockIds.has(c.b) || c.a !== null && !blockIds.has(c.a))) err(file, `pin ${c.id} needs block endpoints`);
     }
     (lv.monsters ?? []).forEach((m, i) => {
       if (!monsterIds.has(m.t)) err(file, `monsters[${i}]: unknown monster "${m.t}"`);

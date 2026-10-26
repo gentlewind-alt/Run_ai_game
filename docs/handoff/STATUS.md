@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.42.1 (thick sky beam, four HP-ranked lightning strikes, Alien Dial giant-foot stomp and full-level earthquake), private
+**Current build:** v1.43.0 (grouped builder palette, hollow and wheel variants, edge/target ropes, Glue, wheel pins and overlap-aware editing/saving), private
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -91,7 +91,8 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | Card | Title | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|
 | BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | review | codex | 10-25 | Private v1.33.0; check/build and 14 browser groups pass. Full campaign solver timed out after L3; hosted device check remains. OpenCode failed before edits; owner approved direct Codex implementation. |
-| BUILDER-02 | Strict square-cell placement, cursor preview, mouse controls and full target picker | doing | codex | 10-25 | Owner playtest follow-up; edge snapping, quarter-turn rotation and the complete target roster. |
+| BUILDER-02 | Strict square-cell placement, cursor preview, mouse controls and full target picker | review | codex | 10-26 | Shared actual-shape snapping, hover previews, Rotate/right-click/R and all 20 targets verified in v1.43.0. Older unfinished primary checkout remains untouched. |
+| BUILDER-03 | Grouped variants, hollow/wheel mechanisms, edge and target ropes, Glue and overlap-safe persistence | review | codex | 10-26 | Private v1.43.0; check/build, 20 predeploy checks, geometry/document tests and 17 browser groups pass. Test/Play allow marked overlaps; saving/export/sharing reject them. Legacy v1 target migration covered. |
 
 ## UI fixes
 

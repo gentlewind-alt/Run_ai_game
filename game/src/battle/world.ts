@@ -30,10 +30,17 @@ export function populate(b: BattleState): void {
   const skinKey = slingTexture(slingSkin);
   const slingTex = skinKey && s.textures.exists(skinKey) ? skinKey : 'sling';
   s.add.image(b.slingX, b.slingY + 28, slingTex).setDepth(2);
-  const bodies = b.level.blocks.map((blk) => addBlock(b, blk));
-  if (b.level.connections?.length) b.connections = installConnections(s, b.level.blocks, bodies, b.level.connections);
+  const bodies = new Map<string, any>();
+  for (const block of b.level.blocks) {
+    const body = addBlock(b, block);
+    if (block.id) bodies.set(block.id, body);
+  }
   for (const c of b.level.chests ?? []) addChest(b, c);
-  for (const m of b.level.monsters) addMonster(b, m);
+  for (const monster of b.level.monsters) {
+    const body = addMonster(b, monster);
+    if (monster.id && body) bodies.set(monster.id, body);
+  }
+  if (b.level.connections?.length) b.connections = installConnections(s, bodies, b.level.connections);
   for (const e of b.ents) if (e.kind === 'monster') e.behavior?.onSpawn?.(b.ctx, e);
   if (b.level.exit) s.add.image(b.level.exit.x, b.level.exit.y ?? groundAt(b, b.level.exit.x) - 13, 'door').setDepth(1);
 }
@@ -59,7 +66,7 @@ function addChest(b: BattleState, chest: { id: string; x: number; y: number; hp?
   b.ents.push(e);
 }
 
-function addMonster(b: BattleState, m: LevelMonster): void {
+function addMonster(b: BattleState, m: LevelMonster): any {
   const def = monsterDef(m.t);
   const art = MONSTER_ART[m.t];
   if (!def || !art) return;
@@ -74,6 +81,7 @@ function addMonster(b: BattleState, m: LevelMonster): void {
   e.def = def;
   e.behavior = behaviorFor(def);
   b.ents.push(e);
+  return body;
 }
 
 function makeEnt(
@@ -85,6 +93,9 @@ function makeEnt(
     phase: b.rng.next() * 6, shield: 0, status: { burn: 0, slow: 0, curse: 0, stun: 0, chain: 0 }, ox: body.position.x, oy: body.position.y,
     dir: 1, speed: 0, fireT: 0, delay: 0, params,
   };
-  body.ent = e;
+  for (const part of body.parts) {
+    part.ent = e;
+    if (kind === 'block') part.label = 'block';
+  }
   return e;
 }

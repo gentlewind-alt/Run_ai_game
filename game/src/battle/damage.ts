@@ -32,9 +32,13 @@ function weaponDamage(b: BattleState, t: Ent, wid: string, impactFactor: number,
 
 /** Collision pairs from the physics step: projectile hits and debris/fall impacts. */
 export function onCollide(b: BattleState, ev: any): void {
+  const seen = new Set<string>();
   for (const pr of ev.pairs) {
-    const A = pr.bodyA;
-    const B = pr.bodyB;
+    const A = pr.bodyA.parent ?? pr.bodyA;
+    const B = pr.bodyB.parent ?? pr.bodyB;
+    const pair = A.id < B.id ? `${A.id}:${B.id}` : `${B.id}:${A.id}`;
+    if (seen.has(pair)) continue;
+    seen.add(pair);
     const aProj = A.label === 'proj';
     const bProj = B.label === 'proj';
     if (aProj && bProj) continue;
@@ -181,7 +185,7 @@ export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: numb
 
   if (t.hp <= 0) kill(b, t, o.silent);
   else if (t.kind === 'block' && t.hp < t.maxHp * 0.5) {
-    t.sprite.setTexture(blockTextureKey({ m: t.type, w: t.w, h: t.h, shape: t.body.builderShape }, true));
+    t.sprite.setTexture(blockTextureKey({ m: t.type, w: t.w, h: t.h, shape: t.body.builderShape, variant: t.body.builderVariant }, true));
   }
 }
 
@@ -271,9 +275,11 @@ export function damageAround(b: BattleState, x: number, y: number, r: number, fa
   const hits = MatterLib.Query.region(MatterLib.Composite.allBodies(b.scene.matter.world.engine.world), {
     min: { x: x - r, y: y - r }, max: { x: x + r, y: y + r },
   });
+  const seen = new Set<Ent>();
   for (const o of hits) {
-    const t: Ent | undefined = o.ent;
-    if (!t || t.dead) continue;
+    const t: Ent | undefined = o.ent ?? o.parent?.ent;
+    if (!t || t.dead || seen.has(t)) continue;
+    seen.add(t);
     directHit(b, t, wid, factor, x, y, false);
   }
 }

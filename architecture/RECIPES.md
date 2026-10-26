@@ -127,10 +127,10 @@ Edit `art/palette.ts`. Sprites index the palette by character, so a palette swap
 
 ### Build and test a custom level
 
-1. Choose **Create level** on the Title screen. Pick a block and material, then tap the grid to place it. Use **Select** to drag pieces; **Rotate** turns them in 15-degree steps.
-2. Use **Anchor** for fixed supports. **Lock** joins two tapped blocks at their current relative angle. **Rope** starts on a block or an empty fixed anchor point, then attaches to the second tapped block. **Unlink** removes the selected block's connections.
-3. Add **Target** monsters. Use **Test** to check balance and hanging mechanisms; **Stop** restores the design. Supported stacks still obey physics, so test before sharing.
-4. **Undo/Redo** includes pieces, targets and connections. Drafts save separately through platform storage. **Export/Import** transfers the versioned JSON; malformed imports leave the current draft intact.
+1. Choose **Create level** on the Title screen. Choose a family, then a subtype and material. Circle includes Ball, Wheel, Wheel + plank and Wheel + wedge; Square and Wedge include solid/hollow variants. Tap the grid to place. **Select** drags one piece or box-selects a group. **Rotate**, right-click or **R** turns the selected block or placement preview by 90 degrees.
+2. Use **Anchor** for fixed supports. **Glue** bonds two clicked blocks at their current relative position and angle. Select a wheel and choose **Pin** to fix its hub while it spins; Pin again removes the pin. **Rope** starts on a block/target edge or empty fixed anchor, then finishes on a block/target edge. The highlighted point previews the attachment. **Esc** cancels an unfinished link. **Unlink** removes the selection's glue, pins and ropes.
+3. **Targets** opens all 20 monster types, four per page using the arrow buttons. Use **Test** to check balance and mechanisms; **Stop** restores the authored design. Real geometry permits touching edges and objects inside hollow openings. Red pieces and the persistent OVERLAP warning identify actual intersections. Overlapping designs can still be tested or played, but cannot be saved, exported or shared until fixed.
+4. **Undo/Redo** includes pieces, targets and connections; **Delete** removes the selection. Drafts save separately through platform storage when clear of overlaps. Invalid overlapping work stays in the current session and does not overwrite the last saved valid design. **Export/Import** transfers v1 JSON; malformed imports leave the current draft intact, and older target IDs/boundary positions migrate automatically.
 5. **Play** launches an isolated slingshot attempt. **Edit** returns to the draft. Custom attempts award no campaign progress or inventory.
 
 ## Deploy

@@ -136,7 +136,8 @@
               "name",
               "w",
               "h",
-              "shape"
+              "shape",
+              "family"
             ],
             "properties": {
               "id": {
@@ -147,6 +148,8 @@
                 "type": "string",
                 "minLength": 1
               },
+              "family": { "enum": ["Planks", "Square", "Circle", "Wedge"] },
+              "variant": { "enum": ["hollow", "wheel", "wheel_plank", "wheel_wedge"] },
               "w": {
                 "type": "number",
                 "exclusiveMinimum": 0

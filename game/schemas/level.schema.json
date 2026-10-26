@@ -81,7 +81,8 @@
           "type": {
             "enum": [
               "lock",
-              "rope"
+              "rope",
+              "pin"
             ]
           },
           "a": {
@@ -142,6 +143,7 @@
         "properties": {
           "id": { "type": "string", "minLength": 1, "maxLength": 64 },
           "shape": { "enum": ["rectangle", "circle", "triangle"] },
+          "variant": { "enum": ["hollow", "wheel", "wheel_plank", "wheel_wedge"] },
           "m": { "type": "string", "description": "Material id." },
           "x": { "type": "number" }, "y": { "type": "number" },
           "w": { "type": "number", "exclusiveMinimum": 0 }, "h": { "type": "number", "exclusiveMinimum": 0 },
@@ -159,6 +161,7 @@
         "additionalProperties": false,
         "properties": {
           "t": { "type": "string", "description": "Monster id." },
+          "id": { "type": "string", "minLength": 1, "maxLength": 64 },
           "x": { "type": "number" }, "y": { "type": "number" },
           "delay": { "type": "number", "minimum": 0, "description": "Seconds before a runner starts." },
           "dir": { "enum": [-1, 1], "description": "Runner direction: 1 runs right, -1 runs left (default 1)." },

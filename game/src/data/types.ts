@@ -147,14 +147,16 @@ export interface Content {
   realms: { id: string; name?: string; levels: number[]; monsters: string[]; background?: string; music?: string }[];
 }
 
-export interface LevelMonster { t: string; x: number; y: number; dir?: number; speed?: number; delay?: number; path?: number[][] }
+export interface LevelMonster { id?: string; t: string; x: number; y: number; dir?: number; speed?: number; delay?: number; path?: number[][] }
+export type BlockVariant = 'hollow' | 'wheel' | 'wheel_plank' | 'wheel_wedge';
 export interface LevelBlock {
   m: string; x: number; y: number; w: number; h: number;
   id?: string; angle?: number; static?: boolean; shape?: 'rectangle' | 'circle' | 'triangle';
+  variant?: BlockVariant;
 }
 export interface LevelConnection {
   id: string;
-  type: 'lock' | 'rope';
+  type: 'lock' | 'rope' | 'pin';
   a: string | null;
   b: string;
   pointA: { x: number; y: number };
@@ -165,7 +167,7 @@ export interface BuilderConfig {
   grid: number; worldW: number; groundY: number; minX: number; minY: number;
   maxBlocks: number; maxConnections: number; maxMonsters: number;
   materials: string[]; targets: string[]; loadout: string[];
-  presets: { id: string; name: string; w: number; h: number; shape: 'rectangle' | 'circle' | 'triangle' }[];
+  presets: { id: string; name: string; family: 'Planks' | 'Square' | 'Circle' | 'Wedge'; w: number; h: number; shape: 'rectangle' | 'circle' | 'triangle'; variant?: BlockVariant }[];
   physics: { lockStiffness: number; lockSpan: number; ropeStiffness: number; ropeDamping: number };
 }
 export interface LevelChest { id: string; x: number; y: number; hp: number; reward: string }

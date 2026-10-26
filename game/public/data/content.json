@@ -18,8 +18,24 @@
     "targets": [
       "goblin_grunt",
       "goblin_bomber",
+      "goblin_chief",
       "dark_elf_archer",
-      "orc_brute"
+      "dark_elf_hexer",
+      "dark_elf_matron",
+      "orc_brute",
+      "skeleton_runner",
+      "imp",
+      "troll",
+      "iron_warlord",
+      "frost_wolf",
+      "ice_golem",
+      "frost_giant",
+      "lava_imp",
+      "forge_ogre",
+      "forge_tyrant",
+      "cloud_harpy",
+      "storm_mage",
+      "storm_sovereign"
     ],
     "loadout": [
       "w_militia_blade",
@@ -41,56 +57,118 @@
         "name": "Short plank",
         "w": 32,
         "h": 8,
-        "shape": "rectangle"
+        "shape": "rectangle",
+        "family": "Planks"
       },
       {
         "id": "plank",
         "name": "Plank",
         "w": 64,
         "h": 8,
-        "shape": "rectangle"
+        "shape": "rectangle",
+        "family": "Planks"
       },
       {
         "id": "beam",
         "name": "Long beam",
         "w": 96,
         "h": 8,
-        "shape": "rectangle"
+        "shape": "rectangle",
+        "family": "Planks"
       },
       {
         "id": "post",
         "name": "Post",
         "w": 8,
         "h": 64,
-        "shape": "rectangle"
+        "shape": "rectangle",
+        "family": "Planks"
       },
       {
         "id": "square",
-        "name": "Square",
+        "name": "Solid block",
         "w": 24,
         "h": 24,
-        "shape": "rectangle"
+        "shape": "rectangle",
+        "family": "Square"
+      },
+      {
+        "id": "hollow_square",
+        "name": "Hollow block",
+        "family": "Square",
+        "w": 32,
+        "h": 32,
+        "shape": "rectangle",
+        "variant": "hollow"
       },
       {
         "id": "brick",
-        "name": "Brick",
+        "name": "Solid brick",
         "w": 32,
         "h": 16,
-        "shape": "rectangle"
+        "shape": "rectangle",
+        "family": "Square"
+      },
+      {
+        "id": "hollow_brick",
+        "name": "Hollow brick",
+        "family": "Square",
+        "w": 48,
+        "h": 24,
+        "shape": "rectangle",
+        "variant": "hollow"
       },
       {
         "id": "ball",
         "name": "Ball",
         "w": 24,
         "h": 24,
-        "shape": "circle"
+        "shape": "circle",
+        "family": "Circle"
+      },
+      {
+        "id": "wheel",
+        "name": "Wheel",
+        "family": "Circle",
+        "w": 32,
+        "h": 32,
+        "shape": "circle",
+        "variant": "wheel"
+      },
+      {
+        "id": "wheel_plank",
+        "name": "Wheel + plank",
+        "family": "Circle",
+        "w": 64,
+        "h": 32,
+        "shape": "circle",
+        "variant": "wheel_plank"
+      },
+      {
+        "id": "wheel_wedge",
+        "name": "Wheel + wedge",
+        "family": "Circle",
+        "w": 64,
+        "h": 32,
+        "shape": "circle",
+        "variant": "wheel_wedge"
       },
       {
         "id": "wedge",
-        "name": "Wedge",
+        "name": "Solid wedge",
         "w": 32,
         "h": 24,
-        "shape": "triangle"
+        "shape": "triangle",
+        "family": "Wedge"
+      },
+      {
+        "id": "hollow_wedge",
+        "name": "Hollow wedge",
+        "family": "Wedge",
+        "w": 48,
+        "h": 32,
+        "shape": "triangle",
+        "variant": "hollow"
       }
     ]
   },
