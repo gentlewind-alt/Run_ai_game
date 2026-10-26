@@ -31,6 +31,8 @@ export default class ExtraShotsScene extends Phaser.Scene {
     panel(this, px, py, pw, ph, '8', '9', 'f', 21);
     text(this, W / 2, py + 18, 'Out of shots!', C('4'), 2, C('0')).setDepth(22);
     const info = text(this, W / 2, py + 40, `Watch one ad for ${d.count} more shots`, C('c'), 1, C('0')).setDepth(22);
+    const bonus = Math.round((data.content.economy.ads?.bonusDamage ?? 0) * 100);
+    if (bonus > 0) text(this, W / 2, py + ph - 14, `Bonus shots hit ${bonus} percent harder`, C('b'), 1, C('0')).setDepth(22);
 
     const choose = (): void => {
       const picks: string[] = [];

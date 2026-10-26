@@ -36,6 +36,9 @@ export interface View {
 }
 
 export interface BattleState {
+  /** Extra shots from a rewarded ad start at this index in the loadout and hit harder by adBonus (shown to the player). */
+  adBonusFrom?: number;
+  adBonus?: number;
   scene: Phaser.Scene;
   ctx: BattleCtx;
   ui: BattleUi;

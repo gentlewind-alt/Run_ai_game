@@ -114,7 +114,7 @@ export interface Economy {
   relicPityLosses?: number;
   relicMarketPrice?: Record<string, number>;
   /** Rewarded ads: coins per ad, ads per rolling window, window length, shots an out-of-shots ad gives. */
-  ads?: { coinReward: number; perWindow: number; windowHours: number; extraShots: number };
+  ads?: { coinReward: number; perWindow: number; windowHours: number; extraShots: number; bonusDamage?: number };
 }
 
 export interface ArtifactDef { id: string; name: string; rarity?: string; price: number; effect: string; params?: Record<string, number | string | boolean> }

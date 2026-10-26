@@ -93,7 +93,7 @@ export default class MapScene extends Phaser.Scene {
     makeButton(this, Math.round(W * 0.63), H - 16, 76, 24, 'Credits', 'plain', () => { sfx.click(); goTo(this, 'credits'); }, 6);
     makeButton(this, Math.round(W * 0.88), H - 16, 76, 24, 'Title', 'plain', () => { sfx.click(); goTo(this, 'title'); }, 6);
     music.play({ theme: 'map' });
-    helpButton(this, W / 2 + 78, 13, ['map', 'loadout', 'abilities', 'flight', 'damage', 'shop', 'forge', 'challenges', 'builder', 'arena', 'leaderboards']);
+    helpButton(this, W / 2 + 78, 13, ['map', 'battle', 'loadout', 'abilities', 'flight', 'damage', 'shop', 'forge', 'challenges', 'builder', 'arena', 'leaderboards']);
     maybeTutorial(this, 'map');
     irisOpen(this);
   }

@@ -15,6 +15,14 @@
         { "title": "Limits and extras", "body": "You can carry only one Legendary weapon at a time. Artifacts and items on the right are optional boosts. Tap Fling when you are ready." }
       ]
     },
+    "battle": {
+      "title": "Battle Basics",
+      "pages": [
+        { "title": "Aim and fling", "body": "Press and drag back from the sling to aim, then let go to fling. The dotted line shows where the shot will go. Pull farther for more power." },
+        { "title": "Ability and view", "body": "While the weapon flies, tap the ability button or press Space. Use the zoom button or the mouse wheel to look over the whole fort." },
+        { "title": "Win the level", "body": "Defeat every monster before your shots run out. Out of shots? You may watch an ad for 2 more shots that hit 25 percent harder. A high score and spare shots earn up to 3 stars." }
+      ]
+    },
     "abilities": {
       "title": "Weapon Abilities",
       "pages": [

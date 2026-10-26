@@ -10,6 +10,7 @@ import { music } from '../audio/music';
 import { setMuted, setMusicOn, profile } from '../core/profile';
 import { platform } from '../platform';
 import { makeButton, panel, type Btn } from './widgets';
+import { helpButton } from './tutorial';
 import type { BattleUi } from '../battle/state';
 
 /** What the HUD needs from the scene hosting the battle. */
@@ -241,6 +242,7 @@ export function createHud(
           ...(h.restart ? [makeButton(scene, W / 2, 106, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart?.(); }, 42).box] : []),
           makeButton(scene, W / 2, 204, 126, 22, h.mapLabel ?? 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
           ...(fsBtn ? [fsBtn.box] : []),
+          helpButton(scene, W / 2 + 74, 47, ['battle', 'abilities', 'flight', 'damage'], 44).box,
         ];
       });
     },

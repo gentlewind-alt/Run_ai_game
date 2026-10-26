@@ -66,6 +66,9 @@ export function grantShots(b: BattleState, ids: string[]): boolean {
   if (b.state !== 'lost' || ids.length === 0) return false;
   b.state = 'settling';
   b.endTimer = 0;
+  // the Daily Mash is a shared leaderboard, so its ad shots stay plain
+  const bonus = b.content.economy.ads?.bonusDamage ?? 0;
+  if (bonus > 0 && b.levelId > 0 && b.adBonusFrom === undefined) { b.adBonusFrom = b.loadout.length; b.adBonus = bonus; }
   b.loadout.push(...ids);
   addToQueue(b, ids);
   loadNext(b);

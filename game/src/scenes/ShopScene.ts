@@ -146,6 +146,7 @@ export default class ShopScene extends Phaser.Scene {
         this.page = 0;
         this.forgeScroll = 0;
         this.render();
+        if (t.id === 'forge') maybeTutorial(this, 'forge', 150);
       }, 6);
       this.tabBtns.push(b);
       x += t.w + 6;

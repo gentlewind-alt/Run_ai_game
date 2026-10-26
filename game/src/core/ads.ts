@@ -3,7 +3,7 @@ import { platform } from '../platform';
 import { data } from '../data/load';
 import { addCoins, changed, profile } from './profile';
 
-export interface AdRules { coinReward: number; perWindow: number; windowHours: number; extraShots: number }
+export interface AdRules { coinReward: number; perWindow: number; windowHours: number; extraShots: number; bonusDamage?: number }
 
 const DEFAULTS: AdRules = { coinReward: 300, perWindow: 3, windowHours: 5, extraShots: 2 };
 export const adRules = (): AdRules => ({ ...DEFAULTS, ...(data.content.economy.ads ?? {}) });

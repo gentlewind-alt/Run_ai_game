@@ -14,6 +14,7 @@ import { data } from '../data/load';
 import { platform } from '../platform';
 import type { Row } from '../platform/types';
 import { makeButton, panel } from '../ui/widgets';
+import { helpButton } from '../ui/tutorial';
 
 export interface ResultsData {
   levelId: number;
@@ -50,6 +51,7 @@ export default class ResultsScene extends Phaser.Scene {
     const pw = 360;
     const px = (W - pw) / 2;
     panel(this, px, py, pw, 234, '8', '9', 'f', 1);
+    helpButton(this, px + pw - 20, py + 14, ['damage', 'flight', 'abilities', 'forge'], 9);
 
     const titleStr = d.won ? 'Level cleared!' : d.why === 'escaped' ? 'Runners escaped!' : 'Out of shots';
     const titleScale = d.won ? 2 : d.why === 'escaped' ? 1.5 : 2;

@@ -199,7 +199,7 @@ if (content) {
 {
   const file = 'tutorials.json';
   const tut = readJson(join(dataDir, file));
-  const need = ['map', 'loadout', 'abilities', 'flight', 'damage', 'forge', 'shop', 'challenges', 'builder', 'arena', 'leaderboards'];
+  const need = ['map', 'battle', 'loadout', 'abilities', 'flight', 'damage', 'forge', 'shop', 'challenges', 'builder', 'arena', 'leaderboards'];
   if (!tut?.sections) err(file, 'missing "sections"');
   else {
     for (const id of need) if (!tut.sections[id]) err(file, `section "${id}" is used by the game but missing`);

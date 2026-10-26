@@ -303,6 +303,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   const buffed = b.mods.serumShots > 0;
   if (buffed) b.mods.serumShots--;
   b.mods.damageMult = buffed ? b.mods.serumMult : 1;
+  if (b.adBonusFrom !== undefined && b.shotIdx >= b.adBonusFrom && b.adBonus) b.mods.damageMult *= 1 + b.adBonus;
   b.readySprite.setVisible(false);
   b.pouch.set(b.slingX, b.slingY);
   b.shotIdx++;
