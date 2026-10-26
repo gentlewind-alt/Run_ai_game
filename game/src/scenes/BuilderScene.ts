@@ -126,7 +126,7 @@ export default class BuilderScene extends Phaser.Scene {
     this.input.on('pointerup', this.pointerUp, this);
     this.input.on('pointerupoutside', this.pointerUp, this);
     this.input.mouse?.disableContextMenu();
-    this.input.keyboard?.on('keydown-R', this.rotate, this);
+    this.input.keyboard?.on('keydown-R', this.rotateKey, this);
     this.input.keyboard?.on('keydown-DELETE', this.deleteSelection, this);
     this.input.keyboard?.on('keydown-ESC', this.cancelLink, this);
     this.events.once('shutdown', () => {
@@ -135,7 +135,7 @@ export default class BuilderScene extends Phaser.Scene {
       this.input.off('pointermove', this.pointerMove, this);
       this.input.off('pointerup', this.pointerUp, this);
       this.input.off('pointerupoutside', this.pointerUp, this);
-      this.input.keyboard?.off('keydown-R', this.rotate, this);
+      this.input.keyboard?.off('keydown-R', this.rotateKey, this);
       this.input.keyboard?.off('keydown-DELETE', this.deleteSelection, this);
       this.input.keyboard?.off('keydown-ESC', this.cancelLink, this);
       this.clearWorld();
@@ -246,9 +246,9 @@ export default class BuilderScene extends Phaser.Scene {
       this.activeMarkers.push({ marker, active: () => this.tool === tool });
     }
     this.pinButton = button(181, 243, 48, 'Pin', () => this.pinWheel());
-    this.editButtons.push(this.pinButton, button(233, 243, 48, 'Rotate', () => this.rotate()));
-    this.anchorButton = button(285, 243, 48, 'Anchor', () => this.anchor());
-    this.editButtons.push(this.anchorButton, button(337, 243, 48, 'Delete', () => this.deleteSelection()), button(389, 243, 48, 'Unlink', () => this.unlink()), button(445, 243, 54, 'Import', () => this.importFile()));
+    this.editButtons.push(this.pinButton, button(221, 243, 26, '-45', () => this.rotate(-45)), button(249, 243, 26, '+45', () => this.rotate(45)));
+    this.anchorButton = button(289, 243, 48, 'Anchor', () => this.anchor());
+    this.editButtons.push(this.anchorButton, button(341, 243, 48, 'Delete', () => this.deleteSelection()), button(393, 243, 48, 'Unlink', () => this.unlink()), button(449, 243, 54, 'Import', () => this.importFile()));
     this.refreshControls();
   }
 
@@ -285,8 +285,8 @@ export default class BuilderScene extends Phaser.Scene {
     this.group = undefined;
     const name = data.content.monsters.find(m => m.id === this.config.targets[this.target])?.name ?? 'Target';
     const hints: Record<Tool, string> = {
-      piece: `${this.config.presets[this.preset].name}: click to place. Right-click or R rotates the preview.`,
-      select: 'Select: drag one piece, or drag an empty area to select a group. R rotates; Delete removes.',
+      piece: `${this.config.presets[this.preset].name}: click to place. R/right-click turns 45 degrees; Shift reverses.`,
+      select: 'Select: drag pieces or an empty area for a group. R turns 45; Shift+R reverses; Delete removes.',
       target: `${name}: click to place. Target page ${this.targetPage + 1}/${Math.ceil(this.config.targets.length / 4)}.`,
       glue: 'Glue: click two blocks to bond their position and angle. Unlink removes the bond.',
       rope: 'Rope: click an edge or empty anchor, then a block or target edge. Esc cancels.',
@@ -362,7 +362,7 @@ export default class BuilderScene extends Phaser.Scene {
   private pointerDown(pointer: Phaser.Input.Pointer): void {
     if (this.running || this.loading || !this.inside(pointer)) return;
     const point = this.worldPoint(pointer);
-    if (pointer.rightButtonDown()) { this.rotate(); return; }
+    if (pointer.rightButtonDown()) { this.rotate(pointer.event.shiftKey ? -45 : 45); return; }
     this.hover = point;
     const hit = this.selectionAt(point);
     if (this.tool === 'select') {
@@ -568,12 +568,14 @@ export default class BuilderScene extends Phaser.Scene {
     this.commit(next, pinned ? 'Wheel unpinned.' : 'Hub pinned: the wheel and its arm can spin. Test to try it.');
   }
 
-  private rotate(): void {
+  private rotateKey(event: KeyboardEvent): void { this.rotate(event.shiftKey ? -45 : 45); }
+
+  private rotate(delta: number): void {
     if (this.running || this.loading) return;
     const selected = this.selection;
     if (selected?.kind !== 'block') {
       if (this.tool === 'piece') {
-        this.placementAngle = (this.placementAngle + 90) % 360;
+        this.placementAngle = ((this.placementAngle + delta) % 360 + 360) % 360;
         this.renderOverlay(this.draft);
         this.say(`Placement rotated to ${this.placementAngle} degrees. Click to place.`);
       } else this.say('Select a block, or choose a piece to rotate its placement preview.');
@@ -582,7 +584,7 @@ export default class BuilderScene extends Phaser.Scene {
     const next = cloneDraft(this.draft);
     const block = next.blocks.find(b => b.id === selected.id)!;
     const before = blockBounds(block);
-    block.angle = ((block.angle ?? 0) + 90) % 360;
+    block.angle = (((block.angle ?? 0) + delta) % 360 + 360) % 360;
     const after = blockBounds(block);
     block.x += before.l - after.l;
     block.y += before.t - after.t;

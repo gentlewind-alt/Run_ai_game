@@ -3,7 +3,7 @@
 States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` · `cut` (behind a flag, not shipping). Claim rules are in `architecture/WORKFLOW.md`. Cards are defined in `architecture/STAGES.md`.
 
 **Deadline:** jam entry by **Mon 2 Nov 12:00 PT**, go public by **Thu 30 Oct**, feature freeze **Wed 29 Oct**.
-**Current build:** v1.43.0 (grouped builder palette, hollow and wheel variants, edge/target ropes, Glue, wheel pins and overlap-aware editing/saving), private
+**Current build:** v1.46.1 (builder rotation in both directions at 45-degree steps), private; public/review remain v1.46.0
 
 | Card | Title | Depends on | State | Owner | Updated | Notes |
 |---|---|---|---|---|---|---|
@@ -93,6 +93,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | review | codex | 10-25 | Private v1.33.0; check/build and 14 browser groups pass. Full campaign solver timed out after L3; hosted device check remains. OpenCode failed before edits; owner approved direct Codex implementation. |
 | BUILDER-02 | Strict square-cell placement, cursor preview, mouse controls and full target picker | review | codex | 10-26 | Shared actual-shape snapping, hover previews, Rotate/right-click/R and all 20 targets verified in v1.43.0. Older unfinished primary checkout remains untouched. |
 | BUILDER-03 | Grouped variants, hollow/wheel mechanisms, edge and target ropes, Glue and overlap-safe persistence | review | codex | 10-26 | Private v1.43.0; check/build, 20 predeploy checks, geometry/document tests and 17 browser groups pass. Test/Play allow marked overlaps; saving/export/sharing reject them. Legacy v1 target migration covered. |
+| BUILDER-04 | Clockwise and counterclockwise 45-degree builder rotation | review | codex | 10-26 | Private v1.46.1; -45/+45 buttons, R/Shift+R and right-click/Shift+right-click. Check/build, 20 predeploy checks and 12 focused browser checks pass. |
 
 ## UI fixes
 
