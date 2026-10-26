@@ -22,10 +22,10 @@ import type { BattleState, BattleUi } from './state';
 const noUi: BattleUi = { setAbilityLabel() {}, showAbility() {}, setEscaped() {}, setTargeting() {}, consumableUsed() {}, setBossHp() {} };
 
 /** The state for one battle. Scene objects (graphics, sprites, cameras) are filled in by `buildBattle`. */
-export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[], customLevel?: Level): BattleState {
+export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[], customLevel?: Level, competitive = false): BattleState {
   const level = customLevel ? JSON.parse(JSON.stringify(customLevel)) as Level : levelDef(levelId);
-  const settings = levelSettings(level);
-  const slingSkin = profile.equipped?.slingSkin;
+  const settings = levelSettings(level, !competitive);
+  const slingSkin = competitive ? undefined : profile.equipped?.slingSkin;
   const slingCosmetic = data.content.cosmetics?.find((c) => c.id === slingSkin);
   const launchSpeedMult = slingCosmetic?.mods?.launchSpeedMult ?? 1;
   const twinFraction = slingCosmetic?.mods?.twinFraction;
@@ -34,7 +34,8 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
   const maxShots = level.shots ?? rawLoadout.length;
   const effectiveLoadout = rawLoadout.slice(0, Math.min(rawLoadout.length, maxShots));
   const b = {
-    scene, ui: noUi, events, rng: createRng(level.id), content: data.content, level, levelId, custom: !!customLevel,
+    scene, ui: noUi, events, rng: createRng(competitive ? 1000 : level.id), content: data.content, level, levelId, custom: !!customLevel,
+    arena: competitive ? { frames: 0, actions: [] } : undefined,
     loadout: effectiveLoadout, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
     worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],

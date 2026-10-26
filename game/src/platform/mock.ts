@@ -1,4 +1,5 @@
 import { noopPlatform, type Platform, type Row, type UgcRow } from './types';
+import { DEV_CHALLENGES } from '../arena/devChallenges';
 
 /** Local dev without the RUN host: in-memory storage, console logging, no ads or purchases. */
 const store = new Map<string, string>();
@@ -50,8 +51,7 @@ const seedUgc = (): void => {
   const mk = (n: number, author: string, uses: number, extra: Record<string, unknown>): void => {
     ugcRows.push({ id: `seed_${n}`, type: 'mm_challenge', authorId: `seed_author_${author}`, authorName: author, title: `${author}'s siege`, data: {
       v: 1, shots: 5, allowed: ['w_militia_blade', 'w_iron_cleaver', 'w_blast_tube'], ...extra,
-      doc: { schema: 'monster-mash-builder', version: 1, name: `${author}'s siege`, monsters: [{ t: 'goblin_grunt', x: 400, y: 313 }],
-        blocks: [{ id: 'b1', m: 'wood', x: 400, y: 292, w: 8, h: 40, shape: 'rectangle', angle: 0, static: false }, { id: 'b2', m: 'stone', x: 400, y: 268, w: 40, h: 8, shape: 'rectangle', angle: 0, static: false }], connections: [] },
+      doc: DEV_CHALLENGES[n - 1].data.doc,
     }, uses, createdAt: nowMs() - n * 3600000, updatedAt: nowMs() });
   };
   mk(1, 'MashMaster', 42, {});

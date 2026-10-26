@@ -1,0 +1,15 @@
+{
+  "rooms": [{
+    "type": "mm_arena",
+    "file": "src/rooms/ArenaRoom.ts",
+    "persistent": true,
+    "config": {
+      "maxPlayers": 64,
+      "tickInterval": 2,
+      "autoPersist": true,
+      "persistInterval": 1000,
+      "allowReconnect": true,
+      "reconnectTimeout": 45
+    }
+  }]
+}

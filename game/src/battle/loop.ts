@@ -6,11 +6,12 @@ import { updateParts } from './fx';
 import { MatterLib } from './matter';
 import { applyCustomGravity, endProj } from './projectiles';
 import { kindFor } from '../content/levelKinds';
-import { step as stepRules } from './rules';
+import { finish, step as stepRules } from './rules';
 import type { BattleState } from './state';
 import { drawOverlay, updateAbilityBtn, updateQueue } from './sling';
 import { updateCamera } from './camera';
 import { beatBob } from '../audio/beat';
+import { ARENA_MAX_FRAMES } from '../arena/types';
 
 /** Called every frame by the scene. Runs 0..maxStepsPerFrame whole steps, then updates the visuals. */
 export function update(b: BattleState, delta: number, nowMs: number): void {
@@ -18,16 +19,23 @@ export function update(b: BattleState, delta: number, nowMs: number): void {
   b.acc += Math.min(delta, 50);
   let n = 0;
   while (b.acc >= b.stepMs && n < b.settings.physics.maxStepsPerFrame) {
+    if (b.arena) {
+      if (b.arena.frames >= ARENA_MAX_FRAMES) { finish(b, false); break; }
+      b.arena.frames++;
+    }
     b.acc -= b.stepMs;
     n++;
     updateParts(b);
     if (b.hitStop > 0) {
       b.hitStop--;
+      if (b.arena?.frames === ARENA_MAX_FRAMES) { finish(b, false); break; }
       continue;
     }
     applyCustomGravity(b);
     b.scene.matter.world.step(b.stepMs);
     stepLogic(b);
+    if (b.arena?.frames === ARENA_MAX_FRAMES) finish(b, false);
+    if (b.arena && (b.state === 'won' || b.state === 'lost')) break;
   }
   updateCamera(b);
   updateQueue(b, nowMs);

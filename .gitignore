@@ -11,3 +11,7 @@ docs/music/
 
 # generated promo media (large)
 docs/promo/
+
+# generated arena verifier and shared engine fingerprint
+game/.arena/
+game/src/arena/engineVersion.generated.ts

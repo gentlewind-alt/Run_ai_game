@@ -10,6 +10,7 @@ import type { ArtifactImpl } from '../content/artifacts/types';
 import type { ConsumableImpl } from '../content/consumables';
 import type { Params } from '../data/types';
 import type { installConnections } from '../builder/physics';
+import type { ArenaReplay } from '../arena/types';
 
 export interface Particle { s: Phaser.GameObjects.Image; vx: number; vy: number; life: number }
 
@@ -44,6 +45,7 @@ export interface BattleState {
   level: Level;
   levelId: number;
   custom?: boolean;
+  arena?: ArenaReplay;
   connections?: ReturnType<typeof installConnections>;
   loadout: string[];
   settings: Settings;

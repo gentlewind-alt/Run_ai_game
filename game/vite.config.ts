@@ -1,10 +1,16 @@
 import { defineConfig } from 'vite';
-import { rundotGameLibrariesPlugin } from "@series-inc/rundot-game-sdk/vite";
+import { rundotGameLibrariesPlugin, rundotMultiplayerPlugin } from "@series-inc/rundot-game-sdk/vite";
+import { DEV_CHALLENGES } from './src/arena/devChallenges';
 
 // CDN assets in cdn/ folder are automatically served in dev mode
 
 export default defineConfig({
-  plugins: [rundotGameLibrariesPlugin()],
+  plugins: [rundotGameLibrariesPlugin(), rundotMultiplayerPlugin({
+    mockServices: { ugc: {
+      get: async id => DEV_CHALLENGES.find(row => row.id === id) as unknown as Record<string, unknown> ?? null,
+      recordUse: async () => {},
+    } },
+  })],
   base: "./",
   server: {
     allowedHosts: true,

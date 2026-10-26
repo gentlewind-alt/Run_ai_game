@@ -53,13 +53,13 @@ export function initSettings(c: Config, ct: Content): void {
 }
 
 /** Config merged with content tuning, level overrides and (in debug) URL overrides like `tune.launchK=0.3`. */
-export function levelSettings(level?: Level): Settings {
+export function levelSettings(level?: Level, allowDebug = true): Settings {
   const s = clone(config) as unknown as Obj;
   s.tune = clone(content!.tuning);
   s.rules = clone(content!.damageRules);
   const ov = level?.overrides ?? {};
   merge(s, { tune: ov.tuning, rules: ov.damageRules, features: ov.features, camera: ov.camera });
-  if (DEBUG && config.debug.urlOverrides) {
+  if (allowDebug && DEBUG && config.debug.urlOverrides) {
     for (const [k, raw] of query) {
       const path = k.split('.');
       if (path.length < 2 || !['tune', 'rules', 'features', 'camera', 'physics', 'world', 'display'].includes(path[0])) continue;

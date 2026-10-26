@@ -23,6 +23,8 @@ import type { ExtraShotsData } from './ExtraShotsScene';
 import { goTo } from '../core/flow';
 import { createHud, type Hud } from '../ui/hud';
 import { makeButton } from '../ui/widgets';
+import type { ArenaSetup } from '../arena/types';
+import { arena } from '../core/arena';
 
 const DEFAULT_LOADOUT = Array.from({ length: 6 }, () => 'w_militia_blade');
 
@@ -34,22 +36,29 @@ export default class BattleScene extends Phaser.Scene {
   private loadout: string[] = [];
   private customLevel?: Level;
   private challenge?: Challenge;
+  private arenaSetup?: ArenaSetup;
+  private arenaSent = 0;
+  private arenaSubmitted = false;
+  private arenaInterrupted = false;
+  private arenaLeaving = false;
 
   constructor() {
     super('game');
   }
 
-  init(data: { level: number; loadout: string[]; customLevel?: Level; challenge?: Challenge }): void {
+  init(data: { level: number; loadout: string[]; customLevel?: Level; challenge?: Challenge; arena?: ArenaSetup }): void {
     this.levelId = data.level ?? 1;
     this.loadout = (data.loadout ?? DEFAULT_LOADOUT).slice();
     this.customLevel = data.customLevel;
     this.challenge = data.challenge;
+    this.arenaSetup = data.arena;
+    this.arenaSent = 0; this.arenaSubmitted = false; this.arenaInterrupted = false; this.arenaLeaving = false;
   }
 
   create(): void {
     this.scene.resume();
     events.beginBattle();
-    const b = (this.b = createBattle(this, this.levelId, this.loadout, this.customLevel));
+    const b = (this.b = createBattle(this, this.levelId, this.loadout, this.customLevel, !!this.arenaSetup));
     buildBattle(b);
 
     const shouldShowHint = !b.custom && b.settings.features.tutorial !== false && !hasSeenHint(this.levelId, 0);
@@ -70,7 +79,7 @@ export default class BattleScene extends Phaser.Scene {
       onPause: () => this.setPaused(true),
     });
     b.ui = this.hud.ui;
-    if (b.custom && !this.challenge) b.inUi(() => {
+    if (b.custom && !this.challenge && !this.arenaSetup) b.inUi(() => {
       makeButton(this, W - 98, 14, 42, 24, 'Edit', 'plain', () => goTo(this, 'builder'), 12);
     });
     this.wireHud(b);
@@ -79,7 +88,7 @@ export default class BattleScene extends Phaser.Scene {
     irisOpen(this, (fn) => b.inUi(fn));
     this.input.keyboard?.on('keydown-ESC', () => this.setPaused(!b.paused));
     this.input.keyboard?.on('keydown-R', () => {
-      if (b.paused) {
+      if (b.paused && !this.arenaSetup) {
         b.paused = false;
         this.hud.hidePause();
         this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge });
@@ -101,12 +110,25 @@ export default class BattleScene extends Phaser.Scene {
     };
     this.scale.on(Phaser.Scale.Events.RESIZE, onResize);
 
+    const offArena = this.arenaSetup ? arena.subscribe(() => {
+      if (!this.scene.isActive() || this.arenaSubmitted || this.arenaLeaving) return;
+      const match = arena.snapshot?.match;
+      if (match && (match.id !== this.arenaSetup!.matchId || match.state === 'finished' || match.revision !== this.arenaSetup!.revision)) {
+        this.arenaLeaving = true; b.paused = true; goTo(this, 'arena', { tab: 'match' }); return;
+      }
+      if (arena.status !== 'online' || arena.turnError?.matchId === this.arenaSetup!.matchId && arena.turnError.revision === this.arenaSetup!.revision) {
+        this.arenaInterrupted = true;
+        this.hud.hidePause(); b.paused = false; this.setPaused(true);
+      }
+    }) : undefined;
+
     this.events.once('shutdown', () => {
       this.hud?.hidePause();
       this.input.keyboard?.removeAllListeners();
       this.input.removeAllListeners();
       this.scale.off(Phaser.Scale.Events.RESIZE, onResize);
       events.clearBattle();
+      offArena?.();
     });
 
     if ((import.meta as any).env?.DEV) (window as any).__scene = this;
@@ -163,12 +185,19 @@ export default class BattleScene extends Phaser.Scene {
   setPaused(on: boolean): void {
     const b = this.b;
     if (!b || b.state === 'won' || b.state === 'lost' || b.paused === on) return;
+    if (!on && this.arenaInterrupted) return;
     b.paused = on;
     if (on) {
       this.hud.showPause({
-        resume: () => this.setPaused(false),
-        restart: () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge }); },
-        map: () => (this.challenge ? goTo(this, 'challenge', { id: this.challenge.id, challenge: this.challenge }) : goTo(this, b.custom ? 'builder' : 'map')),
+        resume: this.arenaInterrupted ? undefined : () => this.setPaused(false),
+        restart: this.arenaSetup ? undefined : () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge }); },
+        title: this.arenaInterrupted ? 'Turn interrupted' : 'Paused',
+        mapLabel: this.arenaSetup ? 'Forfeit turn' : undefined,
+        map: () => {
+          if (this.arenaSetup) { this.arenaLeaving = true; arena.forfeit(); goTo(this, 'arena', { tab: 'match' }); }
+          else if (this.challenge) goTo(this, 'challenge', { id: this.challenge.id, challenge: this.challenge });
+          else goTo(this, b.custom ? 'builder' : 'map');
+        },
       });
     } else {
       this.hud.hidePause();
@@ -183,8 +212,25 @@ export default class BattleScene extends Phaser.Scene {
     update(this.b, delta, this.game.getTime());
     updateCursor(this.b);
     const b = this.b;
+    if (this.arenaSetup && b.arena && !this.arenaSubmitted && !this.arenaInterrupted && !this.arenaLeaving) {
+      while (this.arenaSent < b.arena.actions.length) {
+        if (!arena.sendInput(this.arenaSetup, b.arena.actions[this.arenaSent])) {
+          this.arenaInterrupted = true; this.hud.hidePause(); b.paused = false; this.setPaused(true); return;
+        }
+        this.arenaSent++;
+      }
+    }
     if (b.custom && !b.paused && (b.state === 'won' || b.state === 'lost')) {
       b.paused = true;
+      if (this.arenaSetup) {
+        if (!this.arenaSubmitted && !this.arenaInterrupted && b.arena) {
+          this.arenaSubmitted = true;
+          arena.submit(this.arenaSetup, b.arena);
+        }
+        this.arenaLeaving = true;
+        goTo(this, 'arena', { tab: 'match' });
+        return;
+      }
       if (this.challenge) { this.challengeEnd(b, this.challenge); return; }
       b.inUi(() => {
         this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.78).setDepth(30);

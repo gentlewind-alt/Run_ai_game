@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import BattleScene from './scenes/BattleScene';
 import BuilderScene from './scenes/BuilderScene';
+import ArenaScene from './scenes/ArenaScene';
 import ChallengeScene from './scenes/ChallengeScene';
 import ChallengesScene from './scenes/ChallengesScene';
 import ChallengeWeaponsScene from './scenes/ChallengeWeaponsScene';
@@ -16,13 +17,14 @@ import TitleScene from './scenes/TitleScene';
 import './style.css';
 import { sfx } from './audio/sfx';
 import { H, W } from './config/constants';
-import { getSettings, initSettings } from './config/settings';
+import { feature, getSettings, initSettings } from './config/settings';
 import { adminReady, onAdmin } from './core/admin';
 import { DEBUG, applyDebug, setMuted, wireProfile } from './core/profile';
 import { initResponsive } from './core/responsive';
 import { loadSave, wireSave } from './core/save';
 import { data, loadData } from './data/load';
 import { platform } from './platform';
+import { arena } from './core/arena';
 
 let bootStep1Fired = false;
 
@@ -55,7 +57,7 @@ async function bootstrap(): Promise<void> {
       backgroundColor: '#1a1c2c',
       pixelArt: S.display.pixelArt,
       roundPixels: true,
-      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, BattleScene, BuilderScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
+      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, BattleScene, BuilderScene, ArenaScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
       physics: {
         default: 'matter',
         matter: {
@@ -74,6 +76,7 @@ async function bootstrap(): Promise<void> {
     };
 
     const game = new Phaser.Game(config);
+    if (feature('arena')) void arena.autoConnect();
     initResponsive(game);
     platform.lifecycle.onPause(() => {
       const battle = game.scene.getScene('game') as { setPaused?(on: boolean): void; scene?: { isActive(): boolean } } | null;

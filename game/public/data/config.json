@@ -80,6 +80,7 @@
   },
   "features": {
     "voteButton": true,
+    "arena": true,
     "builder": true,
     "challenges": true,
     "map": true,

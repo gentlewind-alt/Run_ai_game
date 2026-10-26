@@ -59,10 +59,11 @@ export default class TitleScene extends Phaser.Scene {
     makeButton(this, btnX, 54, 130, 30, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
     if (feature('challenges')) makeButton(this, btnX, 118, 130, 26, 'Challenges', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'challenges'); }, 6);
     if (feature('builder')) makeButton(this, btnX, 87, 130, 26, 'Create level', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'builder'); }, 6);
-    makeButton(this, btnX, 150, 110, 24, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
+    if (feature('arena')) makeButton(this, btnX, 149, 130, 24, 'Global Arena', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'arena'); }, 6);
+    makeButton(this, btnX, 178, 110, 22, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
 
     const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music: off' : 'Music: on');
-    const musicBtn = makeButton(this, btnX, 182, 110, 22, musicLabel(), 'plain', () => {
+    const musicBtn = makeButton(this, btnX, 205, 110, 22, musicLabel(), 'plain', () => {
       sfx.unlock();
       setMusicOn(profile.settings.musicOn === false);
       music.updateVolume();
@@ -77,7 +78,7 @@ export default class TitleScene extends Phaser.Scene {
     if (platform.fullscreen.available()) {
       const label = (): string => (platform.fullscreen.active() ? 'Exit full screen' : 'Full screen');
       let note: Phaser.GameObjects.Image[] = [];
-      const fsBtn = makeButton(this, btnX, 208, 110, 22, label(), 'plain', () => {
+      const fsBtn = makeButton(this, btnX, 232, 110, 22, label(), 'plain', () => {
         sfx.unlock();
         void platform.fullscreen.toggle().then(() => {
           if (!this.scene.isActive()) return;

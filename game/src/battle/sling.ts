@@ -15,6 +15,7 @@ import { targetTap } from './consumables';
 import { groundAt } from './terrain';
 import type { Proj } from './BattleCtx';
 import type { BattleState } from './state';
+import { ARENA_MAX_ACTIONS } from '../arena/types';
 
 export function setWeapon(b: BattleState, id: string): void {
   b.wdef = weaponDef(id);
@@ -87,6 +88,14 @@ export function loadNext(b: BattleState): void {
   const first = b.queue.shift()!;
   const readyScale = weaponScale(b.scene, b.wpn.texture, 'sling', b.wdef);
   const readyRot = weaponReadyRotation(b.wdef.id);
+  if (b.arena) {
+    first.destroy();
+    b.queue.forEach((q, i) => q.setPosition(slotX(b, i), groundAt(b, slotX(b, i)) - ((q.getData('yOff') as number) || 8)));
+    b.readySprite.setTexture(b.wpn.texture).setVisible(true).setRotation(readyRot).setScale(readyScale);
+    b.pouch.set(b.slingX, b.slingY);
+    b.state = 'ready';
+    return;
+  }
   first.setDepth(7).setScale((first.getData('baseScale') as number) || 1.5);
   b.queue.forEach((q, i) => {
     const yOff = (q.getData('yOff') as number) || 8;
@@ -134,6 +143,7 @@ export function updateQueue(b: BattleState, time: number): void {
 // ------------------------------------------------------------------ ability
 
 export function activateAbility(b: BattleState): void {
+  if (b.arena && b.arena.actions.length >= ARENA_MAX_ACTIONS) return;
   const mode = b.wdef.ability.mode;
   if (b.state !== 'flying' || !b.proj || mode === 'impact' || mode === 'none') return;
   const p = b.proj;
@@ -147,6 +157,7 @@ export function activateAbility(b: BattleState): void {
       b.abilityCharges[b.wdef.id] = cur - 1;
     }
   }
+  if (b.arena) b.arena.actions.push({ type: 'ability', frame: b.arena.frames });
   p.tapped = true;
   const { x, y } = p.body.position;
   b.wpn.onAbility?.(b.ctx, p);
@@ -261,6 +272,16 @@ export function launchFrom(b: BattleState, angleDeg: number, power: number): voi
 }
 
 function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
+  if (b.arena) {
+    if (b.arena.actions.length >= ARENA_MAX_ACTIONS) return;
+    const angle = Math.round(Math.atan2(-vel.y, vel.x) * 180 / Math.PI * 1e6) / 1e6;
+    const power = Math.round(Math.min(1, Math.max(0, vel.length() / b.maxSpeed)) * 1e6) / 1e6;
+    const radians = angle * Math.PI / 180;
+    const pull = power * b.tune.maxPull;
+    b.pouch.set(b.slingX - Math.cos(radians) * pull, b.slingY + Math.sin(radians) * pull);
+    vel.set(Math.cos(radians) * pull * b.tune.launchK, -Math.sin(radians) * pull * b.tune.launchK);
+    b.arena.actions.push({ type: 'fire', frame: b.arena.frames, angle, power });
+  }
   const id = b.loadout[b.shotIdx];
   setWeapon(b, id);
   const phys = b.wdef.physics;

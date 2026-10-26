@@ -1,0 +1,16 @@
+{
+  "$schema": "https://api.run.world/schemas/predeploy.config.json",
+  "version": "1.0",
+  "enabled": true,
+  "failOn": "critical",
+  "rules": {},
+  "ignoreChecks": [
+    {
+      "rule": "fullscreen-direct-dom",
+      "path": "src\\platform\\mock.ts",
+      "reason": "Local-dev mock platform only; the hosted game uses RundotGameAPI.system.requestFullscreen",
+      "addedAt": "2026-10-26T13:13:14Z"
+    }
+  ],
+  "ignorePaths": []
+}

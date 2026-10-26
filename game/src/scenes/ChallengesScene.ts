@@ -3,6 +3,7 @@ import { C } from '../art/palette';
 import { setText, text } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
+import { feature } from '../config/settings';
 import { goTo, irisOpen } from '../core/flow';
 import { listChallenges, type Challenge, type ChallengeSort } from '../core/challenges';
 import { makeButton, panel } from '../ui/widgets';
@@ -37,6 +38,7 @@ export default class ChallengesScene extends Phaser.Scene {
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
     panel(this, 16, 8, W - 32, H - 16, '8', '9', 'f', 1);
     text(this, W / 2, 20, 'Global Challenges', C('4'), 2, C('0')).setDepth(2);
+    if (feature('arena')) makeButton(this, W - 53, 20, 70, 22, 'Arena', 'go', () => { sfx.click(); goTo(this, 'arena'); }, 3);
     TABS.forEach((t, i) => {
       makeButton(this, W / 2 + (i - 1) * 100, 42, 92, 20, t.label, t.id === this.tab ? 'go' : 'plain', () => {
         sfx.click();

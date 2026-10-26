@@ -24,7 +24,7 @@ export interface Hud {
   setCoins(n: number): void;
   setScore(n: number): void;
   mash(mult: number): void;
-  showPause(h: { resume: () => void; restart: () => void; map: () => void }): void;
+  showPause(h: { resume?: () => void; restart?: () => void; map: () => void; mapLabel?: string; title?: string }): void;
   hidePause(): void;
   setMuted(m: boolean): void;
 }
@@ -203,7 +203,7 @@ export function createHud(
       host.inUi(() => {
         const dim = scene.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.74).setDepth(40).setInteractive();
         const g = panel(scene, W / 2 - 90, 35, 180, 195, '8', '9', 'f', 41);
-        const title = text(scene, W / 2, 54, 'Paused', C('4'), 2, C('0')).setDepth(42);
+        const title = text(scene, W / 2, 54, h.title ?? 'Paused', C('4'), 2, C('0')).setDepth(42);
         const soundLabel = (): string => (profile.settings.muted ? 'Sound is off' : 'Sound is on');
         const sound = makeButton(scene, W / 2, 148, 126, 22, soundLabel(), 'plain', () => {
           setMuted(!profile.settings.muted);
@@ -237,9 +237,9 @@ export function createHud(
         musicBtn.box.setY(154);
         pauseObjs = [
           dim, g, title, sound.box, musicBtn.box,
-          makeButton(scene, W / 2, 78, 126, 26, 'Resume', 'go', () => { sfx.click(); h.resume(); }, 42).box,
-          makeButton(scene, W / 2, 106, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart(); }, 42).box,
-          makeButton(scene, W / 2, 204, 126, 22, 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
+          ...(h.resume ? [makeButton(scene, W / 2, 78, 126, 26, 'Resume', 'go', () => { sfx.click(); h.resume?.(); }, 42).box] : []),
+          ...(h.restart ? [makeButton(scene, W / 2, 106, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart?.(); }, 42).box] : []),
+          makeButton(scene, W / 2, 204, 126, 22, h.mapLabel ?? 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
           ...(fsBtn ? [fsBtn.box] : []),
         ];
       });
