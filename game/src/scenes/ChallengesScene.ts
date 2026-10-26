@@ -6,6 +6,7 @@ import { H, W } from '../config/constants';
 import { feature } from '../config/settings';
 import { goTo, irisOpen } from '../core/flow';
 import { listChallenges, type Challenge, type ChallengeSort } from '../core/challenges';
+import { helpButton, maybeTutorial } from '../ui/tutorial';
 import { makeButton, panel } from '../ui/widgets';
 
 const TABS: { id: ChallengeSort; label: string }[] = [{ id: 'top', label: 'Top' }, { id: 'new', label: 'New' }, { id: 'mine', label: 'Mine' }];
@@ -56,6 +57,8 @@ export default class ChallengesScene extends Phaser.Scene {
     }).catch(() => {
       if (mine === this.token && this.scene.isActive() && this.status) setText(this.status, this, 'Could not load challenges', C('d'), C('0'));
     });
+    helpButton(this, 16, 20, ['challenges', 'builder', 'arena', 'leaderboards'], 9);
+    maybeTutorial(this, 'challenges');
     irisOpen(this);
   }
 

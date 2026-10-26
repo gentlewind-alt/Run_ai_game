@@ -12,6 +12,7 @@ import { data } from '../data/load';
 import type { BuilderConfig, LevelBlock, LevelConnection, LevelMonster } from '../data/types';
 import { platform } from '../platform';
 import { makeButton, type Btn } from '../ui/widgets';
+import { maybeTutorial, tutorialOpen } from '../ui/tutorial';
 
 const STORAGE_KEY = 'monster-mash.builder.v1';
 const FILE_LIMIT = 100000;
@@ -145,6 +146,7 @@ export default class BuilderScene extends Phaser.Scene {
       this.exportUrls.clear();
     });
     if (this.loading) void this.restoreDraft(generation);
+    maybeTutorial(this, 'builder', 700);
   }
 
   private async restoreDraft(generation: number): Promise<void> {
@@ -360,6 +362,7 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private pointerDown(pointer: Phaser.Input.Pointer): void {
+    if (tutorialOpen()) return;
     if (this.running || this.loading || !this.inside(pointer)) return;
     const point = this.worldPoint(pointer);
     if (pointer.rightButtonDown()) { this.rotate(pointer.event.shiftKey ? -45 : 45); return; }

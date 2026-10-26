@@ -10,6 +10,7 @@ import { arena } from '../core/arena';
 import { listChallenges, type Challenge } from '../core/challenges';
 import { goTo, irisOpen } from '../core/flow';
 import { data } from '../data/load';
+import { helpButton, maybeTutorial } from '../ui/tutorial';
 import { makeButton, panel, type Btn } from '../ui/widgets';
 
 type Tab = 'online' | 'invites' | 'match';
@@ -39,6 +40,8 @@ export default class ArenaScene extends Phaser.Scene {
     this.events.once('shutdown', () => { this.generation++; off(); offSetup(); });
     if (arena.status === 'online') arena.sync();
     this.draw();
+    helpButton(this, W - 22, 22, ['arena', 'challenges'], 9);
+    maybeTutorial(this, 'arena');
     irisOpen(this);
   }
 

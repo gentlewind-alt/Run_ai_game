@@ -1,0 +1,92 @@
+{
+  "_note": "Skippable how-to cards. Each section has pages (title up to 28 chars, body up to 260 chars). src/ui/tutorial.ts shows a section once per player (flags tut_<id>), a '?' button reopens it, and Guides lists them all. Keep to letters, digits and . , : ! ? - + x ( ) because the pixel font has no apostrophe or semicolon.",
+  "sections": {
+    "map": {
+      "title": "The Map",
+      "pages": [
+        { "title": "Realms and levels", "body": "Each strip is a realm full of levels. Tap a lit level to play it. Clear a level to unlock the next one. The Daily Mash is a fresh level every day with its own leaderboard." },
+        { "title": "Stars and bosses", "body": "Earn up to 3 stars per level for a high score and spare shots. Boss levels can drop relics, powerful weapons you keep. Bonus realms at the end have tougher forts." }
+      ]
+    },
+    "loadout": {
+      "title": "Pick Your Weapons",
+      "pages": [
+        { "title": "Fill your slots", "body": "Tap a weapon to fill the next slot. Weapons fire in slot order, one per shot. Tap a filled slot to clear it. A level gives you a limited number of shots, so plan the order." },
+        { "title": "Limits and extras", "body": "You can carry only one Legendary weapon at a time. Artifacts and items on the right are optional boosts. Tap Fling when you are ready." }
+      ]
+    },
+    "abilities": {
+      "title": "Weapon Abilities",
+      "pages": [
+        { "title": "Tap in flight", "body": "Every weapon has a tap ability. While it is flying, tap the ability button (or press Space) to trigger it. The weapon card tells you what it does on the Tap line." },
+        { "title": "Button, impact, both", "body": "Button: you choose the moment. Both: tap it, or it fires on its first hit. Legendary and Epic abilities have limited charges, so use them on purpose." },
+        { "title": "Examples", "body": "Whirl spins the blade through blocks. Volley splits the staff into many bolts. Nuke makes the blast tube explode. Try each one on a quiet level to learn its timing." }
+      ]
+    },
+    "flight": {
+      "title": "Why Weapons Fly Differently",
+      "pages": [
+        { "title": "Same speed, different pull", "body": "Every weapon leaves the sling at the same speed for the same pull. What changes is how hard gravity pulls it down once it is in the air." },
+        { "title": "Light weapons go far", "body": "The Boomerang, Staff and Scepter have low gravity, so they float farther and flatter. Choose them for forts that are far away." },
+        { "title": "Heavy weapons drop", "body": "The Cleaver has high gravity and drops sooner, so it smashes near or tall targets. Legendary weapons also feel a little air drag as they fly." },
+        { "title": "Aiming tip", "body": "Aim higher for more distance. Pull is capped, so when a fort is out of reach, switch to a lighter weapon instead of pulling harder." }
+      ]
+    },
+    "damage": {
+      "title": "Damage and Elements",
+      "pages": [
+        { "title": "Base damage", "body": "The number on a weapon card is its base damage. Faster impacts hit harder, and forge levels add extra damage on top." },
+        { "title": "Elements", "body": "A monster weak to your weapon element takes 1.5x damage. A resistant one takes only 0.6x. Check the monster before you choose." },
+        { "title": "Who is weak to what", "body": "Goblins are weak to Hellfire. Dark Elves are weak to Radiant and resist Void. Each realm has its own weaknesses, so mix your elements." },
+        { "title": "Combos", "body": "Land kills within 2 seconds of each other to build a combo. The score multiplier grows with every kill, up to x3." }
+      ]
+    },
+    "forge": {
+      "title": "The Forge",
+      "pages": [
+        { "title": "Upgrade damage", "body": "Open the Forge tab to upgrade a weapon you own. Each level adds 8 percent damage, up to level 5." },
+        { "title": "What it costs", "body": "The first upgrade costs 50 coins and each level costs 1.6x more. Rare weapons cost 1.5x and Legendary weapons 2.5x as much." },
+        { "title": "Spend wisely", "body": "Upgrade the weapons you use the most. Replays and lost levels pay fewer coins than a first clear, so coins are worth saving." }
+      ]
+    },
+    "shop": {
+      "title": "The Shop",
+      "pages": [
+        { "title": "Tabs", "body": "Spend the coins you earn in levels. The tabs are Weapons, Relics, Artifacts, Items, Forge and Slingshots. Tap a card to read what it does." },
+        { "title": "Getting weapons", "body": "Most weapons unlock at a level and then cost coins. Boss relics drop from bosses, or can be bought after three losses against that boss." },
+        { "title": "Items and artifacts", "body": "Items are single use and stack up to 5. Artifacts stay equipped from the loadout screen. On a win you can watch an ad to double the coins." }
+      ]
+    },
+    "challenges": {
+      "title": "Global Challenges",
+      "pages": [
+        { "title": "Play other levels", "body": "Challenges are levels other players built. Top shows the most played, New the latest, and Mine the ones you shared." },
+        { "title": "Rules per challenge", "body": "The author limits how many shots you get and which weapons you may use. Only weapons you own are shown. Clear it to post a score on its own leaderboard." },
+        { "title": "Share your own", "body": "Build a fort in Create level, tap Challenge, pick the allowed weapons and share it. Only you can edit or delete your challenge." }
+      ]
+    },
+    "builder": {
+      "title": "Level Builder",
+      "pages": [
+        { "title": "Place and move", "body": "Pick a piece and a material, then tap the grid. Pieces snap to the grid cells. With Select, tap to pick one piece or drag across empty space to pick many and move them together." },
+        { "title": "Join and fix", "body": "Lock joins two blocks, Rope hangs a block, Anchor fixes one in place and Rotate turns a piece a quarter turn. Undo and Clear are at the top." },
+        { "title": "Test and share", "body": "Test runs real physics on your fort. Play lets you fling at it. Challenge shares it with everyone. Add at least one target first." }
+      ]
+    },
+    "arena": {
+      "title": "Global Arena",
+      "pages": [
+        { "title": "Head to head", "body": "See players who are online and invite one to a match on a shared challenge. Each of you plays one full attempt. A clear beats no clear, then the higher score wins." },
+        { "title": "Wagers", "body": "A wager is optional and uses Arena coins, separate from your campaign coins. You start with 100. A draw gives the stakes back." },
+        { "title": "Invite limits", "body": "Three rejected invites in a row from the same sender block that sender for one hour. You need a RUN account to join the Arena." }
+      ]
+    },
+    "leaderboards": {
+      "title": "Leaderboards",
+      "pages": [
+        { "title": "Three boards", "body": "Daily is the Daily Mash. This level is the level you last played. Overall adds your best score on every level together." },
+        { "title": "Your name", "body": "Your own row shows as You. A RUN account shows its account name. Guests can pick a name with the Set name button." }
+      ]
+    }
+  }
+}

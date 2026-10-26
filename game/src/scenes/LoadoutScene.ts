@@ -12,6 +12,7 @@ import { data } from '../data/load';
 import { levelDef, shortWeaponName } from '../data/lookup';
 import { makeButton } from '../ui/widgets';
 import { createItemCard } from '../ui/cards';
+import { helpButton, maybeTutorial } from '../ui/tutorial';
 
 const PAGE_SIZE = 10;
 
@@ -115,6 +116,8 @@ export default class LoadoutScene extends Phaser.Scene {
     }
 
     this.refresh();
+    helpButton(this, 252, H - 18, ['loadout', 'abilities', 'flight', 'damage'], 9);
+    maybeTutorial(this, ['loadout', 'abilities', ...(this.level >= 3 ? ['flight'] : []), ...(this.level >= 5 ? ['damage'] : [])]);
     irisOpen(this);
   }
 

@@ -18,6 +18,7 @@ import { data } from '../data/load';
 import { monsterDef, shortItemName, shortWeaponName } from '../data/lookup';
 import { coinCounter } from '../ui/coins';
 import { createItemCard } from '../ui/cards';
+import { helpButton, maybeTutorial } from '../ui/tutorial';
 import { makeButton, panel, type Btn } from '../ui/widgets';
 
 type Tab = 'weapons' | 'relics' | 'artifacts' | 'items' | 'forge' | 'slingshots';
@@ -77,6 +78,8 @@ export default class ShopScene extends Phaser.Scene {
     makeButton(this, W / 2, H - 16, 110, 22, 'Back to map', 'plain', () => { if (this.forgeDragMoved) return; sfx.click(); goTo(this, 'map'); }, 6);
     this.render();
     this.adButton();
+    helpButton(this, W - 16, 12, ['shop', 'damage', 'forge', 'flight', 'abilities'], 9);
+    maybeTutorial(this, ['shop', 'damage']);
     irisOpen(this);
     this.input.on('wheel', this.onForgeWheel, this);
     this.input.on('pointerdown', this.onForgeDown, this);

@@ -11,6 +11,7 @@ import { feature } from '../config/settings';
 import { platform } from '../platform';
 import { admin, adminReady, lock, unlock } from '../core/admin';
 import { askAdminCode } from '../ui/adminPrompt';
+import { helpButton } from '../ui/tutorial';
 import { monsterDef } from '../data/lookup';
 import { goTo, irisOpen } from '../core/flow';
 import { profile, setMusicOn } from '../core/profile';
@@ -113,6 +114,7 @@ export default class TitleScene extends Phaser.Scene {
       });
     });
     music.play({ theme: 'title' });
+    helpButton(this, W - 16, 14, undefined, 8);
     irisOpen(this);
   }
 

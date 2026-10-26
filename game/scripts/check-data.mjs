@@ -194,6 +194,27 @@ if (content) {
   }
 }
 
+// ---------------------------------------------------------------- tutorials
+
+{
+  const file = 'tutorials.json';
+  const tut = readJson(join(dataDir, file));
+  const need = ['map', 'loadout', 'abilities', 'flight', 'damage', 'forge', 'shop', 'challenges', 'builder', 'arena', 'leaderboards'];
+  if (!tut?.sections) err(file, 'missing "sections"');
+  else {
+    for (const id of need) if (!tut.sections[id]) err(file, `section "${id}" is used by the game but missing`);
+    for (const [id, sec] of Object.entries(tut.sections)) {
+      if (typeof sec.title !== 'string' || !sec.title || sec.title.length > 30) err(file, `${id}: title needs 1 to 30 characters`);
+      if (!Array.isArray(sec.pages) || sec.pages.length < 1 || sec.pages.length > 6) err(file, `${id}: needs 1 to 6 pages`);
+      (sec.pages ?? []).forEach((p, i) => {
+        if (typeof p.title !== 'string' || !p.title || p.title.length > 28) err(file, `${id}.pages[${i}].title needs 1 to 28 characters`);
+        if (typeof p.body !== 'string' || !p.body || p.body.length > 260) err(file, `${id}.pages[${i}].body needs 1 to 260 characters`);
+        if (/['`;"]/.test(`${p.title}${p.body}`)) err(file, `${id}.pages[${i}]: the pixel font has no apostrophe, quote or semicolon`);
+      });
+    }
+  }
+}
+
 // ---------------------------------------------------------------- report
 
 for (const w of warnings) console.log(`warn  ${w}`);

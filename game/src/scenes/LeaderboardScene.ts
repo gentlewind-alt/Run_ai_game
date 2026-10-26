@@ -9,6 +9,7 @@ import { data } from '../data/load';
 import { platform } from '../platform';
 import { DAILY_BOARD, OVERALL_BOARD, levelBoard } from '../platform/boards';
 import type { Row } from '../platform/types';
+import { helpButton, maybeTutorial } from '../ui/tutorial';
 import { makeButton, panel } from '../ui/widgets';
 import { askText } from '../ui/adminPrompt';
 import { cleanName, setNickname, whoAmI } from '../core/identity';
@@ -82,6 +83,8 @@ export default class LeaderboardScene extends Phaser.Scene {
         });
       }, 3);
     }).catch(() => { this.myName = ''; }).finally(() => this.refresh(false));
+    helpButton(this, W - 30, 20, ['leaderboards'], 9);
+    maybeTutorial(this, 'leaderboards');
     irisOpen(this);
   }
 

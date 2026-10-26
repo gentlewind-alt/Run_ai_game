@@ -6,6 +6,7 @@ export const data = {
   config: undefined as unknown as Config,
   levels: {} as Record<number, Level>,
   music: undefined as unknown as MusicData | undefined,
+  tutorials: undefined as unknown as { sections: Record<string, { title: string; pages: { title: string; body: string }[] }> } | undefined,
 };
 
 async function getJson<T>(path: string): Promise<T | undefined> {
@@ -24,6 +25,7 @@ export async function loadData(): Promise<void> {
   data.config = config;
   data.content = content;
   data.music = await getJson<MusicData>('data/music.json');
+  data.tutorials = await getJson<NonNullable<typeof data.tutorials>>('data/tutorials.json');
   await Promise.all((config.levels ?? []).map(async (id) => {
     const lv = await getJson<Level>(`data/levels/level_${String(id).padStart(2, '0')}.json`);
     if (lv) data.levels[id] = lv;
