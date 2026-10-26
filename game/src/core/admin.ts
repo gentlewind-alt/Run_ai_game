@@ -4,9 +4,9 @@
 // account owns the game, so the code alone cannot delete anything.
 import { platform } from '../platform';
 
-const SALT = 'mm-admin-v1:189e0552585ecb05';
+const SALT = 'mm-admin-v1:922e4ae86f514568';
 const ITERATIONS = 100000;
-const ADMIN_HASH = 'e918343ecc5d47cd2b7995ece6772b2ed227e4727c45931ed19878718d8b401c';
+const ADMIN_HASH = 'a58434f995af3f475901ed6670bee294b15cd99d28b2a22c3c61a038756f34a3';
 const KEY = 'monster-mash.admin.v1';
 
 export const admin = { is: false };
