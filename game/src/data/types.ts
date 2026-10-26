@@ -212,5 +212,6 @@ export interface Config {
   };
   features: Record<string, boolean>;
   links?: Record<string, string>;
+  practice?: { levels: number[]; loadout: string[]; stakes: number[]; startCoins: number; botThinkMs: number; botSkill: number };
   debug: { urlOverrides: boolean; testHook: boolean };
 }

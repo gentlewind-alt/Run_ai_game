@@ -2,7 +2,8 @@ import Phaser from 'phaser';
 import { homeCx, homeZoom, setView, toggleView } from '../battle/camera';
 import { createBattle, buildBattle, startBattle } from '../battle/setup';
 import { update } from '../battle/loop';
-import { activateAbility, skipToReady, updateCursor } from '../battle/sling';
+import { activateAbility, launchFrom, skipToReady, updateCursor } from '../battle/sling';
+import { practiceConfig, type PracticeTurn } from '../core/practice';
 import type { BattleState } from '../battle/state';
 import type { Level } from '../data/types';
 import { C } from '../art/palette';
@@ -41,16 +42,25 @@ export default class BattleScene extends Phaser.Scene {
   private arenaSubmitted = false;
   private arenaInterrupted = false;
   private arenaLeaving = false;
+  private practice?: PracticeTurn;
+  private botWait = 0;
+  private botShots = 0;
+  private botLastX = 0;
+  private botAngle = 38;
+  private botPower = 0.75;
+  private botTapped = false;
 
   constructor() {
     super('game');
   }
 
-  init(data: { level: number; loadout: string[]; customLevel?: Level; challenge?: Challenge; arena?: ArenaSetup }): void {
+  init(data: { level: number; loadout: string[]; customLevel?: Level; challenge?: Challenge; arena?: ArenaSetup; practice?: PracticeTurn }): void {
     this.levelId = data.level ?? 1;
     this.loadout = (data.loadout ?? DEFAULT_LOADOUT).slice();
-    this.customLevel = data.customLevel;
+    this.practice = data.practice;
+    this.customLevel = data.customLevel ?? data.practice?.level;
     this.challenge = data.challenge;
+    this.botWait = 0; this.botShots = 0; this.botLastX = 0; this.botAngle = 38; this.botPower = 0.75; this.botTapped = false;
     this.arenaSetup = data.arena;
     this.arenaSent = 0; this.arenaSubmitted = false; this.arenaInterrupted = false; this.arenaLeaving = false;
   }
@@ -58,7 +68,7 @@ export default class BattleScene extends Phaser.Scene {
   create(): void {
     this.scene.resume();
     events.beginBattle();
-    const b = (this.b = createBattle(this, this.levelId, this.loadout, this.customLevel, !!this.arenaSetup));
+    const b = (this.b = createBattle(this, this.levelId, this.loadout, this.customLevel, !!this.arenaSetup || !!this.practice));
     buildBattle(b);
 
     const shouldShowHint = !b.custom && b.settings.features.tutorial !== false && !hasSeenHint(this.levelId, 0);
@@ -79,7 +89,12 @@ export default class BattleScene extends Phaser.Scene {
       onPause: () => this.setPaused(true),
     });
     b.ui = this.hud.ui;
-    if (b.custom && !this.challenge && !this.arenaSetup) b.inUi(() => {
+    if (this.practice) {
+      const p = this.practice;
+      b.inUi(() => text(this, W / 2, 12, this.practiceLabel(p), C('4'), 1, C('0')).setDepth(12));
+      if (p.bot) this.input.enabled = false;
+    }
+    if (b.custom && !this.challenge && !this.arenaSetup && !this.practice) b.inUi(() => {
       makeButton(this, W - 98, 14, 42, 24, 'Edit', 'plain', () => goTo(this, 'builder'), 12);
     });
     this.wireHud(b);
@@ -190,11 +205,12 @@ export default class BattleScene extends Phaser.Scene {
     if (on) {
       this.hud.showPause({
         resume: this.arenaInterrupted ? undefined : () => this.setPaused(false),
-        restart: this.arenaSetup ? undefined : () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge }); },
+        restart: this.arenaSetup || this.practice ? undefined : () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge }); },
         title: this.arenaInterrupted ? 'Turn interrupted' : 'Paused',
-        mapLabel: this.arenaSetup ? 'Forfeit turn' : undefined,
+        mapLabel: this.arenaSetup ? 'Forfeit turn' : this.practice ? 'Leave practice' : undefined,
         map: () => {
-          if (this.arenaSetup) { this.arenaLeaving = true; arena.forfeit(); goTo(this, 'arena', { tab: 'match' }); }
+          if (this.practice) goTo(this, 'practice', { leave: true });
+          else if (this.arenaSetup) { this.arenaLeaving = true; arena.forfeit(); goTo(this, 'arena', { tab: 'match' }); }
           else if (this.challenge) goTo(this, 'challenge', { id: this.challenge.id, challenge: this.challenge });
           else goTo(this, b.custom ? 'builder' : 'map');
         },
@@ -212,6 +228,7 @@ export default class BattleScene extends Phaser.Scene {
     update(this.b, delta, this.game.getTime());
     updateCursor(this.b);
     const b = this.b;
+    if (this.practice?.bot && !b.paused) this.botStep(b, delta);
     if (this.arenaSetup && b.arena && !this.arenaSubmitted && !this.arenaInterrupted && !this.arenaLeaving) {
       while (this.arenaSent < b.arena.actions.length) {
         if (!arena.sendInput(this.arenaSetup, b.arena.actions[this.arenaSent])) {
@@ -222,6 +239,7 @@ export default class BattleScene extends Phaser.Scene {
     }
     if (b.custom && !b.paused && (b.state === 'won' || b.state === 'lost')) {
       b.paused = true;
+      if (this.practice) { this.practiceEnd(b); return; }
       if (this.arenaSetup) {
         if (!this.arenaSubmitted && !this.arenaInterrupted && b.arena) {
           this.arenaSubmitted = true;
@@ -242,6 +260,50 @@ export default class BattleScene extends Phaser.Scene {
         }, 32);
       });
     }
+  }
+
+  private practiceLabel(p: PracticeTurn): string {
+    if (p.bot) return 'Rival Bot turn';
+    if (p.vsBot) return 'Your turn';
+    return p.who === 0 ? 'Player 1 turn' : 'Player 2 turn';
+  }
+
+  /** The Rival Bot: waits a moment, aims at the nearest monster, and corrects its power from where its last shot landed. */
+  private botStep(b: BattleState, delta: number): void {
+    const cfg = practiceConfig();
+    if (b.proj) {
+      this.botLastX = b.proj.body.position.x;
+      if (!this.botTapped && !b.proj.tapped && b.proj.steps > 55) { this.botTapped = true; activateAbility(b); }
+      return;
+    }
+    if (b.state !== 'ready') return;
+    this.botWait += delta;
+    if (this.botWait < cfg.botThinkMs) return;
+    this.botWait = 0;
+    this.botTapped = false;
+    const target = b.ents.filter((e) => e.kind === 'monster' && !e.dead).sort((x, y) => x.body.position.x - y.body.position.x)[0];
+    if (!target) return;
+    if (this.botShots > 0) {
+      const err = this.botLastX - target.body.position.x; // positive: it flew past, negative: it fell short
+      this.botPower -= Phaser.Math.Clamp(err / 260, -0.3, 0.3);
+      if (this.botPower > 1) { this.botPower = 1; this.botAngle = Math.min(60, this.botAngle + 3); }
+      if (this.botPower < 0.35) { this.botPower = 0.35; this.botAngle = Math.max(20, this.botAngle - 2); }
+    }
+    const slip = 1 - cfg.botSkill; // a weaker bot wobbles more
+    launchFrom(b, this.botAngle + Phaser.Math.FloatBetween(-1, 1) * slip * 8, Phaser.Math.Clamp(this.botPower + Phaser.Math.FloatBetween(-1, 1) * slip * 0.14, 0.3, 1));
+    this.botShots++;
+  }
+
+  /** End of a practice turn: show the result for a moment, then hand it to the practice screen. */
+  private practiceEnd(b: BattleState): void {
+    const cleared = b.state === 'won';
+    const score = Math.round(b.score);
+    b.inUi(() => {
+      this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.7).setDepth(30);
+      text(this, W / 2, 100, cleared ? 'Cleared!' : 'Out of shots', C('4'), 2, C('0')).setDepth(31);
+      text(this, W / 2, 128, `Score ${score}`, C('c'), 1, C('0')).setDepth(31);
+    });
+    this.time.delayedCall(1700, () => { if (this.scene.isActive()) goTo(this, 'practice', { result: { cleared, score, shotsUsed: b.shotIdx } }); });
   }
 
   /** End of a Global Challenge attempt: show the score, keep the player's best on the challenge's own board and show their rank. */

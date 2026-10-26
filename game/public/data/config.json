@@ -75,11 +75,20 @@
     "groundFrac": 0.84,
     "zoomOutRise": 0.2
   },
+  "practice": {
+    "levels": [31, 32, 33, 30],
+    "loadout": ["w_iron_cleaver", "w_ashwood_staff", "w_hunters_pike", "w_blast_tube", "w_scrapheap_scattergun", "w_hunters_boomerang"],
+    "stakes": [0, 10, 25, 50],
+    "startCoins": 100,
+    "botThinkMs": 1100,
+    "botSkill": 0.7
+  },
   "links": {
     "vote": "https://run.world/jams/octoberjam?game=83DTzRcGtCh99lCAuhBn"
   },
   "features": {
     "voteButton": true,
+    "practice": true,
     "arena": true,
     "builder": true,
     "challenges": true,
