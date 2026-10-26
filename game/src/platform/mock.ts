@@ -134,6 +134,17 @@ export const mockPlatform: Platform = {
       return r.uses;
     },
   },
+  fullscreen: {
+    available: () => typeof document !== 'undefined' && !!document.documentElement.requestFullscreen,
+    active: () => typeof document !== 'undefined' && !!document.fullscreenElement,
+    async toggle() {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else await document.documentElement.requestFullscreen();
+      } catch { /* refused */ }
+      return !!document.fullscreenElement;
+    },
+  },
   async share(text, params) {
     console.debug('[mock] share:', text, params ?? '');
     return true;

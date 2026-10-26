@@ -8,6 +8,7 @@ import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { feature } from '../config/settings';
+import { platform } from '../platform';
 import { admin, adminReady, lock, unlock } from '../core/admin';
 import { askAdminCode } from '../ui/adminPrompt';
 import { monsterDef } from '../data/lookup';
@@ -73,6 +74,13 @@ export default class TitleScene extends Phaser.Scene {
       sfx.unlock();
       music.updateVolume();
     });
+    if (platform.fullscreen.available()) {
+      const label = (): string => (platform.fullscreen.active() ? 'Exit full screen' : 'Full screen');
+      const fsBtn = makeButton(this, btnX, 208, 110, 22, label(), 'plain', () => {
+        sfx.unlock();
+        void platform.fullscreen.toggle().then(() => { if (this.scene.isActive()) { fsBtn.setLabel(label()); sfx.click(); } });
+      }, 6);
+    }
     const adminTag = (): void => {
       const tag = text(this, W - 6, H - 8, 'Admin: ` for tools. Tap to lock', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(6).setInteractive();
       tag.on('pointerdown', () => { void lock().then(() => this.scene.restart()); });

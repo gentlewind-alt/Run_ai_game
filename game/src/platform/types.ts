@@ -34,6 +34,8 @@ export interface Platform {
     adminRemove(id: string): Promise<boolean>;
     adminBrowse(type: string, limit: number): Promise<UgcRow[]>;
   };
+  /** Full screen. `toggle` must run straight from a tap (the browser drops the gesture otherwise) and returns whether the game is full screen afterwards. */
+  fullscreen: { available(): boolean; active(): boolean; toggle(): Promise<boolean> };
   share(text: string, params?: Record<string, string>): Promise<boolean>;
   ads: { rewardedReady(): Promise<boolean>; showRewarded(placementId?: string, placementName?: string): Promise<boolean> };
   iap: { available(): boolean; buy(itemId: string): Promise<boolean>; owned(itemId: string): Promise<boolean> };
@@ -68,6 +70,7 @@ export const noopPlatform = {
     async adminRemove(): Promise<boolean> { return false; },
     async adminBrowse(): Promise<UgcRow[]> { return []; },
   },
+  fullscreen: { available: (): boolean => false, active: (): boolean => false, async toggle(): Promise<boolean> { return false; } },
   async share(): Promise<boolean> {
     return false;
   },

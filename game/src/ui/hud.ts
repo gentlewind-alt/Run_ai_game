@@ -218,11 +218,20 @@ export function createHud(
           sfx.click();
           musicBtn.setLabel(musicLabel());
         }, 42);
+        const fsLabel = (): string => (platform.fullscreen.active() ? 'Exit full screen' : 'Full screen');
+        const fsBtn = platform.fullscreen.available()
+          ? makeButton(scene, W / 2, 178, 126, 22, fsLabel(), 'plain', () => {
+            void platform.fullscreen.toggle().then(() => { fsBtn?.setLabel(fsLabel()); sfx.click(); });
+          }, 42)
+          : undefined;
+        sound.box.setY(130);
+        musicBtn.box.setY(154);
         pauseObjs = [
           dim, g, title, sound.box, musicBtn.box,
-          makeButton(scene, W / 2, 88, 126, 26, 'Resume', 'go', () => { sfx.click(); h.resume(); }, 42).box,
-          makeButton(scene, W / 2, 120, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart(); }, 42).box,
-          makeButton(scene, W / 2, 202, 126, 22, 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
+          makeButton(scene, W / 2, 78, 126, 26, 'Resume', 'go', () => { sfx.click(); h.resume(); }, 42).box,
+          makeButton(scene, W / 2, 106, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart(); }, 42).box,
+          makeButton(scene, W / 2, 204, 126, 22, 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
+          ...(fsBtn ? [fsBtn.box] : []),
         ];
       });
     },

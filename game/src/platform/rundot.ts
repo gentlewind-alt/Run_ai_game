@@ -85,6 +85,22 @@ export const rundotPlatform: Platform = {
       }
     },
   },
+  fullscreen: (() => {
+    let on = false;
+    safe(() => RundotGameAPI.system.onFullscreenStateChange((s) => { on = s.active; }), undefined);
+    return {
+      available: () => safe(() => RundotGameAPI.system.getEnvironment().capabilities.fullscreen === 'toggleable', false),
+      active: () => on,
+      // the request is the first call in the tap handler, so the browser still counts it as the player's own action
+      async toggle() {
+        try {
+          const s = await (on ? RundotGameAPI.system.exitFullscreen() : RundotGameAPI.system.requestFullscreen());
+          on = s.active;
+        } catch { /* stays as it was */ }
+        return on;
+      },
+    };
+  })(),
   ugc: {
     async create(type, title, data) {
       try {
