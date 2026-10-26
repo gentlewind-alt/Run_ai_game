@@ -38,6 +38,11 @@ export const rundotPlatform: Platform = {
       } catch { /* storage is optional */ }
     },
   },
+  async profile() {
+    // the signed-in RUN account (or a guest): this is what ties leaderboard rows and challenges to the player
+    const p: any = safe(() => RundotGameAPI.getCurrentProfile(), undefined);
+    return { id: String(p?.id ?? 'guest'), name: String(p?.username ?? p?.name ?? 'Player'), avatarUrl: p?.avatarUrl ?? undefined, anonymous: p?.isAnonymous === true };
+  },
   async serverTime(): Promise<number> {
     try {
       const res = await RundotGameAPI.requestTimeAsync();
@@ -57,9 +62,9 @@ export const rundotPlatform: Platform = {
     onQuit: (f) => safe(() => RundotGameAPI.lifecycles.onQuit(f), undefined),
   },
   leaderboard: {
-    async submit(board: string, score: number, seconds?: number): Promise<void> {
+    async submit(board: string, score: number, seconds?: number, displayName?: string): Promise<void> {
       try {
-        await RundotGameAPI.leaderboard.submitScore({ score, duration: Math.max(1, seconds ?? 60), ...boardRoute(board) });
+        await RundotGameAPI.leaderboard.submitScore({ score, duration: Math.max(1, seconds ?? 60), ...(displayName ? { metadata: { displayName } } : {}), ...boardRoute(board) });
       } catch (e) {
         console.warn('leaderboard submit failed', e);
       }
@@ -67,10 +72,13 @@ export const rundotPlatform: Platform = {
     async top(board: string, n: number): Promise<Row[]> {
       try {
         const res: any = await RundotGameAPI.leaderboard.getPagedScores({ limit: n, ...boardRoute(board) });
+        const me = safe(() => String(RundotGameAPI.getCurrentProfile().id), '');
         return (res?.entries ?? []).map((e: any, i: number) => ({
           rank: e.rank ?? i + 1,
-          name: e.player?.username ?? 'Player',
+          // a guest's own chosen name rides in the score's metadata; a RUN account always shows its account name
+          name: String(e.metadata?.displayName ?? e.username ?? 'Player'),
           score: e.score ?? 0,
+          mine: !!me && e.profileId === me,
         }));
       } catch {
         return [];
@@ -79,7 +87,7 @@ export const rundotPlatform: Platform = {
     async myRank(board: string): Promise<Row | null> {
       try {
         const res: any = await RundotGameAPI.leaderboard.getMyRank({ ...boardRoute(board) });
-        return res ? { rank: res.rank, name: 'You', score: res.score } : null;
+        return res && res.rank ? { rank: res.rank, name: 'You', score: res.score, mine: true } : null;
       } catch {
         return null;
       }
@@ -88,12 +96,15 @@ export const rundotPlatform: Platform = {
   fullscreen: (() => {
     let on = false;
     let note = '';
-    safe(() => RundotGameAPI.system.onFullscreenStateChange((s) => { on = s.active; }), undefined);
+    const listeners: (() => void)[] = [];
+    const tell = (): void => listeners.forEach((f) => f());
+    safe(() => RundotGameAPI.system.onFullscreenStateChange((s) => { on = s.active; tell(); }), undefined);
     const capability = (): string => safe(() => RundotGameAPI.system.getEnvironment().capabilities.fullscreen, 'unavailable') as string;
     return {
       available: () => true, // the button always shows; a refusal is explained on screen
       active: () => on,
       note: () => note,
+      onChange: (f: () => void) => { listeners.push(f); return () => { const i = listeners.indexOf(f); if (i >= 0) listeners.splice(i, 1); }; },
       // the request is the first call in the tap handler, so the browser still counts it as the player's own action
       async toggle() {
         note = '';
@@ -101,6 +112,7 @@ export const rundotPlatform: Platform = {
         try {
           const s = await (on ? RundotGameAPI.system.exitFullscreen() : RundotGameAPI.system.requestFullscreen());
           on = s.active;
+          tell();
         } catch { /* handled below */ }
         if (!on && capability() !== 'toggleable') note = 'Full screen is not offered on this page. Try the RUN menu, or Add to Home screen in your browser.';
         else if (!on) note = 'Full screen was refused. Try the RUN menu.';

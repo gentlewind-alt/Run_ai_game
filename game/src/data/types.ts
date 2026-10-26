@@ -211,5 +211,6 @@ export interface Config {
     followLead: number; followEase: number; groundFrac: number; zoomOutRise: number;
   };
   features: Record<string, boolean>;
+  links?: Record<string, string>;
   debug: { urlOverrides: boolean; testHook: boolean };
 }

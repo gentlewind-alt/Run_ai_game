@@ -1,4 +1,6 @@
-export interface Row { rank: number; name: string; score: number }
+import { openLink } from './link';
+
+export interface Row { rank: number; name: string; score: number; /** This row is the signed-in player. */ mine?: boolean }
 
 /** A user-generated entry in the shared community store (the Global Challenge levels and their scores). */
 export interface UgcRow {
@@ -18,9 +20,10 @@ export interface Platform {
   init(): Promise<void>;
   storage: { get(key: string): Promise<string | null>; set(key: string, v: string): Promise<void> };
   serverTime(): Promise<number>; // ms epoch
-  profile(): Promise<{ id: string; name: string; avatarUrl?: string }>;
+  /** The signed-in player. `anonymous` is true for a guest (no RUN account). */
+  profile(): Promise<{ id: string; name: string; avatarUrl?: string; anonymous?: boolean }>;
   safeArea(): { top: number; bottom: number; left: number; right: number };
-  leaderboard: { submit(board: string, score: number, seconds?: number): Promise<void>; top(board: string, n: number): Promise<Row[]>; myRank(board: string): Promise<Row | null> };
+  leaderboard: { submit(board: string, score: number, seconds?: number, displayName?: string): Promise<void>; top(board: string, n: number): Promise<Row[]>; myRank(board: string): Promise<Row | null> };
   /** Shared community store. Only the author of an entry can update or remove it (the host enforces this). */
   ugc: {
     create(type: string, title: string, data: Record<string, unknown>): Promise<UgcRow | null>;
@@ -35,7 +38,9 @@ export interface Platform {
     adminBrowse(type: string, limit: number): Promise<UgcRow[]>;
   };
   /** Full screen. `toggle` must run straight from a tap (the browser drops the gesture otherwise) and returns whether the game is full screen afterwards. */
-  fullscreen: { available(): boolean; active(): boolean; toggle(): Promise<boolean>; /** Why the last toggle did nothing, or '' */ note(): string };
+  /** Opens a web link from a tap and copies it as a fallback. */
+  openLink(url: string): Promise<{ copied: boolean }>;
+  fullscreen: { available(): boolean; active(): boolean; toggle(): Promise<boolean>; /** Why the last toggle did nothing, or '' */ note(): string; /** Called whenever full screen turns on or off. */ onChange(f: () => void): () => void };
   share(text: string, params?: Record<string, string>): Promise<boolean>;
   ads: { rewardedReady(): Promise<boolean>; showRewarded(placementId?: string, placementName?: string): Promise<boolean> };
   iap: { available(): boolean; buy(itemId: string): Promise<boolean>; owned(itemId: string): Promise<boolean> };
@@ -51,14 +56,15 @@ export const noopPlatform = {
   async serverTime(): Promise<number> {
     return Date.now();
   },
-  async profile(): Promise<{ id: string; name: string }> {
-    return { id: 'local', name: 'Player' };
+  async profile(): Promise<{ id: string; name: string; anonymous?: boolean }> {
+    return { id: 'local', name: 'Player', anonymous: true };
   },
   leaderboard: {
     async submit(): Promise<void> { /* later */ },
     async top(): Promise<Row[]> { return []; },
     async myRank(): Promise<Row | null> { return null; },
   },
+  openLink,
   ugc: {
     async create(): Promise<UgcRow | null> { return null; },
     async update(): Promise<UgcRow | null> { return null; },
@@ -70,7 +76,7 @@ export const noopPlatform = {
     async adminRemove(): Promise<boolean> { return false; },
     async adminBrowse(): Promise<UgcRow[]> { return []; },
   },
-  fullscreen: { available: (): boolean => false, active: (): boolean => false, async toggle(): Promise<boolean> { return false; }, note: (): string => '' },
+  fullscreen: { available: (): boolean => false, active: (): boolean => false, async toggle(): Promise<boolean> { return false; }, note: (): string => '', onChange: (): (() => void) => () => {} },
   async share(): Promise<boolean> {
     return false;
   },

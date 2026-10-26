@@ -10,6 +10,7 @@
   "properties": {
     "$schema": { "type": "string" },
     "version": { "type": "integer", "minimum": 1 },
+    "links": { "type": "object", "additionalProperties": { "type": "string" }, "description": "Web links the game can send players to (the jam vote page)." },
     "levels": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "description": "Ids of the level files in data/levels/ that the game loads. check-data keeps it in step with the folder." },
     "display": {
       "type": "object", "additionalProperties": false,

@@ -72,14 +72,14 @@ export const mockPlatform: Platform = {
   safeArea: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   lifecycle: { onPause() {}, onResume() {}, onSleep() {}, onQuit() {} },
   leaderboard: {
-    async submit(board, score) {
+    async submit(board, score, _seconds, displayName) {
       console.debug('[mock] leaderboard submit', board, score);
       const rows = rowsFor(board);
-      const existing = rows.find((r) => r.name === 'You');
+      const existing = rows.find((r) => r.mine);
       if (existing) {
         existing.score = Math.max(existing.score, score);
       } else {
-        rows.push({ rank: 0, name: 'You', score });
+        rows.push({ rank: 0, name: displayName || 'Player', score, mine: true });
       }
       rows.sort((a, b) => b.score - a.score);
       rows.forEach((r, i) => { r.rank = i + 1; });
@@ -89,8 +89,8 @@ export const mockPlatform: Platform = {
     },
     async myRank(board) {
       const rows = rowsFor(board);
-      const found = rows.find((r) => r.name === 'You');
-      return found ?? { rank: rows.length + 1, name: 'You', score: 0 };
+      const found = rows.find((r) => r.mine);
+      return found ?? { rank: rows.length + 1, name: 'You', score: 0, mine: true };
     },
   },
   ugc: {
@@ -136,6 +136,7 @@ export const mockPlatform: Platform = {
   },
   fullscreen: {
     available: () => true,
+    onChange: (f: () => void) => { document.addEventListener('fullscreenchange', f); return () => document.removeEventListener('fullscreenchange', f); },
     note: () => (typeof document !== 'undefined' && typeof document.documentElement.requestFullscreen === 'function' ? '' : 'Full screen is not available in this browser.'),
     active: () => typeof document !== 'undefined' && !!document.fullscreenElement,
     async toggle() {

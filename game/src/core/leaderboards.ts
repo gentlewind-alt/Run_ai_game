@@ -1,6 +1,7 @@
 // Score boards: one per level (best score) plus an overall board (sum of each level's best). Never throws into the game.
 import { platform } from '../platform';
 import { OVERALL_BOARD, levelBoard } from '../platform/boards';
+import { scoreName } from './identity';
 import { profile } from './profile';
 
 /** Sum of the best score of every campaign level (the Daily Mash, level 0, has its own board). */
@@ -12,9 +13,10 @@ export function overallScore(): number {
 export async function submitBests(levelId: number, seconds?: number): Promise<void> {
   try {
     const best = profile.best[String(levelId)] ?? 0;
-    if (best > 0) await platform.leaderboard.submit(levelBoard(levelId), best, seconds);
+    const name = await scoreName();
+    if (best > 0) await platform.leaderboard.submit(levelBoard(levelId), best, seconds, name);
     const total = overallScore();
-    if (total > 0) await platform.leaderboard.submit(OVERALL_BOARD, total, seconds);
+    if (total > 0) await platform.leaderboard.submit(OVERALL_BOARD, total, seconds, name);
   } catch {
     /* scores are a bonus: never block the game */
   }

@@ -10,6 +10,8 @@ import { platform } from '../platform';
 import { DAILY_BOARD, OVERALL_BOARD, levelBoard } from '../platform/boards';
 import type { Row } from '../platform/types';
 import { makeButton, panel } from '../ui/widgets';
+import { askText } from '../ui/adminPrompt';
+import { cleanName, setNickname, whoAmI } from '../core/identity';
 
 type Tab = 'daily' | 'level' | 'overall';
 const TABS: { id: Tab; label: string }[] = [{ id: 'daily', label: 'Daily' }, { id: 'level', label: 'This level' }, { id: 'overall', label: 'Overall' }];
@@ -65,8 +67,29 @@ export default class LeaderboardScene extends Phaser.Scene {
     makeButton(this, 96, H - 24, 100, 22, 'Back to map', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 3);
     makeButton(this, W - 96, H - 24, 100, 22, 'Refresh', 'go', () => this.refresh(true), 3);
 
-    void platform.profile().then((p) => { this.myName = p.name; }).catch(() => { this.myName = ''; }).finally(() => this.refresh(false));
+    void whoAmI().then((me) => {
+      this.myName = me.shown;
+      if (!me.isGuest) return;
+      // a guest has no RUN account: let them pick the name their scores carry
+      const nameTxt = text(this, W / 2, H - 46, `Playing as ${me.shown}`, C('c'), 1, C('0')).setDepth(3);
+      makeButton(this, W / 2, H - 24, 84, 22, 'Set name', 'plain', () => {
+        sfx.click();
+        void askText('Your name for the boards', { initial: cleanName(this.myName.startsWith('Guest-') ? '' : this.myName), ok: 'Save' }).then(async (v) => {
+          if (v === null || !this.scene.isActive()) return;
+          this.myName = await setNickname(v);
+          setText(nameTxt, this, `Playing as ${this.myName}`, C('c'), C('0'));
+          void this.resubmit();
+        });
+      }, 3);
+    }).catch(() => { this.myName = ''; }).finally(() => this.refresh(false));
     irisOpen(this);
+  }
+
+  /** After a name change: send the current bests again so the boards carry the new name. */
+  private async resubmit(): Promise<void> {
+    const { submitBests } = await import('../core/leaderboards');
+    await submitBests(this.level);
+    if (this.scene.isActive()) this.refresh(false);
   }
 
   private step(levels: number[], idx: number, dir: number): void {
@@ -116,11 +139,11 @@ export default class LeaderboardScene extends Phaser.Scene {
     let youShown = false;
     rows.forEach((r, i) => {
       const y = 84 + i * ROW_H;
-      const isMe = (!!this.myName && r.name === this.myName) || r.name === 'You';
+      const isMe = r.mine === true || r.name === 'You';
       youShown = youShown || isMe;
       const col = isMe ? C('4') : C('c');
       this.rowObjs.push(text(this, x0, y, `#${r.rank}`, col, 1, C('0')).setOrigin(0, 0.5).setDepth(3));
-      this.rowObjs.push(text(this, x0 + 34, y, r.name.slice(0, 18), col, 1, C('0')).setOrigin(0, 0.5).setDepth(3));
+      this.rowObjs.push(text(this, x0 + 34, y, isMe ? `You (${r.name.slice(0, 14)})` : r.name.slice(0, 18), col, 1, C('0')).setOrigin(0, 0.5).setDepth(3));
       this.rowObjs.push(text(this, x1, y, String(r.score), isMe ? C('4') : C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3));
     });
     if (me && me.rank > 0 && !youShown) {

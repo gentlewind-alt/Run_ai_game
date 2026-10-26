@@ -2,7 +2,7 @@
   "name": "",
   "path": "",
   "type": "dir",
-  "hash": "01f3f32697b44451db320a9ff1158dff1ff899eb24a2c86755c7d1b5175c9d58",
+  "hash": "beb1ae067059d9802763f690b821c2607c6360541d4999c799d404a83d32b865",
   "children": [
     {
       "name": ".claude",
@@ -124,7 +124,7 @@
       "name": "docs",
       "path": "docs",
       "type": "dir",
-      "hash": "afe8e4d577d2430c32622d8840388fd645efcdc640143b1911fdaa8c73308e9e",
+      "hash": "7689c2832f40bfbeba5410c4684afdd394cddd71ea07de59a433a7d69edc3c96",
       "children": [
         {
           "name": "concepts",
@@ -153,7 +153,7 @@
           "name": "handoff",
           "path": "docs/handoff",
           "type": "dir",
-          "hash": "f9296d2d9a3ace4c840b96718ca6c8ab4595e0fdba0f37233839865ef220fb30",
+          "hash": "b96501f4ee4050a74ebbe54a7214482a123442b73ef9ac4f925e92fa7e74b97d",
           "children": [
             {
               "name": "AGY_BRIEF.md",
@@ -447,8 +447,8 @@
               "name": "LOG.md",
               "path": "docs/handoff/LOG.md",
               "type": "file",
-              "hash": "afd7a9948c9481614f040c15466569044d360beea69879207df43d06473ec619",
-              "size": 152392
+              "hash": "ac755d656b063d0f595f834bb1f11bc5275940c550ae3b3ede546763da7bb88b",
+              "size": 153847
             },
             {
               "name": "ref",
@@ -3948,7 +3948,7 @@
       "name": "game",
       "path": "game",
       "type": "dir",
-      "hash": "8a2e3f98e6482f908b388b686c341a7ea4e3793611883dc32c807530e70505b3",
+      "hash": "bc0d1822dacac83fbb20478391d97532113fc878945a6c7d9762deb69871551e",
       "children": [
         {
           "name": ".gitignore",
@@ -4024,7 +4024,7 @@
           "name": "public",
           "path": "game/public",
           "type": "dir",
-          "hash": "ba76d1a2c1c9d5c204636ac885a0ac2af4556714e36bc3ee34e564ba147d3c72",
+          "hash": "dd41e2037e42cb10c951263c0cec5b41b55ee9d77a35c43d8aa8c0ce48b9fbe3",
           "children": [
             {
               "name": "cdn-assets",
@@ -4059,14 +4059,14 @@
               "name": "data",
               "path": "game/public/data",
               "type": "dir",
-              "hash": "93f249864dd8a19e5e7241eb6ecbd880800c2c9c8e77ed69ca136759982c6568",
+              "hash": "0b02f04cfe9b440a8cd9a567a381a7baaa74df3838d9eec548a571f7397a7b37",
               "children": [
                 {
                   "name": "config.json",
                   "path": "game/public/data/config.json",
                   "type": "file",
-                  "hash": "dd372fac1e1cdf6923f47823b1f18a67fceafa6848a7032483404f1a4c7ceca6",
-                  "size": 1637
+                  "hash": "efe39682ebffe362982c93ab2b319e8a3f32eae181e59eaaf121469c416f9707",
+                  "size": 1753
                 },
                 {
                   "name": "content.json",
@@ -4797,14 +4797,14 @@
           "name": "schemas",
           "path": "game/schemas",
           "type": "dir",
-          "hash": "7b9b232e20b5a95bb270acf6306ec0a889ce645850dd28fee4f72fb36d19f593",
+          "hash": "c60eb984108256a04bd58302c4c4dea01eb141894095c2b564f256982b378463",
           "children": [
             {
               "name": "config.schema.json",
               "path": "game/schemas/config.schema.json",
               "type": "file",
-              "hash": "dbfb927d2c1da729851e2ed220683a026e8254adc07238f596057d86a47a6a97",
-              "size": 4722
+              "hash": "f1f89565cb78e01ff019062c8e932d732d82503b481f045c8a3de10513ca15e1",
+              "size": 4881
             },
             {
               "name": "content.schema.json",
@@ -4961,7 +4961,7 @@
           "name": "src",
           "path": "game/src",
           "type": "dir",
-          "hash": "ddb81c1b2a312a62cb8bf57b102ed0837f0a96ac7db0a296459020f5aad8aa7c",
+          "hash": "ebd6c598ab22625312e623fa5b015cf999f0cef5bfdbb6e8dca3d08bfd9edb81",
           "children": [
             {
               "name": "art",
@@ -5692,7 +5692,7 @@
               "name": "core",
               "path": "game/src/core",
               "type": "dir",
-              "hash": "75210a495b9d840275100b178272c57ac81a24355841f9c59e3d62699bd151cc",
+              "hash": "243051b70248f933572273b56c6d6b70eeccad50bd83ebfea2dd0dbb4ae8130a",
               "children": [
                 {
                   "name": "admin.ts",
@@ -5712,8 +5712,8 @@
                   "name": "challenges.ts",
                   "path": "game/src/core/challenges.ts",
                   "type": "file",
-                  "hash": "0ac6670132cc21dcb1ac089e2bd98c48e4cfd7fbae16952f0351b52dbbd3f2e7",
-                  "size": 8695
+                  "hash": "b9c94c6fccdd5b8e5794a10886eae31907e5b79ba7e48eaca3159b006ee19a03",
+                  "size": 8875
                 },
                 {
                   "name": "economy.ts",
@@ -5737,11 +5737,18 @@
                   "size": 2867
                 },
                 {
+                  "name": "identity.ts",
+                  "path": "game/src/core/identity.ts",
+                  "type": "file",
+                  "hash": "61af0fa1d87d7bcfa46b7fd88d9252e1d62afd727f010204e22e9d589c538b90",
+                  "size": 1681
+                },
+                {
                   "name": "leaderboards.ts",
                   "path": "game/src/core/leaderboards.ts",
                   "type": "file",
-                  "hash": "5aa811ac7a72f995f35607121bdc6ad8cf0d456afa07290b2bb3a973b1185b44",
-                  "size": 1399
+                  "hash": "769911e305c3371fe59a741166fd3b39385c293fe82ba1ebbbbfe41974fed5dd",
+                  "size": 1487
                 },
                 {
                   "name": "profile.ts",
@@ -5754,8 +5761,8 @@
                   "name": "responsive.ts",
                   "path": "game/src/core/responsive.ts",
                   "type": "file",
-                  "hash": "21de3c3d018b74ca36199e5c7c31f2d3d75810b8765b81baff4ea7871f193586",
-                  "size": 10435
+                  "hash": "9b7d37f14797a69685ff56e7343d4bcabbc13004369bec5bcade532237969223",
+                  "size": 10842
                 },
                 {
                   "name": "rng.ts",
@@ -5777,7 +5784,7 @@
               "name": "data",
               "path": "game/src/data",
               "type": "dir",
-              "hash": "1b36448e445d479ce68d6e64788582d0b9b481592fb6fb397d0ca470ab17729f",
+              "hash": "853e13b4afa9fa55ac137cfa18e001f0a06b77ba7691a28c25175f4d16aaad94",
               "children": [
                 {
                   "name": "load.ts",
@@ -5797,8 +5804,8 @@
                   "name": "types.ts",
                   "path": "game/src/data/types.ts",
                   "type": "file",
-                  "hash": "7d0a3ec9420f42c19f1e58abe38272968a9931bffde7b36b3fabb2ff35a5e048",
-                  "size": 7636
+                  "hash": "3340386c9c24c70f538436540c81db4b79af08253422c4be8784c81a7934f4e1",
+                  "size": 7670
                 }
               ]
             },
@@ -5835,7 +5842,7 @@
               "name": "platform",
               "path": "game/src/platform",
               "type": "dir",
-              "hash": "09bef113a26f2a8912d503b17579886d241541fe7b6a6fc6840a248f2dfe4ddc",
+              "hash": "7340227a47930c6ede6ea83e58d404da894b91e9c47c694661f8e41ff1cef7f0",
               "children": [
                 {
                   "name": "boards.ts",
@@ -5852,25 +5859,32 @@
                   "size": 577
                 },
                 {
+                  "name": "link.ts",
+                  "path": "game/src/platform/link.ts",
+                  "type": "file",
+                  "hash": "3a11f85c54bdc059f972c586d93c3d41abe72e4543880f4096617a4969d9fe95",
+                  "size": 798
+                },
+                {
                   "name": "mock.ts",
                   "path": "game/src/platform/mock.ts",
                   "type": "file",
-                  "hash": "cb6d7c51491dd0e830f4b48a262dd7d823f684b87d714e195ae192821e345c56",
-                  "size": 7235
+                  "hash": "364fb8bbbeb051ef9579fe797d24b4b06f18ed5da5c40c666af41d1ce8ce8838",
+                  "size": 7434
                 },
                 {
                   "name": "rundot.ts",
                   "path": "game/src/platform/rundot.ts",
                   "type": "file",
-                  "hash": "e92a4bd88b9da764005520297ee566e0aadba0383120dc8d5f834513a2e8355a",
-                  "size": 8184
+                  "hash": "5433887b4b2fa0d817b2cf01fc8109ffa9bdc3c77bcf98dde438742ab508bfc1",
+                  "size": 9206
                 },
                 {
                   "name": "types.ts",
                   "path": "game/src/platform/types.ts",
                   "type": "file",
-                  "hash": "1bdae55503964efd0a1228402576eac451038d77dd3cd0b1eacb0e3b474c1cc3",
-                  "size": 4347
+                  "hash": "357acf18084383b68be73e1ae6b7ff44bc911e1517d176735c23d1641dcc3589",
+                  "size": 4864
                 }
               ]
             },
@@ -5878,7 +5892,7 @@
               "name": "scenes",
               "path": "game/src/scenes",
               "type": "dir",
-              "hash": "be6bf2a0a0f980c9c89b2c220d16f1a32e756a26a96d561556def750185f3b8f",
+              "hash": "522aa1e13348707e7c4ef59098f0da5e830dcaaf6a300b71058e9359725f61f3",
               "children": [
                 {
                   "name": "BattleScene.ts",
@@ -5940,8 +5954,8 @@
                   "name": "LeaderboardScene.ts",
                   "path": "game/src/scenes/LeaderboardScene.ts",
                   "type": "file",
-                  "hash": "d91e0ff435a982ee3e29f59bd5b5f9854280ecb61bf036ecb83eff9156a4df49",
-                  "size": 5642
+                  "hash": "d1bdd9a3fa2dcfd89f0ef97817e47287fc8bfe2c147b744bf465a3820bf42481",
+                  "size": 6778
                 },
                 {
                   "name": "LoadoutScene.ts",
@@ -5961,8 +5975,8 @@
                   "name": "ResultsScene.ts",
                   "path": "game/src/scenes/ResultsScene.ts",
                   "type": "file",
-                  "hash": "cf78eb81b3abe6c9b44bb42a37297761e24aa3dbba36f1c40608ac920b2b3515",
-                  "size": 11129
+                  "hash": "cd7f7e5d9d35cc4af43a16f393585eaf47fd86ce6fa704d2a3b664aeea43259d",
+                  "size": 12089
                 },
                 {
                   "name": "ShopScene.ts",
@@ -5991,14 +6005,14 @@
               "name": "ui",
               "path": "game/src/ui",
               "type": "dir",
-              "hash": "d6b0e2a8f441c304d17397c8e3c0fe57f23b1d51b8bdf4a94453f1f824899ecb",
+              "hash": "75082064b3d2e87d89c9c1a6452ebd1c1e457a700b6ca9e113073f5d153710db",
               "children": [
                 {
                   "name": "adminPrompt.ts",
                   "path": "game/src/ui/adminPrompt.ts",
                   "type": "file",
-                  "hash": "fa3d769b863104680a53857341e1dd651e805a04670aaeb8f7cb7448495b9b75",
-                  "size": 1921
+                  "hash": "3789ff7f940683655ac74237188222e2e4ff5fca4b7d18738e0d5050ba3dd804",
+                  "size": 2154
                 },
                 {
                   "name": "cards.ts",

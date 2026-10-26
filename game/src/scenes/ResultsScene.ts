@@ -9,6 +9,7 @@ import { beatBob, beatPhase } from '../audio/beat';
 import { setText } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { levelRankLine } from '../core/leaderboards';
+import { scoreName } from '../core/identity';
 import { data } from '../data/load';
 import { platform } from '../platform';
 import type { Row } from '../platform/types';
@@ -148,8 +149,22 @@ export default class ResultsScene extends Phaser.Scene {
         })();
       }
 
+      const voteUrl = data.config.links?.vote;
+      if (voteUrl && data.config.features?.voteButton !== false) {
+        let note: Phaser.GameObjects.Image[] = [];
+        const voteBtn = makeButton(this, hasNext ? W / 2 - 64 : W / 2, y3, hasNext ? 116 : 130, 20, 'Vote for us!', 'ability', async () => {
+          sfx.click();
+          const { copied } = await platform.openLink(voteUrl);
+          platform.track('vote_button');
+          if (!this.scene.isActive()) return;
+          voteBtn.setLabel('Thanks!');
+          note.forEach((n) => n.destroy());
+          note = textBlock(this, W / 2 - 150, py + 226 + 22, copied ? 'Vote page opens in a new tab. If not, the link is copied: paste it in your browser.' : 'Open run.world/jams/octoberjam, find MONSTER MASH and tap Vote.', C('d'), 300, C('0'));
+          note.forEach((n) => n.setDepth(5));
+        }, 3);
+      }
       if (hasNext) {
-        makeButton(this, W / 2, y3, 90, 20, 'Map', 'plain', () => go('map'), 3);
+        makeButton(this, W / 2 + 64, y3, 116, 20, 'Map', 'plain', () => go('map'), 3);
       }
     } else {
       const y1 = py + 148;
@@ -228,7 +243,7 @@ export default class ResultsScene extends Phaser.Scene {
     }
 
     if (d.won) {
-      await platform.leaderboard.submit('daily', d.score);
+      await platform.leaderboard.submit('daily', d.score, undefined, await scoreName());
     }
 
     const shareBtn = makeButton(this, 16 + leftW / 2, py + 140, 120, 26, 'Share', 'ability', async () => {

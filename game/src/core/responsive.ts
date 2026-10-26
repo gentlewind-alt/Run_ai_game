@@ -107,7 +107,7 @@ export function setBackdropRealm(realm: RealmTheme, customName?: string): void {
 }
 
 /** Computes responsive display dimensions preserving aspect ratio 216:384. */
-export function calculateResponsiveScale(viewportW: number, viewportH: number): {
+export function calculateResponsiveScale(viewportW: number, viewportH: number, fill = false): {
   displayW: number;
   displayH: number;
   scale: number;
@@ -120,7 +120,7 @@ export function calculateResponsiveScale(viewportW: number, viewportH: number): 
   const availH = Math.max(1, viewportH - (sa.top || 0) - (sa.bottom || 0));
 
   const sMax = Math.min(availW / W, availH / H);
-  const isInteger = sMax >= 2;
+  const isInteger = sMax >= 2 && !fill; // in full screen the game fills the space instead of snapping to a whole number
   const scale = isInteger ? Math.floor(sMax) : sMax;
 
   // Exact integer scaling when scale >= 2; smooth fit when scale < 2
@@ -190,7 +190,9 @@ export function initResponsive(game: Phaser.Game): () => void {
       }
     }
 
-    const { displayW, displayH, isInteger, offsetX, offsetY } = calculateResponsiveScale(vpW, vpH);
+    // Full screen: just the game, as large as the screen allows, with no frame and no side panels.
+    const fill = platform.fullscreen.active();
+    const { displayW, displayH, isInteger, offsetX, offsetY } = calculateResponsiveScale(vpW, vpH, fill);
 
     app.style.width = `${displayW}px`;
     app.style.height = `${displayH}px`;
@@ -199,7 +201,7 @@ export function initResponsive(game: Phaser.Game): () => void {
 
     // Add bevel frame on tablet / desktop (when scale >= 2 or when there is border breathing room)
     const hasMargin = vpW - displayW >= 24 && vpH - displayH >= 24;
-    if (isInteger || hasMargin) {
+    if (!fill && (isInteger || hasMargin)) {
       app.classList.add('beveled-frame');
     } else {
       app.classList.remove('beveled-frame');
@@ -212,7 +214,7 @@ export function initResponsive(game: Phaser.Game): () => void {
     const hasSideRoom = rightSpace >= panelW + 20 || leftSpace >= panelW + 20;
 
     if (hud) {
-      if (hasSideRoom && vpW >= 700) {
+      if (!fill && hasSideRoom && vpW >= 700) {
         hud.classList.remove('hidden');
         hud.style.display = 'block';
 
@@ -279,11 +281,14 @@ export function initResponsive(game: Phaser.Game): () => void {
     window.visualViewport.addEventListener('resize', applyLayout);
   }
 
+  const unFullscreen = platform.fullscreen.onChange(() => { applyLayout(); setTimeout(applyLayout, 250); });
+
   // Initial layout application
   applyLayout();
 
   cleanupResponsive = () => {
     unLevel();
+    unFullscreen();
     window.removeEventListener('resize', applyLayout);
     window.removeEventListener('orientationchange', applyLayout);
     if (window.visualViewport) {

@@ -7,6 +7,7 @@ import { data } from '../data/load';
 import type { Level } from '../data/types';
 import { platform } from '../platform';
 import { admin } from './admin';
+import { scoreName } from './identity';
 import type { Row, UgcRow } from '../platform/types';
 
 export const CHALLENGE_TYPE = 'mm_challenge';
@@ -142,7 +143,8 @@ export async function submitScore(c: Challenge, score: number): Promise<number> 
     const existing = (await platform.ugc.mine(type, 1))[0];
     const old = existing && typeof existing.data.score === 'number' ? existing.data.score : 0;
     if (existing && old >= score) return old;
-    const body = { score: Math.round(score), shots: c.shots };
+    const name = await scoreName();
+    const body: Record<string, unknown> = { score: Math.round(score), shots: c.shots, ...(name ? { name } : {}) };
     if (existing) await platform.ugc.update(existing.id, { data: body });
     else await platform.ugc.create(type, c.title.slice(0, 40), body);
     return Math.round(score);
@@ -158,7 +160,7 @@ export async function challengeBoard(c: Challenge, n = 8): Promise<Board> {
     const me = await myId();
     const entries = await platform.ugc.browse(scoreType(c.id), 'recent', 100);
     const sorted = entries
-      .map((e) => ({ authorId: e.authorId, name: e.authorName || 'Player', score: typeof e.data.score === 'number' ? e.data.score : 0 }))
+      .map((e) => ({ authorId: e.authorId, name: (typeof e.data.name === 'string' && e.data.name) || e.authorName || 'Player', score: typeof e.data.score === 'number' ? e.data.score : 0 }))
       .filter((e) => e.score > 0)
       .sort((a, b) => b.score - a.score);
     const rows = sorted.map((e, i) => ({ rank: i + 1, name: e.name, score: e.score, mine: e.authorId === me }));
