@@ -5,6 +5,7 @@ import type { MonsterBehavior } from './types';
 export const hexer: MonsterBehavior = {
   onSpawn(ctx, hx) {
     for (const n of ctx.monsters()) {
+      if (n.status.shieldBreak > 0) continue;
       if (n === hx) continue;
       if (Math.hypot(n.body.position.x - hx.body.position.x, n.body.position.y - hx.body.position.y) > hx.params.radius) continue;
       n.shield = hx.params.shield;

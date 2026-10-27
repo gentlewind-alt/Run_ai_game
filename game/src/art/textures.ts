@@ -1,3 +1,4 @@
+import { registerForgeTextures } from './forgeTextures';
 import Phaser from 'phaser';
 import { C, css } from './palette';
 import { gridTexture } from './pix';
@@ -498,6 +499,7 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
 
 /** Create every sprite texture once. Safe to call on every scene start. */
 export function registerArt(scene: Phaser.Scene): void {
+  registerForgeTextures(scene);
   registerMonsterTextures(scene);
   registerRelicTextures(scene);
   registerOmnitrixTextures(scene);

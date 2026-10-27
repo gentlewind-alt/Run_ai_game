@@ -1,0 +1,404 @@
+{
+  "$schema": "../../schemas/forge.schema.json",
+  "weapons": [
+    {
+      "id": "w_forge_sword",
+      "name": "Forge Sword",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 24,
+      "unlock": "forge",
+      "price": 0,
+      "physics": {
+        "radius": 4,
+        "density": 0.006,
+        "spin": 0.12
+      },
+      "ability": {
+        "mode": "both",
+        "label": "Dance"
+      },
+      "params": {},
+      "archetype": "forged"
+    },
+    {
+      "id": "w_forge_longsword",
+      "name": "Forge Longsword",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 28,
+      "unlock": "forge",
+      "price": 0,
+      "physics": {
+        "radius": 4.5,
+        "density": 0.007,
+        "spin": 0.09
+      },
+      "ability": {
+        "mode": "both",
+        "label": "Dance"
+      },
+      "params": {},
+      "archetype": "forged"
+    },
+    {
+      "id": "w_forge_dagger",
+      "name": "Forge Dagger",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 18,
+      "unlock": "forge",
+      "price": 0,
+      "physics": {
+        "radius": 3,
+        "density": 0.004,
+        "spin": 0.18
+      },
+      "ability": {
+        "mode": "both",
+        "label": "Dance"
+      },
+      "params": {},
+      "archetype": "forged"
+    },
+    {
+      "id": "w_forge_cleaver",
+      "name": "Forge Cleaver",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 32,
+      "unlock": "forge",
+      "price": 0,
+      "physics": {
+        "radius": 5,
+        "density": 0.009,
+        "spin": 0.07,
+        "gravity": 1.15
+      },
+      "ability": {
+        "mode": "both",
+        "label": "Dance"
+      },
+      "params": {},
+      "archetype": "forged"
+    },
+    {
+      "id": "w_forge_spear",
+      "name": "Forge Spear",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 25,
+      "unlock": "forge",
+      "price": 0,
+      "physics": {
+        "radius": 3.5,
+        "density": 0.006,
+        "spin": 0,
+        "align": true
+      },
+      "ability": {
+        "mode": "both",
+        "label": "Dance"
+      },
+      "params": {},
+      "archetype": "forged"
+    },
+    {
+      "id": "w_forge_double_sword",
+      "name": "Forge Twinblades",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 22,
+      "unlock": "forge",
+      "price": 0,
+      "physics": {
+        "radius": 4.5,
+        "density": 0.005,
+        "spin": 0.2
+      },
+      "ability": {
+        "mode": "both",
+        "label": "Dance"
+      },
+      "params": {},
+      "archetype": "forged"
+    }
+  ],
+  "abilities": [
+    {
+      "id": "dance",
+      "name": "Dance",
+      "description": "Copies orbit the nearest target, then fly outward.",
+      "params": {
+        "copies": 4,
+        "radius": 30,
+        "durationSteps": 66,
+        "hitMult": 0.22,
+        "intervalSteps": 22,
+        "copySpeed": 6,
+        "range": 120
+      }
+    },
+    {
+      "id": "rain",
+      "name": "Rain",
+      "description": "Six copies of your weapon rain onto the nearest fort.",
+      "params": {
+        "copies": 6,
+        "spread": 100,
+        "copySpeed": 8,
+        "hitMult": 0.35,
+        "range": 180
+      }
+    },
+    {
+      "id": "burst",
+      "name": "Burst",
+      "description": "Detonate the weapon in a weighted blast that shoves blocks.",
+      "params": {
+        "radius": 48,
+        "hitMult": 1.15,
+        "range": 48
+      }
+    },
+    {
+      "id": "whip",
+      "name": "Whip",
+      "description": "A chain of your chosen weapon sweeps through nearby targets.",
+      "params": {
+        "copies": 5,
+        "range": 90,
+        "durationSteps": 48,
+        "hitMult": 0.55,
+        "intervalSteps": 24
+      }
+    },
+    {
+      "id": "clone",
+      "name": "Clone",
+      "description": "Split into three real weapon copies along the flight path.",
+      "params": {
+        "copies": 3,
+        "spread": 0.38,
+        "copySpeed": 8,
+        "hitMult": 0.55,
+        "range": 110
+      }
+    },
+    {
+      "id": "strike",
+      "name": "Strike",
+      "description": "Dive toward the nearest target and deliver a heavy impact.",
+      "params": {
+        "copySpeed": 13,
+        "hitMult": 1.1,
+        "range": 150
+      }
+    },
+    {
+      "id": "slash",
+      "name": "Slash",
+      "description": "Sweep a wide arc through monsters and supporting blocks.",
+      "params": {
+        "range": 64,
+        "hitMult": 0.85,
+        "durationSteps": 24,
+        "copies": 4
+      }
+    },
+    {
+      "id": "spirit",
+      "name": "Spirit",
+      "description": "A spectral copy pierces a line toward the nearest enemy.",
+      "params": {
+        "range": 170,
+        "hitMult": 0.85,
+        "durationSteps": 28
+      }
+    },
+    {
+      "id": "phantom",
+      "name": "Phantom",
+      "description": "Spectral copies strike up to three different enemies.",
+      "params": {
+        "copies": 3,
+        "range": 180,
+        "hitMult": 0.6,
+        "durationSteps": 30
+      }
+    }
+  ],
+  "traits": [
+    {
+      "id": "balanced",
+      "kind": "bless",
+      "name": "Balanced",
+      "description": "Normal damage, no drawback.",
+      "params": {
+        "damageMult": 1
+      }
+    },
+    {
+      "id": "overcharge",
+      "kind": "bless",
+      "name": "Overcharge",
+      "description": "Double damage, half coins from your kills.",
+      "params": {
+        "damageMult": 2,
+        "coinMult": 0.5
+      }
+    },
+    {
+      "id": "fortune",
+      "kind": "bless",
+      "name": "Fortune",
+      "description": "Half damage, double coins from your kills.",
+      "params": {
+        "damageMult": 0.5,
+        "coinMult": 2
+      }
+    },
+    {
+      "id": "reach",
+      "kind": "bless",
+      "name": "Long Reach",
+      "description": "Abilities reach 30% farther; damage is 15% lower.",
+      "params": {
+        "rangeMult": 1.3,
+        "damageMult": 0.85
+      }
+    },
+    {
+      "id": "critical",
+      "kind": "bless",
+      "name": "Keen Edge",
+      "description": "One in four hits deals 70% extra damage.",
+      "params": {
+        "critChance": 0.25,
+        "critMult": 1.7
+      }
+    },
+    {
+      "id": "vulnerable",
+      "kind": "curse",
+      "name": "Expose",
+      "description": "Hit enemies take extra damage for three seconds.",
+      "params": {
+        "curseSteps": 180
+      }
+    },
+    {
+      "id": "poison",
+      "kind": "curse",
+      "name": "Venom",
+      "description": "Poison enemies for three seconds after a hit.",
+      "params": {
+        "poisonSteps": 180
+      }
+    },
+    {
+      "id": "zap",
+      "kind": "curse",
+      "name": "Conduct",
+      "description": "A hit jumps lightning to two nearby enemies.",
+      "params": {
+        "zapTargets": 2,
+        "zapRange": 55,
+        "zapMult": 0.2
+      }
+    },
+    {
+      "id": "shieldbreak",
+      "kind": "curse",
+      "name": "Unshield",
+      "description": "Remove shields and suppress shield magic for three seconds.",
+      "params": {
+        "shieldBreak": 1
+      }
+    },
+    {
+      "id": "wither",
+      "kind": "curse",
+      "name": "Wither",
+      "description": "Hits also drain 4% of the target's maximum health.",
+      "params": {
+        "healthFraction": 0.04,
+        "damageMult": 0.8
+      }
+    }
+  ],
+  "radiances": [
+    {
+      "id": "dark",
+      "name": "Dark",
+      "color": "v"
+    },
+    {
+      "id": "blue",
+      "name": "Blue",
+      "color": "a"
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "color": "4"
+    },
+    {
+      "id": "red",
+      "name": "Red",
+      "color": "q"
+    },
+    {
+      "id": "orange",
+      "name": "Orange",
+      "color": "3"
+    },
+    {
+      "id": "purple",
+      "name": "Purple",
+      "color": "r"
+    },
+    {
+      "id": "green",
+      "name": "Green",
+      "color": "5"
+    },
+    {
+      "id": "pink",
+      "name": "Pink",
+      "color": "2"
+    },
+    {
+      "id": "white",
+      "name": "White",
+      "color": "c"
+    }
+  ],
+  "defaults": {
+    "traitId": "balanced",
+    "abilityId": "dance",
+    "radianceId": "blue"
+  },
+  "limits": {
+    "maxCopies": 6,
+    "poisonTickSteps": 30,
+    "poisonDamage": 3,
+    "shieldBreakSteps": 180,
+    "traitCooldownSteps": 30
+  },
+  "enemyAttack": {
+    "radius": 2,
+    "density": 0.004,
+    "speed": 5,
+    "lifetimeSteps": 150,
+    "bossDensity": 0.006,
+    "bossSpeed": 4,
+    "volleyCount": 4,
+    "volleySpacing": 40,
+    "gravity": 0.25,
+    "bossGravity": 1,
+    "jitter": 12,
+    "friction": 0.2,
+    "restitution": 0.1
+  }
+}

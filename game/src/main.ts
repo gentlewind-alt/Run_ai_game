@@ -1,3 +1,5 @@
+import ForgeScene from './scenes/ForgeScene';
+import { loadForge } from './core/forge';
 import Phaser from 'phaser';
 import BattleScene from './scenes/BattleScene';
 import BuilderScene from './scenes/BuilderScene';
@@ -48,6 +50,7 @@ async function bootstrap(): Promise<void> {
     wireProfile();
     wireSave();
     await loadSave();
+    await loadForge();
     applyDebug();
     const S = getSettings();
     const config: Phaser.Types.Core.GameConfig = {
@@ -58,7 +61,7 @@ async function bootstrap(): Promise<void> {
       backgroundColor: '#1a1c2c',
       pixelArt: S.display.pixelArt,
       roundPixels: true,
-      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, BattleScene, BuilderScene, ArenaScene, PracticeScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
+      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, ForgeScene, BattleScene, BuilderScene, ArenaScene, PracticeScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
       physics: {
         default: 'matter',
         matter: {

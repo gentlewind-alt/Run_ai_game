@@ -90,6 +90,8 @@
     "voteButton": true,
     "practice": true,
     "arena": true,
+    "weaponForge": true,
+    "enemyAttackPhysics": true,
     "builder": true,
     "challenges": true,
     "map": true,

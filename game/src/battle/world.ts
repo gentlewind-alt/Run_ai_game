@@ -71,10 +71,10 @@ function addMonster(b: BattleState, m: LevelMonster): any {
   const art = MONSTER_ART[m.t];
   if (!def || !art) return;
   const body: any = b.scene.matter.add.rectangle(m.x, m.y, art.w, art.h, {
-    density: def.density ?? DEFAULT_DENSITY, friction: 0.6, frictionStatic: 1, restitution: 0.05, label: 'monster',
+    density: def.density ?? DEFAULT_DENSITY, friction: 0.6, frictionStatic: 1, restitution: 0.05, label: 'monster', collisionFilter: { category: 0x2 },
   });
   const sprite = b.scene.add.image(m.x, m.y, m.t).setDepth(3);
-  const e = makeEnt(b, 'monster', m.t, body, sprite, def.hp, def.weak, def.resist, art.w, art.h, art.size, def.params ?? {});
+  const e = makeEnt(b, 'monster', m.t, body, sprite, def.hp, def.weak, def.resist, art.w, art.h, art.size, { ...(def.params ?? {}) });
   e.dir = m.dir ?? 1;
   e.delay = m.delay ?? 0;
   e.speed = m.speed ?? def.params?.speed ?? 0;
@@ -90,7 +90,7 @@ function makeEnt(
 ): Ent {
   const e: Ent = {
     kind, type, body, sprite, hp, maxHp: hp, weak, resist, w, h, size, cool: 0, hurt: 0, flash: 0, dead: false,
-    phase: b.rng.next() * 6, shield: 0, status: { burn: 0, slow: 0, curse: 0, stun: 0, chain: 0 }, ox: body.position.x, oy: body.position.y,
+    phase: b.rng.next() * 6, shield: 0, status: { burn: 0, slow: 0, curse: 0, stun: 0, chain: 0, poison: 0, shieldBreak: 0 }, ox: body.position.x, oy: body.position.y,
     dir: 1, speed: 0, fireT: 0, delay: 0, params,
   };
   for (const part of body.parts) {

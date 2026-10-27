@@ -1,3 +1,4 @@
+import { forgeEnabled, isForgeWeapon } from '../core/forge';
 import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { text, textBlock } from '../art/font5x7';
@@ -76,8 +77,8 @@ export default class LoadoutScene extends Phaser.Scene {
     }
 
     // Prefill slots from last loadout or available owned weapons
-    const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
-    const last = profile.equipped.loadout.filter((id) => owns('weapons', id));
+    const owned = data.content.weapons.filter((w) => owns('weapons', w.id) && (!isForgeWeapon(w.id) || forgeEnabled()));
+    const last = profile.equipped.loadout.filter((id) => owns('weapons', id) && data.content.weapons.some((w) => w.id === id) && (!isForgeWeapon(id) || forgeEnabled()));
     let hasLegendary = false;
     const sanitizedLast = last.filter((id) => {
       const w = data.content.weapons.find((x) => x.id === id);
@@ -106,6 +107,8 @@ export default class LoadoutScene extends Phaser.Scene {
     makeButton(this, 305, H - 18, 64, 24, 'Back', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
     this.goBtn = makeButton(this, 415, H - 18, 110, 26, 'Fling!', 'go', () => this.start(), 6);
 
+    if (!this.fixed && forgeEnabled()) makeButton(this, 132, 13, 90, 24, 'Forge weapon', 'go', () => { setLoadout(this.slots.filter((id): id is string => id !== null)); setArtifacts(this.equipped); goTo(this, 'forge', { returnTo: 'loadout', level: this.level }); }, 6);
+
     // Left side: Weapon Grid
     if (this.fixed) {
       textBlock(this, 132, 100, 'This level comes with its own set of weapons.', C('4'), 200, C('0'));
@@ -125,7 +128,7 @@ export default class LoadoutScene extends Phaser.Scene {
     this.gridObjs.forEach((o) => o.destroy());
     this.gridObjs = [];
 
-    const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
+    const owned = data.content.weapons.filter((w) => owns('weapons', w.id) && (!isForgeWeapon(w.id) || forgeEnabled()));
     const maxPage = Math.max(0, Math.ceil(owned.length / PAGE_SIZE) - 1);
     this.page = Math.min(this.page, maxPage);
     const startIdx = this.page * PAGE_SIZE;

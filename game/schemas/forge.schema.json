@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "weapons",
+    "abilities",
+    "traits",
+    "radiances",
+    "defaults",
+    "limits",
+    "enemyAttack"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "weapons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "abilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/option"
+      }
+    },
+    "traits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/trait"
+      }
+    },
+    "radiances": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "color"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^[0-9a-v]$"
+          }
+        }
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "traitId",
+        "abilityId",
+        "radianceId"
+      ],
+      "properties": {
+        "traitId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "abilityId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "radianceId": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxCopies",
+        "poisonTickSteps",
+        "poisonDamage",
+        "shieldBreakSteps",
+        "traitCooldownSteps"
+      ],
+      "properties": {
+        "maxCopies": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "poisonTickSteps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "poisonDamage": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "shieldBreakSteps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "traitCooldownSteps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "enemyAttack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "radius",
+        "density",
+        "speed",
+        "lifetimeSteps",
+        "bossDensity",
+        "bossSpeed",
+        "volleyCount",
+        "volleySpacing",
+        "gravity",
+        "bossGravity",
+        "jitter",
+        "friction",
+        "restitution"
+      ],
+      "properties": {
+        "radius": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "density": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "speed": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "lifetimeSteps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "bossDensity": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "bossSpeed": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "volleyCount": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "volleySpacing": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "gravity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "bossGravity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "jitter": {
+          "type": "number",
+          "minimum": 0
+        },
+        "friction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "restitution": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  },
+  "$defs": {
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "description",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "trait": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "description",
+        "params",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "kind": {
+          "enum": [
+            "bless",
+            "curse"
+          ]
+        }
+      }
+    }
+  }
+}

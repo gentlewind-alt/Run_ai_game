@@ -6,6 +6,7 @@ import { popWord } from './fx';
 import { finalize } from './score';
 import { kindFor } from '../content/levelKinds';
 import { addToQueue, loadNext } from './sling';
+import { isForgeWeapon } from '../core/forge';
 import type { Ent } from './BattleCtx';
 import type { BattleState } from './state';
 
@@ -63,6 +64,7 @@ export function finish(b: BattleState, won: boolean, why: 'shots' | 'escaped' = 
 
 /** Rewarded-ad shots: after an out-of-shots loss, put more weapons in the line and carry on with the same battle. */
 export function grantShots(b: BattleState, ids: string[]): boolean {
+  ids = ids.filter((id) => b.content.weapons.some((w) => w.id === id) && (!isForgeWeapon(id) || b.settings.features.weaponForge));
   if (b.state !== 'lost' || ids.length === 0) return false;
   b.state = 'settling';
   b.endTimer = 0;

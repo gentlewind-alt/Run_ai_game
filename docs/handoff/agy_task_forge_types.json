@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "task_kind": "coding_only",
+  "decision_owner": "codex",
+  "decisions_complete": true,
+  "ambiguity_policy": "stop_and_report",
+  "objective": "Create the frozen type contract for the approved modular weapon Forge. This is the first small coding leaf; no other files may change.",
+  "read_paths": ["game/src/data/types.ts"],
+  "edits": [{
+    "path": "game/src/data/forgeTypes.ts",
+    "instructions": "Create a TypeScript type-only file importing WeaponDef from './types'. Export interface ForgeRecipe { weaponId: string; traitId: string; abilityId: string; radianceId: string }. Export interface ForgeOption { id: string; name: string; description: string; params: Record<string, number> }. Export interface ForgeTrait extends ForgeOption { kind: 'bless' | 'curse' }. Export interface ForgeRadiance { id: string; name: string; color: string }. Export interface ForgeConfig { weapons: WeaponDef[]; abilities: ForgeOption[]; traits: ForgeTrait[]; radiances: ForgeRadiance[]; defaults: { traitId: string; abilityId: string; radianceId: string }; limits: { maxCopies: number; auraEverySteps: number; poisonTickSteps: number; poisonDamage: number; shieldBreakSteps: number; traitCooldownSteps: number }; enemyAttack: { radius: number; density: number; speed: number; lifetimeSteps: number; bossDensity: number; bossSpeed: number; volleyCount: number; volleySpacing: number } }. Keep this exact contract. No executable logic, dependencies, or edits to other files."
+  }],
+  "acceptance_checks": [{"command": "npm run check --prefix game", "expected": "Existing checks pass; new file is valid type-only TypeScript."}]
+}

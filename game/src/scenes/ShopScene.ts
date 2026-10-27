@@ -1,3 +1,4 @@
+import { forgeEnabled, isForgeWeapon } from '../core/forge';
 import Phaser from 'phaser';
 import { C, rarityColor } from '../art/palette';
 import { fitText, text, textBlock } from '../art/font5x7';
@@ -54,6 +55,8 @@ export default class ShopScene extends Phaser.Scene {
   private toastTxt?: Phaser.GameObjects.Image;
   private page = 0;
   private forgeScroll = 0;
+  private forgeTop = 46;
+  private forgeView = 176;
   private forgeMaxScroll = 0;
   private forgeList?: Phaser.GameObjects.Container;
   private forgeMask?: Phaser.GameObjects.Graphics;
@@ -161,7 +164,7 @@ export default class ShopScene extends Phaser.Scene {
   private items(): Item[] {
     const c = data.content;
     if (this.tab === 'weapons') {
-      return c.weapons.filter((w) => w.enabled !== false).map((w) => {
+      return c.weapons.filter((w) => w.enabled !== false && !isForgeWeapon(w.id)).map((w) => {
         const owned = owns('weapons', w.id);
         const rarity = w.rarity ?? 'common';
         const pityLosses = economy().relicPityLosses ?? 3;
@@ -454,14 +457,17 @@ export default class ShopScene extends Phaser.Scene {
     const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
     const cardW = 226;
     const cardH = 36;
-    const viewportHeight = 176;
+    const top = forgeEnabled() ? 78 : 46;
+    const viewportHeight = 222 - top;
+    this.forgeTop = top; this.forgeView = viewportHeight;
     this.forgeMaxScroll = Math.max(0, Math.ceil(owned.length / 2) * 40 - 4 - viewportHeight);
     this.forgeScroll = Phaser.Math.Clamp(this.forgeScroll, 0, this.forgeMaxScroll);
-    const list = this.add.container(0, 46 - this.forgeScroll);
+    if (forgeEnabled()) this.body.add(makeButton(this, 240, 59, 200, 24, 'Create a weapon', 'go', () => goTo(this, 'forge')).box);
+    const list = this.add.container(0, top - this.forgeScroll);
     this.forgeList = list;
     this.body.add(list);
     const mask = this.make.graphics({ x: 0, y: 0 }, false);
-    mask.fillRect(8, 46, W - 16, viewportHeight);
+    mask.fillRect(8, top, W - 16, viewportHeight);
     list.setMask(mask.createGeometryMask());
     this.forgeMask = mask;
 
@@ -479,7 +485,8 @@ export default class ShopScene extends Phaser.Scene {
       const now = Math.round(w.baseDamage * upgradeMult(w.id));
       const cost = upgradeCost(w.id);
       const after = Math.round(w.baseDamage * (1 + R.upgradeDamagePerStep * (lv + 1)));
-      const dmgStr = cost === null ? `Dmg ${now} (Max)` : `Dmg ${now} -> ${after}`;
+      const label = w.forge ? 'Base' : 'Dmg';
+      const dmgStr = cost === null ? `${label} ${now} (Max)` : `${label} ${now} -> ${after}`;
       const dmgTxt = text(this, x + 34, y + 26, fitText(dmgStr, 94), cost === null ? C('4') : C('d')).setOrigin(0, 0.5).setDepth(2);
 
       const parts: Phaser.GameObjects.GameObject[] = [g, icon, nameTxt, dmgTxt];
@@ -498,9 +505,9 @@ export default class ShopScene extends Phaser.Scene {
       this.body.add(text(this, W / 2, 80, 'Buy a weapon first.', C('d'), 1, C('0')));
     }
     if (this.forgeMaxScroll > 0) {
-      this.body.add(this.add.rectangle(W - 4, 46 + viewportHeight / 2, 2, viewportHeight, C('0')));
+      this.body.add(this.add.rectangle(W - 4, top + viewportHeight / 2, 2, viewportHeight, C('0')));
       const thumbHeight = Math.max(16, viewportHeight * viewportHeight / (viewportHeight + this.forgeMaxScroll));
-      this.forgeThumb = this.add.rectangle(W - 4, 46 + thumbHeight / 2, 3, thumbHeight, C('d'));
+      this.forgeThumb = this.add.rectangle(W - 4, top + thumbHeight / 2, 3, thumbHeight, C('d'));
       this.body.add(this.forgeThumb);
     }
     this.scrollForge(this.forgeScroll);
@@ -519,21 +526,21 @@ export default class ShopScene extends Phaser.Scene {
   private scrollForge(value: number): void {
     this.forgeScroll = Phaser.Math.Clamp(value, 0, this.forgeMaxScroll);
     if (!this.forgeList) return;
-    this.forgeList.y = 46 - this.forgeScroll;
+    this.forgeList.y = this.forgeTop - this.forgeScroll;
     for (const { button, canUpgrade } of this.forgeButtons) {
       const y = this.forgeList.y + button.box.y;
-      const enabled = canUpgrade && y - 13 >= 46 && y + 13 <= 222;
+      const enabled = canUpgrade && y - 13 >= this.forgeTop && y + 13 <= 222;
       button.setEnabled(enabled);
       if (button.box.input) button.box.input.enabled = enabled;
     }
     if (this.forgeThumb) {
       const h = this.forgeThumb.height;
-      this.forgeThumb.y = 46 + h / 2 + this.forgeScroll / this.forgeMaxScroll * (176 - h);
+      this.forgeThumb.y = this.forgeTop + h / 2 + this.forgeScroll / this.forgeMaxScroll * (this.forgeView - h);
     }
   }
 
   private inForge(pointer: Phaser.Input.Pointer): boolean {
-    return this.tab === 'forge' && pointer.x >= 8 && pointer.x <= W - 8 && pointer.y >= 46 && pointer.y <= 222;
+    return this.tab === 'forge' && pointer.x >= 8 && pointer.x <= W - 8 && pointer.y >= this.forgeTop && pointer.y <= 222;
   }
 
   private onForgeWheel(pointer: Phaser.Input.Pointer, _over: unknown, _dx: number, dy: number): void {

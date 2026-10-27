@@ -113,6 +113,14 @@ Each stage card turns on the flags for what it ships. On deadline day, a broken 
 - Structural validation permits an overlapping work in progress. **Test/Play** retain it for experimentation; a persistent warning and red shape outlines identify intersections. Save, autosave, Export and Challenge publication reject positive occupied-shape overlap, including the service-level publication entry point. Touching boundaries and fitting pieces inside a hollow opening are legal. Unsaved overlapping work remains in session memory, while durable storage keeps the last valid design.
 - Run `npm run check:builder` for malformed-import, geometry, reference, round-trip and conversion checks. It is also part of check/build.
 
+## Modular weapon Forge (FORGE-01)
+
+- `public/data/forge.json` owns the six craftable weapon rows, nine ability definitions, ten Bless/Curse traits, nine palette radiances, defaults, effect limits and enemy projectile physics. `schemas/forge.schema.json` validates its structure; `check-data` also validates each weapon against the existing weapon schema and verifies defaults/IDs.
+- With `features.weaponForge` enabled, craft rows join the runtime weapon catalogue. `core/forge.ts` compiles the selected ability/trait into copied definitions. Battles retain their own snapshots. The original campaign weapons are unchanged.
+- The separate platform storage entry `monster-mash.forge.v1` holds `{ version: 1, recipes: [{ weaponId, traitId, abilityId, radianceId }] }`, at most one recipe for each of the six known shapes. Unknown choices are ignored on load. Successful creation uses the existing `owned.weapons` array; campaign save version remains 2.
+- `features.enemyAttackPhysics` controls real archer/boss projectiles during live shots. Enemy projectile bodies collide with blocks/ground/player weapons and ignore monster bodies. They have a fixed lifetime and do not extend the player's turn.
+- Forge poison and shield suppression use fixed-step timers. Kill coins carry weapon attribution; an indirect debris kill retains normal debris rewards. Radiance changes visuals only. Gameplay/physics values stay in the Forge data file.
+
 ## Deprecations (keep the game reading both until the card that removes them)
 
 None open. S2-02 removed `level.weapon`, `tuning.sawSteps`, the legacy `public/data/level_NN.json` location and the weapon stats in code.

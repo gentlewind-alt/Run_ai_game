@@ -107,6 +107,12 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 |---|---|---|---|---|---|
 | FX-01 | Brahmastra sky beam, four-target hammer lightning and Alien Dial foot stomp | review | codex | 10-26 | Check/build, 20 predeploy checks and 23 browser/gameplay groups pass. Maul L1-L12: zero one-shot clears in 1,344 aims. Default campaign L1-L24 and existing scene/camera/responsive checks pass across bounded batches; full-suite limitation in LOG. |
 
+## Weapon creation
+
+| Card | Title | State | Owner | Updated | Notes |
+|---|---|---|---|---|---|
+| FORGE-01 | Modular weapon Forge: six shapes, shared powers, Bless/Curse, radiance and weighted enemy attacks | review | codex | 10-27 | Implemented locally. Check/build, 18 browser groups and campaign regression pass; see LOG and agy_task_weapon_forge.md. RUN/phone persistence and performance remain device checks. |
+
 ## Waiting on owner
 
 - **Review 10-22 (`docs/handoff/review_2026-10-22.md`):** decide whether to fix the boss re-hit damage and retune, or keep it (B2). B1 rename was approved by the owner and shipped as Alien Dial in v1.42.0.

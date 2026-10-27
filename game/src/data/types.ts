@@ -1,10 +1,12 @@
 // TypeScript mirrors of game/schemas/*.json (only the fields the code reads).
+import type { ForgeRecipe } from './forgeTypes';
 export type Element = 'physical' | 'hellfire' | 'radiant' | 'void';
 export type Params = Record<string, number>;
 export type AbilityMode = 'button' | 'impact' | 'both' | 'none';
 export type WeaponUnlock = string | { boss?: string; chest?: string; shop?: boolean; level?: number };
 
 export interface WeaponDef {
+  forge?: ForgeRecipe;
   id: string;
   name: string;
   archetype?: string;

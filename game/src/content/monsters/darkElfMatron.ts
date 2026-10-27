@@ -23,6 +23,7 @@ export const darkElfMatron: MonsterBehavior = {
       ctx.fx.word(m.body.position.x, m.body.position.y - 20, 'SHIELD AURA!');
       // Apply shield to self and nearby monsters
       for (const n of ctx.monsters()) {
+        if (n.status.shieldBreak > 0) continue;
         const d = Math.hypot(n.body.position.x - m.body.position.x, n.body.position.y - m.body.position.y);
         if (d <= radius || n === m) {
           n.shield = 99999;
@@ -48,7 +49,7 @@ export const darkElfMatron: MonsterBehavior = {
   },
 
   onDamaged(_ctx, m, amount) {
-    if (m.params.shieldActive === 1) {
+    if (m.params.shieldActive === 1 && m.status.shieldBreak <= 0) {
       return 0;
     }
     return amount;
