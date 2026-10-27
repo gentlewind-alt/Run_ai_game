@@ -122,7 +122,7 @@ export interface BattleCtx {
   readonly sling: { x: number; y: number };
   readonly groundY: number;
   groundAt(x: number): number; // ground height at world x (see battle/terrain.ts)
-  pileSand(x: number, half: number, height: number): void; // sand terrain only: heap sand around x
+  pileSand(x: number, half: number, height: number): boolean; // sand terrain only: heap sand around x (false on fixed ground)
   readonly worldW: number;
   readonly level: Level;
   readonly phase: BattlePhase;

@@ -24,7 +24,7 @@ export interface Sand {
   x0: number;
 }
 
-interface SandCfg { columnWidth: number; baseLeft: number; baseRight: number; repose: number; rimShare: number; hitCrater: number; hitCraterMax: number; digSpeed: number; tolerance: number }
+interface SandCfg { realms: string[]; columnWidth: number; baseLeft: number; baseRight: number; repose: number; rimShare: number; hitCrater: number; hitCraterMax: number; digSpeed: number; tolerance: number }
 
 const THICK = 90;
 const MARGIN = 200; // sand drawn past both world edges so the screen never shows the background there
@@ -32,6 +32,10 @@ const BOTTOM = 400; // the texture runs to the bottom of the screen
 export const sandCfg = (): SandCfg => (data.config as any).sand;
 
 export const sandOn = (b: BattleState): boolean => !!b.sand;
+
+/** Only the realms listed in config "sand.realms" (Ember Forge) get sand; every other level keeps its fixed ground. */
+export const sandLevel = (levelId: number): boolean =>
+  data.content.realms.some((r) => sandCfg().realms.includes(r.id) && r.levels.includes(levelId));
 
 /** Ground height at x from the columns (linear between column centres). */
 export function sandHeight(s: Sand, x: number): number {
@@ -261,9 +265,9 @@ export function carveSand(b: BattleState, x: number, y: number, r: number): numb
 }
 
 /** Piles a mound of sand centred at x with the given half-width and height (it settles into a natural heap). */
-export function pileSand(b: BattleState, x: number, half: number, height: number): void {
+export function pileSand(b: BattleState, x: number, half: number, height: number): boolean {
   const s = b.sand;
-  if (!s) return;
+  if (!s) return false;
   const i0 = Math.max(0, Math.floor((x - half) / s.cw));
   const i1 = Math.min(s.h.length - 1, Math.ceil((x + half) / s.cw));
   for (let i = i0; i <= i1; i++) {
@@ -274,4 +278,5 @@ export function pileSand(b: BattleState, x: number, half: number, height: number
     s.dirty.add(i);
   }
   slump(b, i0 - 2, i1 + 2);
+  return true;
 }
