@@ -31,8 +31,12 @@ export function createBlockBody(scene: Phaser.Scene, block: LevelBlock): any {
       return M.Bodies.fromVertices(block.x + centre.x, block.y + centre.y, [vertices], partOptions);
     });
     body = parts.length === 1 ? parts[0] : M.Body.create({ ...partOptions, parts });
-    // Keep the authoring origin while leaving every collision vertex in place.
+    // Keep the authoring origin while leaving every collision vertex in place. The body now turns about that origin, not its
+    // centre of mass, so its inertia must be taken about the origin too (parallel axis, in Matter's 4x inertia scale);
+    // otherwise an off-centre piece like Wheel + plank spins far too easily and any joint or contact pumps energy into it.
+    const offset = (body.position.x - block.x) ** 2 + (body.position.y - block.y) ** 2;
     M.Body.setCentre(body, { x: block.x, y: block.y });
+    if (offset > 1e-6) M.Body.setInertia(body, body.inertia + 4 * body.mass * offset);
     if (block.static) M.Body.setStatic(body, true);
   }
   body.builderShape = block.shape ?? 'rectangle';
@@ -128,6 +132,25 @@ export function installConnections(scene: Phaser.Scene, byId: Map<string, any>, 
     const offset = rotate(point, body.angle);
     return { x: body.position.x + offset.x, y: body.position.y + offset.y };
   };
+  // Glued pieces are one rigid piece: they must not also collide with each other, or contact and the bond fight and the build explodes.
+  const groupOf = new Map<any, number>();
+  let nextGroup = 1;
+  for (const def of connections) {
+    if (def.type !== 'lock' || def.a === null) continue;
+    const bodyA = byId.get(def.a), bodyB = byId.get(def.b);
+    if (!bodyA || !bodyB) continue;
+    const ga = groupOf.get(bodyA), gb = groupOf.get(bodyB);
+    const g = ga ?? gb ?? nextGroup++;
+    for (const [body, old] of [[bodyA, ga], [bodyB, gb]] as [any, number | undefined][]) {
+      if (old !== undefined && old !== g) for (const [other, og] of groupOf) if (og === old) groupOf.set(other, g);
+      groupOf.set(body, g);
+    }
+  }
+  for (const [body, g] of groupOf) {
+    const group = -(4096 + g);
+    body.collisionFilter.group = group;
+    for (const part of body.parts ?? []) part.collisionFilter.group = group;
+  }
   for (const def of connections) {
     const bodyA = def.a === null ? null : byId.get(def.a);
     const bodyB = byId.get(def.b);
