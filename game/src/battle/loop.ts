@@ -7,6 +7,7 @@ import { MatterLib } from './matter';
 import { applyCustomGravity, endProj } from './projectiles';
 import { kindFor } from '../content/levelKinds';
 import { finish, step as stepRules } from './rules';
+import { sandStep } from './sand';
 import type { BattleState } from './state';
 import { drawOverlay, updateAbilityBtn, updateQueue } from './sling';
 import { updateCamera } from './camera';
@@ -33,6 +34,7 @@ export function update(b: BattleState, delta: number, nowMs: number): void {
     }
     applyCustomGravity(b);
     b.scene.matter.world.step(b.stepMs);
+    sandStep(b);
     stepLogic(b);
     if (b.arena?.frames === ARENA_MAX_FRAMES) finish(b, false);
     if (b.arena && (b.state === 'won' || b.state === 'lost')) break;

@@ -7,7 +7,7 @@ import { profile, upgradeMult } from '../core/profile';
 import { materialDef } from '../data/lookup';
 import { battleWeapon } from './weapon';
 import { forgeHit } from './forgeHits';
-import { carveSand } from './sand';
+import { carveSand, sandCfg } from './sand';
 import { weaponImpl } from '../content/weapons';
 import { blockTextureKey } from '../builder/physics';
 import { artifactMult } from './artifacts';
@@ -66,7 +66,10 @@ export function onCollide(b: BattleState, ev: any): void {
 
 function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y: number): void {
   const info = pb.proj;
-  if (b.sand && ob.label === 'ground' && (info.craters ?? 0) < 2 && rel > 1.5) { info.craters = (info.craters ?? 0) + 1; carveSand(b, x, y, Math.min(14, 5 + rel * 0.6)); }
+  if (b.sand && ob.label === 'ground' && !info.dug) { // a shot digs once, where it first lands hard
+    const k = sandCfg();
+    if (rel > k.digSpeed) { info.dug = true; carveSand(b, x, y, Math.min(k.hitCraterMax, k.hitCrater + (rel - k.digSpeed) * 0.5)); }
+  }
   const t: Ent | undefined = ob.ent;
   const p = b.proj && b.proj.body === pb ? b.proj : info.forgeProj ?? null;
   if (p) {
