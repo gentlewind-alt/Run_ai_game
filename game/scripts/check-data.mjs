@@ -101,6 +101,10 @@ if (forge && forgeSchema) {
     if (!forge[list].some((x) => x.id === forge.defaults[key])) err('forge.json', `unknown default ${key}`);
   }
   for (const w of forge.weapons ?? []) if (content.weapons.some((x) => x.id === w.id)) err('forge.json', `weapon id already exists ${w.id}`);
+  for (const [key, list] of [['weapons', 'weapons'], ['abilities', 'abilities'], ['traits', 'traits'], ['radiances', 'radiances']]) {
+    for (const x of forge[list] ?? []) if (typeof forge.costs?.[key]?.[x.id] !== 'number') err('forge.json', `costs.${key} is missing a price for ${x.id}`);
+    for (const id of Object.keys(forge.costs?.[key] ?? {})) if (!(forge[list] ?? []).some((x) => x.id === id)) err('forge.json', `costs.${key} has an unknown id ${id}`);
+  }
   if (forge.limits.maxCopies > 6) err('forge.json', 'maxCopies must stay within the phone physics budget (6)');
 }
 

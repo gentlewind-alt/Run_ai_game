@@ -1,5 +1,6 @@
 import { C } from '../../art/palette';
 import { weaponTexture } from '../../art/textures';
+import { sfx } from '../../audio/sfx';
 import { data } from '../../data/load';
 import type { WeaponDef } from '../../data/types';
 import type { BattleCtx, Ent, Proj } from '../../battle/BattleCtx';
@@ -18,12 +19,12 @@ function center(ctx: BattleCtx, p: Proj): { x: number; y: number } {
   return target && distance(at, target.body.position) <= reach(p) ? { ...target.body.position } : { ...at };
 }
 function image(ctx: BattleCtx, p: Proj, x: number, y: number) {
-  return ctx.fx.image(x, y, p.data.forgeTexture).setScale(p.data.forgeScale).setTint(tint(p)).setDepth(6);
+  return ctx.fx.image(x, y, p.data.forgeTexture).setScale(p.data.forgeScale).setDepth(6);
 }
 function pellet(ctx: BattleCtx, p: Proj, x: number, y: number, vx: number, vy: number, gravity = 1): void {
   ctx.spawnPellet({ x, y, vx, vy, gravity, radius: p.def.physics.radius, density: p.def.physics.density,
     mul: power(p), wid: p.wid, color: p.def.params.auraColor.toString(32),
-    texture: p.data.forgeTexture, scale: p.data.forgeScale, tint: tint(p) });
+    texture: p.data.forgeTexture, scale: p.data.forgeScale });
 }
 function hitCircle(ctx: BattleCtx, p: Proj, at: { x: number; y: number }, radius: number, hit?: Set<Ent>): void {
   for (const e of targets(ctx)) {
@@ -157,18 +158,22 @@ const phantom: Ability = (ctx, p) => {
 
 const ABILITIES: Record<string, Ability> = { dance, rain, burst, whip: (c, p) => sweep(c, p, true), clone, strike, slash: (c, p) => sweep(c, p, false), spirit, phantom };
 
+const cast = (p: Proj): void => { sfx.sample(`forge_${p.def.forge!.abilityId}`); };
+
 export function forgeWeapon(def: WeaponDef): WeaponImpl {
   return {
     texture: weaponTexture(def.id),
-    onLaunch(_ctx, p) { p.data.forgeTexture = p.sprite.texture.key; p.data.forgeScale = p.sprite.scaleX; p.sprite.setTint(tint(p)); },
+    onLaunch(_ctx, p) { p.data.forgeTexture = p.sprite.texture.key; p.data.forgeScale = p.sprite.scaleX; },
     onAbility(ctx, p) {
       if (p.data.forgeActivated) return;
       p.data.forgeActivated = true;
+      cast(p);
       ABILITIES[p.def.forge!.abilityId](ctx, p);
     },
     onImpact(ctx, p, hit) {
       if (!p.data.forgeActivated) {
         p.data.forgeActivated = true;
+        cast(p);
         ABILITIES[p.def.forge!.abilityId](ctx, p);
       }
       if (p.data.striking && hit?.target && !p.data.strikeDone) {

@@ -4,8 +4,9 @@ import { text, textBlock } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { goTo, irisOpen } from '../core/flow';
-import { compileForgeRecipe, forgeEnabled, forgeRecipe, forgeRecipes, saveForgeRecipe } from '../core/forge';
-import { owns, upgradeMult } from '../core/profile';
+import { compileForgeRecipe, forgeCost, forgeEnabled, forgePrice, forgeRecipe, forgeRecipes, saveForgeRecipe } from '../core/forge';
+import { drawForgeWeapon } from '../art/forgeTextures';
+import { owns, profile, upgradeMult } from '../core/profile';
 import { data } from '../data/load';
 import type { ForgeRecipe } from '../data/forgeTypes';
 import { makeButton, panel } from '../ui/widgets';
@@ -41,7 +42,9 @@ export default class ForgeScene extends Phaser.Scene {
     this.kind = data.forge.traits.find((t) => t.id === this.recipe.traitId)!.kind;
     this.add.rectangle(240, 135, 480, 270, C('f'));
     text(this, 16, 14, 'WEAPON FORGE', C('4'), 1, C('0')).setOrigin(0, 0.5);
-    text(this, 302, 14, 'Your shape. Your power.', C('d'), 1).setOrigin(1, 0.5);
+    this.add.image(236, 14, 'icon_coin');
+    text(this, 302, 14, `${profile.coins} coins`, C('4'), 1).setOrigin(1, 0.5);
+    sfx.preload(['forge_craft']);
     this.body = this.add.container(0, 0);
     this.render();
     irisOpen(this);
@@ -66,27 +69,30 @@ export default class ForgeScene extends Phaser.Scene {
         const x = 58 + i % 3 * 100;
         const y = 114 + Math.floor(i / 3) * 60;
         const selected = w.id === this.recipe.weaponId;
-        makeButton(this, x, y + 16, 92, 32, w.name.replace('Forge ', ''), selected ? 'go' : 'plain', () => {
+        makeButton(this, x, y + 16, 92, 32, '', selected ? 'go' : 'plain', () => {
           if (this.saving) return;
           this.recipe = forgeRecipe(w.id);
           this.kind = data.forge.traits.find((t) => t.id === this.recipe.traitId)!.kind;
           this.message = ''; sfx.click(); this.render();
         });
-        this.add.image(x, y - 14, weaponTexture(w.id)).setScale(1.25).setDepth(2);
+        const key = `forge_body_${w.id}`;
+        drawForgeWeapon(this, { ...this.recipe, weaponId: w.id }, key);
+        this.add.image(x, y - 14, key).setScale(1.25).setDepth(2);
+        this.caption(x, y + 16, w.name.replace('Forge ', ''), data.forge.costs.weapons[w.id]);
       });
     } else if (this.tab === 'Trait') {
       makeButton(this, 104, 84, 86, 26, 'Bless', this.kind === 'bless' ? 'go' : 'plain', () => { if (!this.saving) { this.kind = 'bless'; this.render(); } });
       makeButton(this, 211, 84, 86, 26, 'Curse', this.kind === 'curse' ? 'ability' : 'plain', () => { if (!this.saving) { this.kind = 'curse'; this.render(); } });
       const options = data.forge.traits.filter((t) => t.kind === this.kind);
-      options.forEach((t, i) => this.choice(t.name, i, 119, t.id === this.recipe.traitId, () => { this.recipe.traitId = t.id; }));
-      text(this, 158, 213, 'One trait: empower you or weaken enemies.', C('d'));
+      options.forEach((t, i) => this.choice(t.name, i, 119, t.id === this.recipe.traitId, () => { this.recipe.traitId = t.id; }, data.forge.costs.traits[t.id]));
+      text(this, 158, 199, 'One trait: empower you or weaken enemies.', C('d'));
     } else if (this.tab === 'Ability') {
       text(this, 158, 79, 'Every power uses your chosen weapon.', C('d'));
-      data.forge.abilities.forEach((a, i) => this.choice(a.name, i, 108, a.id === this.recipe.abilityId, () => { this.recipe.abilityId = a.id; }));
+      data.forge.abilities.forEach((a, i) => this.choice(a.name, i, 108, a.id === this.recipe.abilityId, () => { this.recipe.abilityId = a.id; }, data.forge.costs.abilities[a.id]));
     } else if (this.tab === 'Aura') {
-      text(this, 158, 79, 'Radiance changes the look, freely.', C('d'));
+      text(this, 158, 79, 'Radiance colors the blade and its glow.', C('d'));
       data.forge.radiances.forEach((a, i) => {
-        this.choice(a.name, i, 108, a.id === this.recipe.radianceId, () => { this.recipe.radianceId = a.id; });
+        this.choice(a.name, i, 108, a.id === this.recipe.radianceId, () => { this.recipe.radianceId = a.id; }, data.forge.costs.radiances[a.id]);
         this.add.rectangle(18 + i % 3 * 100, 108 + Math.floor(i / 3) * 37, 4, 18, C(a.color)).setDepth(12);
       });
     } else {
@@ -108,19 +114,36 @@ export default class ForgeScene extends Phaser.Scene {
       }
     }
     this.renderPreview();
+    const price = forgePrice(this.recipe);
+    const cost = forgeCost(this.recipe);
+    const poor = price > profile.coins;
+    if (this.tab !== 'Legends') {
+      const p = cost.parts;
+      text(this, 158, 224, `Body ${p.body} Power ${p.ability} Trait ${p.trait} Aura ${p.radiance} Total ${cost.total}`, C('d'));
+    }
     makeButton(this, 59, 252, 96, 26, 'Back', 'plain', () => {
       if (!this.saving) goTo(this, this.returnTo, { level: this.level });
     });
-    const save = makeButton(this, 396, 252, 148, 26, this.saving ? 'Saving...' : 'Save weapon', 'go', () => { void this.save(); });
-    save.setEnabled(!this.saving && this.tab !== 'Legends');
-    text(this, 213, 251, this.message || (this.isSaved() ? 'Saved build' : 'Unsaved changes'), this.message ? C('4') : C('d'));
+    const label = this.saving ? 'Forging...' : price === 0 ? 'Saved' : this.isSaved() ? 'Saved' : `Forge for ${price}`;
+    const save = makeButton(this, 396, 252, 148, 26, label, poor ? 'plain' : 'go', () => { void this.save(); });
+    save.setEnabled(!this.saving && this.tab !== 'Legends' && price > 0 && !poor);
+    const status = this.message || (poor ? `Need ${price - profile.coins} more coins` : price === 0 ? 'Saved build' : forgeRecipes().some((r) => r.weaponId === this.recipe.weaponId) ? `Change costs ${price} (half price)` : 'New weapon');
+    text(this, 213, 251, status, this.message ? C('4') : poor ? C('3') : C('d'));
     this.children.list.filter((o) => !before.has(o) && o !== this.body).forEach((o) => this.body.add(o));
   }
-  private choice(label: string, i: number, top: number, selected: boolean, apply: () => void): void {
-    makeButton(this, 58 + i % 3 * 100, top + Math.floor(i / 3) * 37, 92, 30, label, selected ? 'go' : 'plain', () => {
+  private choice(label: string, i: number, top: number, selected: boolean, apply: () => void, price?: number): void {
+    const x = 58 + i % 3 * 100;
+    const y = top + Math.floor(i / 3) * 37;
+    makeButton(this, x, y, 92, 30, price === undefined ? label : '', selected ? 'go' : 'plain', () => {
       if (this.saving) return;
       apply(); sfx.click(); this.message = ''; this.render();
     });
+    if (price !== undefined) this.caption(x, y, label, price);
+  }
+  /** Name on top, coin price underneath, both inside the button. */
+  private caption(x: number, y: number, label: string, price: number): void {
+    text(this, x, y - 6, label, C('c'), 1, C('0')).setDepth(12);
+    text(this, x, y + 7, price === 0 ? 'free' : `${price} coins`, C('4'), 1, C('0')).setDepth(12);
   }
   private isSaved(): boolean {
     return forgeRecipes().some((r) => JSON.stringify(r) === JSON.stringify(this.recipe));
@@ -134,7 +157,8 @@ export default class ForgeScene extends Phaser.Scene {
     this.aura = this.add.graphics().setDepth(2);
     this.aura.lineStyle(2, C(aura.color), 0.8).strokeCircle(396, 65, 27);
     this.aura.lineStyle(1, C('c'), 0.25).strokeCircle(396, 65, 30);
-    this.preview = this.add.image(396, 65, weaponTexture(w.id)).setScale(2).setTint(C(aura.color)).setDepth(3);
+    drawForgeWeapon(this, this.recipe, 'forge_preview');
+    this.preview = this.add.image(396, 65, 'forge_preview').setScale(2).setDepth(3);
     text(this, 396, 104, `${Math.round(w.baseDamage * upgradeMult(w.id) * (w.params.damageMult ?? 1))} base damage`, C('4'));
     text(this, 396, 122, `${trait.kind === 'bless' ? 'Bless' : 'Curse'}: ${trait.name}`, C('b'));
     textBlock(this, 396, 132, trait.description, C('d'), 136);
@@ -147,8 +171,9 @@ export default class ForgeScene extends Phaser.Scene {
     this.saving = true; this.render();
     try {
       await saveForgeRecipe(this.recipe);
-      this.message = 'Added to arsenal'; sfx.unlock();
-    } catch { this.message = 'Save failed. Retry.'; }
+      drawForgeWeapon(this, this.recipe);
+      this.message = 'Forged! In your arsenal'; sfx.sample('forge_craft');
+    } catch (error) { this.message = error instanceof Error && error.message === 'Not enough coins.' ? 'Not enough coins' : 'Save failed. Retry.'; }
     this.saving = false;
     if (this.scene.isActive()) this.render();
   }

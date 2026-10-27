@@ -62,7 +62,8 @@
       "pages": [
         { "title": "Upgrade damage", "body": "Open the Forge tab to upgrade a weapon you own. Each level adds 8 percent damage, up to level 5." },
         { "title": "What it costs", "body": "The first upgrade costs 50 coins and each level costs 1.6x more. Rare weapons cost 1.5x and Legendary weapons 2.5x as much." },
-        { "title": "Spend wisely", "body": "Upgrade the weapons you use the most. Replays and lost levels pay fewer coins than a first clear, so coins are worth saving." }
+        { "title": "Spend wisely", "body": "Upgrade the weapons you use the most. Replays and lost levels pay fewer coins than a first clear, so coins are worth saving." },
+        { "title": "Create a weapon", "body": "In the Forge tab tap Create a weapon. Pick a body, a trait, a power and a radiance. Every choice has its own coin price, so builds cost different amounts. Changing a saved build later costs half of its new price." }
       ]
     },
     "shop": {

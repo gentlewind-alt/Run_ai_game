@@ -1,4 +1,4 @@
-// All sound is synthesised with WebAudio. No audio files.
+// Most sound is synthesised with WebAudio. A few effects are recorded clips in public/audio, made with `rundot generate sfx`.
 class Sfx {
   private ctx?: AudioContext;
   private master?: GainNode;
@@ -63,6 +63,46 @@ class Sfx {
     s.connect(f).connect(g).connect(this.master);
     s.onended = () => { s.disconnect(); f.disconnect(); g.disconnect(); };
     s.start();
+  }
+
+  private clips = new Map<string, Promise<AudioBuffer | null>>();
+
+  /** Loads clips ahead of time so the first play is not late. A missing file is ignored. */
+  preload(names: string[]): void {
+    if (!this.ctx) return;
+    for (const name of names) this.clip(name);
+  }
+
+  private clip(name: string): Promise<AudioBuffer | null> {
+    let p = this.clips.get(name);
+    if (!p) {
+      p = (async () => {
+        try {
+          const r = await fetch(`audio/${name}.mp3`);
+          if (!r.ok || !this.ctx) return null;
+          return await this.ctx.decodeAudioData(await r.arrayBuffer());
+        } catch { return null; }
+      })();
+      this.clips.set(name, p);
+    }
+    return p;
+  }
+
+  /** Plays a recorded clip from public/audio/<name>.mp3. Silent if audio is locked or the file is missing. */
+  sample(name: string, vol = 0.9): void {
+    if (!this.ctx || !this.master) return;
+    const ctx = this.ctx;
+    const master = this.master;
+    void this.clip(name).then((buf) => {
+      if (!buf) return;
+      const s = ctx.createBufferSource();
+      s.buffer = buf;
+      const g = ctx.createGain();
+      g.gain.value = vol;
+      s.connect(g).connect(master);
+      s.onended = () => { s.disconnect(); g.disconnect(); };
+      s.start();
+    });
   }
 
   stretch(): void { this.tone(180, 0.04, 'square', 0.06); }

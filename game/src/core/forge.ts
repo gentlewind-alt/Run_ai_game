@@ -23,6 +23,22 @@ export function validateRecipe(raw: unknown): ForgeRecipe {
 
 export const forgeRecipe = (id: string): ForgeRecipe => ({ ...(recipes[id] ?? { weaponId: id, ...data.forge.defaults }) });
 export const forgeRecipes = (): ForgeRecipe[] => Object.values(recipes).map((r) => ({ ...r }));
+const sameRecipe = (a: ForgeRecipe, b: ForgeRecipe): boolean => a.weaponId === b.weaponId && a.traitId === b.traitId && a.abilityId === b.abilityId && a.radianceId === b.radianceId;
+
+/** Full price of a build: body + ability + trait + radiance, so every combination costs differently. */
+export function forgeCost(raw: ForgeRecipe): { total: number; parts: { body: number; ability: number; trait: number; radiance: number } } {
+  const c = data.forge.costs;
+  const parts = { body: c.weapons[raw.weaponId] ?? 0, ability: c.abilities[raw.abilityId] ?? 0, trait: c.traits[raw.traitId] ?? 0, radiance: c.radiances[raw.radianceId] ?? 0 };
+  return { total: parts.body + parts.ability + parts.trait + parts.radiance, parts };
+}
+
+/** What saving costs right now: full for a new build, a fraction for changing a saved one, nothing for no change. */
+export function forgePrice(raw: ForgeRecipe): number {
+  const saved = recipes[raw.weaponId];
+  if (!saved) return forgeCost(raw).total;
+  if (sameRecipe(saved, raw)) return 0;
+  return Math.round(forgeCost(raw).total * data.forge.costs.reforgeFactor);
+}
 
 export function compileForgeRecipe(raw: ForgeRecipe): WeaponDef {
   const r = validateRecipe(raw);
@@ -68,10 +84,13 @@ export function saveForgeRecipe(raw: ForgeRecipe): Promise<void> {
   if (!forgeEnabled()) return Promise.reject(new Error('The Forge is unavailable.'));
   const r = validateRecipe(raw);
   saving = saving.catch(() => {}).then(async () => {
+    const price = forgePrice(r);
+    if (price > profile.coins) throw new Error('Not enough coins.');
     const next = { ...recipes, [r.weaponId]: r };
     const serialized = JSON.stringify({ version: 1, recipes: Object.values(next) });
     await platform.storage.set(KEY, serialized);
     if (await platform.storage.get(KEY) !== serialized) throw new Error('The build could not be saved.');
+    if (price > 0) { profile.coins -= price; changed('coins'); } // not economy.spendCoins: the Arena verifier bundle stubs profile
     recipes = next;
     applyRecipes();
     changed('owned');

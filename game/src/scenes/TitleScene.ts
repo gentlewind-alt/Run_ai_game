@@ -56,30 +56,45 @@ export default class TitleScene extends Phaser.Scene {
       this.line.push({ img, id, i });
     });
 
-    const btnX = Math.round(W * 0.76);
-    makeButton(this, btnX, 54, 130, 30, 'Play', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'map'); }, 6);
-    if (feature('challenges')) makeButton(this, btnX, 118, 130, 26, 'Challenges', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'challenges'); }, 6);
-    if (feature('builder')) makeButton(this, btnX, 87, 130, 26, 'Create level', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'builder'); }, 6);
-    if (feature('arena')) makeButton(this, btnX, 149, 130, 24, 'Global Arena', 'go', () => { sfx.unlock(); sfx.click(); goTo(this, 'arena'); }, 6);
-    makeButton(this, btnX, 178, 110, 22, 'Credits', 'plain', () => { sfx.unlock(); sfx.click(); goTo(this, 'credits'); }, 6);
+    // menu plate: one big Play, a grid of mode tiles, and a small utility row
+    const cx = 374;
+    this.add.rectangle(cx, 122, 196, 228, C('0'), 0.45).setStrokeStyle(2, C('9'), 0.9).setDepth(5);
+    const open = (scene: string, data?: object) => (): void => { sfx.unlock(); sfx.click(); goTo(this, scene, data); };
+    const play = makeButton(this, cx, 46, 172, 40, '', 'go', open('map'), 6);
+    text(this, cx, 46, 'PLAY', C('c'), 2, C('0')).setDepth(8);
+    this.tweens.add({ targets: play.box, scaleY: 1.06, yoyo: true, repeat: -1, duration: 700, ease: 'Sine.inOut' });
+    const tiles: { label: string; note: string; scene: string; data?: object; on: boolean }[] = [
+      { label: 'Challenges', note: 'Player levels', scene: 'challenges', on: feature('challenges') },
+      { label: 'Create level', note: 'Build and share', scene: 'builder', on: feature('builder') },
+      { label: 'Global Arena', note: 'Duel players', scene: 'arena', on: feature('arena') },
+      { label: 'Weapon Forge', note: 'Craft weapons', scene: 'forge', data: { returnTo: 'title' }, on: feature('weaponForge') },
+    ];
+    tiles.filter((t) => t.on).forEach((t, k) => {
+      const x = cx + (k % 2 ? 46 : -46);
+      const y = 100 + Math.floor(k / 2) * 50;
+      makeButton(this, x, y, 84, 44, '', 'plain', open(t.scene, t.data), 6);
+      text(this, x, y - 7, t.label, C('c'), 1, C('0')).setDepth(8);
+      text(this, x, y + 9, t.note, C('d'), 1, C('0')).setDepth(8);
+    });
 
-    const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music: off' : 'Music: on');
-    const musicBtn = makeButton(this, btnX, 205, 110, 22, musicLabel(), 'plain', () => {
+    const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music off' : 'Music on');
+    const musicBtn = makeButton(this, cx - 64, 214, 60, 22, musicLabel(), 'plain', () => {
       sfx.unlock();
       setMusicOn(profile.settings.musicOn === false);
       music.updateVolume();
       sfx.click();
       musicBtn.setLabel(musicLabel());
     }, 6);
+    makeButton(this, cx + 64, 214, 60, 22, 'Credits', 'plain', open('credits'), 6);
 
     this.input.once('pointerdown', () => {
       sfx.unlock();
       music.updateVolume();
     });
     if (platform.fullscreen.available()) {
-      const label = (): string => (platform.fullscreen.active() ? 'Exit full screen' : 'Full screen');
+      const label = (): string => (platform.fullscreen.active() ? 'Exit full' : 'Fullscreen');
       let note: Phaser.GameObjects.Image[] = [];
-      const fsBtn = makeButton(this, btnX, 232, 110, 22, label(), 'plain', () => {
+      const fsBtn = makeButton(this, cx, 214, 60, 22, label(), 'plain', () => {
         sfx.unlock();
         void platform.fullscreen.toggle().then(() => {
           if (!this.scene.isActive()) return;

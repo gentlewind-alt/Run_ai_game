@@ -9,11 +9,25 @@
     "radiances",
     "defaults",
     "limits",
+    "costs",
     "enemyAttack"
   ],
   "properties": {
     "$schema": {
       "type": "string"
+    },
+    "costs": {
+      "type": "object",
+      "required": ["weapons", "abilities", "traits", "radiances", "reforgeFactor"],
+      "properties": {
+        "_note": { "type": "string" },
+        "weapons": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "abilities": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "traits": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "radiances": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "reforgeFactor": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
     },
     "weapons": {
       "type": "array",

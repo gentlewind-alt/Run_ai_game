@@ -4,7 +4,9 @@ export interface ForgeRecipe { weaponId: string; traitId: string; abilityId: str
 export interface ForgeOption { id: string; name: string; description: string; params: Record<string, number> }
 export interface ForgeTrait extends ForgeOption { kind: 'bless' | 'curse' }
 export interface ForgeRadiance { id: string; name: string; color: string }
+export interface ForgeCosts { weapons: Record<string, number>; abilities: Record<string, number>; traits: Record<string, number>; radiances: Record<string, number>; reforgeFactor: number }
 export interface ForgeConfig {
+  costs: ForgeCosts;
   weapons: WeaponDef[];
   abilities: ForgeOption[];
   traits: ForgeTrait[];

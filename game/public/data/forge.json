@@ -400,5 +400,51 @@
     "jitter": 12,
     "friction": 0.2,
     "restitution": 0.1
+  },
+  "costs": {
+    "_note": "Coins to create or change a build. Total = body + ability + trait + radiance. A new build pays the full total, changing a saved build pays reforgeFactor of the new total.",
+    "weapons": {
+      "w_forge_dagger": 300,
+      "w_forge_sword": 380,
+      "w_forge_spear": 420,
+      "w_forge_longsword": 480,
+      "w_forge_cleaver": 560,
+      "w_forge_double_sword": 700
+    },
+    "abilities": {
+      "strike": 120,
+      "slash": 130,
+      "whip": 140,
+      "dance": 150,
+      "spirit": 200,
+      "burst": 220,
+      "clone": 240,
+      "rain": 260,
+      "phantom": 300
+    },
+    "traits": {
+      "balanced": 0,
+      "reach": 160,
+      "vulnerable": 140,
+      "poison": 150,
+      "shieldbreak": 180,
+      "wither": 190,
+      "fortune": 200,
+      "overcharge": 220,
+      "zap": 240,
+      "critical": 260
+    },
+    "radiances": {
+      "blue": 40,
+      "dark": 60,
+      "red": 60,
+      "orange": 60,
+      "green": 60,
+      "pink": 60,
+      "purple": 90,
+      "white": 100,
+      "gold": 120
+    },
+    "reforgeFactor": 0.5
   }
 }

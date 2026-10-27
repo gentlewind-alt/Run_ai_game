@@ -70,6 +70,7 @@ export default class BattleScene extends Phaser.Scene {
     this.scene.resume();
     events.beginBattle();
     const b = (this.b = createBattle(this, this.levelId, this.loadout, this.customLevel, !!this.arenaSetup || !!this.practice));
+    sfx.preload(this.loadout.map((id) => b.forgeWeapons[id]?.forge?.abilityId).filter((a): a is string => !!a).map((a) => `forge_${a}`));
     buildBattle(b);
 
     const shouldShowHint = !b.custom && b.settings.features.tutorial !== false && !hasSeenHint(this.levelId, 0);

@@ -81,6 +81,7 @@ try {
   const result = await evaluate(`(${browserChecks.toString()})()`);
   await evaluate(`(async()=>{
     const {data}=await import('/src/data/load.ts');
+    (await import('/src/core/profile.ts')).profile.flags.tut_off=true; // the how-to cards would cover the buttons
     data.levels[98]={...data.levels[5],id:98,shots:6};delete data.levels[98].loadout;
     window.__game.scene.start('loadout',{level:98});return true;
   })()`);
@@ -141,7 +142,7 @@ async function browserChecks() {
   const pass = (value) => { passed.push(value); console.log('FORGE_PASS',value); };
   const oldLevel = data.levels[99];
   const oldProfile = JSON.parse(JSON.stringify(mm.profile()));
-  const campaign = () => JSON.stringify({ version: mm.profile().version, coins: mm.profile().coins, stars: mm.profile().stars, best: mm.profile().best, upgrades: mm.profile().upgrades, daily: mm.profile().daily });
+  const campaign = () => JSON.stringify({ version: mm.profile().version, stars: mm.profile().stars, best: mm.profile().best, upgrades: mm.profile().upgrades, daily: mm.profile().daily });
   const campaignBefore = campaign();
   mm.profile().equipped.artifacts = [];
   mm.profile().equipped.slingSkin = undefined;
@@ -339,7 +340,23 @@ async function browserChecks() {
       await storage.set('monster-mash.forge.v1',saved);await f.loadForge();
     }
     pass('Disabled Forge rejects crafted and extra shots; malformed builds load safely');
-    assert(campaign() === campaignBefore, 'Forge acceptance changed campaign progress or currency');
+    assert(campaign() === campaignBefore, 'Forge acceptance changed campaign progress');
+    {
+      // forging costs coins: refused when poor, charged exactly once, half price to change a saved build
+      await mm.platform().storage.set('monster-mash.forge.v1',JSON.stringify({version:1,recipes:[]}));await f.loadForge();
+      const p=mm.profile(); const keep=p.coins; const rec={weaponId:'w_forge_dagger',traitId:'critical',abilityId:'strike',radianceId:'gold'};
+      p.coins=100; let denied=''; try{await f.saveForgeRecipe(rec);}catch(e){denied=e.message;}
+      assert(denied==='Not enough coins.'&&p.coins===100,'A poor player was not refused or was charged');
+      const price=f.forgePrice(rec); assert(price===f.forgeCost(rec).total&&price>=300,'A new build is not full price');
+      p.coins=price+25; await f.saveForgeRecipe(rec);
+      assert(p.coins===25&&f.forgePrice(rec)===0,'Forging did not charge exactly the price');
+      const change={...rec,abilityId:'phantom'};
+      assert(f.forgePrice(change)===Math.round(f.forgeCost(change).total*0.5),'Changing a saved build is not half price');
+      const prices=new Set(['w_forge_dagger','w_forge_sword','w_forge_cleaver','w_forge_double_sword'].map(w=>f.forgeCost({...rec,weaponId:w}).total));
+      assert(prices.size===4,'Different weapons should cost different amounts');
+      p.coins=keep;
+    }
+    pass('Forging costs coins: refused when poor, charged once, half price to change, prices differ per build');
     pass('Campaign save version, coins, upgrades, stars, daily data and scores unchanged');
     return passed;
   } finally {
