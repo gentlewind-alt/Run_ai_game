@@ -1,4 +1,4 @@
-import type { LevelBlock, LevelMonster } from '../data/types';
+import type { LevelBlock, LevelConnection, LevelMonster } from '../data/types';
 
 export interface Point { x: number; y: number }
 export interface Bounds { l: number; r: number; t: number; b: number }
@@ -291,14 +291,19 @@ export function magnetSnap(block: LevelBlock, others: LevelBlock[], reach: numbe
   return best ? { x: block.x + best.d.x, y: block.y + best.d.y } : { x: block.x, y: block.y };
 }
 
-export function findDraftOverlaps(doc: { blocks: LevelBlock[]; monsters: LevelMonster[] }, sizeOf: (type: string) => { w: number; h: number } = () => ({ w: 12, h: 14 })): { a: string; b: string }[] {
+/** A wheel on an axle sits over its frame by design, so those pairs never count as overlaps. */
+const axlePairs = (connections: LevelConnection[] = []): Set<string> => new Set(connections.filter((c) => c.type === 'pin' && c.a).map((c) => [c.a, c.b].sort().join('|')));
+
+export function findDraftOverlaps(doc: { blocks: LevelBlock[]; monsters: LevelMonster[]; connections?: LevelConnection[] }, sizeOf: (type: string) => { w: number; h: number } = () => ({ w: 12, h: 14 })): { a: string; b: string }[] {
   const pieces = doc.blocks.map((block, i) => ({ id: block.id ?? `block_${i + 1}`, block }));
   doc.monsters.forEach((monster, i) => {
     const size = sizeOf(monster.t), id = (monster as LevelMonster & { id?: string }).id ?? `target_${i + 1}`;
     pieces.push({ id, block: { m: '', x: monster.x, y: monster.y, ...size, shape: 'rectangle' } });
   });
   const overlaps: { a: string; b: string }[] = [];
+  const axled = axlePairs(doc.connections);
   for (let i = 0; i < pieces.length; i++) for (let j = i + 1; j < pieces.length; j++) {
+    if (axled.has([pieces[i].id, pieces[j].id].sort().join('|'))) continue;
     if (blocksOverlap(pieces[i].block, pieces[j].block)) overlaps.push({ a: pieces[i].id, b: pieces[j].id });
   }
   return overlaps;

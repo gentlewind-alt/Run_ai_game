@@ -488,7 +488,8 @@ export default class BuilderScene extends Phaser.Scene {
     if (selection.kind === 'block') {
       const blk = entity as LevelBlock;
       Object.assign(blk, snapBlock(blk, point.x + drag.offset.x, point.y + drag.offset.y, this.config.grid));
-      Object.assign(blk, magnetSnap(blk, next.blocks.filter((o) => o.id !== blk.id), this.config.grid));
+      const axled = new Set(next.connections.filter((c) => c.type === 'pin' && c.a && (c.a === blk.id || c.b === blk.id)).flatMap((c) => [c.a, c.b]));
+      Object.assign(blk, magnetSnap(blk, next.blocks.filter((o) => o.id !== blk.id && !axled.has(o.id!)), this.config.grid));
       this.alignPins(next, new Set([selection.id]));
     } else {
       entity.x = this.snap(point.x + drag.offset.x);
@@ -591,21 +592,27 @@ export default class BuilderScene extends Phaser.Scene {
     let pointA = source.point, pointB = local;
     let link: LevelConnection['type'] = type;
     let a: string | null = source.id, b = id;
-    if (type === 'lock') {
+    const hubA = type === 'lock' ? this.hubOf(next, source.id!) : undefined;
+    const hubB = type === 'lock' ? this.hubOf(next, id) : undefined;
+    if (type === 'lock' && !hubA !== !hubB) {
+      // gluing a wheel to anything else fits an axle at the wheel's hub instead, so the wheel (and its arm) spins and carts roll
+      const wheel = next.blocks.find((x) => x.id === (hubA ? source.id : id))!;
+      const frame = next.blocks.find((x) => x.id === (hubA ? id : source.id))!;
+      const hub = (hubA ?? hubB)!;
+      const axle = this.axlePoint(frame, localToWorld(wheel, hub));
+      if (!axle) { this.say('No room for an axle on that piece. Try a plank or block.'); return; }
+      const at = localToWorld(frame, axle), from = localToWorld(wheel, hub);
+      wheel.x += at.x - from.x;
+      wheel.y += at.y - from.y;
+      if (next.blocks.some((o) => o.id !== wheel.id && o.id !== frame.id && blocksOverlap(wheel, o))) { this.say('No room for the wheel there. Clear the space around it.'); return; }
+      link = 'pin'; a = frame.id!; b = wheel.id!;
+      pointA = axle; pointB = hub;
+      wheel.static = false;
+    } else if (type === 'lock') {
       const joined = this.glueFlush(next, source.id!, id);
       if (typeof joined === 'string') { this.say(joined); return; }
       pointA = joined.pointA;
       pointB = joined.pointB;
-      // gluing a wheel to anything else fits an axle at the wheel's hub instead, so the wheel spins and a cart can roll
-      const wheelA = this.isWheel(next, source.id!), wheelB = this.isWheel(next, id);
-      if (wheelA !== wheelB) {
-        const wheel = next.blocks.find((x) => x.id === (wheelA ? source.id : id))!;
-        const frame = next.blocks.find((x) => x.id === (wheelA ? id : source.id))!;
-        link = 'pin'; a = frame.id!; b = wheel.id!;
-        pointA = worldToLocal(frame, { x: wheel.x, y: wheel.y });
-        pointB = { x: 0, y: 0 };
-        wheel.static = false;
-      }
     }
     next.connections.push({ id: this.id('c'), type: link, a, b, pointA, pointB });
     try {
@@ -615,10 +622,26 @@ export default class BuilderScene extends Phaser.Scene {
     } catch (error) { this.say(this.error(error)); }
   }
 
-  /** Round pieces that turn on an axle when glued: the Ball and the Wheel (not the Wheel + plank or Wheel + wedge arms). */
-  private isWheel(doc: BuilderDocument, id: string): boolean {
+  /** The hub of a piece that turns on an axle when glued (Ball, Wheel, and the wheel of Wheel + plank / Wheel + wedge), in its own coordinates. */
+  private hubOf(doc: BuilderDocument, id: string): Point | undefined {
     const b = doc.blocks.find((x) => x.id === id);
-    return !!b && b.shape === 'circle' && (!b.variant || b.variant === 'wheel');
+    if (!b || b.shape !== 'circle') return undefined;
+    if (!b.variant || b.variant === 'wheel') return { x: 0, y: 0 };
+    if (b.variant.startsWith('wheel')) return { x: -b.w / 2 + b.h / 2, y: 0 };
+    return undefined;
+  }
+
+  /**
+   * Where the axle goes on the frame: the frame point nearest the hub, kept a little inside the frame. With the joint inside its
+   * frame the physics holds it; a joint hanging out past a short plank acts like a long lever and shakes the build apart.
+   */
+  private axlePoint(frame: LevelBlock, hub: Point): Point | undefined {
+    const local = worldToLocal(frame, hub);
+    const inset = Math.max(1, Math.min(3, frame.w / 4, frame.h / 4));
+    let p = { x: Math.max(-frame.w / 2 + inset, Math.min(frame.w / 2 - inset, local.x)), y: Math.max(-frame.h / 2 + inset, Math.min(frame.h / 2 - inset, local.y)) };
+    const inside = (q: Point): boolean => pointInBlock({ ...frame, x: 0, y: 0, angle: 0 }, q);
+    for (let i = 0; i < 24 && !inside(p); i++) p = { x: p.x * 0.85, y: p.y * 0.85 };
+    return inside(p) ? p : undefined;
   }
 
   /** Every block rigidly glued to `start` (including it). */
