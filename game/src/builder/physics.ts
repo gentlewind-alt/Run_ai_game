@@ -136,7 +136,7 @@ export function installConnections(scene: Phaser.Scene, byId: Map<string, any>, 
   const groupOf = new Map<any, number>();
   let nextGroup = 1;
   for (const def of connections) {
-    if (def.type !== 'lock' || def.a === null) continue;
+    if ((def.type !== 'lock' && def.type !== 'pin') || def.a === null) continue; // glue and axles
     const bodyA = byId.get(def.a), bodyB = byId.get(def.b);
     if (!bodyA || !bodyB) continue;
     const ga = groupOf.get(bodyA), gb = groupOf.get(bodyB);

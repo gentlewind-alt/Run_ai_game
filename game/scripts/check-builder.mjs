@@ -213,4 +213,13 @@ assert.equal(level.realm, 'goblin_hills');
 level.blocks[0].x = 500;
 assert.equal(draft.blocks[0].x, 240);
 assert.deepEqual(validateDraft(newDraft(), config).blocks, []);
+// an axle: a pin from a frame block to a wheel's hub, which may sit just outside the frame
+{
+  const cart = newDraft();
+  cart.blocks = [{ id: 'frame', m: 'wood', x: 200, y: 250, w: 96, h: 8 }, { id: 'wheel', m: 'wood', x: 170, y: 270, w: 32, h: 32, shape: 'circle', variant: 'wheel' }];
+  cart.connections = [{ id: 'axle', type: 'pin', a: 'frame', b: 'wheel', pointA: { x: -30, y: 20 }, pointB: { x: 0, y: 0 } }];
+  assert.equal(validateDraft(cart, config).connections[0].type, 'pin', 'axle accepted');
+  const far = structuredClone(cart); far.connections[0].pointA = { x: 400, y: 0 };
+  assert.throws(() => validateDraft(far, config), /too far/, 'an axle far from its frame is refused');
+}
 console.log('check-builder: v1 IDs, variants, filled geometry, full targets, ropes/pins, overlap editing, settling and trusted level conversion passed');

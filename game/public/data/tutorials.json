@@ -86,7 +86,7 @@
       "title": "Level Builder",
       "pages": [
         { "title": "Place and move", "body": "Pick a piece and a material, then tap the grid. Pieces snap to the grid cells. With Select, tap to pick one piece or drag across empty space to pick many and move them together." },
-        { "title": "Join and fix", "body": "Lock joins two blocks, Rope hangs a block, Anchor fixes one in place and Rotate turns a piece a quarter turn. Undo and Clear are at the top." },
+        { "title": "Join and fix", "body": "Glue joins two blocks flush, even rotated ones. Glue a Wheel or Ball to a block and it gets an axle, so it spins: build a cart! Rope hangs a block, Anchor fixes one in place. Use + and - to zoom." },
         { "title": "Test and share", "body": "Test runs real physics on your fort. Play lets you fling at it. Challenge shares it with everyone. Add at least one target first." }
       ]
     },

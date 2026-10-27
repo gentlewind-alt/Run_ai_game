@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { text, setText, textWidth, fitText } from '../art/font5x7';
 import { MONSTER_ART } from '../art/textures';
-import { blockBounds, blockParts, blocksOverlap, closestBlockPoint, closestPair, findDraftOverlaps, localToWorld, magnetSnap, pointInBlock, snapBlock, touchOffset } from '../builder/geometry';
+import { blockBounds, blockParts, blocksOverlap, closestBlockPoint, closestPair, findDraftOverlaps, localToWorld, magnetSnap, pointInBlock, snapBlock, touchOffset, worldToLocal } from '../builder/geometry';
 import { cloneDraft, newDraft, settle, toLevel, validateDraft, type BuilderDocument } from '../builder/document';
 import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { getSettings } from '../config/settings';
@@ -307,7 +307,7 @@ export default class BuilderScene extends Phaser.Scene {
       piece: `${this.config.presets[this.preset].name}: click to place. R/right-click turns 45 degrees; Shift reverses.`,
       select: 'Select: drag pieces or an empty area for a group. R turns 45; Shift+R reverses; Delete removes.',
       target: `${name}: click to place. Target page ${this.targetPage + 1}/${Math.ceil(this.config.targets.length / 4)}.`,
-      glue: 'Glue: click two blocks. The second slides flush against the first, straight or rotated. Unlink removes the bond.',
+      glue: 'Glue: click two blocks to join them flush. A Wheel or Ball gets a spinning axle instead. Unlink removes it.',
       rope: 'Rope: click an edge or empty anchor, then a block or target edge. Esc cancels.',
     };
     this.refreshControls();
@@ -589,18 +589,36 @@ export default class BuilderScene extends Phaser.Scene {
     }
     const next = cloneDraft(this.draft);
     let pointA = source.point, pointB = local;
+    let link: LevelConnection['type'] = type;
+    let a: string | null = source.id, b = id;
     if (type === 'lock') {
       const joined = this.glueFlush(next, source.id!, id);
       if (typeof joined === 'string') { this.say(joined); return; }
       pointA = joined.pointA;
       pointB = joined.pointB;
+      // gluing a wheel to anything else fits an axle at the wheel's hub instead, so the wheel spins and a cart can roll
+      const wheelA = this.isWheel(next, source.id!), wheelB = this.isWheel(next, id);
+      if (wheelA !== wheelB) {
+        const wheel = next.blocks.find((x) => x.id === (wheelA ? source.id : id))!;
+        const frame = next.blocks.find((x) => x.id === (wheelA ? id : source.id))!;
+        link = 'pin'; a = frame.id!; b = wheel.id!;
+        pointA = worldToLocal(frame, { x: wheel.x, y: wheel.y });
+        pointB = { x: 0, y: 0 };
+        wheel.static = false;
+      }
     }
-    next.connections.push({ id: this.id('c'), type, a: source.id, b: id, pointA, pointB });
+    next.connections.push({ id: this.id('c'), type: link, a, b, pointA, pointB });
     try {
       validateDraft(next, this.config, this.monsterSize);
       this.pending = undefined;
-      this.commit(next, type === 'lock' ? 'Glued flush, straight or rotated. Unlink removes the bond.' : 'Rope attached edge to edge. Test lets it hang and swing.');
+      this.commit(next, link === 'pin' ? 'Axle fitted: the wheel spins on its hub. Test to roll it.' : link === 'lock' ? 'Glued flush, straight or rotated. Unlink removes the bond.' : 'Rope attached edge to edge. Test lets it hang and swing.');
     } catch (error) { this.say(this.error(error)); }
+  }
+
+  /** Round pieces that turn on an axle when glued: the Ball and the Wheel (not the Wheel + plank or Wheel + wedge arms). */
+  private isWheel(doc: BuilderDocument, id: string): boolean {
+    const b = doc.blocks.find((x) => x.id === id);
+    return !!b && b.shape === 'circle' && (!b.variant || b.variant === 'wheel');
   }
 
   /** Every block rigidly glued to `start` (including it). */
@@ -655,8 +673,8 @@ export default class BuilderScene extends Phaser.Scene {
     const block = selected?.kind === 'block' ? this.draft.blocks.find(b => b.id === selected.id) : undefined;
     if (!block?.variant?.startsWith('wheel')) { this.say('Select a wheel, then Pin fixes its hub while allowing rotation.'); return; }
     const next = cloneDraft(this.draft);
-    const pinned = next.connections.some(c => c.type === 'pin' && c.b === block.id);
-    if (pinned) next.connections = next.connections.filter(c => c.type !== 'pin' || c.b !== block.id);
+    const pinned = next.connections.some(c => c.type === 'pin' && c.a === null && c.b === block.id);
+    if (pinned) next.connections = next.connections.filter(c => c.type !== 'pin' || c.a !== null || c.b !== block.id);
     else {
       const hub = { x: block.variant === 'wheel' ? 0 : -block.w / 2 + block.h / 2, y: 0 };
       next.blocks.find(b => b.id === block.id)!.static = false;
@@ -884,7 +902,7 @@ export default class BuilderScene extends Phaser.Scene {
     const block = this.selection?.kind === 'block' ? this.draft.blocks.find(b => b.id === (this.selection as { id: string }).id) : undefined;
     this.anchorButton.setLabel(block?.static ? 'Free' : 'Anchor');
     this.pinButton.setEnabled(editable && !!block?.variant?.startsWith('wheel'));
-    this.pinButton.setLabel(block && this.draft.connections.some(c => c.type === 'pin' && c.b === block.id) ? 'Unpin' : 'Pin');
+    this.pinButton.setLabel(block && this.draft.connections.some(c => c.type === 'pin' && c.a === null && c.b === block.id) ? 'Unpin' : 'Pin');
     const choices = this.choices();
     this.paletteRows.forEach((btn, row) => {
       const index = choices[row];
@@ -1118,6 +1136,7 @@ export default class BuilderScene extends Phaser.Scene {
     g.lineStyle(2 / scale, C(connection.type === 'lock' ? '4' : 'i'), 1).lineBetween(a.x, a.y, b.x, b.y);
     if (connection.type === 'lock') g.fillStyle(C('4'), 1).fillRect((a.x + b.x) / 2 - 2 / scale, (a.y + b.y) / 2 - 2 / scale, 4 / scale, 4 / scale);
     if (connection.a === null) g.fillStyle(C('c'), 1).fillCircle(a.x, a.y, 3 / scale);
+    else if (connection.type === 'pin') g.lineStyle(1.5 / scale, C('c'), 1).strokeCircle(b.x, b.y, 3 / scale).fillStyle(C('4'), 1).fillCircle(b.x, b.y, 1.5 / scale);
   }
 
   update(_time: number, delta: number): void {

@@ -123,7 +123,9 @@ export function validateDraft(value: unknown, config: BuilderConfig, sizeOf: (ty
     const local = (p: { x: number; y: number }, block: LevelBlock): void => {
       if (!pointInBlock({ ...block, x: 0, y: 0, angle: 0 }, p)) throw new Error(`${label} point is outside its piece`);
     };
-    if (blockA) local(pointA, blockA);
+    // an axle (a pin between two blocks) sits at the wheel's hub, which may be just outside the frame it hangs from
+    if (blockA && c.type === 'pin') { if (Math.hypot(pointA.x, pointA.y) > Math.hypot(blockA.w, blockA.h) / 2 + 64) throw new Error(`${label} axle is too far from its frame`); }
+    else if (blockA) local(pointA, blockA);
     else {
       bounded(pointA.x, config.minX, config.worldW, label);
       bounded(pointA.y, config.minY, config.groundY, label);
