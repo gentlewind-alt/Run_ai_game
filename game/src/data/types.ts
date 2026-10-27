@@ -22,7 +22,7 @@ export interface WeaponDef {
   tap?: string;
   anim?: WeaponAnim; // launch/ability animation style (battle/weaponAnim.ts)
   display?: { px?: number }; // flight size in world px for long items (arrows, spears); overrides config.display.weapon.flightPx
-  physics: { radius: number; density: number; spin: number; gravity?: number; align?: boolean; friction?: number; restitution?: number; frictionAir?: number };
+  physics: { radius: number; density: number; spin: number; gravity?: number; tempo?: number; align?: boolean; friction?: number; restitution?: number; frictionAir?: number };
   ability: { mode: AbilityMode; label: string; charges?: number };
   params: Params;
 }
@@ -209,12 +209,13 @@ export interface WeaponAnimConfig {
   trailEvery: number; ghostAlpha: number; ghostMs: number;
   tumble: number; rock: number; rockSpeed: number; pulse: number; pulseSpeed: number;
   slashMs: number; kick: number; impactMinSpeed: number; impactSteps: number; impactSquash: number; aimTurn: number;
+  flipSteps: number; flipTurns: number; flipLazy: number; frisbeeSpeed: number; corkSpeed: number; twirlSpeed: number; windmill: number;
 }
 /**
  * How a weapon moves: flight spin (physics spin), point (nose first), tumble (lazy spin), rock (upright sway), pulse (throbs),
- * aim (turns its muzzle to the nearest monster); trail; and the ability move (slash, charge, slam, recoil, burst).
+ * aim (turns its muzzle to the nearest monster), flip, frisbee, corkscrew, twirl, windmill (see weaponAnim.ts flightMove); trail; and the ability move (slash, charge, slam, recoil, burst).
  */
-export interface WeaponAnim { flight: 'spin' | 'point' | 'tumble' | 'rock' | 'pulse' | 'aim'; trail: 'ghost' | 'sparks' | 'none'; ability: 'slash' | 'charge' | 'slam' | 'recoil' | 'burst'; colors: string[] }
+export interface WeaponAnim { flight: 'spin' | 'point' | 'tumble' | 'rock' | 'pulse' | 'aim' | 'flip' | 'frisbee' | 'corkscrew' | 'twirl' | 'windmill'; trail: 'ghost' | 'sparks' | 'none'; ability: 'slash' | 'charge' | 'slam' | 'recoil' | 'burst'; colors: string[] }
 
 export interface Config {
   version: number;

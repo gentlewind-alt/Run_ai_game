@@ -289,12 +289,13 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   setWeapon(b, id);
   const phys = b.wdef.physics;
   const speedMult = b.mods.launchSpeedMult ?? 1;
-  const actualVel = vel.clone().scale(speedMult);
+  const tempo = phys.tempo ?? 1;
+  const actualVel = vel.clone().scale(speedMult * tempo);
   const body: any = b.scene.matter.add.circle(b.pouch.x, b.pouch.y, phys.radius, {
-    density: phys.density, friction: phys.friction ?? 0.3, frictionAir: phys.frictionAir ?? 0, restitution: phys.restitution ?? 0.2, label: 'proj',
+    density: phys.density / tempo, friction: phys.friction ?? 0.3, frictionAir: (phys.frictionAir ?? 0) * tempo, restitution: phys.restitution ?? 0.2, label: 'proj',
   });
   body.proj = { wid: id, mul: 1, owner: 'main' };
-  setGravity(body, phys.gravity ?? 1);
+  setGravity(body, (phys.gravity ?? 1) * tempo * tempo);
   MatterLib.Body.setVelocity(body, { x: actualVel.x, y: actualVel.y });
   MatterLib.Body.setAngularVelocity(body, phys.spin);
   const flightScale = weaponScale(b.scene, b.wpn.texture, 'flight', b.wdef);
@@ -325,18 +326,19 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
     twinQ?.destroy();
     let delay = twinDelay;
     const launchPos = { x: b.slingX, y: b.slingY };
-    const twinVel = actualVel.clone();
+    const twinTempo = twinWdef.physics.tempo ?? 1;
+    const twinVel = vel.clone().scale(speedMult * twinTempo);
     b.actors.push({
       update() {
         delay--;
         if (delay === 0) {
           const tPhys = twinWdef.physics;
           const tBody: any = b.scene.matter.add.circle(launchPos.x, launchPos.y, tPhys.radius, {
-            density: tPhys.density, friction: tPhys.friction ?? 0.3, frictionAir: tPhys.frictionAir ?? 0,
+            density: tPhys.density / twinTempo, friction: tPhys.friction ?? 0.3, frictionAir: (tPhys.frictionAir ?? 0) * twinTempo,
             restitution: tPhys.restitution ?? 0.2, label: 'proj',
           });
           tBody.proj = { wid: twinId, mul: twinFrac, owner: 'extra' };
-          setGravity(tBody, tPhys.gravity ?? 1);
+          setGravity(tBody, (tPhys.gravity ?? 1) * twinTempo * twinTempo);
           MatterLib.Body.setVelocity(tBody, { x: twinVel.x, y: twinVel.y });
           MatterLib.Body.setAngularVelocity(tBody, tPhys.spin);
           const tFlightScale = weaponScale(b.scene, twinWpn.texture, 'flight', twinWdef);
@@ -382,7 +384,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   b.wpn.onLaunch?.(b.ctx, b.proj);
   b.events.emit('shot:launched', {
     weaponId: id, index: b.shotIdx - 1, x: body.position.x, y: body.position.y, vx: actualVel.x, vy: actualVel.y, radius: phys.radius,
-    density: phys.density, gravity: phys.gravity ?? 1,
+    density: phys.density / tempo, gravity: (phys.gravity ?? 1) * tempo * tempo,
   });
 }
 
@@ -412,15 +414,16 @@ export function drawOverlay(b: BattleState): void {
     }
     if (aiming) {
       const speedMult = b.mods.launchSpeedMult ?? 1;
-      const v = new Phaser.Math.Vector2(b.slingX - pos.x, b.slingY - pos.y).scale(b.tune.launchK * speedMult);
+      const tempo = b.wdef.physics.tempo ?? 1;
+      const v = new Phaser.Math.Vector2(b.slingX - pos.x, b.slingY - pos.y).scale(b.tune.launchK * speedMult * tempo);
       b.readySprite.setRotation(Math.atan2(v.y, v.x) + Math.PI / 2);
       let x = pos.x;
       let y = pos.y;
       let vy = v.y;
       g.fillStyle(C('c'), 1);
       const gravityStep = 0.001 * b.stepMs * b.stepMs; // matter gravity per step, px/step^2
-      const gr = gravityStep * (b.wdef.physics.gravity ?? 1);
-      const steps = Math.round(30 * b.mods.previewMult);
+      const gr = gravityStep * (b.wdef.physics.gravity ?? 1) * tempo * tempo;
+      const steps = Math.round((30 * b.mods.previewMult) / tempo); // same stretch of path whatever the weapon's tempo
       for (let i = 1; i <= steps; i++) {
         x += v.x;
         vy += gr;

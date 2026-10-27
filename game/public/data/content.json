@@ -280,13 +280,14 @@
       "name": "Militia Blade",
       "archetype": "sword",
       "element": "physical",
-      "rarity": "common", "sprite": "sprites/weapons/w_militia_blade", "anim": { "flight": "spin", "trail": "ghost", "ability": "slash", "colors": ["c", "l"] },
+      "rarity": "common", "sprite": "sprites/weapons/w_militia_blade", "anim": { "flight": "flip", "trail": "ghost", "ability": "slash", "colors": ["c", "l"] },
       "baseDamage": 14,
       "unlock": "start",
       "price": 0,
       "launch": "Spins end over end. Light and fast.",
       "tap": "Whirlwind: rolls along the ground as a sawblade for 1.2 s, carving what it touches.",
       "physics": {
+        "tempo": 1.15,
         "radius": 4,
         "density": 0.03,
         "spin": 0.28,
@@ -310,13 +311,14 @@
       "name": "Iron Cleaver",
       "archetype": "greatsword",
       "element": "physical",
-      "rarity": "common", "sprite": "sprites/weapons/w_iron_cleaver", "anim": { "flight": "spin", "trail": "ghost", "ability": "slam", "colors": ["l", "m"] },
+      "rarity": "common", "sprite": "sprites/weapons/w_iron_cleaver", "anim": { "flight": "windmill", "trail": "ghost", "ability": "slam", "colors": ["l", "m"] },
       "baseDamage": 26,
       "unlock": "level 2",
       "price": 100,
       "launch": "Heavy, short flat arc. Drops fast.",
       "tap": "Crater slam: dive-slam that digs a crater and sends out a crumbling shock ring.",
       "physics": {
+        "tempo": 0.85,
         "radius": 5,
         "density": 0.05,
         "spin": 0.12,
@@ -342,13 +344,14 @@
       "name": "Ashwood Staff",
       "archetype": "staff",
       "element": "radiant",
-      "rarity": "common", "sprite": "sprites/weapons/w_ashwood_staff", "anim": { "flight": "tumble", "trail": "sparks", "ability": "charge", "colors": ["4", "3"] },
+      "rarity": "common", "sprite": "sprites/weapons/w_ashwood_staff", "anim": { "flight": "twirl", "trail": "sparks", "ability": "charge", "colors": ["4", "3"] },
       "baseDamage": 11,
       "unlock": "level 3",
       "price": 150,
       "launch": "Light, floaty.",
       "tap": "Ember volley: 3 homing bolts that each split in two when they hit.",
       "physics": {
+        "tempo": 0.8,
         "radius": 4,
         "density": 0.008,
         "spin": 0.1,
@@ -418,6 +421,7 @@
       "launch": "Flies point-first, flat and fast.",
       "tap": "Speeds up and pierces up to 3 wood blocks or monsters, then blasts the first solid it hits.",
       "physics": {
+        "tempo": 1.3,
         "radius": 3,
         "density": 0.02,
         "spin": 0,
@@ -440,7 +444,7 @@
       "name": "Hunters Boomerang",
       "archetype": "chakram",
       "element": "physical",
-      "rarity": "common", "sprite": "sprites/weapons/w_hunters_boomerang", "anim": { "flight": "spin", "trail": "ghost", "ability": "slash", "colors": ["i", "6"] },
+      "rarity": "common", "sprite": "sprites/weapons/w_hunters_boomerang", "anim": { "flight": "frisbee", "trail": "ghost", "ability": "slash", "colors": ["i", "6"] },
       "baseDamage": 15,
       "unlock": "level 6",
       "price": 300,
@@ -479,6 +483,7 @@
       "launch": "A heavy shell on a high lob.",
       "tap": "Aims at the nearest monster and fires a nuke shell (tap, or it fires when it crashes): huge radius, flash and shock rings; damage falls off with distance.",
       "physics": {
+        "tempo": 0.85,
         "radius": 5,
         "density": 0.04,
         "spin": 0.05,
@@ -502,13 +507,14 @@
       "name": "Horned Scepter",
       "archetype": "staff",
       "element": "hellfire",
-      "rarity": "uncommon", "sprite": "sprites/weapons/w_horned_scepter", "anim": { "flight": "tumble", "trail": "sparks", "ability": "charge", "colors": ["2", "3"] },
+      "rarity": "uncommon", "sprite": "sprites/weapons/w_horned_scepter", "anim": { "flight": "twirl", "trail": "sparks", "ability": "charge", "colors": ["2", "3"] },
       "baseDamage": 11.7,
       "unlock": "level 8",
       "price": 400,
       "launch": "Light, trails ember particles.",
       "tap": "Curse burst (+15% damage taken for 4 s) and a fire pool where it lands that sets monsters in it alight for 3 s.",
       "physics": {
+        "tempo": 0.9,
         "radius": 4,
         "density": 0.006,
         "spin": 0.2,
@@ -533,7 +539,7 @@
       "name": "Comet Fists",
       "archetype": "fists",
       "element": "physical",
-      "rarity": "legendary", "anim": { "flight": "tumble", "trail": "sparks", "ability": "slam", "colors": ["3", "4"] },
+      "rarity": "legendary", "anim": { "flight": "flip", "trail": "sparks", "ability": "slam", "colors": ["3", "4"] },
       "baseDamage": 50,
       "unlock": {
         "boss": "goblin_chief",
@@ -543,6 +549,7 @@
       "launch": "Two heavy gauntlets hurled in tandem.",
       "tap": "Dive-slam causing an earthquake wave, then a rock spike bursts from the ground ahead.",
       "physics": {
+        "tempo": 1.15,
         "radius": 5,
         "density": 0.015,
         "spin": 0.05,
@@ -575,7 +582,7 @@
       "name": "Bulwark Disc",
       "archetype": "shield",
       "element": "physical",
-      "rarity": "legendary", "anim": { "flight": "spin", "trail": "ghost", "ability": "burst", "colors": ["a", "b"] },
+      "rarity": "legendary", "anim": { "flight": "frisbee", "trail": "ghost", "ability": "burst", "colors": ["a", "b"] },
       "baseDamage": 44,
       "unlock": {
         "boss": "dark_elf_matron",
@@ -585,6 +592,7 @@
       "launch": "Concentric rune shield. Each hit ricochets it on to another monster, a little softer every time.",
       "tap": "Redirects once toward the nearest monster. The sixth bounce rings out as a shield blast.",
       "physics": {
+        "tempo": 1.1,
         "radius": 4,
         "density": 0.012,
         "spin": 0.4,
@@ -623,7 +631,7 @@
       "name": "Skyforge Maul",
       "archetype": "hammer",
       "element": "radiant",
-      "rarity": "legendary", "anim": { "flight": "spin", "trail": "sparks", "ability": "charge", "colors": ["4", "b"] },
+      "rarity": "legendary", "anim": { "flight": "windmill", "trail": "sparks", "ability": "charge", "colors": ["4", "b"] },
       "baseDamage": 56,
       "unlock": {
         "boss": "iron_warlord",
@@ -633,6 +641,7 @@
       "launch": "Spinning hammer that smashes through fortresses.",
       "tap": "Lightning strikes the two lowest-HP monsters, a middle-HP monster and the highest-HP monster. Tap again to recall.",
       "physics": {
+        "tempo": 0.85,
         "radius": 5,
         "density": 0.015,
         "spin": 0.35,
@@ -676,6 +685,7 @@
       "launch": "Red-fletched projectile flying point-first.",
       "tap": "Arms explosive tip. Tap again before impact to split into 3.",
       "physics": {
+        "tempo": 1.25,
         "radius": 4,
         "density": 0.012,
         "spin": 0,
@@ -710,6 +720,7 @@
       "launch": "Wrist-mounted launcher firing concentrated web strands.",
       "tap": "Web line pulls the nearest monster 16px and slows it 50% for 4s (tap, or it fires when it crashes).",
       "physics": {
+        "tempo": 1.05,
         "radius": 5,
         "density": 0.02,
         "spin": 0.1,
@@ -741,6 +752,7 @@
       "launch": "Cyan-charged palm emitters with internal kinetic coils.",
       "tap": "Fires a 3-bolt repulsor volley at the nearest monster with knockback and shot recoil (tap, or it fires when it crashes).",
       "physics": {
+        "tempo": 1.1,
         "radius": 4,
         "density": 0.015,
         "spin": 0.2,
@@ -776,6 +788,7 @@
       "launch": "Golden arrow that flies true.",
       "tap": "Calls one thick beam from the sky onto the nearest monster, ignoring armour along its column.",
       "physics": {
+        "tempo": 1.35,
         "radius": 4,
         "density": 0.012,
         "spin": 0,
@@ -805,7 +818,7 @@
       "name": "Alien Dial",
       "archetype": "dial",
       "element": "void",
-      "rarity": "legendary", "anim": { "flight": "spin", "trail": "sparks", "ability": "charge", "colors": ["5", "6"] },
+      "rarity": "legendary", "anim": { "flight": "frisbee", "trail": "sparks", "ability": "charge", "colors": ["5", "6"] },
       "baseDamage": 46,
       "unlock": {
         "chest": "c_l19",
@@ -815,6 +828,7 @@
       "launch": "Heavy green dial that spins as it flies.",
       "tap": "A giant alien foot stomps from the sky with a screech and an earthquake that reaches the entire level.",
       "physics": {
+        "tempo": 0.95,
         "radius": 5,
         "density": 0.014,
         "spin": 0.3,
@@ -864,6 +878,7 @@
       "launch": "Round paper pinata that tumbles in a high arc.",
       "tap": "Bursts into five candy bombs that rain down in a fan.",
       "physics": {
+        "tempo": 0.75,
         "radius": 5,
         "density": 0.02,
         "spin": 0.2,
@@ -897,6 +912,7 @@
       "launch": "Small iron pot that sloshes as it flies.",
       "tap": "Tips out twelve scalding stew drops over a wide band.",
       "physics": {
+        "tempo": 0.8,
         "radius": 5,
         "density": 0.02,
         "spin": 0.15,
@@ -922,13 +938,14 @@
       "name": "Rolling Millstone",
       "archetype": "wheel",
       "element": "physical",
-      "rarity": "rare", "anim": { "flight": "spin", "trail": "ghost", "ability": "slam", "colors": ["l", "k"] },
+      "rarity": "rare", "anim": { "flight": "windmill", "trail": "ghost", "ability": "slam", "colors": ["l", "k"] },
       "baseDamage": 24,
       "unlock": "level 23",
       "price": 700,
       "launch": "Heavy stone wheel that tumbles when thrown.",
       "tap": "Rolls along the ground for 2 s, crushing everything in its path.",
       "physics": {
+        "tempo": 0.8,
         "radius": 6,
         "density": 0.05,
         "spin": 0.2,
@@ -953,7 +970,7 @@
       "name": "Earthworm Drill",
       "archetype": "drill",
       "element": "physical",
-      "rarity": "rare", "anim": { "flight": "spin", "trail": "ghost", "ability": "slam", "colors": ["g", "i"] },
+      "rarity": "rare", "anim": { "flight": "corkscrew", "trail": "ghost", "ability": "slam", "colors": ["i", "t"] },
       "baseDamage": 28,
       "unlock": {
         "chest": "c_l22",
@@ -963,6 +980,7 @@
       "launch": "Armoured worm with a drill snout.",
       "tap": "Dives steeply, drills in, then erupts under the fort.",
       "physics": {
+        "tempo": 0.7,
         "radius": 4,
         "density": 0.025,
         "spin": 0.1,
@@ -987,7 +1005,7 @@
       "name": "Chain Rod",
       "archetype": "rod",
       "element": "radiant",
-      "rarity": "rare", "anim": { "flight": "spin", "trail": "sparks", "ability": "charge", "colors": ["b", "c"] },
+      "rarity": "rare", "anim": { "flight": "twirl", "trail": "sparks", "ability": "charge", "colors": ["b", "c"] },
       "baseDamage": 22,
       "unlock": {
         "chest": "c_l23",
@@ -997,6 +1015,7 @@
       "launch": "Copper rod crackling with static.",
       "tap": "Lightning jumps between up to four monsters, weaker each time.",
       "physics": {
+        "tempo": 1.1,
         "radius": 4,
         "density": 0.02,
         "spin": 0.2,
@@ -1029,6 +1048,7 @@
       "launch": "A dark marble that bends the light around it.",
       "tap": "Hangs a singularity that drags everything in, then collapses.",
       "physics": {
+        "tempo": 0.9,
         "radius": 4,
         "density": 0.03,
         "spin": 0.1,

@@ -7,13 +7,13 @@ import type { Proj } from './BattleCtx';
 import { ring } from './fx';
 import type { BattleState } from './state';
 
-interface AnimState { base: number; flashUntil: number; abilityAt: number; hitAt: number; lastTrail: number; aim: number | null }
+interface AnimState { base: number; flashUntil: number; abilityAt: number; hitAt: number; lastTrail: number; aim: number | null; rot: number; flipAt: number; lastVy: number }
 
 const cfg = (b: BattleState) => b.settings.display.weaponAnim;
 const ART_TILT = Math.PI / 4; // generated weapon art points up-right; aimed weapons turn that corner toward the target
 
 function state(p: Proj): AnimState {
-  return (p.data.anim ??= { base: p.sprite.scaleX, flashUntil: -1, abilityAt: -1e9, hitAt: -1e9, lastTrail: -1, aim: null });
+  return (p.data.anim ??= { base: p.sprite.scaleX, flashUntil: -1, abilityAt: -1e9, hitAt: -1e9, lastTrail: -1, aim: null, rot: p.sprite.rotation, flipAt: -1e9, lastVy: p.body.velocity.y });
 }
 
 function spark(b: BattleState, x: number, y: number, color: string, vx: number, vy: number, life: number): void {
@@ -138,6 +138,39 @@ export function impactAnim(b: BattleState, p: Proj, rel: number): void {
   s.hitAt = p.steps;
 }
 
+/**
+ * Flight moves on top of the physics: flip (lazy spin, then a fast double flip at the top of the arc), frisbee (spins and
+ * tips like a thrown disc), corkscrew (nose first, rolling round its own axis, faster after the ability), twirl (a baton
+ * twirl that speeds up and slows down), windmill (spins as fast as it flies, so it hangs at the top of the arc).
+ * Returns the y scale factor for the moves that fake a 3D roll.
+ */
+function flightMove(b: BattleState, p: Proj, s: AnimState, flight: string): number {
+  const k = cfg(b);
+  const t = p.steps;
+  const v = p.body.velocity;
+  if (flight === 'flip') {
+    if (s.lastVy < 0 && v.y >= 0) s.flipAt = t; // the top of the arc
+    const f = Phaser.Math.Clamp((t - s.flipAt) / k.flipSteps, 0, 1);
+    s.rot += k.flipLazy;
+    p.sprite.setRotation(s.rot + Math.PI * 2 * k.flipTurns * Phaser.Math.Easing.Cubic.InOut(f));
+  } else if (flight === 'frisbee') {
+    p.sprite.setRotation(p.body.angle);
+    return Math.max(0.3, Math.abs(Math.cos(t * k.frisbeeSpeed)));
+  } else if (flight === 'corkscrew') {
+    if (Math.hypot(v.x, v.y) > 0.3) p.sprite.setRotation(Math.atan2(v.y, v.x) + ART_TILT);
+    const fast = s.abilityAt >= 0 && t >= s.abilityAt ? 3 : 1;
+    return 0.55 + 0.45 * Math.abs(Math.cos(t * k.corkSpeed * fast));
+  } else if (flight === 'twirl') {
+    s.rot += k.twirlSpeed * (1 + 0.7 * Math.sin(t * 0.12));
+    p.sprite.setRotation(s.rot);
+  } else if (flight === 'windmill') {
+    s.rot += Math.hypot(v.x, v.y) * k.windmill * Math.sign(v.x || 1);
+    p.sprite.setRotation(s.rot);
+  }
+  s.lastVy = v.y;
+  return 1;
+}
+
 /** Every frame while the shot flies: flight style, launch pop, impact squash, ability punch and the trail. */
 export function animateProj(b: BattleState, p: Proj): void {
   const a = p.def.anim;
@@ -154,7 +187,7 @@ export function animateProj(b: BattleState, p: Proj): void {
     p.sprite.setRotation((s.aim ?? Math.atan2(p.body.velocity.y, p.body.velocity.x)) + ART_TILT);
   }
   let sx = 1;
-  let sy = 1;
+  let sy = flightMove(b, p, s, a.flight);
   if (t < k.launchSteps) { const f = k.launchPop * (1 - t / k.launchSteps); sx += f; sy += f; }
   const since = t - s.abilityAt;
   if (since >= 0 && since < k.abilitySteps) { const f = k.abilityPunch * (1 - since / k.abilitySteps); sx += f; sy += f; }
@@ -172,8 +205,8 @@ export function animateProj(b: BattleState, p: Proj): void {
     spark(b, x + (Math.random() - 0.5) * 4, y + (Math.random() - 0.5) * 4, color, (Math.random() - 0.5) * 0.4, -0.2 - Math.random() * 0.3, 10 + Math.random() * 6);
     return;
   }
-  // ghost: a fading copy of the weapon left behind, tinted in its colour
+  // ghost: a fading silhouette of the weapon left behind, filled with its colour
   const g = b.scene.add.image(x, y, p.sprite.texture.key).setRotation(p.sprite.rotation).setScale(p.sprite.scaleX, p.sprite.scaleY)
-    .setTint(C(color)).setAlpha(k.ghostAlpha).setDepth(3);
+    .setTintFill(C(color)).setAlpha(k.ghostAlpha).setDepth(3);
   b.scene.tweens.add({ targets: g, alpha: 0, scale: p.sprite.scaleX * 0.8, duration: k.ghostMs, ease: Phaser.Math.Easing.Quadratic.Out, onComplete: () => g.destroy() });
 }

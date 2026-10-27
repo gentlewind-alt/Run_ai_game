@@ -107,14 +107,16 @@ function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y
     }
   }
   if (!t || t.dead) return;
-  if (rel < b.tune.projMinSpeed && !info.status) return;
+  // hits are judged against the weapon's own tempo, so a slow, floaty weapon hits as hard as it would at normal speed
+  const relN = rel / (battleWeapon(b, info.wid).physics.tempo ?? 1);
+  if (relN < b.tune.projMinSpeed && !info.status) return;
   if (t.def?.boss) {
     const last = (info.lastHit ??= {});
     if (b.steps - (last[ob.id] ?? -1e9) < b.tune.bossRehitSteps) return;
     last[ob.id] = b.steps;
   }
   const R = b.rules;
-  const { dmg, tag } = weaponDamage(b, t, info.wid, Phaser.Math.Clamp(b.tune.impactBase + rel / b.maxSpeed, R.impactFactorMin, R.impactFactorMax), info.mul);
+  const { dmg, tag } = weaponDamage(b, t, info.wid, Phaser.Math.Clamp(b.tune.impactBase + relN / b.maxSpeed, R.impactFactorMin, R.impactFactorMax), info.mul);
   if (info.status && t.kind === 'monster') {
     const P = battleWeapon(b, info.wid).params;
     if (info.status === 'knock') MatterLib.Body.setVelocity(t.body, { x: pb.velocity.x * P.knockMult, y: pb.velocity.y * P.knockMult - P.knockLift });
