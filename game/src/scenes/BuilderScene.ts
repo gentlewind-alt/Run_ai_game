@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { text, setText, textWidth, fitText } from '../art/font5x7';
 import { MONSTER_ART } from '../art/textures';
-import { blockBounds, blockParts, blocksOverlap, closestBlockPoint, closestPair, findDraftOverlaps, localToWorld, pointInBlock, snapBlock, touchOffset } from '../builder/geometry';
+import { blockBounds, blockParts, blocksOverlap, closestBlockPoint, closestPair, findDraftOverlaps, localToWorld, magnetSnap, pointInBlock, snapBlock, touchOffset } from '../builder/geometry';
 import { cloneDraft, newDraft, settle, toLevel, validateDraft, type BuilderDocument } from '../builder/document';
 import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { getSettings } from '../config/settings';
@@ -328,8 +328,8 @@ export default class BuilderScene extends Phaser.Scene {
   private placement(point: Point): LevelBlock {
     const preset = this.config.presets[this.preset];
     const block: LevelBlock = { id: 'preview', m: this.material, x: point.x, y: point.y, w: preset.w, h: preset.h, shape: preset.shape, variant: preset.variant, angle: this.placementAngle, static: false };
-    const at = snapBlock(block, point.x, point.y, this.config.grid);
-    return { ...block, ...at };
+    const snapped = { ...block, ...snapBlock(block, point.x, point.y, this.config.grid) };
+    return { ...snapped, ...magnetSnap(snapped, this.draft.blocks, this.config.grid) };
   }
 
   private updateWarning(doc: BuilderDocument = this.draft): void {
@@ -487,9 +487,8 @@ export default class BuilderScene extends Phaser.Scene {
     const entity = selection.kind === 'block' ? next.blocks.find((b) => b.id === selection.id)! : next.monsters[selection.index];
     if (selection.kind === 'block') {
       const blk = entity as LevelBlock;
-      const at = snapBlock(blk, point.x + drag.offset.x, point.y + drag.offset.y, this.config.grid);
-      blk.x = at.x;
-      blk.y = at.y;
+      Object.assign(blk, snapBlock(blk, point.x + drag.offset.x, point.y + drag.offset.y, this.config.grid));
+      Object.assign(blk, magnetSnap(blk, next.blocks.filter((o) => o.id !== blk.id), this.config.grid));
       this.alignPins(next, new Set([selection.id]));
     } else {
       entity.x = this.snap(point.x + drag.offset.x);

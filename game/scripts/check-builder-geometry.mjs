@@ -4,7 +4,7 @@ import ts from 'typescript';
 
 const source = readFileSync(new URL('../src/builder/geometry.ts', import.meta.url), 'utf8');
 const js = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
-const { blockParts, blockBounds, pointInBlock, closestBlockPoint, localToWorld, worldToLocal, blocksOverlap, snapBlock, findDraftOverlaps, dropDistance, closestPair, touchOffset } = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
+const { blockParts, blockBounds, pointInBlock, closestBlockPoint, localToWorld, worldToLocal, blocksOverlap, snapBlock, findDraftOverlaps, dropDistance, closestPair, touchOffset, magnetSnap } = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
 const block = (overrides = {}) => ({ m: 'wood', x: 0, y: 0, w: 24, h: 24, shape: 'rectangle', ...overrides });
 const close = (actual, expected, tolerance = 1e-5) => assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} should equal ${expected}`);
 const closePoint = (actual, expected, tolerance) => { close(actual.x, expected.x, tolerance); close(actual.y, expected.y, tolerance); };
@@ -100,4 +100,17 @@ assert.deepEqual(findDraftOverlaps({ blocks: [], monsters: [{ t: 'goblin', x: 0,
   const push = touchOffset(over, left);
   assert.equal(blocksOverlap(left, { ...over, x: over.x + push.x, y: over.y + push.y }), false, 'overlap is pushed clear');
 }
-console.log('check-builder-geometry: touching, convex/circle intersections, compound holes, attachments, transformed bounds, snapping, drops and flush gluing passed');
+// grid snap leaves a rotated plank a sliver from its neighbour: the magnet closes it, plain grid boxes stay put
+{
+  const post = block({ x: 0, y: 0, w: 8, h: 40 });
+  const slant = block({ x: 18, y: -6, w: 30, h: 6, angle: 45 });
+  const gapBefore = closestPair(slant, post).gap;
+  assert.ok(gapBefore > 0.5 && gapBefore < 8, `test setup gap ${gapBefore}`);
+  const at = magnetSnap(slant, [post], 8);
+  const placed = { ...slant, ...at };
+  assert.ok(closestPair(placed, post).gap < 0.05 && !blocksOverlap(placed, post), 'rotated plank pulled flush');
+  const a = block({ x: 0, y: 0 }), b2 = block({ x: 28, y: 0 });
+  assert.deepEqual(magnetSnap(b2, [a], 8), { x: 28, y: 0 }, 'grid boxes are not moved off the grid');
+  assert.deepEqual(magnetSnap(slant, [block({ x: 300, y: 0 })], 8), { x: slant.x, y: slant.y }, 'far pieces do not pull');
+}
+console.log('check-builder-geometry: touching, convex/circle intersections, compound holes, attachments, transformed bounds, snapping, drops, flush gluing and magnet snapping passed');

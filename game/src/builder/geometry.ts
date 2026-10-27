@@ -214,8 +214,20 @@ export function closestPair(a: LevelBlock, b: LevelBlock): { a: Point; b: Point;
     la = closestBlockPoint(a, localToWorld(b, lb));
     lb = closestBlockPoint(b, localToWorld(a, la));
   }
-  const wa = localToWorld(a, la), wb = localToWorld(b, lb);
-  return { a: wa, b: wb, la, lb, gap: Math.hypot(wa.x - wb.x, wa.y - wb.y) };
+  let wa = localToWorld(a, la), wb = localToWorld(b, lb);
+  let gap = Math.hypot(wa.x - wb.x, wa.y - wb.y);
+  // for polygons the true minimum is a corner against an edge, so check every corner both ways
+  const corners = (block: LevelBlock): Point[] => worldParts(block).flatMap((part) => part.kind === 'polygon' ? part.vertices : []);
+  for (const [from, to, flip] of [[a, b, false], [b, a, true]] as [LevelBlock, LevelBlock, boolean][]) {
+    for (const v of corners(from)) {
+      const lt = closestBlockPoint(to, v), wt = localToWorld(to, lt);
+      const d = Math.hypot(v.x - wt.x, v.y - wt.y);
+      if (d >= gap) continue;
+      gap = d;
+      if (flip) { wa = wt; la = lt; wb = v; lb = closestBlockPoint(b, v); } else { wa = v; la = closestBlockPoint(a, v); wb = wt; lb = lt; }
+    }
+  }
+  return { a: wa, b: wb, la, lb, gap };
 }
 
 /**
@@ -240,6 +252,12 @@ export function touchOffset(mover: LevelBlock, anchor: LevelBlock, maxGap = 40):
   const pair = closestPair(mover, anchor);
   if (pair.gap > maxGap) return null;
   const d = { x: pair.b.x - pair.a.x, y: pair.b.y - pair.a.y };
+  // the bounce search is approximate for corner-to-edge contacts, so close what is left in a few more steps
+  for (let i = 0; i < 4 && !blocksOverlap(shift(d), anchor); i++) {
+    const rest = closestPair(shift(d), anchor);
+    if (rest.gap < 0.005) break;
+    d.x += rest.b.x - rest.a.x; d.y += rest.b.y - rest.a.y;
+  }
   if (!blocksOverlap(shift(d), anchor)) return d;
   let lo = 0, hi = 1;
   for (let i = 0; i < 16; i++) {
@@ -247,6 +265,30 @@ export function touchOffset(mover: LevelBlock, anchor: LevelBlock, maxGap = 40):
     if (blocksOverlap(shift({ x: d.x * mid, y: d.y * mid }), anchor)) hi = mid; else lo = mid;
   }
   return { x: d.x * lo, y: d.y * lo };
+}
+
+const gridAligned = (b: LevelBlock): boolean => !b.variant && (!b.shape || b.shape === 'rectangle') && (b.angle ?? 0) % 90 === 0;
+
+/**
+ * Grid snapping lines up bounding boxes, so a rotated or round piece next to another piece is left a sliver away (or a sliver into it).
+ * This pulls it flush, or pushes it just clear, when that is a step of at most `reach`. Two plain grid boxes are left alone.
+ */
+export function magnetSnap(block: LevelBlock, others: LevelBlock[], reach: number): Point {
+  const bb = blockBounds(block);
+  let best: { d: Point; len: number } | undefined;
+  for (const o of others) {
+    if (gridAligned(block) && gridAligned(o)) continue;
+    const ob = blockBounds(o);
+    if (ob.l - bb.r > reach || bb.l - ob.r > reach || ob.t - bb.b > reach || bb.t - ob.b > reach) continue;
+    const d = touchOffset(block, o, reach);
+    if (!d) continue;
+    const len = Math.hypot(d.x, d.y);
+    if (len < 1e-3 || len > reach) continue;
+    const moved = { ...block, x: block.x + d.x, y: block.y + d.y };
+    if (others.some((x) => blocksOverlap(moved, x))) continue;
+    if (!best || len < best.len) best = { d, len };
+  }
+  return best ? { x: block.x + best.d.x, y: block.y + best.d.y } : { x: block.x, y: block.y };
 }
 
 export function findDraftOverlaps(doc: { blocks: LevelBlock[]; monsters: LevelMonster[] }, sizeOf: (type: string) => { w: number; h: number } = () => ({ w: 12, h: 14 })): { a: string; b: string }[] {
