@@ -1044,6 +1044,32 @@
         "collapseRadius": 60,
         "collapseMult": 1.6
       }
+    },
+    {
+      "id": "w_sandbag",
+      "name": "Sandbag",
+      "archetype": "launcher",
+      "element": "physical",
+      "rarity": "common",
+      "baseDamage": 6,
+      "unlock": "start",
+      "price": 0,
+      "launch": "A sack of sand on a lob.",
+      "tap": "Bursts on its first hit and heaps sand there. Fills holes and builds cover.",
+      "physics": {
+        "radius": 5,
+        "density": 0.03,
+        "spin": 0.08,
+        "gravity": 1
+      },
+      "ability": {
+        "mode": "impact",
+        "label": "Heap"
+      },
+      "params": {
+        "half": 30,
+        "height": 26
+      }
     }
   ],
   "stretchWeapons": [

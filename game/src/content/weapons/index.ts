@@ -11,6 +11,7 @@ import { omnitrixDial } from './omnitrixDial';
 import { pike } from './pike';
 import { scattergun } from './scattergun';
 import { scepter } from './scepter';
+import { sandbag } from './sandbag';
 import { silklineShooters } from './silklineShooters';
 import { blackHoleMarble } from './blackHoleMarble';
 import { chainRod } from './chainRod';
@@ -34,6 +35,7 @@ export const WEAPONS: Record<string, WeaponImpl> = {
   w_hunters_boomerang: boomerang,
   w_blast_tube: blastTube,
   w_horned_scepter: scepter,
+  w_sandbag: sandbag,
   w_comet_fists: cometFists,
   w_bulwark_disc: bulwarkDisc,
   w_skyforge_maul: skyforgeMaul,

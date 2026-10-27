@@ -142,6 +142,10 @@ function weaponSprite(id: string): Px {
       p.rectT(5, 3, 6, 11, DARK); p.rect(5, 6, 6, 1, '4'); p.rect(5, 10, 6, 1, '4');
       p.rect(6, 0, 4, 3, '3'); p.rect(7, 0, 2, 2, '4'); p.rectT(7, 14, 2, 2, WOOD);
       break;
+    case 'w_sandbag':
+      p.rectT(4, 4, 8, 11, ['p', 'i', 'g']); p.rect(5, 2, 6, 3, 'i'); p.rect(4, 4, 8, 1, 'g'); p.rect(6, 1, 4, 1, 'g');
+      p.set(6, 8, 'h'); p.set(9, 10, 'h'); p.set(7, 12, 't'); p.set(10, 7, 't');
+      break;
     case 'w_horned_scepter':
       p.rectT(7, 6, 2, 10, ['2', 'q', '1']);
       p.line(7, 5, 4, 1, 'c'); p.line(8, 5, 11, 1, 'c'); p.set(4, 0, 'c'); p.set(11, 0, 'c');
@@ -196,7 +200,7 @@ export const MONSTER_ART: Record<string, MonsterArt> = {
 
 export const WEAPON_IDS = [
   'w_militia_blade', 'w_iron_cleaver', 'w_ashwood_staff', 'w_scrapheap_scattergun',
-  'w_hunters_pike', 'w_hunters_boomerang', 'w_blast_tube', 'w_horned_scepter',
+  'w_hunters_pike', 'w_hunters_boomerang', 'w_blast_tube', 'w_horned_scepter', 'w_sandbag',
 ];
 
 export const weaponTexture = (id: string): string => `wpn_${id}`;

@@ -10,6 +10,7 @@ import { escape } from './rules';
 import { addCoins } from './score';
 import { inflict } from './status';
 import { groundAt } from './terrain';
+import { pileSand } from './sand';
 import { spawnEnemyAttack } from './enemyAttacks';
 import type { BattleCtx, Ent } from './BattleCtx';
 import type { BattleState } from './state';
@@ -27,6 +28,7 @@ export function makeCtx(b: BattleState): BattleCtx {
     sling: { x: b.slingX, y: b.slingY },
     groundY: b.groundY,
     groundAt: (x) => groundAt(b, x),
+    pileSand: (x, half, height) => pileSand(b, x, half, height),
     worldW: b.worldW,
     level: b.level,
     get phase() { return b.state; },

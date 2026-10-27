@@ -214,6 +214,7 @@ export interface Config {
   };
   features: Record<string, boolean>;
   links?: Record<string, string>;
+  sand?: { columnWidth: number; baseLeft: number; baseRight: number; repose: number; rimShare: number; hitCrater: number };
   practice?: { levels: number[]; loadout: string[]; stakes: number[]; startCoins: number; botThinkMs: number; botSkill: number };
   debug: { urlOverrides: boolean; testHook: boolean };
 }

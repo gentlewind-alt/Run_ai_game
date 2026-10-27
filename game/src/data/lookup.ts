@@ -30,6 +30,7 @@ const SHORT: Record<string, string> = {
   w_hunters_boomerang: 'Boomerang',
   w_blast_tube: 'Blast Tube',
   w_horned_scepter: 'Scepter',
+  w_sandbag: 'Sandbag',
   w_comet_fists: 'Comet Fists',
   w_bulwark_disc: 'Bulwark Disc',
   w_skyforge_maul: 'Skyforge Maul',

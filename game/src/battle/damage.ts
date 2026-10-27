@@ -7,6 +7,7 @@ import { profile, upgradeMult } from '../core/profile';
 import { materialDef } from '../data/lookup';
 import { battleWeapon } from './weapon';
 import { forgeHit } from './forgeHits';
+import { carveSand } from './sand';
 import { weaponImpl } from '../content/weapons';
 import { blockTextureKey } from '../builder/physics';
 import { artifactMult } from './artifacts';
@@ -65,6 +66,7 @@ export function onCollide(b: BattleState, ev: any): void {
 
 function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y: number): void {
   const info = pb.proj;
+  if (b.sand && ob.label === 'ground' && (info.craters ?? 0) < 2 && rel > 1.5) { info.craters = (info.craters ?? 0) + 1; carveSand(b, x, y, Math.min(14, 5 + rel * 0.6)); }
   const t: Ent | undefined = ob.ent;
   const p = b.proj && b.proj.body === pb ? b.proj : info.forgeProj ?? null;
   if (p) {
@@ -298,6 +300,7 @@ export function damageAround(b: BattleState, x: number, y: number, r: number, fa
 
 /** Radial damage that falls off with distance, with a push. wid null = non-weapon (bomber). */
 export function explode(b: BattleState, x: number, y: number, r: number, base: number, exclude: Ent | null, wid: string | null): void {
+  if (b.sand) carveSand(b, x, y + r * 0.2, r * 0.85);
   ring(b, x, y, r, C('4'));
   ring(b, x, y, r * 0.6, C('3'));
   burst(b, x, y, ['4', '3', '2', 'c'], 18);

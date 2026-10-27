@@ -3,6 +3,7 @@
 import { terrainTexture } from '../art/terrain';
 import { data } from '../data/load';
 import type { Level } from '../data/types';
+import { buildSand, sandHeight } from './sand';
 import type { BattleState } from './state';
 
 export type Terrain = [number, number][];
@@ -29,7 +30,7 @@ export function groundAtPoints(pts: Terrain, x: number): number {
   return pts[pts.length - 1][1];
 }
 
-export const groundAt = (b: BattleState, x: number): number => groundAtPoints(b.terrain, x);
+export const groundAt = (b: BattleState, x: number): number => (b.sand ? sandHeight(b.sand, x) : groundAtPoints(b.terrain, x));
 
 const THICK = 70; // how deep each slab of ground is, so nothing tunnels through
 
@@ -37,6 +38,7 @@ const THICK = 70; // how deep each slab of ground is, so nothing tunnels through
 export function buildTerrain(b: BattleState): void {
   const s = b.scene;
   const pts = b.terrain;
+  if (b.settings.features.sandTerrain && !b.arena) { buildSand(b, (x) => groundAtPoints(pts, x)); return; }
   const slab = (cx: number, cy: number, len: number, angle: number): void => {
     s.matter.add.rectangle(cx, cy, len, THICK, { isStatic: true, friction: 1, frictionStatic: 1, angle, label: 'ground' });
   };

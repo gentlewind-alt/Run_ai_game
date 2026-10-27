@@ -49,6 +49,7 @@ export interface BattleState {
   levelId: number;
   custom?: boolean;
   arena?: ArenaReplay;
+  sand?: import('./sand').Sand; // experimental destructible terrain, see battle/sand.ts
   closing?: boolean;
   connections?: ReturnType<typeof installConnections>;
   loadout: string[];
