@@ -4,7 +4,10 @@ import { C } from '../art/palette';
 import { pixText } from '../art/pix';
 import { sfx } from '../audio/sfx';
 import { profile, upgradeMult } from '../core/profile';
-import { materialDef, weaponDef } from '../data/lookup';
+import { materialDef } from '../data/lookup';
+import { battleWeapon } from './weapon';
+import { forgeHit } from './forgeHits';
+import { weaponImpl } from '../content/weapons';
 import { blockTextureKey } from '../builder/physics';
 import { artifactMult } from './artifacts';
 import { announce, comboMult, registerKill } from './combo';
@@ -22,7 +25,7 @@ function elementMult(b: BattleState, t: Ent, element: string): number {
 
 /** damage = baseDamage x forge upgrade x impact x element x combo x global scale x the shot's own multiplier. */
 function weaponDamage(b: BattleState, t: Ent, wid: string, impactFactor: number, mul: number): { dmg: number; tag: DamageTag } {
-  const w = weaponDef(wid);
+  const w = battleWeapon(b, wid);
   const el = elementMult(b, t, w.element);
   const dmg = w.baseDamage * upgradeMult(wid) * impactFactor * el * comboMult(b) * b.rules.globalScale * mul * b.mods.damageMult * artifactMult(b, { weaponId: wid, target: t });
   return { dmg, tag: el > 1 ? 'weak' : el < 1 ? 'resist' : 'norm' };
@@ -35,6 +38,10 @@ export function onCollide(b: BattleState, ev: any): void {
   for (const pr of ev.pairs) {
     const A = pr.bodyA;
     const B = pr.bodyB;
+    if (A.label === 'enemyAttack' || B.label === 'enemyAttack') {
+      (A.label === 'enemyAttack' ? A : B).enemySpent = true;
+      continue;
+    }
     const aProj = A.label === 'proj';
     const bProj = B.label === 'proj';
     if (aProj && bProj) continue;
@@ -55,19 +62,22 @@ export function onCollide(b: BattleState, ev: any): void {
 function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y: number): void {
   const info = pb.proj;
   const t: Ent | undefined = ob.ent;
-  const p = b.proj && b.proj.body === pb ? b.proj : null;
+  const p = b.proj && b.proj.body === pb ? b.proj : info.forgeProj ?? null;
   if (p) {
+    if (p.data.ended) return;
+    const impl = p === b.proj ? b.wpn : weaponImpl(p.def);
     const hit = { target: t, rel, x, y };
-    if (!p.tapped && b.wdef.ability.mode !== 'button' && b.wpn.onImpact) {
+    if (!p.tapped && p.def.ability.mode !== 'button' && impl.onImpact) {
       p.tapped = true;
-      b.wpn.onImpact(b.ctx, p, hit);
+      impl.onImpact(b.ctx, p, hit);
       return;
-    } else if (b.wpn.onImpact) {
-      b.wpn.onImpact(b.ctx, p, hit);
+    } else if (impl.onImpact) {
+      impl.onImpact(b.ctx, p, hit);
     }
-    if (p.tapped && b.wpn.onPostImpact && !p.data.postDone) {
+    if (p.data.ended) return;
+    if (p.tapped && impl.onPostImpact && !p.data.postDone) {
       p.data.postDone = true;
-      b.wpn.onPostImpact(b.ctx, p);
+      impl.onPostImpact(b.ctx, p);
     }
   }
   // piercing: solid things stop it
@@ -94,11 +104,11 @@ function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y
   const R = b.rules;
   const { dmg, tag } = weaponDamage(b, t, info.wid, Phaser.Math.Clamp(b.tune.impactBase + rel / b.maxSpeed, R.impactFactorMin, R.impactFactorMax), info.mul);
   if (info.status && t.kind === 'monster') {
-    const P = weaponDef(info.wid).params;
+    const P = battleWeapon(b, info.wid).params;
     if (info.status === 'knock') MatterLib.Body.setVelocity(t.body, { x: pb.velocity.x * P.knockMult, y: pb.velocity.y * P.knockMult - P.knockLift });
     else inflict(b, t, info.status, P.statusSteps);
   }
-  if (dmg >= 1) damage(b, t, dmg, x, y, { strong: info.owner === 'main', tag });
+  if (dmg >= 1) forgeHit(b, t, info.wid, dmg, x, y, { strong: info.owner === 'main', tag });
 }
 
 /** Impacts between non-projectile bodies: falling bodies and debris hurt, and monsters feel every landing. */
@@ -179,7 +189,7 @@ export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: numb
   b.scene.cameras.main.shake(90, Phaser.Math.Clamp((dmg / 40) * 0.012, 0.002, 0.014));
   if (o.strong) b.hitStop = Math.max(b.hitStop, b.tune.hitStopFrames);
 
-  if (t.hp <= 0) kill(b, t);
+  if (t.hp <= 0) kill(b, t, o.weaponId);
   else if (t.kind === 'block' && t.hp < t.maxHp * 0.5) {
     t.sprite.setTexture(blockTextureKey({ m: t.type, w: t.w, h: t.h, shape: t.body.builderShape }, true));
   }
@@ -195,7 +205,7 @@ export function discard(b: BattleState, t: Ent): void {
   t.icon?.destroy();
 }
 
-function kill(b: BattleState, t: Ent): void {
+function kill(b: BattleState, t: Ent, weaponId?: string): void {
   const px = t.body.position.x;
   const py = t.body.position.y;
   discard(b, t);
@@ -230,7 +240,9 @@ function kill(b: BattleState, t: Ent): void {
       }
     }
   } else {
-    addCoins(b, t.kind === 'monster' ? coins[t.type] ?? coins.monster : coins[t.type] ?? coins.stone);
+    const reward = t.kind === 'monster' ? coins[t.type] ?? coins.monster : coins[t.type] ?? coins.stone;
+    const coinMult = weaponId ? battleWeapon(b, weaponId)?.params.coinMult ?? 1 : 1;
+    addCoins(b, Math.round(reward * coinMult));
     sfx.coin();
   }
   b.events.emit('kill', { target: t, x: px, y: py });
@@ -264,7 +276,7 @@ function kill(b: BattleState, t: Ent): void {
 /** Damage from a weapon that is not a physical collision (bolts, saw ticks, blasts). */
 export function directHit(b: BattleState, t: Ent, wid: string, mul: number, x: number, y: number, strong = true): void {
   const { dmg, tag } = weaponDamage(b, t, wid, 1, mul);
-  if (dmg >= 1) damage(b, t, dmg, x, y, { strong, tag });
+  if (dmg >= 1) forgeHit(b, t, wid, dmg, x, y, { strong, tag });
 }
 
 export function damageAround(b: BattleState, x: number, y: number, r: number, factor: number, wid: string): void {
@@ -296,17 +308,20 @@ export function explode(b: BattleState, x: number, y: number, r: number, base: n
     let dmg = base * fall;
     let tag: DamageTag = 'norm';
     if (wid) {
-      const el = elementMult(b, e, weaponDef(wid).element);
+      const el = elementMult(b, e, battleWeapon(b, wid).element);
       dmg *= el * comboMult(b) * b.rules.globalScale;
       tag = el > 1 ? 'weak' : el < 1 ? 'resist' : 'norm';
     }
-    damage(b, e, dmg, bp.x, bp.y, { strong: false, tag });
+    if (wid && battleWeapon(b, wid).forge) {
+      dmg *= b.mods.damageMult * artifactMult(b, { weaponId: wid, target: e });
+      forgeHit(b, e, wid, dmg, bp.x, bp.y, { strong: false, tag });
+    } else damage(b, e, dmg, bp.x, bp.y, { strong: false, tag });
   }
   push(b, x, y, r, b.tune.explosionPush);
 }
 
 export function blast(b: BattleState, x: number, y: number, r: number, mul: number, wid: string): void {
-  explode(b, x, y, r, weaponDef(wid).baseDamage * upgradeMult(wid) * mul, null, wid);
+  explode(b, x, y, r, battleWeapon(b, wid).baseDamage * upgradeMult(wid) * mul, null, wid);
 }
 
 /** Push everything near (x, y) away: strength is the velocity change in px/step. */

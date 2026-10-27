@@ -1,3 +1,4 @@
+import { isForgeWeapon } from '../core/forge';
 import Phaser from 'phaser';
 import { homeCx, homeZoom, setView, toggleView } from '../battle/camera';
 import { createBattle, buildBattle, startBattle } from '../battle/setup';
@@ -100,6 +101,9 @@ export default class BattleScene extends Phaser.Scene {
     this.scale.on(Phaser.Scale.Events.RESIZE, onResize);
 
     this.events.once('shutdown', () => {
+      b.closing = true;
+      for (const actor of b.actors) actor.destroy();
+      b.actors = [];
       this.hud?.hidePause();
       this.input.keyboard?.removeAllListeners();
       this.input.removeAllListeners();
@@ -143,7 +147,7 @@ export default class BattleScene extends Phaser.Scene {
     this.scene.pause();
     const data: ExtraShotsData = {
       count: adRules().extraShots,
-      owned: profile.owned.weapons.slice(),
+      owned: profile.owned.weapons.filter((id) => b.content.weapons.some((w) => w.id === id) && (!isForgeWeapon(id) || b.settings.features.weaponForge)),
       onGrant: (ids) => {
         this.scene.resume();
         if (!grantShots(b, ids)) decline();

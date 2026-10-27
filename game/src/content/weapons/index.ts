@@ -1,3 +1,4 @@
+import { forgeWeapon } from './forge';
 import { blade } from './blade';
 import { blastTube } from './blastTube';
 import { boomerang } from './boomerang';
@@ -50,4 +51,4 @@ export const WEAPONS: Record<string, WeaponImpl> = {
 };
 
 /** The behaviour for a weapon row: `params.behavior` names another weapon's behaviour to reuse, otherwise the row's own id. */
-export const weaponImpl = (def: WeaponDef): WeaponImpl => WEAPONS[(def.params as Record<string, unknown> | undefined)?.behavior as string] ?? WEAPONS[def.id] ?? blade;
+export const weaponImpl = (def: WeaponDef): WeaponImpl => def.forge ? forgeWeapon(def) : WEAPONS[(def.params as Record<string, unknown> | undefined)?.behavior as string] ?? WEAPONS[def.id] ?? blade;

@@ -44,8 +44,10 @@ export interface BattleState {
   level: Level;
   levelId: number;
   custom?: boolean;
+  closing?: boolean;
   connections?: ReturnType<typeof installConnections>;
   loadout: string[];
+  forgeWeapons: Record<string, WeaponDef>;
   settings: Settings;
   tune: Tuning;
   rules: DamageRules;

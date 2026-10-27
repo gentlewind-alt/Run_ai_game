@@ -65,6 +65,8 @@
     "zoomOutRise": 0.2
   },
   "features": {
+    "weaponForge": true,
+    "enemyAttackPhysics": true,
     "builder": true,
     "map": true,
     "shop": true,

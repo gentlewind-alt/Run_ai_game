@@ -133,6 +133,16 @@ Edit `art/palette.ts`. Sprites index the palette by character, so a palette swap
 4. **Undo/Redo** includes pieces, targets and connections. Drafts save separately through platform storage. **Export/Import** transfers the versioned JSON; malformed imports leave the current draft intact.
 5. **Play** launches an isolated slingshot attempt. **Edit** returns to the draft. Custom attempts award no campaign progress or inventory.
 
+## Create a custom weapon
+
+1. Open **Shop > Forge > Create a weapon**, or **Forge weapon** on an unrestricted loadout screen.
+2. Choose a **Body**, then one **Bless** or **Curse** trait, an **Ability**, and an **Aura**. The live preview explains the tradeoff. Each shape keeps one build; changing a shape opens that shape's saved recipe.
+3. Choose **Save weapon**. The weapon is added to the arsenal after its recipe is saved. Return to Loadout and tap it to fill a firing slot. Campaign levels with fixed teaching loadouts retain their authored weapons.
+4. In flight, tap the ability button or let the weapon's first impact activate the power. Powers use the selected weapon design, including rain, clones and spectral strikes. Each shot gets one activation. Gemini's secondary crafted shot activates on impact at reduced strength.
+5. **Legends** shows the existing legendary collection; its original powers and one-legendary loadout restriction remain.
+
+Verification: start Vite on 5212, then run `node tools/test_forge.mjs` from the repository root. The local mock stores recipes only for the current browser session; RUN uses platform storage.
+
 ## Deploy
 
 1. `npm run build`, then `rundot predeploy` (fix what it reports), then `rundot deploy`.

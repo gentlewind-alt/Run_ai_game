@@ -6,11 +6,12 @@ import type { DamageRules, Level, MonsterDef, Tuning, WeaponDef } from '../data/
 import type { MonsterBehavior } from '../content/monsters/types';
 
 export type Kind = 'block' | 'monster' | 'chest';
-export type StatusId = 'burn' | 'slow' | 'curse' | 'stun' | 'chain';
+export type StatusId = 'burn' | 'slow' | 'curse' | 'stun' | 'chain' | 'poison' | 'shieldBreak';
 export type BattlePhase = 'intro' | 'loading' | 'ready' | 'aiming' | 'flying' | 'settling' | 'won' | 'lost';
 export type DamageTag = 'weak' | 'resist' | 'norm';
 
 export interface DamageOpts {
+  weaponId?: string;
   strong: boolean; // hit-stop on this hit
   tag: DamageTag;
   fall?: boolean;
@@ -90,10 +91,13 @@ export interface Actor {
 
 export interface PelletOpts {
   x: number; y: number; vx: number; vy: number; radius: number; density: number; mul: number; wid: string;
+  tint?: number;
   color: string; status?: string; gravity?: number; texture?: string; scale?: number;
   /** Called with where the pellet came to rest, when it ends inside the world (not when it flies out). */
   onEnd?: (x: number, y: number) => void;
 }
+
+export interface EnemyAttackOpts { x: number; y: number; color: number; boss?: boolean }
 
 /** Numbers artifacts and consumables adjust during a battle. */
 export interface Mods {
@@ -141,6 +145,7 @@ export interface BattleCtx {
   setGravity(body: any, factor: number): void;
   addActor(a: Actor): void;
   spawnPellet(o: PelletOpts): void;
+  spawnEnemyAttack(o: EnemyAttackOpts): boolean;
   endProj(p: Proj): void;
   escape(runner: Ent): void;
   addCoins(n: number): void; // goes through the coin multiplier

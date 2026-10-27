@@ -4,6 +4,7 @@ import { damage } from './damage';
 import { MatterLib } from './matter';
 import type { Ent, StatusId } from './BattleCtx';
 import type { BattleState } from './state';
+import { data } from '../data/load';
 
 export function inflict(_b: BattleState, e: Ent, kind: StatusId, steps: number): void {
   if (e.dead) return;
@@ -16,6 +17,14 @@ export function inflict(_b: BattleState, e: Ent, kind: StatusId, steps: number):
 export function tick(b: BattleState, e: Ent): void {
   const body = e.body;
   const S = b.tune.status;
+  if (e.status.poison > 0) {
+    e.status.poison--;
+    if (e.status.poison % data.forge.limits.poisonTickSteps === 0) {
+      damage(b, e, data.forge.limits.poisonDamage, body.position.x, body.position.y, { strong: false, tag: 'norm', quiet: true, weaponId: e.params.poisonWeaponId });
+      burst(b, body.position.x, body.position.y - e.h / 2, ['5', '6'], 2);
+    }
+  }
+  if (e.status.shieldBreak > 0) e.status.shieldBreak--;
   if (e.status.burn > 0) {
     e.status.burn--;
     if (e.status.burn % S.burnTickSteps === 0) damage(b, e, S.burnDamage, body.position.x, body.position.y, { strong: false, tag: 'norm', quiet: true });

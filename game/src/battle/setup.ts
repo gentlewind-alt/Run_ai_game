@@ -4,6 +4,7 @@ import { W } from '../config/constants';
 import { levelSettings } from '../config/settings';
 import { events } from '../core/events';
 import { profile } from '../core/profile';
+import { forgeSnapshot, isForgeWeapon } from '../core/forge';
 import { createRng } from '../core/rng';
 import { data } from '../data/load';
 import { levelDef } from '../data/lookup';
@@ -30,12 +31,13 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
   const launchSpeedMult = slingCosmetic?.mods?.launchSpeedMult ?? 1;
   const twinFraction = slingCosmetic?.mods?.twinFraction;
   const twinDelaySteps = slingCosmetic?.mods?.twinDelaySteps ?? 12;
-  const rawLoadout = (level.loadout ?? loadout).slice();
+  const rawLoadout = (level.loadout ?? loadout).filter((id) => data.content.weapons.some((w) => w.id === id) && (!isForgeWeapon(id) || settings.features.weaponForge));
+  if (!rawLoadout.length) rawLoadout.push('w_militia_blade');
   const maxShots = level.shots ?? rawLoadout.length;
   const effectiveLoadout = rawLoadout.slice(0, Math.min(rawLoadout.length, maxShots));
   const b = {
     scene, ui: noUi, events, rng: createRng(level.id), content: data.content, level, levelId, custom: !!customLevel,
-    loadout: effectiveLoadout, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
+    loadout: effectiveLoadout, forgeWeapons: settings.features.weaponForge ? forgeSnapshot() : {}, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
     worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
     mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: 1, launchSpeedMult, twinFraction, twinDelaySteps }, artifacts: [], consumables: [], targeting: null, paused: false,

@@ -4,6 +4,7 @@ import type { MonsterBehavior } from './types';
 
 /** Visual only: an arrow flies at the launcher pad and fizzles. */
 function fireArrow(ctx: BattleCtx, x: number, y: number, steps: number): void {
+  if (ctx.spawnEnemyAttack({ x, y, color: C('g') })) return;
   const sprite = ctx.fx.image(x, y, 'px').setTint(C('g')).setScale(5, 1).setDepth(6);
   const sx = x;
   const sy = y;
@@ -33,7 +34,7 @@ export const archer: MonsterBehavior = {
   },
   onUpdate(ctx, m) {
     m.fireT--;
-    if (m.fireT <= 0 && (ctx.phase === 'ready' || ctx.phase === 'aiming' || ctx.phase === 'loading')) {
+    if (m.fireT <= 0 && ['ready', 'aiming', 'loading', 'flying', 'settling'].includes(ctx.phase)) {
       m.fireT = m.params.fireEvery;
       fireArrow(ctx, m.body.position.x, m.body.position.y - 2, m.params.arrowSteps);
     }

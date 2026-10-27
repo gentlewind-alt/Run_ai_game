@@ -37,7 +37,7 @@ rejects((d) => { d.connections[0].a = null; });
 rejects((d) => { d.connections[0].pointA.x = 99; });
 rejects((d) => { d.connections[1].length = 0; });
 rejects((d) => { d.connections[1].id = 'lock'; });
-rejects((d) => { d.monsters[0].t = 'iron_warlord'; });
+rejects((d) => { d.monsters[0].t = 'unknown_target'; });
 rejects((d) => { d.blocks = Array(config.maxBlocks + 1).fill(d.blocks[0]); });
 const injected = { ...draft, overrides: { features: { iap: true } }, chests: [{ reward: 'w_blast_tube' }] };
 const level = toLevel(validateDraft(injected, config), config);
@@ -50,4 +50,39 @@ assert.deepEqual(level.loadout, config.loadout);
 level.blocks[0].x = 500;
 assert.equal(draft.blocks[0].x, 240);
 assert.deepEqual(validateDraft(newDraft(), config).blocks, []);
-console.log('check-builder: draft round-trip, references, limits, finite geometry and isolated level conversion passed');
+const targetInfo = {
+  goblin_grunt: { w: 12, h: 14 },
+  iron_warlord: { w: 36, h: 46 },
+  skeleton_runner: { w: 9, h: 14, runner: true },
+  frost_wolf: { w: 20, h: 14, runner: true },
+};
+const rosterConfig = { ...config, targets: [...new Set([...config.targets, ...Object.keys(targetInfo)])] };
+const bossDraft = newDraft();
+bossDraft.monsters = [{ t: 'iron_warlord', x: rosterConfig.minX + 18, y: rosterConfig.groundY - 23 }];
+assert.equal(validateDraft(bossDraft, rosterConfig, targetInfo).monsters[0].y, rosterConfig.groundY - 23);
+const outsideBoss = structuredClone(bossDraft);
+outsideBoss.monsters[0].y++;
+assert.throws(() => validateDraft(outsideBoss, rosterConfig, targetInfo));
+outsideBoss.monsters[0].y--;
+outsideBoss.monsters[0].x--;
+assert.throws(() => validateDraft(outsideBoss, rosterConfig, targetInfo));
+outsideBoss.monsters[0].x = rosterConfig.worldW - 17;
+assert.throws(() => validateDraft(outsideBoss, rosterConfig, targetInfo));
+outsideBoss.monsters[0].x = 240;
+outsideBoss.monsters[0].y = rosterConfig.minY + 22;
+assert.throws(() => validateDraft(outsideBoss, rosterConfig, targetInfo));
+// Omitting geometry preserves the original draft import bounds.
+assert.equal(validateDraft(outsideBoss, rosterConfig).monsters[0].y, rosterConfig.minY + 22);
+for (const type of ['skeleton_runner', 'frost_wolf']) {
+  const runnerDraft = newDraft();
+  runnerDraft.monsters = [{ t: type, x: 400, y: 313 }];
+  const runnerLevel = toLevel(runnerDraft, rosterConfig, targetInfo);
+  assert.equal(runnerLevel.runnersStartOnShot, true);
+  assert.equal(runnerLevel.escapeLimit, 0);
+  assert.deepEqual(runnerLevel.exit, { x: rosterConfig.worldW - rosterConfig.grid * 4, y: rosterConfig.groundY - 13 });
+}
+const ordinaryLevel = toLevel(draft, rosterConfig, targetInfo);
+assert.equal(ordinaryLevel.exit, undefined);
+assert.equal(ordinaryLevel.runnersStartOnShot, undefined);
+assert.equal(ordinaryLevel.escapeLimit, undefined);
+console.log('check-builder: draft round-trip, references, limits, body bounds, runner conversion and isolation passed');

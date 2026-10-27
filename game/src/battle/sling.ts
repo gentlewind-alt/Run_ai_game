@@ -5,7 +5,7 @@ import { weaponHeight, weaponScale } from '../art/weaponScale';
 import { sfx } from '../audio/sfx';
 import { beatBob, beatPulse } from '../audio/beat';
 import { weaponImpl } from '../content/weapons';
-import { weaponDef } from '../data/lookup';
+import { battleWeapon } from './weapon';
 import { clampCx, homeCx, homeZoom, pointerWorld, screenDist, setView, zoomBy } from './camera';
 import { H } from '../config/constants';
 import { profile } from '../core/profile';
@@ -17,7 +17,7 @@ import type { Proj } from './BattleCtx';
 import type { BattleState } from './state';
 
 export function setWeapon(b: BattleState, id: string): void {
-  b.wdef = weaponDef(id);
+  b.wdef = battleWeapon(b, id);
   b.wpn = weaponImpl(b.wdef);
 }
 
@@ -48,8 +48,8 @@ export function addToQueue(b: BattleState, ids: string[]): void {
   const first = b.queue.length;
   ids.forEach((id, k) => {
     const i = first + k;
-    const wpn = weaponImpl(weaponDef(id));
-    const baseScale = weaponScale(b.scene, wpn.texture, 'queue', weaponDef(id));
+    const wpn = weaponImpl(battleWeapon(b, id));
+    const baseScale = weaponScale(b.scene, wpn.texture, 'queue', battleWeapon(b, id));
     const yOff = Math.round(weaponHeight(b.scene, wpn.texture, baseScale) / 3);
     const q = b.scene.add.image(slotX(b, i), groundAt(b, slotX(b, i)) - yOff, wpn.texture).setDepth(3).setScale(baseScale);
     q.setData('phase', i * 1.3);
@@ -278,6 +278,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   const pData: Record<string, any> = {};
   if (speedMult > 1) pData.speedLines = true;
   b.proj = { body, sprite, wid: id, def: b.wdef, steps: 0, slow: 0, tapped: false, t: 0, data: pData };
+  if (b.wdef.forge) body.proj.forgeProj = b.proj;
   // Prime Serum: this shot is buffed if any charges are left
   const buffed = b.mods.serumShots > 0;
   if (buffed) b.mods.serumShots--;
@@ -291,7 +292,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   const twinDelay = b.mods.twinDelaySteps ?? 12;
   if (twinFrac !== undefined && b.shotIdx < b.loadout.length) {
     const twinId = b.loadout[b.shotIdx];
-    const twinWdef = weaponDef(twinId);
+    const twinWdef = battleWeapon(b, twinId);
     const twinWpn = weaponImpl(twinWdef);
     b.shotIdx++;
     const twinQ = b.queue.shift();
@@ -314,7 +315,8 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
           MatterLib.Body.setAngularVelocity(tBody, tPhys.spin);
           const tFlightScale = weaponScale(b.scene, twinWpn.texture, 'flight', twinWdef);
           const tSprite = b.scene.add.image(launchPos.x, launchPos.y, twinWpn.texture).setDepth(4).setScale(tFlightScale);
-          const tProj: Proj = { body: tBody, sprite: tSprite, wid: twinId, def: twinWdef, steps: 0, slow: 0, tapped: false, t: 0, data: {} };
+          const tProj: Proj = { body: tBody, sprite: tSprite, wid: twinId, def: twinWdef, steps: 0, slow: 0, tapped: false, t: 0, data: { forgeMult: twinFrac } };
+          if (twinWdef.forge) tBody.proj.forgeProj = tProj;
           sfx.launch();
           twinWpn.onLaunch?.(b.ctx, tProj);
           let tSlow = 0;
@@ -323,6 +325,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
             body: tBody,
             pos: () => tBody.position,
             update() {
+              if (tProj.data.ended) return true;
               tSteps++;
               tSprite.setPosition(tBody.position.x, tBody.position.y);
               tSprite.setRotation(tBody.angle);
@@ -334,7 +337,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
               return out || tSlow > F.projectileSlowSteps || tSteps > F.projectileMaxSteps;
             },
             destroy() {
-              b.scene.matter.world.remove(tBody);
+              if (!b.closing) b.scene.matter.world.remove(tBody);
               tSprite.destroy();
             },
           });

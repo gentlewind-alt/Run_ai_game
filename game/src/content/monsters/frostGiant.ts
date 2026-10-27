@@ -1,4 +1,5 @@
 import type { MonsterBehavior } from './types';
+import { data } from '../../data/load';
 
 interface Theme { open: string; stomp: string; death: string; drop: number; dropStroke: number; sparks: string[] }
 
@@ -32,9 +33,10 @@ export const frostGiant: MonsterBehavior = {
       const x0 = m.body.position.x;
       ctx.fx.word(x0, m.body.position.y - 20, theme.stomp);
       ctx.fx.shake(0.012);
-      // a volley of falling drops across a band in front of the boss (visual)
-      for (let k = 0; k < 4; k++) {
-        const x = x0 - 60 + k * 40 + (ctx.rng.next() - 0.5) * 12;
+      const R = data.forge.enemyAttack;
+      for (let k = 0; k < R.volleyCount; k++) {
+        const x = x0 + (k - (R.volleyCount - 1) / 2) * R.volleySpacing + (ctx.rng.next() - 0.5) * R.jitter;
+        if (ctx.spawnEnemyAttack({ x, y: -10, color: theme.drop, boss: true })) continue;
         const dot = ctx.fx.dot(x, -10, 2, theme.drop, theme.dropStroke);
         let y = -10;
         ctx.addActor({

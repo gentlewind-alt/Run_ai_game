@@ -88,6 +88,22 @@ const configSchema = schema('config.schema.json');
 const content = readJson(join(dataDir, 'content.json'));
 if (content && contentSchema) validate(contentSchema, content, '$', contentSchema, 'content.json');
 
+const forgeSchema = schema('forge.schema.json');
+const forge = readJson(join(dataDir, 'forge.json'));
+if (forge && forgeSchema) {
+  validate(forgeSchema, forge, '$', forgeSchema, 'forge.json');
+  for (const w of forge.weapons ?? []) validate(contentSchema.$defs.weapon, w, '$.weapons', contentSchema, 'forge.json');
+  for (const key of ['weapons', 'abilities', 'traits', 'radiances']) {
+    const ids = (forge[key] ?? []).map((x) => x.id);
+    if (new Set(ids).size !== ids.length) err('forge.json', `duplicate ${key} id`);
+  }
+  for (const [key, list] of [['traitId', 'traits'], ['abilityId', 'abilities'], ['radianceId', 'radiances']]) {
+    if (!forge[list].some((x) => x.id === forge.defaults[key])) err('forge.json', `unknown default ${key}`);
+  }
+  for (const w of forge.weapons ?? []) if (content.weapons.some((x) => x.id === w.id)) err('forge.json', `weapon id already exists ${w.id}`);
+  if (forge.limits.maxCopies > 6) err('forge.json', 'maxCopies must stay within the phone physics budget (6)');
+}
+
 const configPath = join(dataDir, 'config.json');
 if (existsSync(configPath)) {
   const config = readJson(configPath);

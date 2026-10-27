@@ -22,6 +22,7 @@ export function applyCustomGravity(b: BattleState): void {
 }
 
 export function endProj(b: BattleState, p: Proj): void {
+  p.data.ended = true;
   if (b.proj !== p) return;
   b.scene.matter.world.remove(p.body);
   p.sprite.destroy();
@@ -41,6 +42,7 @@ export function spawnPellet(b: BattleState, o: PelletOpts): void {
   const sprite = b.scene.add.image(o.x, o.y, texKey).setDepth(5);
   if (!o.texture) sprite.setTint(C(o.color)).setScale(o.radius * 1.5);
   else sprite.setScale(o.scale ?? 0.8);
+  if (o.tint !== undefined) sprite.setTint(o.tint);
   let steps = 0;
   let slow = 0;
   b.actors.push({
@@ -56,8 +58,8 @@ export function spawnPellet(b: BattleState, o: PelletOpts): void {
     },
     destroy: () => {
       const { x, y } = body.position;
-      if (o.onEnd && x > 0 && x < b.worldW && y < b.groundY + 20) o.onEnd(x, y);
-      b.scene.matter.world.remove(body);
+      if (!b.closing && o.onEnd && x > 0 && x < b.worldW && y < b.groundY + 20) o.onEnd(x, y);
+      if (!b.closing) b.scene.matter.world.remove(body);
       sprite.destroy();
     },
     body,

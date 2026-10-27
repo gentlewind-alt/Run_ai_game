@@ -113,6 +113,7 @@ function syncSprites(b: BattleState, time: number): void {
     else if (e.hurt > 0 && !hurtFrame) e.sprite.setTint(0xff8a8a);
     else if (e.status.chain > 0) e.sprite.setTint(0xb8c0c8);
     else if (e.status.stun > 0) e.sprite.setTint(0x9fb8ff);
+    else if (e.status.poison > 0) e.sprite.setTint(0xa7f070);
     else if (e.status.curse > 0) e.sprite.setTint(0xd7a0ff);
     else if (e.status.slow > 0) e.sprite.setTint(0x8af0f8);
     else e.sprite.clearTint();

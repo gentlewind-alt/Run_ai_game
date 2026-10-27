@@ -3,7 +3,8 @@ import { C } from '../art/palette';
 import { text, setText, textWidth } from '../art/font5x7';
 import { MONSTER_ART } from '../art/textures';
 import { MatterLib } from '../battle/matter';
-import { cloneDraft, newDraft, toLevel, validateDraft, type BuilderDocument } from '../builder/document';
+import { cloneDraft, newDraft, toLevel, validateDraft, type BuilderDocument, type TargetInfo } from '../builder/document';
+import { gridBlock, gridTarget, quarterTurn } from '../builder/grid';
 import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { getSettings } from '../config/settings';
 import { H, W } from '../config/constants';
@@ -33,6 +34,15 @@ export default class BuilderScene extends Phaser.Scene {
   private tool: Tool = 'piece';
   private preset = 0;
   private material = 'wood';
+  private placementAngle = 0;
+  hover?: Point;
+  private targetType = 'goblin_grunt';
+  private targetPage = 0;
+  private targetInfo: TargetInfo = {};
+  private palette?: Phaser.GameObjects.Container;
+  private paletteButtons: Btn[] = [];
+  private paletteMarkers: { marker: Phaser.GameObjects.Rectangle; active: () => boolean }[] = [];
+  private paletteEdges: { button: Btn; allowed: boolean }[] = [];
   private selection?: Selection;
   private pending?: { block: string | null; point: Point };
   private drag?: Drag;
@@ -75,10 +85,17 @@ export default class BuilderScene extends Phaser.Scene {
     this.tool = 'piece';
     this.preset = 0;
     this.material = this.config.materials[0];
+    this.placementAngle = 0;
+    this.hover = undefined;
+    this.targetPage = 0;
+    this.targetType = this.config.targets[0];
+    this.targetInfo = Object.fromEntries(data.content.monsters.map((target) => [target.id, {
+      ...MONSTER_ART[target.id], runner: target.behavior === 'runner',
+    }]));
     this.editButtons = [];
     this.activeMarkers = [];
     this.draft = newDraft();
-    let message = this.loading ? 'Loading your saved design...' : 'Draft restored. Select to move; Lock joins blocks; Rope hangs them.';
+    let message = this.loading ? 'Loading your saved design...' : 'Draft restored. Wheel or right-click rotates. Shift-click two blocks to lock.';
     try {
       if (currentDraft) this.draft = validateDraft(currentDraft, this.config);
     } catch { message = 'Saved draft could not be read. A new empty design is ready.'; }
@@ -94,12 +111,17 @@ export default class BuilderScene extends Phaser.Scene {
     this.input.on('pointermove', this.pointerMove, this);
     this.input.on('pointerup', this.pointerUp, this);
     this.input.on('pointerupoutside', this.pointerUp, this);
+    this.input.on('wheel', this.mouseWheel, this);
+    this.input.on('gameout', this.pointerOut, this);
+    this.input.mouse?.disableContextMenu();
     this.events.once('shutdown', () => {
       this.restoreGeneration++;
       this.input.off('pointerdown', this.pointerDown, this);
       this.input.off('pointermove', this.pointerMove, this);
       this.input.off('pointerup', this.pointerUp, this);
       this.input.off('pointerupoutside', this.pointerUp, this);
+      this.input.off('wheel', this.mouseWheel, this);
+      this.input.off('gameout', this.pointerOut, this);
       this.clearWorld();
       this.importInput?.remove();
       this.importInput = undefined;
@@ -110,14 +132,14 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private async restoreDraft(generation: number): Promise<void> {
-    let message = 'Choose a piece, then tap the grid. Test checks your structure.';
+    let message = 'Grid 8 x 8. Wheel or right-click rotates. Shift-click two blocks to lock.';
     let restored = newDraft();
     try {
       const json = await platform.storage.get(STORAGE_KEY);
       if (json) {
         if (json.length > FILE_LIMIT) throw new Error('Saved draft is too large');
         restored = validateDraft(JSON.parse(json), this.config);
-        message = 'Draft restored. Select to move; Lock joins blocks; Rope hangs them.';
+        message = 'Draft restored. Wheel or right-click rotates. Shift-click two blocks to lock.';
       }
     } catch { message = 'Saved draft could not be read. A new empty design is ready.'; }
     if (generation !== this.restoreGeneration || !this.scene.isActive()) return;
@@ -168,36 +190,6 @@ export default class BuilderScene extends Phaser.Scene {
     const save = button(366, 15, 64, 'Save', () => { void this.save(true); });
     const exportBtn = button(437, 15, 66, 'Export', () => this.exportFile());
     this.editButtons.push(play, save, exportBtn);
-    text(this, 56, 38, 'BLOCKS', C('4')).setDepth(12);
-    const names = ['Short', 'Plank', 'Beam', 'Post', 'Square', 'Brick', 'Ball', 'Wedge'];
-    this.config.presets.forEach((preset, i) => {
-      const x = i % 2 ? 84 : 28;
-      const y = 60 + Math.floor(i / 2) * 27;
-      const btn = button(x, y, 48, names[i] ?? preset.name, () => this.choose('piece', i));
-      this.editButtons.push(btn);
-      const marker = this.add.rectangle(x, y, 50, 26).setStrokeStyle(1, C('4')).setFillStyle(C('4'), 0).setDepth(14);
-      this.activeMarkers.push({ marker, active: () => this.tool === 'piece' && this.preset === i });
-      const swatch = this.add.graphics().setDepth(15);
-      const col = C('i');
-      swatch.fillStyle(col, 1);
-      if (preset.shape === 'circle') swatch.fillCircle(x - 18, y - 8, 2);
-      else if (preset.shape === 'triangle') swatch.fillTriangle(x - 21, y - 6, x - 15, y - 6, x - 18, y - 11);
-      else swatch.fillRect(x - 22, y - 10, 8, 3);
-    });
-    text(this, 56, 158, 'MATERIAL', C('4')).setDepth(12);
-    this.config.materials.forEach((material, i) => {
-      const x = i % 2 ? 84 : 28;
-      const y = 177 + Math.floor(i / 2) * 27;
-      const btn = button(x, y, 48, material.charAt(0).toUpperCase() + material.slice(1), () => {
-        if (this.running || this.loading) return;
-        this.material = material;
-        this.refreshControls();
-        this.say(`${material} selected. New pieces use this material.`);
-      });
-      this.editButtons.push(btn);
-      const marker = this.add.rectangle(x, y, 50, 26).setStrokeStyle(1, C('b')).setFillStyle(C('b'), 0).setDepth(14);
-      this.activeMarkers.push({ marker, active: () => this.material === material });
-    });
     const tools: [Tool, string, number][] = [['select', 'Select', 25], ['target', 'Target', 77], ['lock', 'Lock', 129], ['rope', 'Rope', 181]];
     for (const [tool, label, x] of tools) {
       this.editButtons.push(button(x, 243, 48, label, () => this.choose(tool)));
@@ -210,7 +202,88 @@ export default class BuilderScene extends Phaser.Scene {
     this.editButtons.push(button(337, 243, 48, 'Delete', () => this.deleteSelection()));
     this.editButtons.push(button(389, 243, 48, 'Unlink', () => this.unlink()));
     this.editButtons.push(button(445, 243, 54, 'Import', () => this.importFile()));
+    this.buildPalette();
     this.refreshControls();
+  }
+
+  private buildPalette(): void {
+    this.palette?.destroy();
+    const palette = this.add.container(0, 0).setDepth(12);
+    this.palette = palette;
+    this.paletteButtons = [];
+    this.paletteMarkers = [];
+    this.paletteEdges = [];
+    const label = (x: number, y: number, value: string, color = C('4')): void => {
+      palette.add(text(this, x, y, value, color));
+    };
+    const button = (x: number, y: number, w: number, value: string, action: () => void): Btn => {
+      const btn = makeButton(this, x, y, w, 24, value, 'plain', () => {
+        if (!this.running && !this.loading) action();
+      });
+      palette.add(btn.box);
+      this.paletteButtons.push(btn);
+      return btn;
+    };
+    const mark = (x: number, y: number, w: number, active: () => boolean): void => {
+      const marker = this.add.rectangle(x, y, w + 2, 26).setStrokeStyle(1, C('4')).setFillStyle(C('4'), 0);
+      palette.add(marker);
+      this.paletteMarkers.push({ marker, active });
+    };
+    if (this.tool === 'target') {
+      label(56, 38, 'TARGETS');
+      const targets = data.content.monsters.filter((target) => this.config.targets.includes(target.id) && MONSTER_ART[target.id]);
+      const pages = Math.ceil(targets.length / 6);
+      this.targetPage = Math.max(0, Math.min(pages - 1, this.targetPage));
+      targets.slice(this.targetPage * 6, this.targetPage * 6 + 6).forEach((target, i) => {
+        const y = 60 + i * 26;
+        button(56, y, 104, '', () => {
+          this.targetType = target.id;
+          this.selection = undefined;
+          this.refreshControls();
+          this.renderOverlay(this.draft);
+          this.say(`${target.name ?? target.id}: click a cell to place. Feet snap to grid lines.`);
+        });
+        const art = MONSTER_ART[target.id];
+        palette.add(this.add.image(16, y, target.id).setScale(Math.min(18 / art.size, 1)));
+        let name = target.name ?? target.id;
+        while (textWidth(name) > 76) name = `${name.slice(0, -4)}...`;
+        palette.add(text(this, 29, y, name, C('c')).setOrigin(0, 0.5));
+        mark(56, y, 104, () => this.targetType === target.id);
+      });
+      const previous = button(22, 220, 32, '<', () => { this.targetPage--; this.buildPalette(); this.refreshControls(); });
+      const next = button(90, 220, 32, '>', () => { this.targetPage++; this.buildPalette(); this.refreshControls(); });
+      previous.setEnabled(this.targetPage > 0);
+      next.setEnabled(this.targetPage < pages - 1);
+      this.paletteEdges = [{ button: previous, allowed: this.targetPage > 0 }, { button: next, allowed: this.targetPage < pages - 1 }];
+      label(56, 220, `${this.targetPage + 1}/${pages}`, C('c'));
+    } else {
+      label(56, 38, 'BLOCKS');
+      const names = ['Short', 'Plank', 'Beam', 'Post', 'Square', 'Brick', 'Ball', 'Wedge'];
+      this.config.presets.forEach((preset, i) => {
+        const x = i % 2 ? 84 : 28;
+        const y = 60 + Math.floor(i / 2) * 27;
+        button(x, y, 48, names[i] ?? preset.name, () => this.choose('piece', i));
+        mark(x, y, 48, () => this.tool === 'piece' && this.preset === i);
+        const swatch = this.add.graphics().fillStyle(C('i'), 1);
+        if (preset.shape === 'circle') swatch.fillCircle(x - 18, y - 8, 2);
+        else if (preset.shape === 'triangle') swatch.fillTriangle(x - 21, y - 6, x - 15, y - 6, x - 18, y - 11);
+        else swatch.fillRect(x - 22, y - 10, 8, 3);
+        palette.add(swatch);
+      });
+      label(56, 158, 'MATERIAL');
+      this.config.materials.forEach((material, i) => {
+        const x = i % 2 ? 84 : 28;
+        const y = 177 + Math.floor(i / 2) * 27;
+        button(x, y, 48, material.charAt(0).toUpperCase() + material.slice(1), () => {
+          this.material = material;
+          this.refreshControls();
+          this.renderOverlay(this.draft);
+          this.say(`${material} selected. New pieces use this material.`);
+        });
+        mark(x, y, 48, () => this.material === material);
+      });
+      label(56, 224, `${this.config.grid} x ${this.config.grid} cells`, C('d'));
+    }
   }
 
   private choose(tool: Tool, preset?: number): void {
@@ -218,13 +291,16 @@ export default class BuilderScene extends Phaser.Scene {
     this.tool = tool;
     if (preset !== undefined) this.preset = preset;
     this.pending = undefined;
+    this.selection = undefined;
+    this.drag = undefined;
     const hints: Record<Tool, string> = {
-      piece: `${this.config.presets[this.preset].name}: tap the grid to place. Select moves pieces.`,
-      select: 'Select a block or target; drag to move. Rotate, Anchor, Delete or Unlink below.',
-      target: 'Tap the grid to place a target. A playable level needs at least one.',
+      piece: `${this.config.presets[this.preset].name}: click to place. Wheel or right-click rotates.`,
+      select: 'Drag on grid. Wheel or right-click rotates. Shift-click two blocks to lock.',
+      target: 'Choose a target from the list, then click a cell to place it.',
       lock: 'Lock: tap one block, then another. The pair keeps its shape.',
       rope: 'Rope: tap a block or an empty anchor point, then tap the block to hang.',
     };
+    this.buildPalette();
     this.refreshControls();
     this.renderOverlay(this.draft);
     this.say(hints[tool]);
@@ -244,6 +320,41 @@ export default class BuilderScene extends Phaser.Scene {
     return pointer.x >= VIEW.x && pointer.x <= VIEW.x + VIEW.w && pointer.y >= VIEW.y && pointer.y <= VIEW.y + VIEW.h;
   }
   private snap(value: number): number { return Math.round(value / this.config.grid) * this.config.grid; }
+  private blockAt(point: Point): LevelBlock {
+    const preset = this.config.presets[this.preset];
+    return gridBlock({ id: 'preview', m: this.material, x: point.x, y: point.y, w: preset.w, h: preset.h, shape: preset.shape, angle: this.placementAngle, static: false }, point, this.config);
+  }
+  private targetAt(point: Point): LevelMonster {
+    return gridTarget({ t: this.targetType, x: point.x, y: point.y }, point, this.targetInfo[this.targetType], this.config);
+  }
+  private pointerOut(): void {
+    this.hover = undefined;
+    this.renderOverlay(this.drag?.preview ?? this.draft);
+  }
+  private mouseWheel(pointer: Phaser.Input.Pointer, _over: unknown, _dx: number, dy: number, _dz: number, event: WheelEvent): void {
+    if (this.running || this.loading || dy === 0) return;
+    if (this.tool === 'target' && pointer.x < 112 && pointer.y >= 34 && pointer.y < 232) {
+      event?.preventDefault();
+      this.targetPage += dy > 0 ? 1 : -1;
+      this.buildPalette();
+      this.refreshControls();
+      return;
+    }
+    if (!this.inside(pointer)) return;
+    event?.preventDefault();
+    this.hover = this.worldPoint(pointer);
+    this.mouseRotate(pointer, dy > 0 ? 1 : -1);
+  }
+  private mouseRotate(pointer: Phaser.Input.Pointer, direction: number): void {
+    const hit = this.selectionAt(this.worldPoint(pointer));
+    if (hit?.kind === 'block') {
+      this.selection = hit;
+      this.tool = 'select';
+      this.pending = undefined;
+      this.buildPalette();
+    }
+    this.rotate(direction);
+  }
   private id(prefix: string): string { return `${prefix}_${Date.now().toString(36)}_${(++nextId).toString(36)}`; }
   private error(error: unknown): string { return error instanceof Error ? error.message : 'Could not use this design'; }
   private say(message: string): void {
@@ -261,7 +372,14 @@ export default class BuilderScene extends Phaser.Scene {
   private pointerDown(pointer: Phaser.Input.Pointer): void {
     if (this.running || this.loading || !this.inside(pointer)) return;
     const point = this.worldPoint(pointer);
+    this.hover = point;
     const hit = this.selectionAt(point);
+    if (pointer.rightButtonDown()) { this.mouseRotate(pointer, 1); return; }
+    if ((pointer.event as MouseEvent)?.shiftKey) {
+      if (this.tool !== 'lock') this.choose('lock');
+      this.connect(point, hit);
+      return;
+    }
     if (this.tool === 'select') {
       this.selection = hit;
       if (hit) {
@@ -278,7 +396,8 @@ export default class BuilderScene extends Phaser.Scene {
     const next = cloneDraft(this.draft);
     if (this.tool === 'piece') {
       const preset = this.config.presets[this.preset];
-      const block: LevelBlock = { id: this.id('b'), m: this.material, x: this.snap(point.x), y: this.snap(point.y), w: preset.w, h: preset.h, shape: preset.shape, angle: 0, static: false };
+      const block = this.blockAt(point);
+      block.id = this.id('b');
       next.blocks.push(block);
       try {
         validateDraft(next, this.config);
@@ -287,7 +406,7 @@ export default class BuilderScene extends Phaser.Scene {
         this.commit(next, `${preset.name} placed. Test checks balance; Anchor fixes supports.`);
       } catch (error) { this.say(this.error(error)); }
     } else {
-      const monster: LevelMonster = { t: 'goblin_grunt', x: this.snap(point.x), y: Math.min(this.config.groundY - 7, this.snap(point.y)) };
+      const monster = this.targetAt(point);
       next.monsters.push(monster);
       try {
         validateDraft(next, this.config);
@@ -299,16 +418,20 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private pointerMove(pointer: Phaser.Input.Pointer): void {
+    if (this.running || this.loading) return;
+    this.hover = this.inside(pointer) ? this.worldPoint(pointer) : undefined;
     const drag = this.drag;
-    if (!drag || this.running || this.loading || !pointer.isDown) return;
+    if (!drag || !pointer.isDown) { this.renderOverlay(this.draft); return; }
     const point = this.worldPoint(pointer);
     if (Math.hypot(point.x - drag.start.x, point.y - drag.start.y) < 2 && !drag.moved) return;
     drag.moved = true;
     const next = cloneDraft(this.draft);
     const selection = drag.selection;
     const entity = selection.kind === 'block' ? next.blocks.find((b) => b.id === selection.id)! : next.monsters[selection.index];
-    entity.x = this.snap(point.x + drag.offset.x);
-    entity.y = this.snap(point.y + drag.offset.y);
+    const position = { x: point.x + drag.offset.x, y: point.y + drag.offset.y };
+    Object.assign(entity, selection.kind === 'block'
+      ? gridBlock(entity as LevelBlock, position, this.config)
+      : gridTarget(entity as LevelMonster, position, this.targetInfo[(entity as LevelMonster).t], this.config));
     try {
       validateDraft(next, this.config);
       const overlaps = selection.kind === 'block' ? this.overlaps(entity as LevelBlock, selection.id) : this.targetOverlaps(entity as LevelMonster, selection.index);
@@ -368,13 +491,24 @@ export default class BuilderScene extends Phaser.Scene {
     } catch (error) { this.say(this.error(error)); }
   }
 
-  private rotate(): void {
+  private rotate(direction = 1): void {
     if (this.running || this.loading) return;
     const selected = this.selection;
-    if (selected?.kind !== 'block') { this.say('Select a block to rotate it.'); return; }
+    if (selected?.kind !== 'block' || this.tool === 'piece') {
+      if (this.tool !== 'piece') { this.say('Select a block or choose a piece to rotate.'); return; }
+      this.placementAngle = quarterTurn(this.placementAngle, direction);
+      this.renderOverlay(this.draft);
+      this.say(`Preview ${this.placementAngle} degrees. Click to place. Wheel or right-click rotates.`);
+      return;
+    }
     const next = cloneDraft(this.draft);
     const block = next.blocks.find((b) => b.id === selected.id)!;
-    block.angle = ((block.angle ?? 0) + 15 + 360) % 360;
+    const oldAngle = quarterTurn(block.angle ?? 0, 0);
+    const left = block.x - (oldAngle % 180 === 0 ? block.w : block.h) / 2;
+    const top = block.y - (oldAngle % 180 === 0 ? block.h : block.w) / 2;
+    block.angle = quarterTurn(block.angle ?? 0, direction);
+    const position = { x: left + (block.angle % 180 === 0 ? block.w : block.h) / 2, y: top + (block.angle % 180 === 0 ? block.h : block.w) / 2 };
+    Object.assign(block, gridBlock(block, position, this.config));
     try {
       validateDraft(next, this.config);
       if (this.overlaps(block, block.id)) throw new Error('Pieces overlap');
@@ -519,7 +653,8 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private refreshControls(): void {
-    for (const btn of this.editButtons) btn.setEnabled(!this.running && !this.loading);
+    for (const btn of [...this.editButtons, ...this.paletteButtons]) btn.setEnabled(!this.running && !this.loading);
+    for (const edge of this.paletteEdges) edge.button.setEnabled(!this.running && !this.loading && edge.allowed);
     this.undoButton.setEnabled(!this.running && !this.loading && this.past.length > 0);
     this.redoButton.setEnabled(!this.running && !this.loading && this.future.length > 0);
     this.testButton.setEnabled(!this.loading);
@@ -527,7 +662,7 @@ export default class BuilderScene extends Phaser.Scene {
     const selected = this.selection;
     const anchored = selected?.kind === 'block' && this.draft.blocks.find((b) => b.id === selected.id)?.static;
     this.anchorButton.setLabel(anchored ? 'Free' : 'Anchor');
-    for (const { marker, active } of this.activeMarkers) marker.setVisible(active()).setAlpha(this.running || this.loading ? 0.3 : 1);
+    for (const { marker, active } of [...this.activeMarkers, ...this.paletteMarkers]) marker.setVisible(active()).setAlpha(this.running || this.loading ? 0.3 : 1);
   }
 
   private clearWorld(): void {

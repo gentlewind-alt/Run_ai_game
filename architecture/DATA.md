@@ -111,6 +111,14 @@ Each stage card turns on the flags for what it ships. On deadline day, a broken 
 - Custom play uses an ephemeral level (1000), never writes campaign level data, and skips rewards, progress, consumables, artifact installs, tutorials and rewarded ads. **Test** runs the same block/connection physics; **Stop** restores authored positions.
 - Run `npm run check:builder` for malformed-import, geometry, reference, round-trip and conversion checks. It is also part of check/build.
 
+## Modular weapon Forge (FORGE-01)
+
+- `public/data/forge.json` owns the six craftable weapon rows, nine ability definitions, ten Bless/Curse traits, nine palette radiances, defaults, effect limits and enemy projectile physics. `schemas/forge.schema.json` validates its structure; `check-data` also validates each weapon against the existing weapon schema and verifies defaults/IDs.
+- With `features.weaponForge` enabled, craft rows join the runtime weapon catalogue. `core/forge.ts` compiles the selected ability/trait into copied definitions. Battles retain their own snapshots. The original campaign weapons are unchanged.
+- The separate platform storage entry `monster-mash.forge.v1` holds `{ version: 1, recipes: [{ weaponId, traitId, abilityId, radianceId }] }`, at most one recipe for each of the six known shapes. Unknown choices are ignored on load. Successful creation uses the existing `owned.weapons` array; campaign save version remains 2.
+- `features.enemyAttackPhysics` controls real archer/boss projectiles during live shots. Enemy projectile bodies collide with blocks/ground/player weapons and ignore monster bodies. They have a fixed lifetime and do not extend the player's turn.
+- Forge poison and shield suppression use fixed-step timers. Kill coins carry weapon attribution; an indirect debris kill retains normal debris rewards. Radiance changes visuals only. Gameplay/physics values stay in the Forge data file.
+
 ## Deprecations (keep the game reading both until the card that removes them)
 
 None open. S2-02 removed `level.weapon`, `tuning.sawSteps`, the legacy `public/data/level_NN.json` location and the weapon stats in code.

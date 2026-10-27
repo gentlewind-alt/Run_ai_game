@@ -10,6 +10,7 @@ import { escape } from './rules';
 import { addCoins } from './score';
 import { inflict } from './status';
 import { groundAt } from './terrain';
+import { spawnEnemyAttack } from './enemyAttacks';
 import type { BattleCtx, Ent } from './BattleCtx';
 import type { BattleState } from './state';
 
@@ -48,6 +49,7 @@ export function makeCtx(b: BattleState): BattleCtx {
     setGravity,
     addActor: (a) => { b.actors.push(a); },
     spawnPellet: (o) => spawnPellet(b, o),
+    spawnEnemyAttack: (o) => spawnEnemyAttack(b, o),
     endProj: (p) => endProj(b, p),
     escape: (e) => escape(b, e),
     addCoins: (n) => addCoins(b, n),

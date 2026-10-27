@@ -9,6 +9,8 @@ export interface BuilderDocument {
   connections: LevelConnection[];
 }
 
+export type TargetInfo = Record<string, { w: number; h: number; runner?: boolean }>;
+
 export function newDraft(): BuilderDocument {
   return { schema: 'monster-mash-builder', version: 1, name: 'My level', blocks: [], monsters: [], connections: [] };
 }
@@ -40,7 +42,7 @@ const point = (value: unknown, label: string): { x: number; y: number } => {
 };
 
 /** Reconstruct trusted fields rather than copying imported runtime settings. */
-export function validateDraft(value: unknown, config: BuilderConfig): BuilderDocument {
+export function validateDraft(value: unknown, config: BuilderConfig, targetInfo?: TargetInfo): BuilderDocument {
   const raw = object(value, 'Level');
   if (raw.schema !== 'monster-mash-builder' || raw.version !== 1) throw new Error('Unsupported builder file version');
   if (typeof raw.name !== 'string' || raw.name.trim().length < 1 || raw.name.trim().length > 40) throw new Error('Level name must contain 1 to 40 characters');
@@ -79,10 +81,11 @@ export function validateDraft(value: unknown, config: BuilderConfig): BuilderDoc
     const label = `Target ${index + 1}`;
     const m = object(value, label);
     if (typeof m.t !== 'string' || !config.targets.includes(m.t)) throw new Error(`${label} is an unknown target`);
+    const size = targetInfo?.[m.t];
     return {
       t: m.t,
-      x: bounded(finite(m.x, `${label}.x`), config.minX, config.worldW - 16, label),
-      y: bounded(finite(m.y, `${label}.y`), config.minY, config.groundY - 7, label),
+      x: bounded(finite(m.x, `${label}.x`), config.minX + (size ? size.w / 2 : 0), config.worldW - (size ? size.w / 2 : 16), label),
+      y: bounded(finite(m.y, `${label}.y`), config.minY + (size ? size.h / 2 : 0), config.groundY - (size ? size.h / 2 : 7), label),
     };
   });
   const byId = new Map(blocks.map((b) => [b.id!, b]));
@@ -133,13 +136,15 @@ export function validateDraft(value: unknown, config: BuilderConfig): BuilderDoc
   return { schema: 'monster-mash-builder', version: 1, name: raw.name.trim(), blocks, monsters, connections };
 }
 
-export function toLevel(doc: BuilderDocument, config: BuilderConfig): Level {
-  const safe = validateDraft(doc, config);
+export function toLevel(doc: BuilderDocument, config: BuilderConfig, targetInfo?: TargetInfo): Level {
+  const safe = validateDraft(doc, config, targetInfo);
+  const hasRunner = safe.monsters.some((monster) => targetInfo?.[monster.t]?.runner);
   return {
     id: 1000, name: safe.name, realm: 'goblin_hills', kind: 'siege', worldW: config.worldW,
     terrain: [[0, config.groundY], [config.worldW, config.groundY]], sling: { x: 56, y: config.groundY - 58 },
     shots: config.loadout.length, loadout: config.loadout.slice(), blocks: safe.blocks, monsters: safe.monsters,
     connections: safe.connections,
+    ...(hasRunner ? { runnersStartOnShot: true, escapeLimit: 0, exit: { x: config.worldW - config.grid * 4, y: config.groundY - 13 } } : {}),
     overrides: { features: { tutorial: false, consumables: false, artifacts: false }, camera: { introPan: false } },
   };
 }

@@ -1,3 +1,4 @@
+import { forgeEnabled, isForgeWeapon } from '../core/forge';
 import Phaser from 'phaser';
 import { C, rarityColor } from '../art/palette';
 import { setText, text, textBlock } from '../art/font5x7';
@@ -130,7 +131,7 @@ export default class ShopScene extends Phaser.Scene {
   private items(): Item[] {
     const c = data.content;
     if (this.tab === 'weapons') {
-      return c.weapons.filter((w) => w.enabled !== false).map((w) => {
+      return c.weapons.filter((w) => w.enabled !== false && !isForgeWeapon(w.id)).map((w) => {
         const owned = owns('weapons', w.id);
         const rarity = w.rarity ?? 'common';
         const pityLosses = economy().relicPityLosses ?? 3;
@@ -422,12 +423,20 @@ export default class ShopScene extends Phaser.Scene {
     const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
     const cardW = 226;
     const cardH = 32;
+    const pages = Math.max(1, Math.ceil(owned.length / 8));
+    this.page = Math.min(this.page, pages - 1);
+    if (forgeEnabled()) this.body.add(makeButton(this, 240, 55, 160, 26, 'Create a weapon', 'go', () => goTo(this, 'forge')).box);
+    if (pages > 1) {
+      this.body.add(makeButton(this, 46, 228, 44, 24, '<', 'plain', () => { this.page = (this.page + pages - 1) % pages; this.render(); }).box);
+      this.body.add(text(this, 240, 228, `${this.page + 1}/${pages}`, C('d')));
+      this.body.add(makeButton(this, 434, 228, 44, 24, '>', 'plain', () => { this.page = (this.page + 1) % pages; this.render(); }).box);
+    }
 
-    owned.forEach((w, i) => {
+    owned.slice(this.page * 8, this.page * 8 + 8).forEach((w, i) => {
       const col = i % 2;
       const row = Math.floor(i / 2);
       const x = 10 + col * 234;
-      const y = 46 + row * 36;
+      const y = (forgeEnabled() ? 78 : 46) + row * 36;
       const lv = weaponLevel(w.id);
       const g = panel(this, x, y, cardW, cardH, '8', '9', 'f', 1);
       const icon = this.add.image(x + 16, y + 16, weaponTexture(w.id)).setDepth(2);
@@ -436,7 +445,8 @@ export default class ShopScene extends Phaser.Scene {
       const now = Math.round(w.baseDamage * upgradeMult(w.id));
       const cost = upgradeCost(w.id);
       const after = Math.round(w.baseDamage * (1 + R.upgradeDamagePerStep * (lv + 1)));
-      const dmgStr = cost === null ? `Dmg ${now} (Max)` : `Dmg ${now} -> ${after}`;
+      const label = w.forge ? 'Base' : 'Dmg';
+      const dmgStr = cost === null ? `${label} ${now} (Max)` : `${label} ${now} -> ${after}`;
       const dmgTxt = text(this, x + 34, y + 22, dmgStr, cost === null ? C('4') : C('d')).setOrigin(0, 0.5).setDepth(2);
 
       const parts: Phaser.GameObjects.GameObject[] = [g, icon, nameTxt, dmgTxt];

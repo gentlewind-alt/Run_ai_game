@@ -93,6 +93,12 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | BUILDER-01 | Player level builder: blocks, rigid locks, hanging ropes and isolated playtests | review | codex | 10-25 | Private v1.33.0; check/build and 14 browser groups pass. Full campaign solver timed out after L3; hosted device check remains. OpenCode failed before edits; owner approved direct Codex implementation. |
 | BUILDER-02 | Strict square-cell placement, cursor preview, mouse controls and full target picker | doing | codex | 10-25 | Owner playtest follow-up; edge snapping, quarter-turn rotation and the complete target roster. |
 
+## Weapon creation
+
+| Card | Title | State | Owner | Updated | Notes |
+|---|---|---|---|---|---|
+| FORGE-01 | Modular weapon Forge: six shapes, shared powers, Bless/Curse, radiance and weighted enemy attacks | review | codex | 10-27 | Implemented locally. Check/build, 18 browser groups and campaign regression pass; see LOG and agy_task_weapon_forge.md. RUN/phone persistence and performance remain device checks. |
+
 ## Waiting on owner
 
 - **Review 10-22 (`docs/handoff/review_2026-10-22.md`):** approve renaming "Omnitrix Dial" (B1). Decide whether to fix the boss re-hit damage and retune, or keep it (B2).
