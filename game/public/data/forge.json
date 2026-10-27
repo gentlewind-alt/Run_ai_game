@@ -384,7 +384,11 @@
     "poisonTickSteps": 30,
     "poisonDamage": 3,
     "shieldBreakSteps": 180,
-    "traitCooldownSteps": 30
+    "traitCooldownSteps": 30,
+    "forgedShare": 0.34,
+    "minForged": 1,
+    "maxForged": 3,
+    "bossForged": 1
   },
   "enemyAttack": {
     "radius": 2,
@@ -399,7 +403,8 @@
     "bossGravity": 1,
     "jitter": 12,
     "friction": 0.2,
-    "restitution": 0.1
+    "restitution": 0.1,
+    "friendlyDamage": 14
   },
   "costs": {
     "_note": "Coins to create or change a build. Total = body + ability + trait + radiance. A new build pays the full total, changing a saved build pays reforgeFactor of the new total.",

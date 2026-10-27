@@ -4,7 +4,7 @@ import { W } from '../config/constants';
 import { levelSettings } from '../config/settings';
 import { events } from '../core/events';
 import { profile } from '../core/profile';
-import { forgeSnapshot, isForgeWeapon } from '../core/forge';
+import { forgeLimit, forgeSnapshot, isForgeWeapon } from '../core/forge';
 import { createRng } from '../core/rng';
 import { data } from '../data/load';
 import { levelDef } from '../data/lookup';
@@ -31,7 +31,12 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
   const launchSpeedMult = slingCosmetic?.mods?.launchSpeedMult ?? 1;
   const twinFraction = slingCosmetic?.mods?.twinFraction;
   const twinDelaySteps = slingCosmetic?.mods?.twinDelaySteps ?? 12;
-  const rawLoadout = (level.loadout ?? loadout).filter((id) => data.content.weapons.some((w) => w.id === id) && (!isForgeWeapon(id) || settings.features.weaponForge));
+  // a level with a preset set of weapons is yours to replay with your own arsenal once you have cleared it
+  const replayOwn = !!level.loadout && !customLevel && !competitive && (profile.stars?.[String(levelId)] ?? 0) > 0;
+  let kept = 0;
+  const cap = forgeLimit(level);
+  const rawLoadout = (replayOwn ? loadout : level.loadout ?? loadout).filter((id) => data.content.weapons.some((w) => w.id === id) && (!isForgeWeapon(id) || settings.features.weaponForge));
+  for (let i = 0; i < rawLoadout.length; i++) if (isForgeWeapon(rawLoadout[i]) && ++kept > cap) rawLoadout[i] = 'w_militia_blade'; // over the level's forged-weapon limit
   if (!rawLoadout.length) rawLoadout.push('w_militia_blade');
   const maxShots = level.shots ?? rawLoadout.length;
   const effectiveLoadout = rawLoadout.slice(0, Math.min(rawLoadout.length, maxShots));

@@ -206,6 +206,49 @@ export function closestBlockPoint(block: LevelBlock, worldPoint: Point): Point {
   return nearest;
 }
 
+/** The nearest pair of boundary points between two blocks (world and block-local), found by bouncing between the two shapes. */
+export function closestPair(a: LevelBlock, b: LevelBlock): { a: Point; b: Point; la: Point; lb: Point; gap: number } {
+  let la = closestBlockPoint(a, { x: b.x, y: b.y });
+  let lb = closestBlockPoint(b, localToWorld(a, la));
+  for (let i = 0; i < 6; i++) {
+    la = closestBlockPoint(a, localToWorld(b, lb));
+    lb = closestBlockPoint(b, localToWorld(a, la));
+  }
+  const wa = localToWorld(a, la), wb = localToWorld(b, lb);
+  return { a: wa, b: wb, la, lb, gap: Math.hypot(wa.x - wb.x, wa.y - wb.y) };
+}
+
+/**
+ * How far to slide `mover` so it just touches `anchor`, keeping both angles. A gap is closed along the shortest line, an overlap is
+ * pushed apart along the line between the centres. Null when they are too far apart or there is no clear way.
+ */
+export function touchOffset(mover: LevelBlock, anchor: LevelBlock, maxGap = 40): Point | null {
+  const shift = (d: Point): LevelBlock => ({ ...mover, x: mover.x + d.x, y: mover.y + d.y });
+  if (blocksOverlap(mover, anchor)) {
+    let dx = mover.x - anchor.x, dy = mover.y - anchor.y;
+    const len = Math.hypot(dx, dy);
+    if (len < EPSILON) { dx = 0; dy = -1; } else { dx /= len; dy /= len; }
+    let hi = 1;
+    while (blocksOverlap(shift({ x: dx * hi, y: dy * hi }), anchor)) { hi *= 2; if (hi > 400) return null; }
+    let lo = 0;
+    for (let i = 0; i < 16; i++) {
+      const mid = (lo + hi) / 2;
+      if (blocksOverlap(shift({ x: dx * mid, y: dy * mid }), anchor)) lo = mid; else hi = mid;
+    }
+    return { x: dx * hi, y: dy * hi };
+  }
+  const pair = closestPair(mover, anchor);
+  if (pair.gap > maxGap) return null;
+  const d = { x: pair.b.x - pair.a.x, y: pair.b.y - pair.a.y };
+  if (!blocksOverlap(shift(d), anchor)) return d;
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 16; i++) {
+    const mid = (lo + hi) / 2;
+    if (blocksOverlap(shift({ x: d.x * mid, y: d.y * mid }), anchor)) hi = mid; else lo = mid;
+  }
+  return { x: d.x * lo, y: d.y * lo };
+}
+
 export function findDraftOverlaps(doc: { blocks: LevelBlock[]; monsters: LevelMonster[] }, sizeOf: (type: string) => { w: number; h: number } = () => ({ w: 12, h: 14 })): { a: string; b: string }[] {
   const pieces = doc.blocks.map((block, i) => ({ id: block.id ?? `block_${i + 1}`, block }));
   doc.monsters.forEach((monster, i) => {

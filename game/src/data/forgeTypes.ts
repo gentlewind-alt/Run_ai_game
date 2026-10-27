@@ -12,6 +12,6 @@ export interface ForgeConfig {
   traits: ForgeTrait[];
   radiances: ForgeRadiance[];
   defaults: { traitId: string; abilityId: string; radianceId: string };
-  limits: { maxCopies: number; poisonTickSteps: number; poisonDamage: number; shieldBreakSteps: number; traitCooldownSteps: number };
-  enemyAttack: { radius: number; density: number; speed: number; lifetimeSteps: number; bossDensity: number; bossSpeed: number; volleyCount: number; volleySpacing: number; gravity: number; bossGravity: number; jitter: number; friction: number; restitution: number };
+  limits: { forgedShare: number; minForged: number; maxForged: number; bossForged: number; maxCopies: number; poisonTickSteps: number; poisonDamage: number; shieldBreakSteps: number; traitCooldownSteps: number };
+  enemyAttack: { radius: number; density: number; speed: number; lifetimeSteps: number; bossDensity: number; bossSpeed: number; volleyCount: number; volleySpacing: number; gravity: number; bossGravity: number; jitter: number; friendlyDamage: number; friction: number; restitution: number };
 }

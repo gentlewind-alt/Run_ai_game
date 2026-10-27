@@ -4,17 +4,18 @@ import { setGravity } from './projectiles';
 import type { EnemyAttackOpts } from './BattleCtx';
 import type { BattleState } from './state';
 
-/** Enemy shots have real mass, hit structures and weapons, and pass through other monsters. */
+/** Enemy shots have real mass and fly a fixed line. They hit structures, weapons and any enemy in the way (except their own shooter). */
 export function spawnEnemyAttack(b: BattleState, o: EnemyAttackOpts): boolean {
   if (!b.settings.features.enemyAttackPhysics || !['flying', 'settling'].includes(b.state)) return false;
   const R = data.forge.enemyAttack;
-  const at = b.proj?.body.position ?? { x: b.slingX, y: b.slingY };
-  const dx = at.x - o.x;
-  const dy = at.y - o.y;
+  // a fixed line: the shooter's own aim from when it spawned, or toward the sling's place. It never follows the player's weapon.
+  const dx = o.aim ? o.aim.x : b.slingX - o.x;
+  const dy = o.aim ? o.aim.y : b.slingY - o.y;
   const d = Math.max(1, Math.hypot(dx, dy));
+  if (o.shooter) o.shooter.collisionFilter.group = -o.shooter.id;
   const body: any = b.scene.matter.add.circle(o.x, o.y, R.radius, {
     density: o.boss ? R.bossDensity : R.density, friction: R.friction, restitution: R.restitution,
-    label: 'enemyAttack', collisionFilter: { category: 0x4, mask: 0x1 },
+    label: 'enemyAttack', collisionFilter: { category: 0x4, mask: 0x3, group: o.shooter ? -o.shooter.id : 0 },
   });
   setGravity(body, o.boss ? R.bossGravity : R.gravity);
   MatterLib.Body.setVelocity(body, o.boss ? { x: 0, y: R.bossSpeed } : { x: dx / d * R.speed, y: dy / d * R.speed });

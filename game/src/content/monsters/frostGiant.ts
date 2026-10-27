@@ -36,7 +36,7 @@ export const frostGiant: MonsterBehavior = {
       const R = data.forge.enemyAttack;
       for (let k = 0; k < R.volleyCount; k++) {
         const x = x0 + (k - (R.volleyCount - 1) / 2) * R.volleySpacing + (ctx.rng.next() - 0.5) * R.jitter;
-        if (ctx.spawnEnemyAttack({ x, y: -10, color: theme.drop, boss: true })) continue;
+        if (ctx.spawnEnemyAttack({ x, y: -10, color: theme.drop, boss: true, shooter: m.body })) continue;
         const dot = ctx.fx.dot(x, -10, 2, theme.drop, theme.dropStroke);
         let y = -10;
         ctx.addActor({

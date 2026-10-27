@@ -4,6 +4,7 @@ import { C } from '../art/palette';
 import { pixText } from '../art/pix';
 import { sfx } from '../audio/sfx';
 import { profile, upgradeMult } from '../core/profile';
+import { data } from '../data/load';
 import { materialDef } from '../data/lookup';
 import { battleWeapon } from './weapon';
 import { forgeHit } from './forgeHits';
@@ -43,7 +44,10 @@ export function onCollide(b: BattleState, ev: any): void {
     if (seen.has(pair)) continue;
     seen.add(pair);
     if (A.label === 'enemyAttack' || B.label === 'enemyAttack') {
-      (A.label === 'enemyAttack' ? A : B).enemySpent = true;
+      const shot = A.label === 'enemyAttack' ? A : B;
+      const hit = shot === A ? B : A;
+      if (!shot.enemySpent && hit.ent?.kind === 'monster' && !hit.ent.dead) damage(b, hit.ent, data.forge.enemyAttack.friendlyDamage, shot.position.x, shot.position.y, { strong: false, tag: 'norm' });
+      shot.enemySpent = true;
       continue;
     }
     const aProj = A.label === 'proj';

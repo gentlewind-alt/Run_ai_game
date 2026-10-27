@@ -3,8 +3,8 @@ import type { BattleCtx } from '../../battle/BattleCtx';
 import type { MonsterBehavior } from './types';
 
 /** Visual only: an arrow flies at the launcher pad and fizzles. */
-function fireArrow(ctx: BattleCtx, x: number, y: number, steps: number): void {
-  if (ctx.spawnEnemyAttack({ x, y, color: C('g') })) return;
+function fireArrow(ctx: BattleCtx, x: number, y: number, steps: number, aim?: { x: number; y: number }, shooter?: any): void {
+  if (ctx.spawnEnemyAttack({ x, y, color: C('g'), aim, shooter })) return;
   const sprite = ctx.fx.image(x, y, 'px').setTint(C('g')).setScale(5, 1).setDepth(6);
   const sx = x;
   const sy = y;
@@ -31,12 +31,14 @@ function fireArrow(ctx: BattleCtx, x: number, y: number, steps: number): void {
 export const archer: MonsterBehavior = {
   onSpawn(ctx, m) {
     m.fireT = m.params.fireMin + Math.floor(ctx.rng.next() * m.params.fireSpread);
+    // the arrow line is fixed now, so an archer that gets knocked elsewhere keeps shooting along it and can hit its own side
+    m.aim = { x: ctx.sling.x - m.body.position.x, y: ctx.sling.y + 6 - (m.body.position.y - 2) };
   },
   onUpdate(ctx, m) {
     m.fireT--;
     if (m.fireT <= 0 && ['ready', 'aiming', 'loading', 'flying', 'settling'].includes(ctx.phase)) {
       m.fireT = m.params.fireEvery;
-      fireArrow(ctx, m.body.position.x, m.body.position.y - 2, m.params.arrowSteps);
+      fireArrow(ctx, m.body.position.x, m.body.position.y - 2, m.params.arrowSteps, m.aim, m.body);
     }
   },
 };

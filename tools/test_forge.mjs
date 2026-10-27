@@ -146,6 +146,8 @@ async function browserChecks() {
   const campaignBefore = campaign();
   mm.profile().equipped.artifacts = [];
   mm.profile().equipped.slingSkin = undefined;
+  const forgeMin = data.forge.limits.minForged;
+  data.forge.limits.minForged = 6; // most groups bring several forged weapons; the limit has its own group below
   function arena(id) {
     data.levels[99] = { id: 99, name: 'Forge acceptance', realm: data.content.realms[0].id, kind: 'siege', worldW: 640, shots: 2,
       loadout: [id, id], blocks: [{ m: 'wood', x: 350, y: 300, w: 12, h: 40 }],
@@ -156,7 +158,10 @@ async function browserChecks() {
     for (const e of b.ents) { e.hp = 1000; e.maxHp = 1000; e.shield = 0; }
     return b;
   }
-  const recipe = (id, abilityId = 'dance', traitId = 'balanced') => ({ weaponId: id, abilityId, traitId, radianceId: 'blue' });
+  const recipe = (id, abilityId = 'dance', traitId = 'balanced') => {
+    mm.profile().coins = Math.max(mm.profile().coins, 50000); // forging costs coins; the groups save many builds
+    return { weaponId: id, abilityId, traitId, radianceId: 'blue' };
+  };
   const id = 'w_forge_sword';
   try {
     for (const w of data.forge.weapons) for (const a of data.forge.abilities) for (const t of data.forge.traits) for (const r of data.forge.radiances) {
@@ -294,12 +299,27 @@ async function browserChecks() {
       const a = b.actors.find((x) => x.body?.label === 'enemyAttack');
       assert(a && !a.pos && a.body.mass > 0, 'Enemy attack lacks real mass or blocks turns');
       const monster = b.ents.find((e) => e.kind === 'monster');
-      assert(!M.Detector.canCollide(a.body.collisionFilter, monster.body.collisionFilter), 'Enemy shot hits monsters');
+      assert(M.Detector.canCollide(a.body.collisionFilter, monster.body.collisionFilter), 'Enemy shot passes through other enemies');
       assert(M.Detector.canCollide(a.body.collisionFilter, b.proj.body.collisionFilter), 'Enemy shot misses weapons');
       mm.run(8);
       assert(Math.abs(b.proj?.body.velocity.x ?? 0) > 0.01, 'Enemy shot did not impart physical impulse');
     }
-    pass('Enemy attacks have mass, push player weapons, ignore monsters and do not hold turns');
+    pass('Enemy attacks have mass, push player weapons, can hit other enemies and do not hold turns');
+    {
+      // a fixed line, not a lock on the player's weapon: a shot fired along +x never turns toward the weapon, and hurts the enemy it meets
+      const b = arena(id);
+      const [one, two] = b.ents.filter((e) => e.kind === 'monster');
+      mm.fire({ angleDeg: 25, power: 0.2 });
+      M.Body.setPosition(two.body, { x: 400, y: 200 }); M.Body.setStatic(two.body, true);
+      const before = two.hp;
+      assert(b.ctx.spawnEnemyAttack({ x: 380, y: 200, color: 0xffffff, aim: { x: 1, y: 0 }, shooter: one.body }), 'Enemy attack unavailable');
+      const a = b.actors.find((x) => x.body?.label === 'enemyAttack');
+      assert(a.body.velocity.x > 0 && Math.abs(a.body.velocity.y) < 0.01, 'Enemy shot did not follow its fixed aim');
+      mm.run(40);
+      assert(two.hp < before, 'An enemy shot did not hurt the enemy in its path');
+      assert(!M.Detector.canCollide(a.body.collisionFilter, one.body.collisionFilter), 'An enemy shot hit its own shooter');
+    }
+    pass('Enemy shots fly a fixed line, ignore their shooter and hurt enemies in the way');
     {
       const b = arena(id);
       let detonated = 0;
@@ -357,6 +377,25 @@ async function browserChecks() {
       p.coins=keep;
     }
     pass('Forging costs coins: refused when poor, charged once, half price to change, prices differ per build');
+    {
+      data.forge.limits.minForged = forgeMin;
+      const lim = (shots, kind) => f.forgeLimit({ shots, kind });
+      assert(lim(2) === 1 && lim(4) === 1 && lim(6) === 2 && lim(9) === 3 && lim(30) === 3, 'Forged limit does not follow the level shots');
+      assert(lim(9, 'boss') === 1, 'Boss levels should allow one forged weapon');
+      const b = arena(id);
+      assert(b.loadout[0] === id && b.loadout[1] === 'w_militia_blade', 'A forged weapon over the level limit was not swapped out: ' + b.loadout);
+      // a level with a preset set of weapons: preset until cleared, then your own arsenal
+      const old = data.levels[97];
+      data.levels[97] = { ...data.levels[99], id: 97, loadout: ['w_militia_blade', 'w_militia_blade'], shots: 2 };
+      delete mm.profile().stars['97'];
+      mm.load(97, ['w_blast_tube', 'w_blast_tube']);
+      assert(mm.battle().loadout.join() === 'w_militia_blade,w_militia_blade', 'Uncleared level lost its preset weapons');
+      mm.profile().stars['97'] = 1;
+      mm.load(97, ['w_blast_tube', 'w_blast_tube']);
+      assert(mm.battle().loadout.join() === 'w_blast_tube,w_blast_tube', 'A cleared level did not accept your own arsenal');
+      delete mm.profile().stars['97']; data.levels[97] = old;
+    }
+    pass('Forged weapons are limited by level shots; cleared preset levels accept your own arsenal');
     pass('Campaign save version, coins, upgrades, stars, daily data and scores unchanged');
     return passed;
   } finally {

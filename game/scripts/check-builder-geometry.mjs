@@ -4,7 +4,7 @@ import ts from 'typescript';
 
 const source = readFileSync(new URL('../src/builder/geometry.ts', import.meta.url), 'utf8');
 const js = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
-const { blockParts, blockBounds, pointInBlock, closestBlockPoint, localToWorld, worldToLocal, blocksOverlap, snapBlock, findDraftOverlaps, dropDistance } = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
+const { blockParts, blockBounds, pointInBlock, closestBlockPoint, localToWorld, worldToLocal, blocksOverlap, snapBlock, findDraftOverlaps, dropDistance, closestPair, touchOffset } = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
 const block = (overrides = {}) => ({ m: 'wood', x: 0, y: 0, w: 24, h: 24, shape: 'rectangle', ...overrides });
 const close = (actual, expected, tolerance = 1e-5) => assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} should equal ${expected}`);
 const closePoint = (actual, expected, tolerance) => { close(actual.x, expected.x, tolerance); close(actual.y, expected.y, tolerance); };
@@ -83,4 +83,21 @@ assert.deepEqual(findDraftOverlaps({ blocks: [block({ id: 'square' })], monsters
 assert.deepEqual(findDraftOverlaps({ blocks: [frame], monsters: [{ t: 'goblin', x: 0, y: 0 }] }), []);
 assert.deepEqual(findDraftOverlaps({ blocks: [frame], monsters: [{ t: 'goblin', x: 0, y: 0 }] }, () => ({ w: 26, h: 4 })), [{ a: 'block_1', b: 'target_1' }]);
 assert.deepEqual(findDraftOverlaps({ blocks: [], monsters: [{ t: 'goblin', x: 0, y: 0 }, { t: 'goblin', x: 11, y: 0 }] }), [{ a: 'target_1', b: 'target_2' }]);
-console.log('check-builder-geometry: touching, convex/circle intersections, compound holes, attachments, transformed bounds, snapping and drops passed');
+// Glue slides a rotated plank flush against another: the "^" of two planks 45 degrees either way, with a gap
+{
+  const left = block({ x: 0, y: 0, w: 40, h: 8, angle: 45 }), right = block({ x: 34, y: 0, w: 40, h: 8, angle: -45 });
+  assert.equal(blocksOverlap(left, right), false, 'the planks start with a gap');
+  const d = touchOffset(right, left);
+  assert.ok(d, 'a nearby rotated plank can be slid flush');
+  const moved = { ...right, x: right.x + d.x, y: right.y + d.y };
+  assert.equal(blocksOverlap(left, moved), false, 'flush planks do not overlap');
+  assert.ok(closestPair(left, moved).gap < 0.05, 'flush planks touch');
+  assert.equal(right.angle, -45, 'angles are never changed');
+  assert.equal(touchOffset(right, block({ x: 500, y: 0 })), null, 'blocks too far apart are not joined');
+  // an overlapping pair is pushed apart until it just touches
+  const over = block({ x: 10, y: 3, w: 40, h: 8, angle: -45 });
+  assert.equal(blocksOverlap(left, over), true);
+  const push = touchOffset(over, left);
+  assert.equal(blocksOverlap(left, { ...over, x: over.x + push.x, y: over.y + push.y }), false, 'overlap is pushed clear');
+}
+console.log('check-builder-geometry: touching, convex/circle intersections, compound holes, attachments, transformed bounds, snapping, drops and flush gluing passed');

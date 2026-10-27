@@ -10,6 +10,14 @@ let recipes: Record<string, ForgeRecipe> = {};
 export const forgeEnabled = (): boolean => feature('weaponForge');
 export const isForgeWeapon = (id: string): boolean => data.forge.weapons.some((w) => w.id === id);
 
+/** How many forged weapons a level lets you bring: floor(shots x forgedShare) between minForged and maxForged, less on boss levels. */
+export function forgeLimit(level: { shots?: number; kind?: string }): number {
+  const L = data.forge.limits;
+  const shots = level.shots ?? data.content.economy.loadoutSize;
+  const n = Math.max(L.minForged, Math.min(L.maxForged, Math.floor(shots * L.forgedShare)));
+  return level.kind === 'boss' ? Math.min(n, L.bossForged) : n;
+}
+
 export function validateRecipe(raw: unknown): ForgeRecipe {
   if (!raw || typeof raw !== 'object') throw new Error('Choose a weapon build.');
   const r = raw as ForgeRecipe;

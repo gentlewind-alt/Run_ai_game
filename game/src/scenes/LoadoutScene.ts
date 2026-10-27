@@ -1,4 +1,4 @@
-import { forgeEnabled, isForgeWeapon } from '../core/forge';
+import { forgeEnabled, forgeLimit, isForgeWeapon } from '../core/forge';
 import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { text, textBlock } from '../art/font5x7';
@@ -8,7 +8,7 @@ import { slingTexture, weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { W, H } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
-import { artifactSlots, consumableCount, loadoutSize, owns, profile, setArtifacts, setLoadout, upgradeMult } from '../core/profile';
+import { artifactSlots, consumableCount, loadoutSize, owns, profile, setArtifacts, setLoadout, starsFor, upgradeMult } from '../core/profile';
 import { data } from '../data/load';
 import { levelDef, shortWeaponName } from '../data/lookup';
 import { makeButton } from '../ui/widgets';
@@ -28,6 +28,8 @@ export default class LoadoutScene extends Phaser.Scene {
   private goBtn?: ReturnType<typeof makeButton>;
   private gridObjs: Phaser.GameObjects.GameObject[] = [];
   private page = 0;
+  private forgeCap = 99;
+  private forgeNote?: Phaser.GameObjects.Image;
   private fixed: string[] | null = null; // the level's own loadout (tutorials, mini-bosses): shown locked, never saved as the player's
 
   constructor() {
@@ -46,7 +48,9 @@ export default class LoadoutScene extends Phaser.Scene {
     this.page = 0;
 
     const lvl = levelDef(this.level);
-    this.fixed = lvl.loadout?.length ? lvl.loadout.slice() : null;
+    const cleared = starsFor(this.level) > 0;
+    this.fixed = lvl.loadout?.length && !cleared ? lvl.loadout.slice() : null;
+    this.forgeCap = forgeEnabled() ? forgeLimit(lvl) : 0;
     this.add.rectangle(W / 2, H / 2, W, H, C('f'));
 
     // Divider between grid and loadout panel
@@ -54,7 +58,8 @@ export default class LoadoutScene extends Phaser.Scene {
 
     // Right side: Header & level info
     text(this, 370, 10, `Level ${this.level}: ${lvl.name}`, C('4'), 1, C('0'));
-    if (lvl.hints?.[0]) {
+    if (lvl.loadout?.length && cleared) textBlock(this, 370, 22, 'Cleared! This level came with set weapons. Now bring your own arsenal.', C('5'), 196);
+    else if (lvl.hints?.[0]) {
       textBlock(this, 370, 22, lvl.hints[0], C('d'), 196);
     }
 
@@ -88,7 +93,9 @@ export default class LoadoutScene extends Phaser.Scene {
       }
       return true;
     });
-    this.slots = Array.from({ length: n }, (_, i) => sanitizedLast[i] ?? null);
+    let forged = 0;
+    const within = sanitizedLast.filter((id) => !isForgeWeapon(id) || ++forged <= this.forgeCap);
+    this.slots = Array.from({ length: n }, (_, i) => within[i] ?? null);
     for (let i = 0; i < n; i++) {
       if (this.slots[i] === null) {
         const fallback = owned.find((ow) => ow.rarity !== 'legendary' && !this.slots.includes(ow.id)) ??
@@ -199,6 +206,8 @@ export default class LoadoutScene extends Phaser.Scene {
     }
   }
 
+  private forgedCount(): number { return this.slots.filter((s) => s && isForgeWeapon(s)).length; }
+
   private addToSlot(id: string): void {
     const w = data.content.weapons.find((x) => x.id === id);
     if (w?.rarity === 'legendary') {
@@ -215,6 +224,15 @@ export default class LoadoutScene extends Phaser.Scene {
         ];
         return;
       }
+    }
+    if (isForgeWeapon(id) && this.forgedCount() >= this.forgeCap) {
+      sfx.hit(0.5);
+      this.info.forEach((i) => i.destroy());
+      this.info = [
+        text(this, 370, 94, 'Forged limit!', C('4'), 1, C('0')),
+        ...textBlock(this, 370, 108, `This level allows ${this.forgeCap} forged weapon${this.forgeCap === 1 ? '' : 's'}, set by its shot count. Remove one first.`, C('c'), 196),
+      ];
+      return;
     }
     const i = this.slots.findIndex((s) => s === null);
     if (i < 0) return;
@@ -290,6 +308,8 @@ export default class LoadoutScene extends Phaser.Scene {
     });
     for (const a of this.artifactBoxes) a.box.setStrokeStyle(this.equipped.includes(a.id) ? 2 : 1, this.equipped.includes(a.id) ? C('4') : C('d'));
     this.goBtn?.setEnabled(this.slots.every((s) => s !== null));
+    this.forgeNote?.destroy();
+    if (!this.fixed && this.forgeCap > 0) this.forgeNote = text(this, 310, H - 18, `Forged ${this.forgedCount()}/${this.forgeCap}`, this.forgedCount() >= this.forgeCap ? C('4') : C('d'));
   }
 
   private start(): void {

@@ -111,6 +111,10 @@
         "traitCooldownSteps"
       ],
       "properties": {
+        "forgedShare": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "description": "Forged weapons allowed in a level = floor(shots x forgedShare), kept between minForged and maxForged." },
+        "minForged": { "type": "integer", "minimum": 0 },
+        "maxForged": { "type": "integer", "minimum": 0 },
+        "bossForged": { "type": "integer", "minimum": 0, "description": "Cap on boss levels." },
         "maxCopies": {
           "type": "number",
           "exclusiveMinimum": 0
@@ -148,6 +152,7 @@
         "gravity",
         "bossGravity",
         "jitter",
+        "friendlyDamage",
         "friction",
         "restitution"
       ],
@@ -189,6 +194,10 @@
           "minimum": 0
         },
         "bossGravity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "friendlyDamage": {
           "type": "number",
           "minimum": 0
         },

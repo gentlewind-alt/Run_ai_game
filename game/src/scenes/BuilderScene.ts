@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { text, setText, textWidth, fitText } from '../art/font5x7';
 import { MONSTER_ART } from '../art/textures';
-import { blockBounds, blockParts, blocksOverlap, closestBlockPoint, findDraftOverlaps, localToWorld, pointInBlock, snapBlock } from '../builder/geometry';
+import { blockBounds, blockParts, blocksOverlap, closestBlockPoint, closestPair, findDraftOverlaps, localToWorld, pointInBlock, snapBlock, touchOffset } from '../builder/geometry';
 import { cloneDraft, newDraft, settle, toLevel, validateDraft, type BuilderDocument } from '../builder/document';
 import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { getSettings } from '../config/settings';
@@ -49,6 +49,11 @@ export default class BuilderScene extends Phaser.Scene {
   private marquee?: { a: Point; b: Point };
   private hover?: Point;
   private gridGfx?: Phaser.GameObjects.Graphics;
+  private gridMask?: Phaser.GameObjects.Graphics;
+  private zoom = 1;
+  private focus?: Point;
+  private panMode = false;
+  private panning?: { sx: number; sy: number; fx: number; fy: number };
   private running = false;
   private loading = false;
   private restoreGeneration = 0;
@@ -96,6 +101,11 @@ export default class BuilderScene extends Phaser.Scene {
     this.groupDrag = undefined;
     this.marquee = undefined;
     this.gridGfx = undefined;
+    this.gridMask = undefined;
+    this.zoom = 1;
+    this.focus = undefined;
+    this.panMode = false;
+    this.panning = undefined;
     this.tool = 'piece';
     this.preset = 0;
     this.family = 'Planks';
@@ -126,6 +136,7 @@ export default class BuilderScene extends Phaser.Scene {
     this.input.on('pointermove', this.pointerMove, this);
     this.input.on('pointerup', this.pointerUp, this);
     this.input.on('pointerupoutside', this.pointerUp, this);
+    this.input.on('wheel', this.wheel, this);
     this.input.mouse?.disableContextMenu();
     this.input.keyboard?.on('keydown-R', this.rotateKey, this);
     this.input.keyboard?.on('keydown-DELETE', this.deleteSelection, this);
@@ -136,6 +147,7 @@ export default class BuilderScene extends Phaser.Scene {
       this.input.off('pointermove', this.pointerMove, this);
       this.input.off('pointerup', this.pointerUp, this);
       this.input.off('pointerupoutside', this.pointerUp, this);
+      this.input.off('wheel', this.wheel, this);
       this.input.keyboard?.off('keydown-R', this.rotateKey, this);
       this.input.keyboard?.off('keydown-DELETE', this.deleteSelection, this);
       this.input.keyboard?.off('keydown-ESC', this.cancelLink, this);
@@ -251,6 +263,11 @@ export default class BuilderScene extends Phaser.Scene {
     this.editButtons.push(this.pinButton, button(221, 243, 26, '-45', () => this.rotate(-45)), button(249, 243, 26, '+45', () => this.rotate(45)));
     this.anchorButton = button(289, 243, 48, 'Anchor', () => this.anchor());
     this.editButtons.push(this.anchorButton, button(341, 243, 48, 'Delete', () => this.deleteSelection()), button(393, 243, 48, 'Unlink', () => this.unlink()), button(449, 243, 54, 'Import', () => this.importFile()));
+    // view controls sit on the canvas corner and work while testing too
+    const view: [string, number, number, () => void][] = [['Fit', 373, 28, () => this.fitView()], ['-', 401, 22, () => this.zoomBy(-1)], ['+', 427, 22, () => this.zoomBy(1)], ['Hand', 457, 34, () => { this.panMode = !this.panMode; this.refreshControls(); this.say(this.panMode ? 'Hand: drag the canvas to move the zoomed view.' : 'Hand off.'); }]];
+    for (const [label, x, w, action] of view) button(x, 218, w, label, action, 'plain', 18);
+    const handMarker = this.add.rectangle(457, 218, 36, 20).setStrokeStyle(1, C('4')).setFillStyle(C('4'), 0).setDepth(14);
+    this.activeMarkers.push({ marker: handMarker, active: () => this.panMode });
     this.refreshControls();
   }
 
@@ -290,7 +307,7 @@ export default class BuilderScene extends Phaser.Scene {
       piece: `${this.config.presets[this.preset].name}: click to place. R/right-click turns 45 degrees; Shift reverses.`,
       select: 'Select: drag pieces or an empty area for a group. R turns 45; Shift+R reverses; Delete removes.',
       target: `${name}: click to place. Target page ${this.targetPage + 1}/${Math.ceil(this.config.targets.length / 4)}.`,
-      glue: 'Glue: click two blocks to bond their position and angle. Unlink removes the bond.',
+      glue: 'Glue: click two blocks. The second slides flush against the first, straight or rotated. Unlink removes the bond.',
       rope: 'Rope: click an edge or empty anchor, then a block or target edge. Esc cancels.',
     };
     this.refreshControls();
@@ -325,13 +342,27 @@ export default class BuilderScene extends Phaser.Scene {
     if (findDraftOverlaps(doc, this.monsterSize).length) throw new Error('Fix the red overlaps first. Test and Play can still try this design.');
   }
 
-  private scaleValue(): number {
+  private baseScale(): number {
     const cell = this.config.grid;
     const fit = Math.min(VIEW.w / (this.config.worldW - this.config.minX), VIEW.h / (this.config.groundY - this.config.minY));
     return Math.max(1, Math.floor(fit * cell)) / cell;
   }
+  /** Whole screen pixels per grid cell at every zoom step, so the grid and the pieces stay crisp. */
+  private scaleValue(): number {
+    const cell = this.config.grid;
+    return Math.max(1, Math.round(cell * this.baseScale() * this.zoom)) / cell;
+  }
   private offset(): Point {
     const scale = this.scaleValue();
+    const c = this.config;
+    if (this.zoom > 1) {
+      const f = this.focus ?? { x: (c.minX + c.worldW) / 2, y: (c.minY + c.groundY) / 2 };
+      const lim = (v: number, lo: number, hi: number): number => Math.round(Math.max(Math.min(lo, hi), Math.min(Math.max(lo, hi), v)));
+      return {
+        x: lim(VIEW.x + VIEW.w / 2 - f.x * scale, VIEW.x + VIEW.w - c.worldW * scale, VIEW.x - c.minX * scale),
+        y: lim(VIEW.y + VIEW.h / 2 - f.y * scale, VIEW.y + VIEW.h - c.groundY * scale, VIEW.y - c.minY * scale),
+      };
+    }
     const width = (this.config.worldW - this.config.minX) * scale;
     const height = (this.config.groundY - this.config.minY) * scale;
     return { x: VIEW.x + Math.round((VIEW.w - width) / 2) - this.config.minX * scale, y: VIEW.y + Math.round((VIEW.h - height) / 2) - this.config.minY * scale };
@@ -361,9 +392,20 @@ export default class BuilderScene extends Phaser.Scene {
     return undefined;
   }
 
+  private wheel(pointer: Phaser.Input.Pointer, _over: unknown, _dx: number, dy: number): void {
+    if (tutorialOpen() || !this.inside(pointer)) return;
+    this.zoomBy(dy < 0 ? 1 : -1, pointer);
+  }
+
   private pointerDown(pointer: Phaser.Input.Pointer): void {
     if (tutorialOpen()) return;
-    if (this.running || this.loading || !this.inside(pointer)) return;
+    if (this.loading || !this.inside(pointer)) return;
+    if (this.panMode || pointer.middleButtonDown()) {
+      if (this.zoom <= 1) { this.say('Zoom in first, then drag to move the view.'); return; }
+      this.panning = { sx: pointer.x, sy: pointer.y, fx: (this.focus ?? this.viewCentre()).x, fy: (this.focus ?? this.viewCentre()).y };
+      return;
+    }
+    if (this.running) return;
     const point = this.worldPoint(pointer);
     if (pointer.rightButtonDown()) { this.rotate(pointer.event.shiftKey ? -45 : 45); return; }
     this.hover = point;
@@ -419,6 +461,12 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private pointerMove(pointer: Phaser.Input.Pointer): void {
+    if (this.panning && pointer.isDown) {
+      const s = this.scaleValue();
+      this.focus = { x: this.panning.fx - (pointer.x - this.panning.sx) / s, y: this.panning.fy - (pointer.y - this.panning.sy) / s };
+      this.redrawView();
+      return;
+    }
     if (!pointer.isDown && !this.running && !this.loading) {
       const next = this.inside(pointer) ? this.worldPoint(pointer) : undefined;
       if (next?.x !== this.hover?.x || next?.y !== this.hover?.y) { this.hover = next; this.renderOverlay(this.draft); }
@@ -494,6 +542,7 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private pointerUp(): void {
+    if (this.panning) { this.panning = undefined; return; }
     if (this.marquee) { this.finishMarquee(); return; }
     const gd = this.groupDrag;
     if (gd) {
@@ -540,12 +589,58 @@ export default class BuilderScene extends Phaser.Scene {
       this.say('Those attachment points are already linked.'); return;
     }
     const next = cloneDraft(this.draft);
-    next.connections.push({ id: this.id('c'), type, a: source.id, b: id, pointA: source.point, pointB: local });
+    let pointA = source.point, pointB = local;
+    if (type === 'lock') {
+      const joined = this.glueFlush(next, source.id!, id);
+      if (typeof joined === 'string') { this.say(joined); return; }
+      pointA = joined.pointA;
+      pointB = joined.pointB;
+    }
+    next.connections.push({ id: this.id('c'), type, a: source.id, b: id, pointA, pointB });
     try {
       validateDraft(next, this.config, this.monsterSize);
       this.pending = undefined;
-      this.commit(next, type === 'lock' ? 'Blocks glued. Unlink removes the bond.' : 'Rope attached edge to edge. Test lets it hang and swing.');
+      this.commit(next, type === 'lock' ? 'Glued flush, straight or rotated. Unlink removes the bond.' : 'Rope attached edge to edge. Test lets it hang and swing.');
     } catch (error) { this.say(this.error(error)); }
+  }
+
+  /** Every block rigidly glued to `start` (including it). */
+  private glueGroup(doc: BuilderDocument, start: string): Set<string> {
+    const seen = new Set([start]);
+    for (let grew = true; grew;) {
+      grew = false;
+      for (const c of doc.connections) {
+        if (c.type !== 'lock' || !c.a) continue;
+        if (seen.has(c.a) !== seen.has(c.b)) { seen.add(c.a); seen.add(c.b); grew = true; }
+      }
+    }
+    return seen;
+  }
+
+  /**
+   * Glue slides the second block (with anything already glued to it) until the two touch edge to edge, whatever their angles,
+   * then returns the contact point on each. Nothing is bent: both angles stay exactly as they were.
+   */
+  private glueFlush(doc: BuilderDocument, aId: string, bId: string): { pointA: Point; pointB: Point } | string {
+    const find = (id: string): LevelBlock => doc.blocks.find((b) => b.id === id)!;
+    let anchorId = aId, moverId = bId;
+    const groupOf = (id: string): LevelBlock[] => [...this.glueGroup(doc, id)].map(find);
+    const pinned = (id: string): boolean => groupOf(id).some((b) => b.static);
+    if (this.glueGroup(doc, aId).has(bId)) { /* already one rigid piece */ } else {
+      if (pinned(moverId) && !pinned(anchorId)) [anchorId, moverId] = [moverId, anchorId];
+      if (!pinned(moverId)) {
+        const offset = touchOffset(find(moverId), find(anchorId));
+        if (!offset) return 'Too far apart to join. Move the blocks closer, then glue.';
+        const moving = this.glueGroup(doc, moverId);
+        for (const id of moving) { const b = find(id); b.x += offset.x; b.y += offset.y; }
+        this.alignPins(doc, moving);
+        const blocked = doc.blocks.some((o) => !moving.has(o.id!) && [...moving].some((id) => blocksOverlap(find(id), o)));
+        if (blocked) return 'No room to bring them together there. Clear the space between them.';
+      }
+    }
+    const pair = closestPair(find(aId), find(bId));
+    if (pair.gap > 1.5) return 'These blocks are fixed in place and not touching, so they cannot be joined.';
+    return { pointA: pair.la, pointB: pair.lb };
   }
 
   private alignPins(doc: BuilderDocument, ids: Set<string>): void {
@@ -823,9 +918,47 @@ export default class BuilderScene extends Phaser.Scene {
     this.overlay = undefined;
   }
 
+  private static readonly ZOOMS = [1, 1.5, 2, 3, 4];
+
+  /** Zooms one step in or out. With a pointer the point under it stays put, like a map. */
+  private zoomBy(step: number, pointer?: Phaser.Input.Pointer): void {
+    const steps = BuilderScene.ZOOMS;
+    const next = Math.max(0, Math.min(steps.length - 1, steps.indexOf(this.zoom) + step));
+    if (steps[next] === this.zoom) return;
+    const before = pointer ? this.worldPoint(pointer) : undefined;
+    this.zoom = steps[next];
+    if (this.zoom <= 1) this.focus = undefined;
+    else if (before && pointer) {
+      const scale = this.scaleValue();
+      this.focus = { x: before.x + (VIEW.x + VIEW.w / 2 - pointer.x) / scale, y: before.y + (VIEW.y + VIEW.h / 2 - pointer.y) / scale };
+    } else this.focus ??= this.viewCentre();
+    this.redrawView();
+    this.say(this.zoom > 1 ? `Zoom ${this.zoom}x. Use Hand to drag the view, Fit to reset.` : 'Whole canvas in view.');
+  }
+  private viewCentre(): Point {
+    const o = this.offset(), s = this.scaleValue();
+    return { x: (VIEW.x + VIEW.w / 2 - o.x) / s, y: (VIEW.y + VIEW.h / 2 - o.y) / s };
+  }
+  private redrawView(): void {
+    this.gridGfx?.destroy();
+    this.gridGfx = undefined;
+    this.renderWorld();
+    this.refreshControls();
+  }
+  private fitView(): void {
+    this.zoom = 1;
+    this.focus = undefined;
+    this.redrawView();
+    this.say('Whole canvas in view.');
+  }
+
   /** The crisscross grid, drawn once in screen pixels: even cells, a brighter line every 4 cells and an X through each cell. */
   private drawGrid(): Phaser.GameObjects.Graphics {
     const g = this.add.graphics().setDepth(2);
+    this.gridMask?.destroy();
+    this.gridMask = this.make.graphics({ x: 0, y: 0 }, false);
+    this.gridMask.fillRect(VIEW.x, VIEW.y, VIEW.w, VIEW.h);
+    g.setMask(this.gridMask.createGeometryMask());
     const scale = this.scaleValue();
     const cell = this.config.grid;
     const px = Math.round(cell * scale);
