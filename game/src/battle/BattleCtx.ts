@@ -43,6 +43,8 @@ export interface Ent {
   shieldedBy?: Ent;
   icon?: Phaser.GameObjects.Image;
   revealed?: boolean; // show HP and element from the start (Analyst Lens)
+  visualScaleX?: number; // cosmetic deformation; never changes the body
+  visualScaleY?: number;
   status: Record<StatusId, number>;
   ox: number;
   oy: number;
@@ -88,6 +90,16 @@ export interface Actor {
   body?: any;
   pos?: () => { x: number; y: number };
   update(): boolean; // return true when finished
+  destroy(): void;
+}
+
+export interface LegendVisual {
+  setPosition(x: number, y: number): this;
+  setScale(x: number, y?: number): this;
+  setAlpha(value: number): this;
+  setRotation(value: number): this;
+  setVisible(value: boolean): this;
+  setDepth(value: number): this;
   destroy(): void;
 }
 
@@ -173,5 +185,14 @@ export interface BattleCtx {
     webSplat?(x: number, y: number, steps?: number): void;
     muzzleFlash?(x: number, y: number): void;
     beam?(seg: () => { x0: number; y0: number; x1: number; y1: number } | null, steps: number, width?: number, chargeSteps?: number): void;
+    legendArt(key: string, x: number, y: number, width: number, height: number): LegendVisual;
+    legendOverlay(color: number, alpha: number, steps: number, style?: 'dim' | 'flash' | 'vignette' | 'hourglass'): void;
+    legendWave(x: number, y: number, radiusX: number, radiusY: number, steps: number, color: number, width: number): void;
+    legendGroundGlow(x: number, y: number, radiusX: number, radiusY: number, color: number, alpha: number, steps: number): void;
+    legendRuneLink(x0: number, y0: number, x1: number, y1: number, radius: number, steps: number, marks: number, width: number): void;
+    legendShards(x: number, y: number, count: number, spread: number, steps: number, color: number): void;
+    legendRays(x: number, y: number, count: number, length: number, steps: number, color: number, rotation?: number, convergeSteps?: number): void;
+    legendSpiral(x: number, y: number, radius: number, count: number, steps: number, color: number): void;
+    legendStretch(x: number, y: number, radius: number, strength: number, steps: number): void;
   };
 }

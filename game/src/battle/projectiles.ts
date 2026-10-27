@@ -24,7 +24,7 @@ export function applyCustomGravity(b: BattleState): void {
 export function endProj(b: BattleState, p: Proj): void {
   p.data.ended = true;
   if (b.proj !== p) return;
-  b.scene.matter.world.remove(p.body);
+  if (!b.closing) b.scene.matter.world.remove(p.body); // while the scene shuts down the world is already gone
   p.sprite.destroy();
   b.proj = null;
   b.events.emit('shot:ended', { weaponId: p.wid });

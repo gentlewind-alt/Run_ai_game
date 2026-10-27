@@ -1,6 +1,5 @@
 import { sfx } from '../../audio/sfx';
 import { C } from '../../art/palette';
-import { ALIEN_FOOT_KEY } from '../../art/omnitrixTextures';
 import { weaponTexture } from '../../art/textures';
 import type { Actor } from '../../battle/BattleCtx';
 import type { WeaponImpl } from './types';
@@ -15,7 +14,9 @@ export const omnitrixDial: WeaponImpl = {
     const target = ctx.nearestMonsters(p.body.position.x, p.body.position.y, 1)[0];
     const x = Math.max(0, Math.min(ctx.worldW, target?.body.position.x ?? p.body.position.x));
     const landY = landingY(ctx, x);
-    const fromY = Math.min(-P.skyGap, landY - P.footHeight - P.skyGap);
+    const footWidth = P.footWidth * P.footScale;
+    const footHeight = P.footHeight * P.footScale;
+    const fromY = Math.min(-P.skyGap, landY - footHeight - P.skyGap);
     const range = ctx.worldW * P.quakeRangeFraction;
     const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches === true;
     p.data.stompActive = true;
@@ -25,15 +26,13 @@ export const omnitrixDial: WeaponImpl = {
     p.body.isSensor = true;
     ctx.setGravity(p.body, 0);
     p.sprite.setVisible(false);
+    ctx.fx.legendOverlay(0x55ed87, P.hourglassFlashAlpha, P.hourglassFlashSteps, 'hourglass');
+    ctx.fx.legendGroundGlow(x, landY, P.shadowRadiusX, P.shadowRadiusY, 0x071412, P.shadowAlpha, P.shadowSteps);
     ctx.fx.ring(x, landY, P.splashRadius, C('5'));
     ctx.fx.word(x, landY - P.markerHeight, 'STOMP!');
     sfx.alienScreech();
 
-    const foot = ctx.fx.image(x, fromY, ALIEN_FOOT_KEY).setOrigin(0.5, 1).setDepth(12)
-      .setDisplaySize(P.footWidth, P.footHeight).setVisible(false)
-      .setData('fx', 'alien-foot').setData('phase', 'warning');
-    const scaleX = foot.scaleX;
-    const scaleY = foot.scaleY;
+    const foot = ctx.fx.legendArt('legend_alien_foot', x, fromY + footHeight / 2, footWidth, footHeight).setDepth(12).setVisible(false);
     let phase: 'warning' | 'fall' | 'hold' | 'lift' = 'warning';
     let elapsed = 0;
     let quakeElapsed = -1;
@@ -66,10 +65,12 @@ export const omnitrixDial: WeaponImpl = {
         const dustX = ctx.worldW * (i + 0.5) / P.dustBursts;
         ctx.fx.sparks(dustX, ctx.groundAt(dustX), ['k', 'l', 'm', 'd'], 4);
       }
+      ctx.fx.legendWave(x, landY, P.visualWaveRangeX, P.dustWaveHeight, P.dustWaveSteps, 0x73f078, P.dustWaveWidth);
+      ctx.fx.legendWave(x, landY, P.energyRingRadius, P.energyRingRadius, P.energyRingSteps, 0x59ff8c, P.energyRingWidth);
       ctx.fx.ring(x, landY, P.splashRadius, C('c'));
-      if (!reducedMotion) { ctx.fx.shake(P.shakeIntensity); ctx.flash?.(0xdaf7e5, 80); }
+      if (!reducedMotion) { ctx.fx.shake(P.legendShakeIntensity); ctx.flash?.(0xdaf7e5, 80); }
       sfx.alienStomp();
-      foot.setScale(scaleX * 1.08, scaleY * 0.88);
+      foot.setScale(1.08, 0.88);
     };
     const finish = (): void => {
       if (finished) return;
@@ -88,18 +89,21 @@ export const omnitrixDial: WeaponImpl = {
           if (elapsed >= P.warningSteps) { phase = 'fall'; elapsed = 0; foot.setVisible(true); }
         } else if (phase === 'fall') {
           const progress = Math.min(1, elapsed / P.fallSteps);
-          foot.setY(fromY + (landY - fromY) * progress * progress);
-          if (elapsed >= P.fallSteps) { foot.setY(landY); impact(); phase = 'hold'; elapsed = 0; }
+          const fromCenterY = fromY + footHeight / 2;
+          const landCenterY = landY - footHeight / 2;
+          foot.setPosition(x, fromCenterY + (landCenterY - fromCenterY) * progress * progress);
+          if (elapsed >= P.fallSteps) { foot.setPosition(x, landY - footHeight / 2); impact(); phase = 'hold'; elapsed = 0; }
         } else if (phase === 'hold') {
           const progress = Math.min(1, elapsed / P.holdSteps);
-          foot.setScale(scaleX * (1 + 0.08 * (1 - progress)), scaleY * (1 - 0.12 * (1 - progress)));
-          if (elapsed >= P.holdSteps) { phase = 'lift'; elapsed = 0; foot.setScale(scaleX, scaleY); }
+          foot.setScale(1 + 0.08 * (1 - progress), 1 - 0.12 * (1 - progress));
+          if (elapsed >= P.holdSteps) { phase = 'lift'; elapsed = 0; foot.setScale(1, 1); }
         } else {
           const progress = Math.min(1, elapsed / P.liftSteps);
-          foot.setY(landY + (fromY - landY) * progress * progress);
+          const landCenterY = landY - footHeight / 2;
+          const fromCenterY = fromY + footHeight / 2;
+          foot.setPosition(x, landCenterY + (fromCenterY - landCenterY) * progress * progress);
           if (elapsed >= P.liftSteps) { finish(); return true; }
         }
-        foot.setData('phase', phase);
         return false;
       },
       destroy: finish,

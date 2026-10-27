@@ -117,7 +117,7 @@ function syncSprites(b: BattleState, time: number): void {
     e.sprite.setPosition(bp.x, bp.y + e.h / 2 - e.size / 2 + 1 + (running ? -Math.abs(Math.sin(b.steps / 4)) * 2 : 0));
     e.sprite.setRotation(e.body.angle);
     const amp = e.size >= 24 ? 0.03 : 0.05;
-    e.sprite.setScale(running ? 1 : 1 + amp * beat, running ? 1 : 1 - amp * 1.4 * beat);
+    e.sprite.setScale((running ? 1 : 1 + amp * beat) * (e.visualScaleX ?? 1), (running ? 1 : 1 - amp * 1.4 * beat) * (e.visualScaleY ?? 1));
     if (e.flash > 0) e.sprite.setTintFill(0xffffff);
     else if (e.hurt > 0 && !hurtFrame) e.sprite.setTint(0xff8a8a);
     else if (e.status.chain > 0) e.sprite.setTint(0xb8c0c8);

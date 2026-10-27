@@ -1,5 +1,6 @@
 import { sfx } from '../../audio/sfx';
 import { weaponTexture } from '../../art/textures';
+import type { LegendVisual } from '../../battle/BattleCtx';
 import type { Ent } from '../../battle/BattleCtx';
 import type { WeaponImpl } from './types';
 
@@ -17,6 +18,7 @@ export const brahmastraArrow: WeaponImpl = {
     const chargeSteps = P.beamChargeSteps;
     const activeSteps = P.beamSteps;
     const totalSteps = chargeSteps + activeSteps;
+    const eyeY = Math.max(P.sunEyeTop, (target?.body.position.y ?? groundY) - P.sunEyeOffset);
     p.data.skyBeamActive = true;
     body.isSensor = true;
     ctx.M.Body.setPosition(body, { x, y: groundY - P.beamMarkerHeight });
@@ -32,9 +34,26 @@ export const brahmastraArrow: WeaponImpl = {
       ctx.endProj(p);
     };
     sfx.brahmastra();
+    ctx.hitStop?.(P.legendHitStopSteps);
+    ctx.fx.legendOverlay(0xffd56a, P.legendDimAlpha, P.legendDimSteps, 'dim');
     ctx.flash?.(0xfff0b0, 90);
     ctx.fx.shake(0.02);
-    ctx.fx.beam?.(() => segment, totalSteps, P.beamWidth, chargeSteps);
+    const eye: LegendVisual = ctx.fx.legendArt('legend_sun_eye', x, eyeY, P.sunEyeWidth, P.sunEyeHeight).setScale(P.sunEyeStartScale).setAlpha(0);
+    ctx.fx.legendRays(x, eyeY, P.rayCount, P.rayLength, P.raySweepSteps, 0xffdd78, P.rayStartAngle, P.rayConvergeSteps);
+    ctx.fx.legendGroundGlow(x, groundY, P.moltenRadiusX, P.moltenRadiusY, 0xff7a36, P.moltenAlpha, totalSteps);
+    ctx.fx.beam?.(() => segment, totalSteps, P.visualBeamWidth, chargeSteps);
+    let eyeStep = 0;
+    ctx.addActor({
+      pos: () => ({ x, y: eyeY }),
+      update() {
+        eyeStep++;
+        const open = Math.min(1, eyeStep / P.sunEyeOpenSteps);
+        const fade = eyeStep > totalSteps - P.sunEyeFadeSteps ? Math.max(0, (totalSteps - eyeStep) / P.sunEyeFadeSteps) : 1;
+        eye.setScale(P.sunEyeStartScale + (1 - P.sunEyeStartScale) * open).setAlpha(fade);
+        return eyeStep >= totalSteps;
+      },
+      destroy: () => eye.destroy(),
+    });
     ctx.addActor({
       pos: () => ({ x, y: groundY }),
       update() {
@@ -53,6 +72,8 @@ export const brahmastraArrow: WeaponImpl = {
           }
         }
         if (t >= totalSteps) {
+          ctx.fx.legendOverlay(0xffffff, P.finalFlashAlpha, P.finalFlashSteps, 'flash');
+          ctx.fx.sparks(x, groundY, ['4', 't', '3'], P.emberCount);
           finish();
           return true;
         }

@@ -3,7 +3,9 @@ import Phaser from 'phaser';
 import { blast, damage, damageAround, directHit, explode, push } from './damage';
 import {
   bolt, popWord, ring, shake, burst, electricField, quakeRings,
-  pingStar, flameBlast, webStrand, webSplat, muzzleFlash, beam } from './fx';
+  pingStar, flameBlast, webStrand, webSplat, muzzleFlash, beam,
+  legendArt, legendOverlay, legendWave, legendGroundGlow, legendRuneLink,
+  legendShards, legendRays, legendSpiral, legendStretch } from './fx';
 import { MatterLib } from './matter';
 import { endProj, setGravity, spawnPellet } from './projectiles';
 import { escape } from './rules';
@@ -78,6 +80,15 @@ export function makeCtx(b: BattleState): BattleCtx {
       webSplat: (x, y, steps) => webSplat(b, x, y, steps),
       muzzleFlash: (x, y) => muzzleFlash(b, x, y),
       beam: (seg, steps, width, chargeSteps) => beam(b, seg, steps, width, chargeSteps),
+      legendArt: (key, x, y, width, height) => legendArt(b, key, x, y, width, height),
+      legendOverlay: (color, alpha, steps, style) => legendOverlay(b, color, alpha, steps, style),
+      legendWave: (x, y, radiusX, radiusY, steps, color, width) => legendWave(b, x, y, radiusX, radiusY, steps, color, width),
+      legendGroundGlow: (x, y, radiusX, radiusY, color, alpha, steps) => legendGroundGlow(b, x, y, radiusX, radiusY, color, alpha, steps),
+      legendRuneLink: (x0, y0, x1, y1, radius, steps, marks, width) => legendRuneLink(b, x0, y0, x1, y1, radius, steps, marks, width),
+      legendShards: (x, y, count, spread, steps, color) => legendShards(b, x, y, count, spread, steps, color),
+      legendRays: (x, y, count, length, steps, color, rotation, convergeSteps) => legendRays(b, x, y, count, length, steps, color, rotation, convergeSteps),
+      legendSpiral: (x, y, radius, count, steps, color) => legendSpiral(b, x, y, radius, count, steps, color),
+      legendStretch: (x, y, radius, strength, steps) => legendStretch(b, x, y, radius, strength, steps),
     },
   };
 }

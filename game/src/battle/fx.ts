@@ -2,6 +2,7 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { text } from '../art/font5x7';
+import type { LegendVisual } from './BattleCtx';
 import type { BattleState } from './state';
 
 export function burst(b: BattleState, x: number, y: number, colors: string[], n: number): void {
@@ -445,5 +446,293 @@ export function beam(b: BattleState, seg: () => { x0: number; y0: number; x1: nu
       if (g.active) g.destroy();
       if (dim.active) dim.destroy();
     },
+  });
+}
+
+/** Large generated art with a hand-drawn fallback so a missing asset never becomes a Phaser placeholder. */
+export function legendArt(b: BattleState, key: string, x: number, y: number, width: number, height: number): LegendVisual {
+  const scene = b.scene;
+  let object: any;
+  if (scene.textures.exists(key)) {
+    object = scene.add.image(x, y, key).setDisplaySize(width, height).setDepth(30);
+  } else {
+    const g = scene.add.graphics().setPosition(x, y).setDepth(30);
+    drawLegendStandIn(g, key, width, height);
+    object = g;
+  }
+
+  const visual: LegendVisual = {
+    setPosition(px, py) { object.setPosition(px, py); return visual; },
+    setScale(sx, sy = sx) { object.setScale(sx, sy); return visual; },
+    setAlpha(alpha) { object.setAlpha(alpha); return visual; },
+    setRotation(rotation) { object.setRotation(rotation); return visual; },
+    setVisible(visible) { object.setVisible(visible); return visual; },
+    setDepth(depth) { object.setDepth(depth); return visual; },
+    destroy() { if (object.active !== false) object.destroy(); },
+  };
+  return visual;
+}
+
+function drawLegendStandIn(g: Phaser.GameObjects.Graphics, key: string, width: number, height: number): void {
+  const x = width / 2;
+  const y = height / 2;
+  if (key === 'legend_comet') {
+    g.lineStyle(Math.max(2, width * 0.06), 0xff6b35, 0.95).lineBetween(-x * 0.9, y * 0.4, x * 0.4, -y * 0.2);
+    g.lineStyle(Math.max(1, width * 0.035), 0xffd36e, 1).lineBetween(-x * 0.7, y * 0.6, x * 0.2, -y * 0.1);
+    g.fillTriangle(-x * 0.45, y * 0.4, x * 0.2, -y * 0.25, x * 0.42, y * 0.05);
+    g.fillStyle(0xffdf9b, 1).fillCircle(x * 0.2, -y * 0.05, Math.min(x, y) * 0.27);
+    g.fillStyle(0xff6b35, 1).fillCircle(x * 0.2, -y * 0.05, Math.min(x, y) * 0.18);
+    g.fillStyle(0xffffff, 1).fillCircle(x * 0.27, -y * 0.1, Math.min(x, y) * 0.09);
+  } else if (key === 'legend_rock_spike') {
+    g.fillStyle(0x594536, 1).fillTriangle(0, -y * 0.9, -x * 0.72, y * 0.9, x * 0.72, y * 0.9);
+    g.fillStyle(0x987151, 1).fillTriangle(-x * 0.04, -y * 0.72, -x * 0.48, y * 0.62, -x * 0.03, y * 0.45);
+    g.lineStyle(Math.max(1, width * 0.035), 0xc4a078, 0.9).lineBetween(x * 0.05, -y * 0.58, x * 0.33, y * 0.48);
+  } else if (key === 'legend_shield_dome') {
+    g.fillStyle(0x55c9ff, 0.22).fillEllipse(0, y * 0.2, width * 0.9, height * 0.72);
+    g.lineStyle(Math.max(2, width * 0.035), 0xa7efff, 0.95).beginPath().arc(0, y * 0.28, x * 0.85, Math.PI, Math.PI * 2).strokePath();
+    g.lineStyle(Math.max(1, width * 0.02), 0xffdf72, 0.9).strokeEllipse(0, y * 0.2, width * 0.68, height * 0.48);
+    g.lineStyle(Math.max(1, width * 0.015), 0xe9fbff, 0.75).lineBetween(-x * 0.75, y * 0.28, x * 0.75, y * 0.28);
+  } else if (key === 'legend_storm_cloud') {
+    g.fillStyle(0x252b48, 1).fillEllipse(0, y * 0.15, width * 0.9, height * 0.48);
+    g.fillStyle(0x394366, 1).fillCircle(-x * 0.35, 0, Math.min(x, y) * 0.3).fillCircle(0, -y * 0.08, Math.min(x, y) * 0.38).fillCircle(x * 0.34, y * 0.02, Math.min(x, y) * 0.3);
+    g.lineStyle(Math.max(1, width * 0.025), 0xb9eaff, 0.9).lineBetween(-x * 0.2, y * 0.35, -x * 0.34, y * 0.78);
+    g.lineStyle(Math.max(1, width * 0.02), 0x7ee6ff, 0.9).lineBetween(x * 0.25, y * 0.36, x * 0.12, y * 0.72);
+  } else if (key === 'legend_storm_hammer') {
+    g.fillStyle(0x8b5a34, 1).fillRoundedRect(-x * 0.11, -y * 0.02, width * 0.22, height * 0.86, Math.min(width, height) * 0.04);
+    g.fillStyle(0x34435f, 1).fillRoundedRect(-x * 0.62, -y * 0.6, width * 1.24, height * 0.4, Math.min(width, height) * 0.08);
+    g.fillStyle(0x8ee7ff, 0.95).fillRect(-x * 0.52, -y * 0.52, width * 0.18, height * 0.13);
+    g.lineStyle(Math.max(2, width * 0.03), 0xf2fcff, 0.9).strokeRoundedRect(-x * 0.62, -y * 0.6, width * 1.24, height * 0.4, Math.min(width, height) * 0.08);
+  } else if (key === 'legend_sun_eye') {
+    g.lineStyle(Math.max(2, width * 0.035), 0xffdf72, 0.95).strokeEllipse(0, 0, width * 0.9, height * 0.62);
+    g.fillStyle(0xffd36e, 0.2).fillCircle(0, 0, Math.min(x, y) * 0.58);
+    g.fillStyle(0xffeab0, 1).fillCircle(0, 0, Math.min(x, y) * 0.28);
+    g.fillStyle(0xb46f3e, 1).fillCircle(0, 0, Math.min(x, y) * 0.13);
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      g.lineStyle(Math.max(1, width * 0.018), 0xffdc68, 0.9).lineBetween(Math.cos(a) * x * 0.48, Math.sin(a) * y * 0.48, Math.cos(a) * x * 0.75, Math.sin(a) * y * 0.75);
+    }
+  } else if (key === 'legend_alien_foot') {
+    g.fillStyle(0x1b4c44, 1).fillRoundedRect(-x * 0.34, -y * 0.72, width * 0.68, height * 0.72, Math.min(width, height) * 0.2);
+    g.fillStyle(0x4de0a4, 1).fillEllipse(0, y * 0.48, width * 0.92, height * 0.32);
+    for (let i = 0; i < 4; i++) g.fillStyle(0x7fffc0, 1).fillCircle(-x * 0.56 + i * x * 0.37, y * 0.43, Math.min(x, y) * 0.14);
+    g.lineStyle(Math.max(2, width * 0.025), 0x9bffd1, 0.9).strokeEllipse(0, y * 0.48, width * 0.9, height * 0.32);
+  } else if (key === 'legend_black_hole') {
+    g.fillStyle(0x100c20, 1).fillCircle(0, 0, Math.min(x, y) * 0.48);
+    g.lineStyle(Math.max(2, width * 0.035), 0x8e53ac, 0.95).strokeEllipse(0, 0, width * 0.92, height * 0.48);
+    g.lineStyle(Math.max(1, width * 0.025), 0x6a8dff, 0.9).beginPath().arc(0, 0, Math.min(x, y) * 0.36, -Math.PI * 0.15, Math.PI * 1.55).strokePath();
+    g.lineStyle(Math.max(1, width * 0.02), 0xcf8cff, 0.9).beginPath().arc(0, 0, Math.min(x, y) * 0.25, Math.PI * 0.4, Math.PI * 2.1).strokePath();
+    g.fillStyle(0x05040a, 1).fillCircle(0, 0, Math.min(x, y) * 0.18);
+  } else {
+    g.fillStyle(0xb78cff, 1).fillCircle(0, 0, Math.min(x, y) * 0.38);
+    g.lineStyle(Math.max(2, width * 0.03), 0xffffff, 0.9).strokeCircle(0, 0, Math.min(x, y) * 0.48);
+  }
+}
+
+/** Full-world tint or flash, updated on the battle's fixed step. */
+export function legendOverlay(b: BattleState, color: number, alpha: number, steps: number, style: 'dim' | 'flash' | 'vignette' | 'hourglass' = 'dim'): void {
+  const g = b.scene.add.graphics().setDepth(style === 'flash' || style === 'hourglass' ? 38 : 10);
+  let t = 0;
+  b.actors.push({
+    update: () => {
+      t++;
+      g.clear();
+      const fadeIn = style === 'flash' ? 1 : Math.min(1, t / Math.min(4, steps));
+      const fadeOut = style === 'flash' ? Math.max(0, 1 - t / steps) : Math.min(1, Math.max(0, (steps - t) / Math.min(8, steps)));
+      const a = alpha * fadeIn * fadeOut;
+      const left = -100;
+      const top = -240;
+      const width = b.worldW + 200;
+      const height = b.groundY + 480;
+      g.fillStyle(color, a).fillRect(left, top, width, height);
+      if (style === 'vignette') {
+        g.fillStyle(0x05030d, a * 0.7).fillRect(left, top, width * 0.16, height).fillRect(left + width * 0.84, top, width * 0.16, height);
+        g.fillStyle(0x05030d, a * 0.5).fillRect(left, top, width, height * 0.16).fillRect(left, top + height * 0.84, width, height * 0.16);
+      } else if (style === 'hourglass') {
+        const cx = b.worldW / 2;
+        g.lineStyle(4, 0xc8ff8c, a).lineBetween(left, top, cx, b.groundY / 2).lineBetween(left + width, top, cx, b.groundY / 2)
+          .lineBetween(left, top + height, cx, b.groundY / 2).lineBetween(left + width, top + height, cx, b.groundY / 2);
+      }
+      return t >= steps;
+    },
+    destroy: () => { if (g.active) g.destroy(); },
+  });
+}
+
+/** Expanding ring for full-width shockwaves and nova pulses. */
+export function legendWave(b: BattleState, x: number, y: number, radiusX: number, radiusY: number, steps: number, color: number, width: number): void {
+  const g = b.scene.add.graphics().setDepth(27);
+  let t = 0;
+  b.actors.push({
+    pos: () => ({ x, y }),
+    update: () => {
+      t++;
+      const p = Math.min(1, t / steps);
+      const ease = 1 - (1 - p) * (1 - p);
+      g.clear();
+      g.lineStyle(width, color, Math.max(0, 1 - p * 0.75)).strokeEllipse(x, y, Math.max(1, radiusX * 2 * ease), Math.max(1, radiusY * 2 * ease));
+      return t >= steps;
+    },
+    destroy: () => { if (g.active) g.destroy(); },
+  });
+}
+
+/** Molten floor glow or a growing stomp shadow. */
+export function legendGroundGlow(b: BattleState, x: number, y: number, radiusX: number, radiusY: number, color: number, alpha: number, steps: number): void {
+  const g = b.scene.add.graphics().setDepth(12);
+  let t = 0;
+  b.actors.push({
+    pos: () => ({ x, y }),
+    update: () => {
+      t++;
+      const grow = Math.min(1, t / Math.min(8, steps));
+      const fade = Math.max(0, 1 - t / steps);
+      g.clear();
+      g.fillStyle(color, alpha * grow * fade).fillEllipse(x, y, radiusX * 2 * grow, radiusY * 2 * grow);
+      return t >= steps;
+    },
+    destroy: () => { if (g.active) g.destroy(); },
+  });
+}
+
+/** Rotating rune orbit and a line that draws toward the selected target. */
+export function legendRuneLink(b: BattleState, x0: number, y0: number, x1: number, y1: number, radius: number, steps: number, marks: number, width: number): void {
+  const g = b.scene.add.graphics().setDepth(29);
+  let t = 0;
+  b.actors.push({
+    pos: () => ({ x: x0, y: y0 }),
+    update: () => {
+      t++;
+      const progress = Math.min(1, t / steps);
+      g.clear();
+      g.lineStyle(width, 0xffd66e, 1 - progress * 0.65).strokeCircle(x0, y0, radius).strokeCircle(x0, y0, radius * 0.72);
+      for (let i = 0; i < marks; i++) {
+        const a = t * 0.12 + i * Math.PI * 2 / marks;
+        const inner = radius * 0.78;
+        const outer = radius * (i % 2 ? 0.96 : 1.12);
+        g.lineStyle(width, 0xffedaa, 1 - progress * 0.55).lineBetween(x0 + Math.cos(a) * inner, y0 + Math.sin(a) * inner, x0 + Math.cos(a) * outer, y0 + Math.sin(a) * outer);
+      }
+      const lineProgress = Math.min(1, progress * 2);
+      g.lineStyle(width, 0xffd66e, 0.9 * (1 - progress * 0.5)).lineBetween(x0, y0, x0 + (x1 - x0) * lineProgress, y0 + (y1 - y0) * lineProgress);
+      return t >= steps;
+    },
+    destroy: () => { if (g.active) g.destroy(); },
+  });
+}
+
+/** Fast triangular fragments used for glass-like legendary bursts. */
+export function legendShards(b: BattleState, x: number, y: number, count: number, spread: number, steps: number, color: number): void {
+  const g = b.scene.add.graphics().setDepth(31);
+  const angles = Array.from({ length: count }, (_v, i) => i * Math.PI * 2 / count);
+  let t = 0;
+  b.actors.push({
+    pos: () => ({ x, y }),
+    update: () => {
+      t++;
+      const p = Math.min(1, t / steps);
+      g.clear();
+      angles.forEach((angle, i) => {
+        const a = angle + (i % 2 ? 0.2 : -0.2);
+        const d = spread * p;
+        const sx = x + Math.cos(a) * d;
+        const sy = y + Math.sin(a) * d - p * p * spread * 0.18;
+        const size = Math.max(2, spread * (0.035 + (i % 3) * 0.008)) * (1 - p * 0.25);
+        g.fillStyle(i % 2 ? 0xffffff : color, 1 - p * 0.8).fillTriangle(sx, sy - size, sx - size * 0.65, sy + size, sx + size * 0.65, sy + size);
+      });
+      return t >= steps;
+    },
+    destroy: () => { if (g.active) g.destroy(); },
+  });
+}
+
+/** Rays converge on an eye and sweep outward across the battlefield. */
+export function legendRays(b: BattleState, x: number, y: number, count: number, length: number, steps: number, color: number, rotation = 0, convergeSteps = 0): void {
+  const g = b.scene.add.graphics().setDepth(28);
+  let t = 0;
+  b.actors.push({
+    pos: () => ({ x, y }),
+    update: () => {
+      t++;
+      const converging = t <= convergeSteps;
+      const convergeProgress = convergeSteps > 0 ? Math.min(1, t / convergeSteps) : 1;
+      const sweepProgress = Math.max(0, (t - convergeSteps) / Math.max(1, steps - convergeSteps));
+      const sweep = rotation + sweepProgress * Math.PI * 0.7;
+      g.clear();
+      for (let i = 0; i < count; i++) {
+        const a = sweep + i * Math.PI * 2 / count;
+        const p = converging ? convergeProgress : sweepProgress;
+        const inner = converging ? length * (1 - p) * 0.45 : length * (0.08 + p * 0.04);
+        const outer = converging ? length * (1 - p) : length * (0.45 + 0.55 * Math.abs(Math.sin(i * 1.7 + p * 4)));
+        const alpha = converging ? 1 : 1 - p * 0.65;
+        g.lineStyle(i % 3 === 0 ? 2 : 1, color, alpha * (i % 2 ? 0.8 : 1));
+        g.lineBetween(x + Math.cos(a) * outer, y + Math.sin(a) * outer, x + Math.cos(a) * inner, y + Math.sin(a) * inner);
+      }
+      return t >= steps;
+    },
+    destroy: () => { if (g.active) g.destroy(); },
+  });
+}
+
+/** Radial streaks spiral inward without touching bodies or changing their velocities. */
+export function legendSpiral(b: BattleState, x: number, y: number, radius: number, count: number, steps: number, color: number): void {
+  const g = b.scene.add.graphics().setDepth(26);
+  const angles = Array.from({ length: count }, (_v, i) => i * Math.PI * 2 / count);
+  let t = 0;
+  b.actors.push({
+    pos: () => ({ x, y }),
+    update: () => {
+      t++;
+      const p = Math.min(1, t / steps);
+      g.clear();
+      angles.forEach((base, i) => {
+        const a = base + p * Math.PI * 2.5;
+        const r0 = radius * (0.35 + (i % 4) * 0.2) * (1 - p * 0.72);
+        const r1 = Math.max(1, r0 - radius * 0.12);
+        g.lineStyle(i % 3 === 0 ? 2 : 1, color, 1 - p * 0.75);
+        g.lineBetween(x + Math.cos(a - 0.18) * r1, y + Math.sin(a - 0.18) * r1, x + Math.cos(a) * r0, y + Math.sin(a) * r0);
+      });
+      return t >= steps;
+    },
+    destroy: () => { if (g.active) g.destroy(); },
+  });
+}
+
+/** Stretch nearby sprites toward a singularity while leaving every Matter body untouched. */
+export function legendStretch(b: BattleState, x: number, y: number, radius: number, strength: number, steps: number): void {
+  const affected = b.ents.filter((e) => !e.dead && e.kind !== 'chest' && Math.hypot(e.body.position.x - x, e.body.position.y - y) <= radius).map((e) => ({
+    ent: e,
+    visualX: e.visualScaleX ?? 1,
+    visualY: e.visualScaleY ?? 1,
+    spriteX: e.sprite.scaleX,
+    spriteY: e.sprite.scaleY,
+  }));
+  let t = 0;
+  const restore = (): void => {
+    for (const item of affected) {
+      item.ent.visualScaleX = item.visualX;
+      item.ent.visualScaleY = item.visualY;
+      if (item.ent.kind === 'block' && item.ent.sprite.active) item.ent.sprite.setScale(item.spriteX, item.spriteY);
+    }
+  };
+  b.actors.push({
+    pos: () => ({ x, y }),
+    update: () => {
+      t++;
+      const pulse = Math.sin(Math.PI * Math.min(1, t / steps));
+      for (const item of affected) {
+        const e = item.ent;
+        if (e.dead) continue;
+        const influence = Math.max(0, 1 - Math.hypot(e.body.position.x - x, e.body.position.y - y) / radius) * pulse;
+        const sx = 1 + strength * influence;
+        const sy = Math.max(0.35, 1 - strength * influence * 0.35);
+        if (e.kind === 'block') {
+          if (e.sprite.active) e.sprite.setScale(item.spriteX * sx, item.spriteY * sy);
+        } else {
+          e.visualScaleX = item.visualX * sx;
+          e.visualScaleY = item.visualY * sy;
+        }
+      }
+      return t >= steps;
+    },
+    destroy: restore,
   });
 }

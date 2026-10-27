@@ -1,7 +1,7 @@
 import { sfx } from '../../audio/sfx';
 import { C } from '../../art/palette';
 import { weaponTexture } from '../../art/textures';
-import type { Actor, Ent } from '../../battle/BattleCtx';
+import type { Actor, Ent, LegendVisual } from '../../battle/BattleCtx';
 import type { WeaponImpl } from './types';
 
 /** Two lowest HP, a middle target, and the highest HP, without duplicate strikes. */
@@ -29,21 +29,88 @@ export const skyforgeMaul: WeaponImpl = {
       const target = targets.reduce<Ent | undefined>((highest, monster) => !highest || monster.hp > highest.hp || (monster.hp === highest.hp && monster.body.id > highest.body.id) ? monster : highest, undefined);
       const tx = target ? target.body.position.x : p.body.position.x;
       const ty = target ? target.body.position.y : p.body.position.y;
+      const strikePoints = targets.map((monster) => ({ x: monster.body.position.x, y: monster.body.position.y }));
+      const cloudX = strikePoints.length ? strikePoints.reduce((sum, point) => sum + point.x, 0) / strikePoints.length : tx;
+      const cloudY = (strikePoints.length ? Math.min(...strikePoints.map((point) => point.y)) : ty) - P.cloudOffsetY;
+      const hammerPoint = target ? { x: target.body.position.x, y: target.body.position.y } : { x: tx, y: ty };
 
       // Screen white flash and hit-stop
       ctx.flash?.(0xffffff, 70);
       ctx.hitStop?.(P.boltHitStop ?? 3);
+      ctx.fx.legendOverlay(0x0b1027, P.stormDimAlpha, P.stormSequenceSteps, 'dim');
+
+      const cloud = ctx.fx.legendArt('legend_storm_cloud', cloudX - P.cloudRollDistance, cloudY, P.cloudWidth, P.cloudHeight).setScale(P.cloudScale);
+      let cloudStep = 0;
+      ctx.addActor({
+        pos: () => ({ x: cloudX, y: cloudY }),
+        update() {
+          cloudStep++;
+          const progress = Math.min(1, cloudStep / P.cloudRollSteps);
+          const eased = progress * progress * (3 - 2 * progress);
+          cloud.setPosition(cloudX - P.cloudRollDistance * (1 - eased), cloudY + Math.sin(cloudStep * P.cloudWobbleSpeed) * P.cloudWobbleHeight);
+          if (cloudStep > P.stormSequenceSteps - P.cloudFadeSteps) cloud.setAlpha(P.stormDimAlpha * (P.stormSequenceSteps - cloudStep) / P.cloudFadeSteps);
+          return cloudStep >= P.stormSequenceSteps;
+        },
+        destroy: () => cloud.destroy(),
+      });
 
       sfx.thunder();
       ctx.fx.shake(0.04);
 
       for (const monster of targets) {
         const { x, y } = monster.body.position;
-        ctx.fx.bolt(x, y);
         ctx.directHit(monster, p.wid, monster === target ? P.boltDamageMult : P.chainMult, x, y, monster === target);
         ctx.addStatus(monster, 'chain', 60);
       }
-      if (!target) ctx.fx.bolt(tx, ty);
+      let strikeStep = 0;
+      let strikeIndex = 0;
+      let hammer: LegendVisual | null = null;
+      let hammerPhase: 'fall' | 'hold' | 'rise' | 'done' = 'fall';
+      let hammerStep = 0;
+      const hammerX = hammerPoint.x;
+      const hammerFromY = cloudY;
+      const hammerLandY = hammerPoint.y - P.hammerSize / 2;
+      ctx.addActor({
+        pos: () => ({ x: hammerX, y: cloudY }),
+        update() {
+          strikeStep++;
+          if (strikeIndex < strikePoints.length && strikeStep % P.strikeGapSteps === 0) {
+            const point = strikePoints[strikeIndex++];
+            ctx.fx.legendGroundGlow(point.x, point.y, P.strikeGlowRadiusX, P.strikeGlowRadiusY, 0x79dfff, P.strikeGlowAlpha, P.strikeGlowSteps);
+            ctx.fx.bolt(point.x, point.y);
+          } else if (!strikePoints.length && strikeIndex === 0 && strikeStep === P.strikeGapSteps) {
+            strikeIndex++;
+            ctx.fx.legendGroundGlow(tx, ty, P.strikeGlowRadiusX, P.strikeGlowRadiusY, 0x79dfff, P.strikeGlowAlpha, P.strikeGlowSteps);
+            ctx.fx.bolt(tx, ty);
+          }
+          if (strikeIndex >= Math.max(1, strikePoints.length) && !hammer && target) {
+            hammer = ctx.fx.legendArt('legend_storm_hammer', hammerX, hammerFromY, P.hammerSize, P.hammerSize).setScale(P.hammerScale);
+          }
+          if (!hammer) return strikeIndex >= Math.max(1, strikePoints.length) && strikeStep >= P.stormSequenceSteps;
+          hammerStep++;
+          if (hammerPhase === 'fall') {
+            const f = Math.min(1, hammerStep / P.hammerFallSteps);
+            const eased = f * f;
+            hammer.setPosition(hammerX, hammerFromY + (hammerLandY - hammerFromY) * eased).setRotation((1 - f) * P.hammerTurn);
+            if (hammerStep >= P.hammerFallSteps) {
+              hammerStep = 0;
+              hammerPhase = 'hold';
+              ctx.fx.legendWave(hammerX, hammerLandY, P.hammerWaveRangeX, P.hammerWaveHeight, P.hammerWaveSteps, 0x9eeaff, P.hammerWaveWidth);
+              ctx.fx.shake(P.hammerShakeIntensity);
+              ctx.hitStop?.(P.hammerHitStopSteps);
+            }
+          } else if (hammerPhase === 'hold') {
+            if (hammerStep >= P.hammerHoldSteps) { hammerStep = 0; hammerPhase = 'rise'; }
+          } else if (hammerPhase === 'rise') {
+            const f = Math.min(1, hammerStep / P.hammerRiseSteps);
+            const eased = f * f;
+            hammer.setPosition(hammerX, hammerLandY + (hammerFromY - hammerLandY) * eased).setRotation(-f * P.hammerTurn);
+            if (hammerStep >= P.hammerRiseSteps) hammerPhase = 'done';
+          }
+          return hammerPhase === 'done';
+        },
+        destroy() { hammer?.destroy(); },
+      });
 
       // Crackling blue-white electric field around that spot for 3 s (180 steps)
       // that chains damage (a small tick every 20 steps) between monsters and metal blocks within radius

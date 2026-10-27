@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { sfx } from '../../audio/sfx';
 import { C } from '../../art/palette';
 import { weaponTexture } from '../../art/textures';
-import type { Ent } from '../../battle/BattleCtx';
+import type { Ent, LegendVisual } from '../../battle/BattleCtx';
 import type { WeaponImpl } from './types';
 
 export const bulwarkDisc: WeaponImpl = {
@@ -22,6 +22,7 @@ export const bulwarkDisc: WeaponImpl = {
     if (d < 0.1) return;
     const sp = P.redirectSpeed ?? 9;
     ctx.M.Body.setVelocity(p.body, { x: (dx / d) * sp, y: (dy / d) * sp });
+    ctx.fx.legendRuneLink(p.body.position.x, p.body.position.y, nearest.body.position.x, nearest.body.position.y, P.legendRuneRadius, P.legendRuneSteps, P.legendRuneMarks, P.legendRuneWidth);
     ctx.fx.ring(p.body.position.x, p.body.position.y, 16, C('b'));
     sfx.saw();
   },
@@ -43,6 +44,7 @@ export const bulwarkDisc: WeaponImpl = {
     sfx.ping();
     ctx.fx.pingStar?.(p.body.position.x, p.body.position.y);
     ctx.fx.sparks(p.body.position.x, p.body.position.y, ['c', '4', 'b'], 12);
+    ctx.fx.legendWave(p.body.position.x, p.body.position.y, P.bounceRuneRadius, P.bounceRuneRadius, P.bounceRuneSteps, 0xffd66e, P.bounceRuneWidth);
 
     // Ricochet: after any real knock (monster, block, ground or wall) fly on to the next monster in range, preferring one not yet hit.
     if (p.data.bounces < maxBounces && (p.data.jumps ?? 0) < (P.ricochetJumps ?? 4)) {
@@ -78,6 +80,24 @@ export const bulwarkDisc: WeaponImpl = {
       ctx.blast(b.x, b.y, P.finalRadius, P.finalMult, p.wid);
       ctx.fx.ring(b.x, b.y, P.finalRadius, C('4'));
       ctx.fx.shake(0.012);
+      ctx.hitStop?.(P.legendHitStopSteps);
+      ctx.fx.legendOverlay(0xc9f5ff, P.legendFlashAlpha, P.legendFlashSteps, 'flash');
+      ctx.fx.legendWave(b.x, b.y, P.finalVisualRadiusX, P.finalVisualRadiusY, P.finalWaveSteps, 0x8feaff, P.finalWaveWidth);
+      ctx.fx.legendShards(b.x, b.y, P.glassShardCount, P.glassShardSpread, P.glassShardSteps, 0xc5f4ff);
+      ctx.fx.legendRuneLink(b.x, b.y, b.x, b.y, P.domeRuneRadius, P.domeSteps, P.legendRuneMarks, P.legendRuneWidth);
+      const dome: LegendVisual = ctx.fx.legendArt('legend_shield_dome', b.x, b.y, P.domeSize, P.domeSize).setScale(P.domeStartScale).setAlpha(P.domeAlpha);
+      let domeStep = 0;
+      ctx.addActor({
+        pos: () => ({ x: b.x, y: b.y }),
+        update() {
+          domeStep++;
+          const f = Math.min(1, domeStep / P.domeSteps);
+          const scale = P.domeStartScale + (P.domeScale - P.domeStartScale) * f;
+          dome.setScale(scale).setRotation(f * P.domeTurns * Math.PI * 2).setAlpha(P.domeAlpha * (1 - f * 0.45));
+          return domeStep >= P.domeSteps;
+        },
+        destroy: () => dome.destroy(),
+      });
     }
   },
   onUpdate(ctx, p) {

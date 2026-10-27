@@ -70,6 +70,17 @@ foreach ($id in $arms.Keys) {
 # The four-armed alien (the Omnitrix Dial's ability): one big sprite, 64 px
 $alien = Join-Path $src 'omni_alien.png'
 if (Test-Path $alien) { Process $alien (Join-Path $outA 'omni_alien.png') 64; Write-Output 'ok alien' }
+# Legendary ability set pieces: name -> size in px (sources in gen\legend).
+$legend = @{ 'legend_comet' = 64; 'legend_rock_spike' = 48; 'legend_shield_dome' = 96; 'legend_storm_hammer' = 72; 'legend_storm_cloud' = 128;
+  'legend_sun_eye' = 64; 'legend_alien_foot' = 96; 'legend_black_hole' = 96 }
+$outL = Join-Path $root 'game\public\sprites\legend'
+New-Item -ItemType Directory -Force $outL | Out-Null
+foreach ($id in $legend.Keys) {
+  $f = Join-Path $src "legend\$id.png"
+  if (-not (Test-Path $f)) { Write-Output "missing $f"; continue }
+  Process $f (Join-Path $outL "$id.png") $legend[$id]
+  Write-Output "ok legend $id"
+}
 $outM = Join-Path $root 'game\public\sprites\monsters'
 New-Item -ItemType Directory -Force $outM | Out-Null
 foreach ($id in $monsters.Keys) {
