@@ -4,7 +4,7 @@
   "title": "Monster Mash content (balance and entities)",
   "description": "Numbers live here, behaviour lives in code registries keyed by id. Keys starting with _ are comments. Add a new field here before using it in data. See architecture/DATA.md.",
   "type": "object",
-  "required": ["tuning", "damageRules", "weapons", "monsters", "materials", "realms"],
+  "required": ["tuning", "damageRules", "weapons", "monsters", "materials", "realms", "arena"],
   "patternProperties": { "^_": {} },
   "additionalProperties": false,
   "properties": {
@@ -21,7 +21,8 @@
     "monsters": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/monster" } },
     "materials": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/material" } },
     "realms": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/realm" } },
-    "cosmetics": { "type": "array", "items": { "$ref": "#/$defs/cosmetic" } }
+    "cosmetics": { "type": "array", "items": { "$ref": "#/$defs/cosmetic" } },
+    "arena": { "$ref": "#/$defs/arena" }
   },
   "$defs": {
     "builder": {
@@ -422,6 +423,50 @@
           },
           "additionalProperties": false
         }
+      }
+    },
+    "arena": {
+      "type": "object", "additionalProperties": false,
+      "required": ["startCoins", "stakes", "slings", "boosts"],
+      "properties": {
+        "startCoins": { "type": "integer", "minimum": 0 },
+        "stakes": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 0 } },
+        "slings": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/arenaSling" } },
+        "boosts": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "$ref": "#/$defs/arenaBoost" } }
+      }
+    },
+    "arenaSling": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "name", "desc", "price", "skin", "mods"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "desc": { "type": "string", "minLength": 1 },
+        "price": { "type": "integer", "minimum": 0 },
+        "skin": { "type": ["string", "null"] },
+        "mods": { "$ref": "#/$defs/arenaMods" }
+      }
+    },
+    "arenaMods": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "launchSpeedMult": { "type": "number", "minimum": 0 },
+        "twinFraction": { "type": "number", "minimum": 0, "maximum": 1 },
+        "twinDelaySteps": { "type": "integer", "minimum": 1 },
+        "previewMult": { "type": "number", "minimum": 0 },
+        "damageMult": { "type": "number", "minimum": 0 }
+      }
+    },
+    "arenaBoost": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "name", "desc", "mod", "perLevel", "prices"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "desc": { "type": "string", "minLength": 1 },
+        "mod": { "enum": ["damageMult", "launchSpeedMult", "previewMult"] },
+        "perLevel": { "type": "number", "minimum": 0 },
+        "prices": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "integer", "minimum": 0 } }
       }
     }
   }

@@ -11,7 +11,7 @@ const normalized = value => value.replaceAll('\\', '/');
 const files = [];
 const walk = dir => { for (const entry of fs.readdirSync(path.join(root, dir), { withFileTypes: true })) { const name = `${dir}/${entry.name}`; if (entry.isDirectory()) walk(name); else files.push(name); } };
 for (const dir of ['src/battle', 'src/builder', 'src/content', 'src/config', 'src/art']) walk(dir);
-files.push('src/arena/headless.ts', 'src/arena/types.ts', 'src/core/events.ts', 'src/core/rng.ts', 'src/data/lookup.ts', 'public/data/config.json', 'public/data/content.json', 'scripts/build-arena-headless.mjs');
+files.push('src/arena/headless.ts', 'src/arena/types.ts', 'src/core/events.ts', 'src/core/rng.ts', 'src/data/lookup.ts', 'public/data/config.json', 'public/data/content.json', 'public/data/forge.json', 'scripts/build-arena-headless.mjs');
 const hash = crypto.createHash('sha256');
 for (const file of files.sort()) hash.update(file).update('\0').update(fs.readFileSync(path.join(root, file), 'utf8').replaceAll('\r\n', '\n')).update('\0');
 const version = `arena-${hash.digest('hex').slice(0, 16)}`;
@@ -21,6 +21,7 @@ if (!fs.existsSync(versionFile) || fs.readFileSync(versionFile, 'utf8') !== sour
 
 const content = JSON.parse(fs.readFileSync(path.join(root, 'public/data/content.json'), 'utf8'));
 const config = JSON.parse(fs.readFileSync(path.join(root, 'public/data/config.json'), 'utf8'));
+const forge = JSON.parse(fs.readFileSync(path.join(root, 'public/data/forge.json'), 'utf8')); // battle setup reads the forged-weapon limits
 const textures = ts.createSourceFile('textures.ts', fs.readFileSync(path.join(root, 'src/art/textures.ts'), 'utf8'), ts.ScriptTarget.Latest, true);
 const declaration = textures.statements.filter(ts.isVariableStatement).flatMap(s => [...s.declarationList.declarations]).find(d => d.name.getText(textures) === 'MONSTER_ART');
 if (!declaration?.initializer) throw new Error('MONSTER_ART was not found.');
@@ -28,13 +29,14 @@ const art = declaration.initializer.getText(textures);
 const phaser = name => normalized(path.join(root, 'node_modules/phaser/src', name));
 const shims = new Map([
   ['phaser', `import Matter from ${JSON.stringify(phaser('physics/matter-js/CustomMain.js'))};import Vector2 from ${JSON.stringify(phaser('math/Vector2.js'))};export default {Physics:{Matter:{Matter}},Math:{Vector2,Clamp:(x,a,b)=>Math.max(a,Math.min(b,x)),DegToRad:x=>x*Math.PI/180,Between:(a,b)=>Math.floor(Math.random()*(b-a+1))+a,Distance:{Between:(x,y,a,b)=>Math.hypot(a-x,b-y)}},Scenes:{Events:{ADDED_TO_SCENE:'add'}}};`],
-  ['src/data/load', `export const data={config:${JSON.stringify(config)},content:${JSON.stringify(content)},levels:{}};`],
+  ['src/data/load', `export const data={config:${JSON.stringify(config)},content:${JSON.stringify(content)},forge:${JSON.stringify(forge)},levels:{}};`],
   ['src/core/profile', `export const profile={equipped:{},owned:{weapons:[],artifacts:[],consumables:{},cosmetics:[]},stats:{},upgrades:{},settings:{}};export const upgradeMult=()=>1,owns=()=>false,consumableCount=()=>0,useConsumable=()=>false,DEBUG=false,changed=()=>{};`],
   ['src/audio/sfx', 'export const sfx=new Proxy({},{get:()=>()=>{}});'],
   ['src/art/pix', "export const pixText=(s,x,y)=>s.add.image(x,y,'px'),gridTexture=()=>{},setPixText=()=>{};"],
   ['src/art/font5x7', "export const text=(s,x,y)=>s.add.image(x,y,'px'),setText=()=>{},textBlock=()=>[],textWidth=s=>s.length*6,fitText=s=>s;"],
   ['src/art/textures', `export class Px{};export const MONSTER_ART=${art},blockKey=(m,w,h,c)=>m+w+h+c,weaponTexture=id=>'wpn_'+id,slingTexture=()=> 'sling',makeBattleTextures=()=>{};`],
   ['src/art/terrain', 'export const terrainTexture=()=>{};'],
+  ['src/battle/weaponAnim', 'export const launchAnim=()=>{},abilityAnim=()=>()=>{},impactAnim=()=>{},animateProj=()=>{};'], // visual only
   ['src/art/backgrounds', 'export const buildBackground=()=>{};'],
   ['src/platform', 'export const platform={track(){},haptic(){},log(){}};'],
 ]);
@@ -49,5 +51,5 @@ const output = path.join(root, '.arena');
 fs.mkdirSync(output, { recursive: true });
 const result = await build({ entryPoints: [path.join(root, 'src/arena/headless.ts')], bundle: true, platform: 'neutral', format: 'esm', target: 'es2022', minify: true, outfile: path.join(output, 'arena-runtime.mjs'), plugins: [plugin], metafile: true, define: { window: '__arenaWindow' }, banner: { js: 'const __arenaWindow={matchMedia:()=>({matches:true})};' }, logLevel: 'silent' });
 if (Object.values(result.metafile.outputs).some(output => output.imports.length)) throw new Error('Arena runtime must be self-contained.');
-fs.writeFileSync(path.join(output, 'arena-runtime.d.mts'), "import type {ArenaChallenge,ArenaReplay,ArenaResult} from '../src/arena/types';\nimport type {Level} from '../src/data/types';\nexport const ENGINE_VERSION:string;\nexport function prepareChallenge(row:unknown):ArenaChallenge;\nexport function arenaLevel(challenge:ArenaChallenge):Level;\nexport function verifyReplay(challenge:ArenaChallenge,replay:ArenaReplay):ArenaResult;\n");
+fs.writeFileSync(path.join(output, 'arena-runtime.d.mts'), "import type {ArenaChallenge,ArenaMods,ArenaReplay,ArenaResult,ArenaCatalog} from '../src/arena/types';\nimport type {Level} from '../src/data/types';\nexport const ARENA_CATALOG:ArenaCatalog;\nexport const ENGINE_VERSION:string;\nexport function prepareChallenge(row:unknown):ArenaChallenge;\nexport function arenaLevel(challenge:ArenaChallenge):Level;\nexport function verifyReplay(challenge:ArenaChallenge,replay:ArenaReplay,mods:ArenaMods):ArenaResult;\n");
 console.log(`Arena verifier built: ${version}`);

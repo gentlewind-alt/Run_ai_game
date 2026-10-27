@@ -8,7 +8,6 @@ import { weaponImpl } from '../content/weapons';
 import { battleWeapon } from './weapon';
 import { clampCx, homeCx, homeZoom, pointerWorld, screenDist, setView, zoomBy } from './camera';
 import { H } from '../config/constants';
-import { profile } from '../core/profile';
 import { MatterLib } from './matter';
 import { setGravity } from './projectiles';
 import { targetTap } from './consumables';
@@ -308,7 +307,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   // Prime Serum: this shot is buffed if any charges are left
   const buffed = b.mods.serumShots > 0;
   if (buffed) b.mods.serumShots--;
-  b.mods.damageMult = buffed ? b.mods.serumMult : 1;
+  b.mods.damageMult = b.arenaDamageMult * (buffed ? b.mods.serumMult : 1);
   if (b.adBonusFrom !== undefined && b.shotIdx >= b.adBonusFrom && b.adBonus) b.mods.damageMult *= 1 + b.adBonus;
   b.readySprite.setVisible(false);
   b.pouch.set(b.slingX, b.slingY);
@@ -396,7 +395,7 @@ export function drawOverlay(b: BattleState): void {
   const aiming = b.state === 'aiming';
   const pos = aiming ? b.pouch : new Phaser.Math.Vector2(b.slingX, b.slingY);
 
-  const skin = profile.equipped?.slingSkin;
+  const skin = b.slingSkin;
   const bandColor = skin === 's_quicksilver' ? C('b') : skin === 's_gemini' ? C('4') : C('2');
 
   if (b.readySprite.visible || aiming) {

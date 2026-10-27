@@ -138,6 +138,19 @@ export interface CosmeticDef {
   };
 }
 
+export interface ArenaMods {
+  launchSpeedMult?: number;
+  twinFraction?: number;
+  twinDelaySteps?: number;
+  previewMult?: number;
+  damageMult?: number;
+}
+export interface ArenaSling { id: string; name: string; desc: string; price: number; skin: string | null; mods: ArenaMods }
+export interface ArenaBoost {
+  id: string; name: string; desc: string; mod: 'damageMult' | 'launchSpeedMult' | 'previewMult'; perLevel: number; prices: number[];
+}
+export interface ArenaCatalog { startCoins: number; stakes: number[]; slings: ArenaSling[]; boosts: ArenaBoost[] }
+
 export interface Content {
   builder: BuilderConfig;
   tuning: Tuning;
@@ -146,6 +159,7 @@ export interface Content {
   artifacts: ArtifactDef[];
   consumables: ConsumableDef[];
   cosmetics?: CosmeticDef[];
+  arena: ArenaCatalog;
   weapons: WeaponDef[];
   monsters: MonsterDef[];
   materials: MaterialDef[];

@@ -49,6 +49,8 @@ export interface BattleState {
   levelId: number;
   custom?: boolean;
   arena?: ArenaReplay;
+  slingSkin?: string;
+  arenaDamageMult: number;
   closing?: boolean;
   connections?: ReturnType<typeof installConnections>;
   loadout: string[];

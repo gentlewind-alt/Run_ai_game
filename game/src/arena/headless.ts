@@ -14,8 +14,9 @@ import { events } from '../core/events';
 import { WEAPONS } from '../content/weapons';
 import { data } from '../data/load';
 import type { Level } from '../data/types';
-import { ARENA_MAX_ACTIONS, ARENA_MAX_FRAMES, type ArenaAction, type ArenaChallenge, type ArenaReplay, type ArenaResult } from './types';
+import { ARENA_MAX_ACTIONS, ARENA_MAX_FRAMES, type ArenaAction, type ArenaChallenge, type ArenaMods, type ArenaReplay, type ArenaResult } from './types';
 export { ENGINE_VERSION } from './engineVersion.generated';
+export const ARENA_CATALOG = data.content.arena;
 
 const object = (value: unknown): Record<string, unknown> => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid arena document.');
@@ -106,7 +107,7 @@ function headlessScene(): Phaser.Scene {
 }
 
 /** Scores only simulated inputs. A claimed score, winner or coin amount is never accepted. */
-export function verifyReplay(challenge: ArenaChallenge, replay: ArenaReplay): ArenaResult {
+export function verifyReplay(challenge: ArenaChallenge, replay: ArenaReplay, mods: ArenaMods): ArenaResult {
   const actions = replayActions(replay);
   const level = arenaLevel(challenge);
   initSettings(data.config, data.content);
@@ -116,7 +117,7 @@ export function verifyReplay(challenge: ArenaChallenge, replay: ArenaReplay): Ar
   const engine = scene.matter.world.engine;
   let battle: ReturnType<typeof createBattle> | undefined;
   try {
-    const b = (battle = createBattle(scene, 1000, challenge.loadout, level, true));
+    const b = (battle = createBattle(scene, 1000, challenge.loadout, level, true, mods));
     buildTerrain(b);
     populate(b);
     b.gfx = scene.add.graphics();

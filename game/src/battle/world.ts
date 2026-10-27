@@ -4,7 +4,6 @@ import { MONSTER_ART, slingTexture } from '../art/textures';
 import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { behaviorFor } from '../content/monsters';
 import { buildTerrain, groundAt } from './terrain';
-import { profile } from '../core/profile';
 import { data } from '../data/load';
 import { materialDef, monsterDef } from '../data/lookup';
 import type { LevelBlock, LevelMonster } from '../data/types';
@@ -26,7 +25,7 @@ export function buildWorld(b: BattleState): void {
 /** Sling, blocks, monsters and the exit door. Call after the view is set up. */
 export function populate(b: BattleState): void {
   const s = b.scene;
-  const slingSkin = profile.equipped.slingSkin;
+  const slingSkin = b.slingSkin;
   const skinKey = slingTexture(slingSkin);
   const slingTex = skinKey && s.textures.exists(skinKey) ? skinKey : 'sling';
   s.add.image(b.slingX, b.slingY + 28, slingTex).setDepth(2);

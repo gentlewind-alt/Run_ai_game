@@ -4,7 +4,7 @@ import { fitText, text } from '../art/font5x7';
 import { MONSTER_ART } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { toLevel } from '../builder/document';
-import { ARENA_STAKES, type ArenaPlayer, type ArenaSetup } from '../arena/types';
+import type { ArenaEquipmentSnapshot, ArenaPlayer, ArenaSetup, ArenaSnapshot } from '../arena/types';
 import { H, W } from '../config/constants';
 import { arena } from '../core/arena';
 import { feature } from '../config/settings';
@@ -25,12 +25,13 @@ export default class ArenaScene extends Phaser.Scene {
   private picker?: { player: ArenaPlayer; challenges: Challenge[]; selected: number; page: number; wager: number; loading: boolean };
   private generation = 0;
   private navigating = false;
+  private armoryOpen = false;
 
   constructor() { super('arena'); }
 
   init(options?: { tab?: Tab }): void {
     this.tab = options?.tab ?? 'online';
-    this.page = 0; this.objects = []; this.picker = undefined; this.navigating = false;
+    this.page = 0; this.objects = []; this.picker = undefined; this.navigating = false; this.armoryOpen = false;
   }
 
   create(): void {
@@ -46,8 +47,8 @@ export default class ArenaScene extends Phaser.Scene {
     irisOpen(this);
   }
 
-  private label(x: number, y: number, value: string, color = C('c'), width?: number, origin = 0.5): void {
-    this.objects.push(text(this, x, y, width ? fitText(value, width) : value, color, 1, C('0')).setOrigin(origin, 0.5).setDepth(4));
+  private label(x: number, y: number, value: string, color = C('c'), width?: number, origin = 0.5, depth = 4): void {
+    this.objects.push(text(this, x, y, width ? fitText(value, width) : value, color, 1, C('0')).setOrigin(origin, 0.5).setDepth(depth));
   }
   private button(x: number, y: number, w: number, label: string, action: () => void, go = false, enabled = true): Btn {
     const button = makeButton(this, x, y, w, 24, fitText(label, w - 8), go ? 'go' : 'plain', () => { sfx.unlock(); sfx.click(); action(); }, 5);
@@ -62,6 +63,7 @@ export default class ArenaScene extends Phaser.Scene {
     const state = arena.snapshot;
     this.label(20, 42, `Arena coins ${state?.coins ?? '--'}`, C('4'), 210, 0);
     this.label(460, 42, state ? `W ${state.wins}  L ${state.losses}  D ${state.draws}` : 'Sign in to play', C('d'), 210, 1);
+    this.button(304, 42, 96, 'Slingshot', () => { this.picker = undefined; this.armoryOpen = true; this.draw(); }, false, !!state && arena.compatible());
     const incoming = state?.invitations.filter((invite) => invite.to === state.me).length ?? 0;
     const tabs: [Tab, string][] = [['online', 'Online'], ['invites', incoming ? `Invites ${incoming}` : 'Invites'], ['match', 'Match']];
     tabs.forEach(([tab, label], i) => this.button(90 + i * 150, 67, 134, label, () => { this.tab = tab; this.page = 0; this.picker = undefined; this.draw(); }, this.tab === tab));
@@ -80,6 +82,7 @@ export default class ArenaScene extends Phaser.Scene {
     } else this.label(240, 145, 'Loading players...', C('d'));
     this.label(16, 225, arena.error || (!arena.compatible() ? 'Update the game before joining a match.' : 'No wager is required. Three rejections block invites for 1 hour.'), arena.error ? C('4') : C('d'), 448, 0);
     if (this.picker) this.drawPicker();
+    if (this.armoryOpen && state) this.drawArmory(state);
   }
 
   private pages(length: number): number {
@@ -146,6 +149,10 @@ export default class ArenaScene extends Phaser.Scene {
       const result = match.results[i];
       this.label(32, 121 + i * 28, `${name}${match.players[i] === state.me ? ' (you)' : ''}`, C('c'), 220, 0);
       this.label(448, 121 + i * 28, result ? result.forfeit ? 'Forfeit' : `${result.cleared ? 'Clear' : 'Not cleared'}  ${result.score}` : 'Awaiting turn', C('d'), 205, 1);
+      const equipment: ArenaEquipmentSnapshot | undefined = match.equipment?.[i] ?? undefined;
+      const sling = state.slingCatalog?.find((row) => row.id === equipment?.slingId);
+      const boosts = state.boostCatalog?.map((row) => `${row.name} ${equipment?.boosts[row.id] ?? 0}`).join(' / ') ?? '';
+      this.label(32, 135 + i * 28, `${sling?.name ?? 'Standard'} / ${boosts}`, C('d'), 410, 0);
     });
     if (match.state === 'finished') {
       const result = match.resolution === 'cancelled' ? 'Match cancelled - coins returned' : match.resolution === 'draw' ? 'Draw - both stakes returned' : match.winnerId === state.me ? 'You win!' : `${match.names[match.players.indexOf(match.winnerId!)] || 'Opponent'} wins`;
@@ -184,7 +191,7 @@ export default class ArenaScene extends Phaser.Scene {
       this.button(240, 95 + row * 30, 380, `${index + 1}. ${challenge.title} / ${challenge.shots} shots`, () => { picker.selected = index; this.draw(); }, index === picker.selected);
     });
     this.label(240, 181, 'Optional stake - opponent can choose friendly', C('d'), 390);
-    ARENA_STAKES.forEach((stake, i) => this.button(114 + i * 84, 204, 76, stake ? `${stake} coins` : 'No wager', () => { picker.wager = stake; this.draw(); }, picker.wager === stake, (arena.snapshot?.coins ?? 0) >= stake));
+    (arena.snapshot?.stakes ?? []).forEach((stake, i) => this.button(114 + i * 84, 204, 76, stake ? `${stake} coins` : 'No wager', () => { picker.wager = stake; this.draw(); }, picker.wager === stake, (arena.snapshot?.coins ?? 0) >= stake));
     this.button(104, 238, 106, 'Cancel', () => { this.picker = undefined; this.generation++; this.draw(); });
     this.button(195, 238, 30, '<', () => { picker.page--; this.draw(); }, false, picker.page > 0);
     this.button(236, 238, 30, '>', () => { picker.page++; this.draw(); }, false, picker.page < pages - 1);
@@ -193,6 +200,49 @@ export default class ArenaScene extends Phaser.Scene {
       if (challenge && arena.send({ type: 'arena:invite', targetId: picker.player.id, challengeId: challenge.id, wager: picker.wager })) { this.picker = undefined; this.tab = 'invites'; this.page = 0; this.draw(); }
     }, true, !picker.loading && !!picker.challenges[picker.selected] && arena.compatible());
     for (let i = first; i < this.objects.length; i++) (this.objects[i] as Phaser.GameObjects.GameObject & { setDepth(depth: number): unknown }).setDepth(22 + (this.objects[i] instanceof Phaser.GameObjects.Container ? 1 : 0));
+  }
+
+  private drawArmory(state: ArenaSnapshot): void {
+    if (!state.slingCatalog || !state.boostCatalog) return;
+    const overlay = this.add.rectangle(240, 135, W, H, C('0'), 0.84).setDepth(20).setInteractive();
+    this.objects.push(overlay, panel(this, 10, 8, 460, 254, '8', '9', 'f', 21));
+    this.label(24, 21, 'Slingshot armory', C('4'), 260, 0, 23);
+    this.label(24, 38, `Arena coins ${state.coins}`, C('d'), 220, 0, 23);
+    const close = this.button(438, 22, 34, 'X', () => { this.armoryOpen = false; this.draw(); });
+    close.box.setDepth(26);
+    this.label(24, 52, 'Slingshots', C('4'), 120, 0, 23);
+    const ownTurn = state.match?.state === 'playing' && state.match.players[state.match.turn] === state.me;
+    state.slingCatalog.forEach((sling, i) => {
+      const y = 66 + i * 20;
+      const owned = state.ownedSlings.includes(sling.id), equipped = state.equippedSling === sling.id;
+      this.objects.push(this.add.rectangle(240, y, 438, 18, C('9')).setStrokeStyle(1, C('a')).setDepth(22));
+      this.label(24, y, sling.name, C('c'), 94, 0, 23);
+      this.label(124, y, sling.desc, C('d'), 150, 0, 23);
+      this.label(358, y, sling.price ? `${sling.price} coins` : 'Free', C('4'), 68, 1, 23);
+      const action = owned ? equipped ? 'Equipped' : 'Equip' : `Buy ${sling.price}`;
+      const button = this.button(416, y, 76, action, () => {
+        arena.send(owned ? { type: 'arena:equip-sling', slingId: sling.id } : { type: 'arena:buy-sling', slingId: sling.id });
+      }, !owned || equipped, !ownTurn && (owned ? !equipped : state.coins >= sling.price));
+      button.box.setDepth(26);
+    });
+    this.label(24, 150, 'Boost tracks', C('4'), 150, 0, 23);
+    state.boostCatalog.forEach((boost, i) => {
+      const x = 25 + i * 143, center = x + 68, level = state.boostLevels[boost.id] ?? 0;
+      const price = boost.prices[level];
+      this.objects.push(panel(this, x, 158, 136, 82, '9', 'b', 'f', 22));
+      this.label(center, 168, boost.name, C('4'), 128, 0.5, 23);
+      for (let pip = 0; pip < boost.prices.length; pip++) {
+        const shape = this.add.rectangle(center - 12 + pip * 12, 181, 7, 7, C(pip < level ? '6' : '8')).setStrokeStyle(1, C('0')).setDepth(24);
+        this.objects.push(shape);
+      }
+      this.label(center, 193, `${level}/${boost.prices.length} levels`, C('c'), 128, 0.5, 23);
+      this.label(center, 204, boost.desc, C('d'), 128, 0.5, 23);
+      this.label(center, 215, price === undefined ? 'Max level' : `Next ${price} coins`, C('d'), 128, 0.5, 23);
+      const button = this.button(center, 231, 110, price === undefined ? 'Maxed' : `Boost ${price}`, () => { arena.send({ type: 'arena:boost', boostId: boost.id }); }, true, !ownTurn && price !== undefined && state.coins >= price);
+      button.box.setDepth(26);
+    });
+    const note = ownTurn ? 'Armory changes unlock after your turn.' : arena.error || 'Upgrades apply when your next turn starts.';
+    this.label(240, 252, fitText(note, 438), arena.error ? C('4') : C('d'), 438, 0.5, 23);
   }
 
   private play(setup: ArenaSetup): void {

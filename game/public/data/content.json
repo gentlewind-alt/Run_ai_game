@@ -1973,5 +1973,69 @@
       "extraShots": 2,
       "bonusDamage": 0.25
     }
+  },
+  "arena": {
+    "startCoins": 100,
+    "stakes": [0, 10, 25, 50],
+    "slings": [
+      {
+        "id": "standard",
+        "name": "Standard",
+        "desc": "Reliable and balanced.",
+        "price": 0,
+        "skin": null,
+        "mods": {}
+      },
+      {
+        "id": "quicksilver",
+        "name": "Quicksilver",
+        "desc": "Launch faster with a flatter arc.",
+        "price": 150,
+        "skin": "s_quicksilver",
+        "mods": { "launchSpeedMult": 1.25 }
+      },
+      {
+        "id": "gemini",
+        "name": "Gemini",
+        "desc": "Fire your next weapon as a twin shot.",
+        "price": 250,
+        "skin": "s_gemini",
+        "mods": { "twinFraction": 0.45, "twinDelaySteps": 12 }
+      },
+      {
+        "id": "longsight",
+        "name": "Longsight",
+        "desc": "See a longer dotted aim preview.",
+        "price": 400,
+        "skin": null,
+        "mods": { "previewMult": 1.5 }
+      }
+    ],
+    "boosts": [
+      {
+        "id": "power",
+        "name": "Power",
+        "desc": "Hit harder with every weapon.",
+        "mod": "damageMult",
+        "perLevel": 0.05,
+        "prices": [60, 120, 200]
+      },
+      {
+        "id": "draw",
+        "name": "Draw",
+        "desc": "Launch shots faster.",
+        "mod": "launchSpeedMult",
+        "perLevel": 0.04,
+        "prices": [60, 120, 200]
+      },
+      {
+        "id": "aim",
+        "name": "Aim",
+        "desc": "Extend the dotted aim preview.",
+        "mod": "previewMult",
+        "perLevel": 0.2,
+        "prices": [60, 120, 200]
+      }
+    ]
   }
 }

@@ -95,7 +95,8 @@
       "pages": [
         { "title": "Head to head", "body": "See players who are online and invite one to a match on a shared challenge. Each of you plays one full attempt. A clear beats no clear, then the higher score wins." },
         { "title": "Wagers", "body": "A wager is optional and uses Arena coins, separate from your campaign coins. You start with 100. A draw gives the stakes back." },
-        { "title": "Invite limits", "body": "Three rejected invites in a row from the same sender block that sender for one hour. You need a RUN account to join the Arena. Nobody online? Tap Practice match to play the Rival Bot or pass the device to a friend." }
+        { "title": "Invite limits", "body": "Three rejected invites in a row from the same sender block that sender for one hour. You need a RUN account to join the Arena. Nobody online? Tap Practice match to play the Rival Bot or pass the device to a friend." },
+        { "title": "Slingshot armory", "body": "Spend Arena coins to buy and equip slingshots, then upgrade Power, Draw, or Aim. A started turn keeps its sling and boost snapshot, so new purchases apply to a later turn." }
       ]
     },
     "leaderboards": {

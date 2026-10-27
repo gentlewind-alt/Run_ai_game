@@ -1,7 +1,7 @@
 import { GameRoom, type GameMessage, type GameRoomProps, type Player } from '@series-inc/rundot-game-sdk/mp-server';
 import { ArenaAuthority, type ArenaState } from '../arena/authority';
 import type { ArenaMessage, ArenaSetup } from '../arena/types';
-import { ENGINE_VERSION, prepareChallenge, verifyReplay } from '../../.arena/arena-runtime.mjs';
+import { ARENA_CATALOG, ENGINE_VERSION, prepareChallenge, verifyReplay } from '../../.arena/arena-runtime.mjs';
 
 /** One authenticated, persistent game-wide authority; clients never supply balances or scores. */
 export default class ArenaRoom extends GameRoom<ArenaMessage> {
@@ -15,6 +15,7 @@ export default class ArenaRoom extends GameRoom<ArenaMessage> {
 
   private makeAuthority(saved?: ArenaState): ArenaAuthority {
     return new ArenaAuthority({
+      catalog: ARENA_CATALOG,
       engineVersion: ENGINE_VERSION, now: () => Date.now(),
       online: () => [...this.players.values()].filter(p => p.connected).map(p => ({ id: p.id, name: p.username.slice(0, 24) })),
       loadChallenge: async id => {
@@ -22,7 +23,7 @@ export default class ArenaRoom extends GameRoom<ArenaMessage> {
         if (!row) throw new Error('This challenge is no longer available.');
         return { title: String(row.title ?? 'Challenge'), challenge: prepareChallenge(row) };
       },
-      verify: verifyReplay,
+      verify: (challenge, replay, mods) => verifyReplay(challenge, replay, mods),
     }, saved);
   }
 
@@ -47,7 +48,7 @@ export default class ArenaRoom extends GameRoom<ArenaMessage> {
     return this.enqueue(async () => {
       try {
         if (payload.engineVersion !== ENGINE_VERSION) throw new Error('Reload the game to use the current Arena rules.');
-        const commands = ['arena:sync', 'arena:invite', 'arena:respond', 'arena:cancel', 'arena:start', 'arena:input', 'arena:submit', 'arena:forfeit'];
+        const commands = ['arena:sync', 'arena:invite', 'arena:respond', 'arena:cancel', 'arena:buy-sling', 'arena:equip-sling', 'arena:boost', 'arena:start', 'arena:input', 'arena:submit', 'arena:forfeit'];
         if (!commands.includes(payload.type)) return;
         const setup = await this.authority.act(sender.id, payload as Parameters<ArenaAuthority['act']>[1]);
         this.save();

@@ -18,19 +18,20 @@ import { onCollide } from './damage';
 import { onDown, onMove, onUp, activateAbility, buildQueue, loadNext, setWeapon } from './sling';
 import { buildWorld, populate } from './world';
 import type { Level } from '../data/types';
+import type { ArenaMods } from '../arena/types';
 import type { BattleState, BattleUi } from './state';
 
 const noUi: BattleUi = { setAbilityLabel() {}, showAbility() {}, setEscaped() {}, setTargeting() {}, consumableUsed() {}, setBossHp() {} };
 
 /** The state for one battle. Scene objects (graphics, sprites, cameras) are filled in by `buildBattle`. */
-export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[], customLevel?: Level, competitive = false): BattleState {
+export function createBattle(scene: Phaser.Scene, levelId: number, loadout: string[], customLevel?: Level, competitive = false, arenaMods?: ArenaMods, arenaSkin?: string | null): BattleState {
   const level = customLevel ? JSON.parse(JSON.stringify(customLevel)) as Level : levelDef(levelId);
   const settings = levelSettings(level, !competitive);
-  const slingSkin = competitive ? undefined : profile.equipped?.slingSkin;
-  const slingCosmetic = data.content.cosmetics?.find((c) => c.id === slingSkin);
-  const launchSpeedMult = slingCosmetic?.mods?.launchSpeedMult ?? 1;
-  const twinFraction = slingCosmetic?.mods?.twinFraction;
-  const twinDelaySteps = slingCosmetic?.mods?.twinDelaySteps ?? 12;
+  const slingSkin = competitive ? arenaSkin ?? undefined : profile.equipped?.slingSkin;
+  const slingCosmetic = competitive ? undefined : data.content.cosmetics?.find((c) => c.id === slingSkin);
+  const launchSpeedMult = competitive ? arenaMods?.launchSpeedMult ?? 1 : slingCosmetic?.mods?.launchSpeedMult ?? 1;
+  const twinFraction = competitive ? arenaMods?.twinFraction : slingCosmetic?.mods?.twinFraction;
+  const twinDelaySteps = competitive ? arenaMods?.twinDelaySteps ?? 12 : slingCosmetic?.mods?.twinDelaySteps ?? 12;
   // a level with a preset set of weapons is yours to replay with your own arsenal once you have cleared it
   const replayOwn = !!level.loadout && !customLevel && !competitive && (profile.stars?.[String(levelId)] ?? 0) > 0;
   let kept = 0;
@@ -46,7 +47,8 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
     loadout: effectiveLoadout, forgeWeapons: settings.features.weaponForge && !competitive ? forgeSnapshot() : {}, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
     worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
-    mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: 1, launchSpeedMult, twinFraction, twinDelaySteps }, artifacts: [], consumables: [], targeting: null, paused: false,
+    mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: competitive ? arenaMods?.previewMult ?? 1 : 1, launchSpeedMult, twinFraction, twinDelaySteps },
+    slingSkin, arenaDamageMult: competitive ? arenaMods?.damageMult ?? 1 : 1, artifacts: [], consumables: [], targeting: null, paused: false,
     ents: [], actors: [], proj: null, state: 'intro', shotIdx: 0, coins: 0, score: 0, chain: 0, chainT: 999, escaped: 0,
     steps: 0, acc: 0, hitStop: 0, settleSteps: 0, endTimer: 0, lastPop: 0, lastStretch: 0,
     pouch: new Phaser.Math.Vector2(settings.world.slingX, settings.world.slingY), queue: [], parts: [],

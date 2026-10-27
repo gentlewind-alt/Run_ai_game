@@ -1,11 +1,12 @@
 import {
   ARENA_BLOCK_MS, ARENA_INVITE_MS, ARENA_MAX_ACTIONS, ARENA_MAX_FRAMES, ARENA_READY_MS,
-  ARENA_REJECT_LIMIT, ARENA_STAKES, ARENA_START_COINS, ARENA_TURN_MS,
+  ARENA_REJECT_LIMIT, ARENA_TURN_MS,
   type ArenaAction, type ArenaChallenge, type ArenaCommand, type ArenaInvitation, type ArenaMatch,
-  type ArenaPlayer, type ArenaReplay, type ArenaResult, type ArenaSetup, type ArenaSnapshot,
+  type ArenaCatalog, type ArenaEquipmentSnapshot, type ArenaMods, type ArenaPlayer, type ArenaReplay,
+  type ArenaResult, type ArenaSetup, type ArenaSnapshot,
 } from './types';
 
-interface Wallet { coins: number; wins: number; losses: number; draws: number }
+interface Wallet { coins: number; wins: number; losses: number; draws: number; slings?: string[]; sling?: string; boosts?: Record<string, number> }
 interface Pair { rejects: number; blockedUntil: number }
 interface Invitation extends ArenaInvitation { challenge: ArenaChallenge }
 interface Match extends ArenaMatch { challenge: ArenaChallenge | null; actions: ArenaAction[]; startedAt: number }
@@ -15,11 +16,12 @@ export interface ArenaState {
   matches: Record<string, Match>; lastMatch: Record<string, string>;
 }
 export interface ArenaDependencies {
+  catalog: ArenaCatalog;
   engineVersion: string;
   now(): number;
   online(): { id: string; name: string }[];
   loadChallenge(id: string): Promise<{ title: string; challenge: ArenaChallenge }>;
-  verify(challenge: ArenaChallenge, replay: ArenaReplay): ArenaResult;
+  verify(challenge: ArenaChallenge, replay: ArenaReplay, mods: ArenaMods): ArenaResult;
 }
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 const emptyResult = (): ArenaResult => ({ cleared: false, score: 0, shotsUsed: 0, steps: 0, forfeit: true });
@@ -43,9 +45,10 @@ export class ArenaAuthority {
   }
 
   join(id: string): void {
-    if (this.state.wallets[id]) return;
+    if (this.state.wallets[id]) { this.normalizeWallet(this.state.wallets[id]); return; }
     requireThat(Object.keys(this.state.wallets).length < 2000, 'The Arena is full. Please try again later.');
-    this.state.wallets[id] = { coins: ARENA_START_COINS, wins: 0, losses: 0, draws: 0 };
+    this.state.wallets[id] = { coins: this.deps.catalog.startCoins, wins: 0, losses: 0, draws: 0 };
+    this.normalizeWallet(this.state.wallets[id]);
   }
 
   private active(id: string): Match | undefined {
@@ -55,6 +58,41 @@ export class ArenaAuthority {
 
   private names(id: string): string { return this.deps.online().find(p => p.id === id)?.name ?? 'Player'; }
   private wallet(id: string): Wallet { this.join(id); return this.state.wallets[id]; }
+
+  private normalizeWallet(wallet: Wallet): void {
+    const starter = this.deps.catalog.slings.find((sling) => sling.price === 0) ?? this.deps.catalog.slings[0];
+    const known = new Set(this.deps.catalog.slings.map((sling) => sling.id));
+    const owned = Array.isArray(wallet.slings) ? [...new Set(wallet.slings.filter((id) => known.has(id)))] : [];
+    if (!owned.includes(starter.id)) owned.unshift(starter.id);
+    wallet.slings = owned;
+    if (!wallet.sling || !owned.includes(wallet.sling)) wallet.sling = starter.id;
+    const oldBoosts = wallet.boosts ?? {};
+    wallet.boosts = Object.fromEntries(this.deps.catalog.boosts.map((boost) => {
+      const level = oldBoosts[boost.id];
+      return [boost.id, Number.isInteger(level) ? Math.max(0, Math.min(boost.prices.length, level)) : 0];
+    }));
+  }
+
+  private equipment(id: string): ArenaEquipmentSnapshot {
+    const wallet = this.wallet(id);
+    const sling = this.deps.catalog.slings.find((row) => row.id === wallet.sling)!;
+    const boosts = { ...wallet.boosts! };
+    const mods: ArenaMods = {
+      ...sling.mods,
+      damageMult: sling.mods.damageMult ?? 1,
+      launchSpeedMult: sling.mods.launchSpeedMult ?? 1,
+      previewMult: sling.mods.previewMult ?? 1,
+    };
+    for (const boost of this.deps.catalog.boosts) {
+      mods[boost.mod] = (mods[boost.mod] ?? 1) + boost.perLevel * boosts[boost.id];
+    }
+    return { slingId: sling.id, skin: sling.skin, boosts, mods };
+  }
+
+  private requireCanManage(id: string): void {
+    const match = this.active(id);
+    requireThat(!match || match.state !== 'playing' || match.players[match.turn] !== id, 'Finish your playing turn before changing slingshots.');
+  }
 
   view(id: string): ArenaSnapshot {
     const wallet = this.wallet(id), now = this.deps.now();
@@ -70,7 +108,15 @@ export class ArenaAuthority {
     }
     const match = this.state.matches[this.state.lastMatch[id]];
     const publicMatch = match ? (({ challenge: _challenge, actions: _actions, startedAt: _startedAt, ...m }) => m)(match) : null;
-    return clone({ me: id, ...wallet, players, invitations, match: publicMatch, cooldowns, serverNow: now });
+    if (match && publicMatch) {
+      publicMatch.equipment = [match.equipment?.[0] ?? this.equipment(match.players[0]), match.equipment?.[1] ?? this.equipment(match.players[1])];
+    }
+    return clone({
+      me: id, coins: wallet.coins, wins: wallet.wins, losses: wallet.losses, draws: wallet.draws,
+      players, invitations, match: publicMatch, cooldowns, serverNow: now,
+      stakes: this.deps.catalog.stakes, slingCatalog: this.deps.catalog.slings, boostCatalog: this.deps.catalog.boosts,
+      ownedSlings: wallet.slings!, equippedSling: wallet.sling!, boostLevels: wallet.boosts!,
+    });
   }
 
   expire(): boolean {
@@ -96,7 +142,7 @@ export class ArenaAuthority {
         const to = command.targetId;
         requireThat(typeof to === 'string' && to !== id && this.deps.online().some(p => p.id === to), 'That player is no longer online.');
         requireThat(!this.active(id) && !this.active(to), 'Finish the current match first.');
-        requireThat((ARENA_STAKES as readonly number[]).includes(command.wager), 'Choose one of the listed coin stakes.');
+        requireThat(this.deps.catalog.stakes.includes(command.wager), 'Choose one of the listed coin stakes.');
         requireThat(this.wallet(id).coins >= command.wager && this.wallet(to).coins >= command.wager, 'There are not enough Arena coins for that wager. Choose a free match.');
         const key = pairKey(id, to), pair = this.state.pairs[key];
         requireThat(!pair || pair.blockedUntil <= now, 'Three invitations were rejected. Try this player again after the one-hour cooldown.');
@@ -137,7 +183,7 @@ export class ArenaAuthority {
         const match: Match = {
           id: matchId, players: [invite.from, id], names: [invite.fromName, invite.toName], challengeId: invite.challengeId,
           title: invite.title, wager: stake, turn: 0, state: 'ready', revision: 1, deadline: now + ARENA_READY_MS,
-          results: [null, null], winnerId: null, resolution: null, challenge: clone(invite.challenge), actions: [], startedAt: 0,
+          results: [null, null], winnerId: null, resolution: null, equipment: [null, null], challenge: clone(invite.challenge), actions: [], startedAt: 0,
         };
         this.state.matches[matchId] = match;
         this.state.lastMatch[invite.from] = matchId; this.state.lastMatch[id] = matchId;
@@ -152,11 +198,46 @@ export class ArenaAuthority {
         requireThat(invite && invite.from === id, 'Only the sender can cancel a pending invitation.');
         delete this.state.invitations[invite.id]; return;
       }
+      case 'arena:buy-sling': {
+        this.requireCanManage(id);
+        const wallet = this.wallet(id), sling = this.deps.catalog.slings.find((row) => row.id === command.slingId);
+        requireThat(sling, 'Choose a known Arena slingshot.');
+        const selected = sling!;
+        requireThat(!wallet.slings!.includes(selected.id), 'You already own that slingshot.');
+        requireThat(wallet.coins >= selected.price, 'Not enough Arena coins for that slingshot.');
+        wallet.coins -= selected.price;
+        wallet.slings!.push(selected.id);
+        return;
+      }
+      case 'arena:equip-sling': {
+        this.requireCanManage(id);
+        const wallet = this.wallet(id), sling = this.deps.catalog.slings.find((row) => row.id === command.slingId);
+        requireThat(sling, 'Choose a known Arena slingshot.');
+        const selected = sling!;
+        requireThat(wallet.slings!.includes(selected.id), 'Buy that slingshot before equipping it.');
+        wallet.sling = selected.id;
+        return;
+      }
+      case 'arena:boost': {
+        this.requireCanManage(id);
+        const wallet = this.wallet(id), boost = this.deps.catalog.boosts.find((row) => row.id === command.boostId);
+        requireThat(boost, 'Choose a known Arena boost.');
+        const selected = boost!;
+        const level = wallet.boosts![selected.id], price = selected.prices[level];
+        requireThat(price !== undefined, 'That boost is already at max level.');
+        requireThat(wallet.coins >= price, 'Not enough Arena coins for that boost.');
+        wallet.coins -= price;
+        wallet.boosts![selected.id] = level + 1;
+        return;
+      }
       case 'arena:start': {
         const match = this.current(id, command.matchId, command.revision);
         if (match.state === 'ready') { match.state = 'playing'; match.revision++; match.startedAt = now; match.deadline = now + ARENA_TURN_MS; }
         requireThat(match.actions.length === 0, 'This attempt has already started. Continue it or forfeit.');
-        return clone({ matchId: match.id, revision: match.revision, ...match.challenge!, engineVersion: this.deps.engineVersion });
+        match.equipment ??= [null, null];
+        match.equipment[match.turn] ??= this.equipment(id);
+        const equipment = match.equipment[match.turn]!;
+        return clone({ matchId: match.id, revision: match.revision, ...match.challenge!, ...equipment, engineVersion: this.deps.engineVersion });
       }
       case 'arena:input': {
         const match = this.current(id, command.matchId, command.revision);
@@ -176,7 +257,11 @@ export class ArenaAuthority {
         requireThat(Number.isInteger(command.replay.frames) && command.replay.frames > 0 && command.replay.frames <= ARENA_MAX_FRAMES, 'Invalid attempt duration.');
         requireThat(command.replay.frames <= Math.floor((now - match.startedAt) * 60 / 1000) + 180, 'The replay advanced faster than the match clock.');
         let result: ArenaResult;
-        try { result = this.deps.verify(match.challenge!, { frames: command.replay.frames, actions: clone(match.actions) }); }
+        try {
+          const mods = match.equipment?.[match.turn]?.mods;
+          if (!mods) throw new Error('This turn has no equipment snapshot.');
+          result = this.deps.verify(match.challenge!, { frames: command.replay.frames, actions: clone(match.actions) }, clone(mods));
+        }
         catch { this.completeTurn(match, emptyResult()); throw new Error('The attempt could not be verified and this turn was forfeited.'); }
         this.completeTurn(match, result); return;
       }

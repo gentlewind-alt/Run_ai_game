@@ -9,6 +9,11 @@ import { joinArena, type ArenaRoomConnection } from '../platform/arena';
 
 type Status = 'offline' | 'connecting' | 'online' | 'reconnecting';
 const copy = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
+const validMods = (value: unknown): boolean => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const allowed = new Set(['launchSpeedMult', 'twinFraction', 'twinDelaySteps', 'previewMult', 'damageMult']);
+  return Object.entries(value).every(([key, n]) => allowed.has(key) && typeof n === 'number' && Number.isFinite(n) && n >= 0 && (key !== 'twinFraction' || n <= 1) && (key !== 'twinDelaySteps' || Number.isInteger(n) && n >= 1));
+};
 
 class ArenaClient {
   snapshot: ArenaSnapshot | null = null;
@@ -180,7 +185,8 @@ class ArenaClient {
       const json = this.chunks.parts.join('');
       if (json.length > 100000) throw new Error('Arena level is too large.');
       const setup = JSON.parse(json) as ArenaSetup;
-      if (setup.matchId !== message.matchId || setup.revision !== message.revision || setup.engineVersion !== ENGINE_VERSION || !Array.isArray(setup.loadout) || setup.loadout.length < 3 || setup.loadout.length > 8 || setup.loadout.some((id) => !data.content.weapons.some((weapon) => weapon.id === id))) throw new Error('Arena setup could not be read.');
+      if (setup.matchId !== message.matchId || setup.revision !== message.revision || setup.engineVersion !== ENGINE_VERSION || !Array.isArray(setup.loadout) || setup.loadout.length < 3 || setup.loadout.length > 8 || setup.loadout.some((id) => !data.content.weapons.some((weapon) => weapon.id === id)) || !data.content.arena.slings.some((sling) => sling.id === setup.slingId) || (setup.skin !== null && typeof setup.skin !== 'string') || !setup.boosts || typeof setup.boosts !== 'object' || !validMods(setup.mods)) throw new Error('Arena setup could not be read.');
+      for (const boost of data.content.arena.boosts) if (!Number.isInteger(setup.boosts[boost.id]) || setup.boosts[boost.id] < 0 || setup.boosts[boost.id] > boost.prices.length) throw new Error('Arena setup could not be read.');
       setup.doc = validateDraft(setup.doc, data.content.builder, (type) => ({ w: MONSTER_ART[type]?.w ?? 12, h: MONSTER_ART[type]?.h ?? 14 }));
       this.consumed.add(`${setup.matchId}:${setup.revision}`);
       this.pendingStart = undefined; this.chunks = undefined; this.error = ''; this.turnError = undefined;

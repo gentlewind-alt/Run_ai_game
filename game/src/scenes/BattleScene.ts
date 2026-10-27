@@ -69,7 +69,7 @@ export default class BattleScene extends Phaser.Scene {
   create(): void {
     this.scene.resume();
     events.beginBattle();
-    const b = (this.b = createBattle(this, this.levelId, this.loadout, this.customLevel, !!this.arenaSetup || !!this.practice));
+    const b = (this.b = createBattle(this, this.levelId, this.loadout, this.customLevel, !!this.arenaSetup || !!this.practice, this.arenaSetup?.mods, this.arenaSetup?.skin));
     sfx.preload(this.loadout.map((id) => b.forgeWeapons[id]?.forge?.abilityId).filter((a): a is string => !!a).map((a) => `forge_${a}`));
     buildBattle(b);
 

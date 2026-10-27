@@ -59,6 +59,7 @@ function validate(s, v, path, rootSchema, file) {
   }
   if (Array.isArray(v)) {
     if (s.minItems !== undefined && v.length < s.minItems) err(file, `${path}: needs at least ${s.minItems} items`);
+    if (s.maxItems !== undefined && v.length > s.maxItems) err(file, `${path}: needs at most ${s.maxItems} items`);
     if (s.items) v.forEach((x, i) => validate(s.items, x, `${path}[${i}]`, rootSchema, file));
   }
   if (typeOf(v) === 'object') {
@@ -147,6 +148,22 @@ if (content) {
 
   for (const r of content.realms ?? []) {
     for (const m of r.monsters ?? []) if (!monsterIds.has(m)) err('content.json', `realm ${r.id} lists unknown monster "${m}"`);
+  }
+  const arena = content.arena;
+  if (arena) {
+    const slingIds = (arena.slings ?? []).map((s) => s.id);
+    const boostIds = (arena.boosts ?? []).map((b) => b.id);
+    if (new Set(slingIds).size !== slingIds.length) err('content.json', 'duplicate Arena sling id');
+    if (new Set(boostIds).size !== boostIds.length) err('content.json', 'duplicate Arena boost id');
+    if (arena.slings?.filter((s) => s.price === 0).length !== 1) err('content.json', 'Arena needs exactly one free starter sling');
+    const cosmetics = new Map((content.cosmetics ?? []).map((c) => [c.id, c]));
+    for (const sling of arena.slings ?? []) {
+      if (sling.skin !== null && cosmetics.get(sling.skin)?.kind !== 'sling_skin') err('content.json', `Arena sling ${sling.id} references unknown sling skin "${sling.skin}"`);
+    }
+    for (const boost of arena.boosts ?? []) {
+      if (!['damageMult', 'launchSpeedMult', 'previewMult'].includes(boost.mod)) err('content.json', `Arena boost ${boost.id} uses unsupported modifier "${boost.mod}"`);
+      if (!Array.isArray(boost.prices) || boost.prices.length !== 3) err('content.json', `Arena boost ${boost.id} needs three level prices`);
+    }
   }
   const realmLevels = (content.realms ?? []).flatMap((r) => r.levels);
   if (new Set(realmLevels).size !== realmLevels.length) err('content.json', 'a level number appears in two realms');
