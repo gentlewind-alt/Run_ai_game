@@ -20,6 +20,7 @@ export interface WeaponDef {
   launch?: string;
   sprite?: string;
   tap?: string;
+  anim?: WeaponAnim; // launch/ability animation style (battle/weaponAnim.ts)
   display?: { px?: number }; // flight size in world px for long items (arrows, spears); overrides config.display.weapon.flightPx
   physics: { radius: number; density: number; spin: number; gravity?: number; align?: boolean; friction?: number; restitution?: number; frictionAir?: number };
   ability: { mode: AbilityMode; label: string; charges?: number };
@@ -201,11 +202,24 @@ export interface Level {
 
 /** How big weapons are drawn, in world px (the viewport is 480x270; a goblin is about 16 px). Relic art is 32 px, so relicBonus applies to it. */
 export interface WeaponDisplay { flightPx: number; slingPx: number; queuePx: number; relicBonus: number }
+/** Timings (steps) and sizes for the code-drawn launch and ability animation (battle/weaponAnim.ts). */
+export interface WeaponAnimConfig {
+  launchSteps: number; launchPop: number; launchSparks: number;
+  abilitySteps: number; abilityPunch: number; abilityRing: number; abilitySparks: number; flashSteps: number;
+  trailEvery: number; ghostAlpha: number; ghostMs: number;
+  tumble: number; rock: number; rockSpeed: number; pulse: number; pulseSpeed: number;
+  slashMs: number; kick: number; impactMinSpeed: number; impactSteps: number; impactSquash: number; aimTurn: number;
+}
+/**
+ * How a weapon moves: flight spin (physics spin), point (nose first), tumble (lazy spin), rock (upright sway), pulse (throbs),
+ * aim (turns its muzzle to the nearest monster); trail; and the ability move (slash, charge, slam, recoil, burst).
+ */
+export interface WeaponAnim { flight: 'spin' | 'point' | 'tumble' | 'rock' | 'pulse' | 'aim'; trail: 'ghost' | 'sparks' | 'none'; ability: 'slash' | 'charge' | 'slam' | 'recoil' | 'burst'; colors: string[] }
 
 export interface Config {
   version: number;
   levels: number[];
-  display: { pixelArt: boolean; maxParticles: number; weapon: WeaponDisplay };
+  display: { pixelArt: boolean; maxParticles: number; weapon: WeaponDisplay; weaponAnim: WeaponAnimConfig };
   world: { groundY: number; slingX: number; slingY: number };
   physics: { stepHz: number; gravityY: number; positionIterations: number; velocityIterations: number; enableSleeping: boolean; maxStepsPerFrame: number };
   camera: {

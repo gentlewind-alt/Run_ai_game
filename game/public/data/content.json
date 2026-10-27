@@ -280,7 +280,7 @@
       "name": "Militia Blade",
       "archetype": "sword",
       "element": "physical",
-      "rarity": "common",
+      "rarity": "common", "sprite": "sprites/weapons/w_militia_blade", "anim": { "flight": "spin", "trail": "ghost", "ability": "slash", "colors": ["c", "l"] },
       "baseDamage": 14,
       "unlock": "start",
       "price": 0,
@@ -310,7 +310,7 @@
       "name": "Iron Cleaver",
       "archetype": "greatsword",
       "element": "physical",
-      "rarity": "common",
+      "rarity": "common", "sprite": "sprites/weapons/w_iron_cleaver", "anim": { "flight": "spin", "trail": "ghost", "ability": "slam", "colors": ["l", "m"] },
       "baseDamage": 26,
       "unlock": "level 2",
       "price": 100,
@@ -342,7 +342,7 @@
       "name": "Ashwood Staff",
       "archetype": "staff",
       "element": "radiant",
-      "rarity": "common",
+      "rarity": "common", "sprite": "sprites/weapons/w_ashwood_staff", "anim": { "flight": "tumble", "trail": "sparks", "ability": "charge", "colors": ["4", "3"] },
       "baseDamage": 11,
       "unlock": "level 3",
       "price": 150,
@@ -375,12 +375,12 @@
       "name": "Scrapheap Scattergun",
       "archetype": "shotgun",
       "element": "physical",
-      "rarity": "common",
+      "rarity": "common", "sprite": "sprites/weapons/w_scrapheap_scattergun", "anim": { "flight": "aim", "trail": "ghost", "ability": "recoil", "colors": ["3", "m"] },
       "baseDamage": 30,
       "unlock": "level 4",
       "price": 200,
       "launch": "Medium weight, clean arc.",
-      "tap": "Bursts into 5 pellets in a cone; each pellet rolls burn, slow or knockback and pops in a small blast where it lands.",
+      "tap": "Fires 5 pellets in a cone at the nearest monster (tap, or it fires when it crashes); each pellet rolls burn, slow or knockback and pops in a small blast where it lands.",
       "physics": {
         "radius": 4,
         "density": 0.02,
@@ -388,14 +388,14 @@
         "gravity": 1
       },
       "ability": {
-        "mode": "button",
+        "mode": "both",
         "label": "Blast"
       },
       "params": {
         "pellets": 5,
         "coneStep": 0.16,
         "pelletSpeedMult": 1.15,
-        "minSpeed": 4,
+        "minSpeed": 6,
         "pelletRadius": 2,
         "pelletDensity": 0.01,
         "pelletMult": 0.35,
@@ -411,7 +411,7 @@
       "name": "Hunters Pike",
       "archetype": "spear",
       "element": "physical",
-      "rarity": "uncommon",
+      "rarity": "uncommon", "sprite": "sprites/weapons/w_hunters_pike", "anim": { "flight": "point", "trail": "ghost", "ability": "slash", "colors": ["c", "i"] },
       "baseDamage": 19.1,
       "unlock": "level 5",
       "price": 250,
@@ -440,7 +440,7 @@
       "name": "Hunters Boomerang",
       "archetype": "chakram",
       "element": "physical",
-      "rarity": "common",
+      "rarity": "common", "sprite": "sprites/weapons/w_hunters_boomerang", "anim": { "flight": "spin", "trail": "ghost", "ability": "slash", "colors": ["i", "6"] },
       "baseDamage": 15,
       "unlock": "level 6",
       "price": 300,
@@ -472,12 +472,12 @@
       "name": "Blast Tube",
       "archetype": "launcher",
       "element": "physical",
-      "rarity": "common",
+      "rarity": "common", "sprite": "sprites/weapons/w_blast_tube", "anim": { "flight": "aim", "trail": "sparks", "ability": "recoil", "colors": ["3", "4"] },
       "baseDamage": 35,
       "unlock": "level 7",
       "price": 350,
       "launch": "A heavy shell on a high lob.",
-      "tap": "Nuke lob: airburst with a huge radius, flash and shock rings; damage falls off with distance.",
+      "tap": "Aims at the nearest monster and fires a nuke shell (tap, or it fires when it crashes): huge radius, flash and shock rings; damage falls off with distance.",
       "physics": {
         "radius": 5,
         "density": 0.04,
@@ -490,7 +490,11 @@
       },
       "params": {
         "radius": 52,
-        "mult": 1
+        "mult": 1,
+        "muzzle": 9,
+        "shellSpeed": 8,
+        "shellHit": 8,
+        "shellSteps": 120
       }
     },
     {
@@ -498,7 +502,7 @@
       "name": "Horned Scepter",
       "archetype": "staff",
       "element": "hellfire",
-      "rarity": "uncommon",
+      "rarity": "uncommon", "sprite": "sprites/weapons/w_horned_scepter", "anim": { "flight": "tumble", "trail": "sparks", "ability": "charge", "colors": ["2", "3"] },
       "baseDamage": 11.7,
       "unlock": "level 8",
       "price": 400,
@@ -525,11 +529,11 @@
     },
     {
       "id": "w_comet_fists",
-      "sprite": "sprites/relics/w_comet_fists",
+      "sprite": "sprites/weapons/w_comet_fists",
       "name": "Comet Fists",
       "archetype": "fists",
       "element": "physical",
-      "rarity": "legendary",
+      "rarity": "legendary", "anim": { "flight": "tumble", "trail": "sparks", "ability": "slam", "colors": ["3", "4"] },
       "baseDamage": 50,
       "unlock": {
         "boss": "goblin_chief",
@@ -567,11 +571,11 @@
     },
     {
       "id": "w_bulwark_disc",
-      "sprite": "sprites/relics/w_bulwark_disc",
+      "sprite": "sprites/weapons/w_bulwark_disc",
       "name": "Bulwark Disc",
       "archetype": "shield",
       "element": "physical",
-      "rarity": "legendary",
+      "rarity": "legendary", "anim": { "flight": "spin", "trail": "ghost", "ability": "burst", "colors": ["a", "b"] },
       "baseDamage": 44,
       "unlock": {
         "boss": "dark_elf_matron",
@@ -615,11 +619,11 @@
     },
     {
       "id": "w_skyforge_maul",
-      "sprite": "sprites/relics/w_skyforge_maul",
+      "sprite": "sprites/weapons/w_skyforge_maul",
       "name": "Skyforge Maul",
       "archetype": "hammer",
       "element": "radiant",
-      "rarity": "legendary",
+      "rarity": "legendary", "anim": { "flight": "spin", "trail": "sparks", "ability": "charge", "colors": ["4", "b"] },
       "baseDamage": 56,
       "unlock": {
         "boss": "iron_warlord",
@@ -658,11 +662,11 @@
     },
     {
       "id": "w_steersong_arrow",
-      "sprite": "sprites/relics/w_steersong_arrow",
+      "sprite": "sprites/weapons/w_steersong_arrow",
       "name": "Steersong Arrow",
       "archetype": "bow",
       "element": "hellfire",
-      "rarity": "rare",
+      "rarity": "rare", "anim": { "flight": "point", "trail": "sparks", "ability": "charge", "colors": ["2", "3"] },
       "baseDamage": 34,
       "unlock": {
         "chest": "c_l3",
@@ -692,11 +696,11 @@
     },
     {
       "id": "w_silkline_shooters",
-      "sprite": "sprites/relics/w_silkline_shooters",
+      "sprite": "sprites/weapons/w_silkline_shooters",
       "name": "Silkline Shooters",
       "archetype": "crossbow",
       "element": "physical",
-      "rarity": "rare",
+      "rarity": "rare", "anim": { "flight": "aim", "trail": "ghost", "ability": "recoil", "colors": ["c", "9"] },
       "baseDamage": 30,
       "unlock": {
         "chest": "c_l5",
@@ -704,7 +708,7 @@
       },
       "price": 800,
       "launch": "Wrist-mounted launcher firing concentrated web strands.",
-      "tap": "Web line pulls target 16px and slows monsters 50% for 4s.",
+      "tap": "Web line pulls the nearest monster 16px and slows it 50% for 4s (tap, or it fires when it crashes).",
       "physics": {
         "radius": 5,
         "density": 0.02,
@@ -712,7 +716,7 @@
         "gravity": 0.95
       },
       "ability": {
-        "mode": "button",
+        "mode": "both",
         "label": "Silk"
       },
       "params": {
@@ -723,11 +727,11 @@
     },
     {
       "id": "w_kinetic_palms",
-      "sprite": "sprites/relics/w_kinetic_palms",
+      "sprite": "sprites/weapons/w_kinetic_palms",
       "name": "Kinetic Palms",
       "archetype": "gauntlet",
       "element": "radiant",
-      "rarity": "rare",
+      "rarity": "rare", "anim": { "flight": "aim", "trail": "sparks", "ability": "recoil", "colors": ["b", "a"] },
       "baseDamage": 32,
       "unlock": {
         "chest": "c_l7",
@@ -735,7 +739,7 @@
       },
       "price": 800,
       "launch": "Cyan-charged palm emitters with internal kinetic coils.",
-      "tap": "Fires a 3-bolt repulsor volley with knockback and shot recoil.",
+      "tap": "Fires a 3-bolt repulsor volley at the nearest monster with knockback and shot recoil (tap, or it fires when it crashes).",
       "physics": {
         "radius": 4,
         "density": 0.015,
@@ -743,7 +747,7 @@
         "gravity": 1.0
       },
       "ability": {
-        "mode": "button",
+        "mode": "both",
         "label": "Repel"
       },
       "params": {
@@ -758,11 +762,11 @@
     },
     {
       "id": "w_brahmastra_arrow",
-      "sprite": "sprites/relics/w_brahmastra_arrow",
+      "sprite": "sprites/weapons/w_brahmastra_arrow",
       "name": "Brahmastra Arrow",
       "archetype": "bow",
       "element": "radiant",
-      "rarity": "legendary",
+      "rarity": "legendary", "anim": { "flight": "point", "trail": "sparks", "ability": "charge", "colors": ["4", "t"] },
       "baseDamage": 52,
       "unlock": {
         "boss": "frost_giant",
@@ -797,11 +801,11 @@
     },
     {
       "id": "w_omnitrix_dial",
-      "sprite": "sprites/relics/w_omnitrix_dial",
+      "sprite": "sprites/weapons/w_omnitrix_dial",
       "name": "Alien Dial",
       "archetype": "dial",
       "element": "void",
-      "rarity": "legendary",
+      "rarity": "legendary", "anim": { "flight": "spin", "trail": "sparks", "ability": "charge", "colors": ["5", "6"] },
       "baseDamage": 46,
       "unlock": {
         "chest": "c_l19",
@@ -846,11 +850,11 @@
     },
     {
       "id": "w_pinata_mirv",
-      "sprite": "sprites/relics/w_pinata_mirv",
+      "sprite": "sprites/weapons/w_pinata_mirv",
       "name": "Pinata MIRV",
       "archetype": "bomb",
       "element": "hellfire",
-      "rarity": "epic",
+      "rarity": "epic", "anim": { "flight": "tumble", "trail": "sparks", "ability": "burst", "colors": ["2", "4", "5"] },
       "baseDamage": 38,
       "unlock": {
         "chest": "c_l21",
@@ -882,11 +886,11 @@
     },
     {
       "id": "w_hailstorm_cauldron",
-      "sprite": "sprites/relics/w_hailstorm_cauldron",
+      "sprite": "sprites/weapons/w_hailstorm_cauldron",
       "name": "Hailstorm Cauldron",
       "archetype": "cauldron",
       "element": "radiant",
-      "rarity": "epic",
+      "rarity": "epic", "anim": { "flight": "rock", "trail": "sparks", "ability": "slam", "colors": ["b", "a"] },
       "baseDamage": 36,
       "unlock": "level 22",
       "price": 1000,
@@ -914,11 +918,11 @@
     },
     {
       "id": "w_rolling_millstone",
-      "sprite": "sprites/relics/w_rolling_millstone",
+      "sprite": "sprites/weapons/w_rolling_millstone",
       "name": "Rolling Millstone",
       "archetype": "wheel",
       "element": "physical",
-      "rarity": "rare",
+      "rarity": "rare", "anim": { "flight": "spin", "trail": "ghost", "ability": "slam", "colors": ["l", "k"] },
       "baseDamage": 24,
       "unlock": "level 23",
       "price": 700,
@@ -945,11 +949,11 @@
     },
     {
       "id": "w_earthworm_drill",
-      "sprite": "sprites/relics/w_earthworm_drill",
+      "sprite": "sprites/weapons/w_earthworm_drill",
       "name": "Earthworm Drill",
       "archetype": "drill",
       "element": "physical",
-      "rarity": "rare",
+      "rarity": "rare", "anim": { "flight": "spin", "trail": "ghost", "ability": "slam", "colors": ["g", "i"] },
       "baseDamage": 28,
       "unlock": {
         "chest": "c_l22",
@@ -979,11 +983,11 @@
     },
     {
       "id": "w_chain_rod",
-      "sprite": "sprites/relics/w_chain_rod",
+      "sprite": "sprites/weapons/w_chain_rod",
       "name": "Chain Rod",
       "archetype": "rod",
       "element": "radiant",
-      "rarity": "rare",
+      "rarity": "rare", "anim": { "flight": "spin", "trail": "sparks", "ability": "charge", "colors": ["b", "c"] },
       "baseDamage": 22,
       "unlock": {
         "chest": "c_l23",
@@ -1011,11 +1015,11 @@
     },
     {
       "id": "w_black_hole_marble",
-      "sprite": "sprites/relics/w_black_hole_marble",
+      "sprite": "sprites/weapons/w_black_hole_marble",
       "name": "Black Hole Marble",
       "archetype": "orb",
       "element": "void",
-      "rarity": "legendary",
+      "rarity": "legendary", "anim": { "flight": "pulse", "trail": "ghost", "ability": "charge", "colors": ["r", "1"] },
       "baseDamage": 40,
       "unlock": {
         "boss": "storm_sovereign",

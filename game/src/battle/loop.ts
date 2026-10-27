@@ -12,6 +12,7 @@ import { drawOverlay, updateAbilityBtn, updateQueue } from './sling';
 import { updateCamera } from './camera';
 import { beatBob } from '../audio/beat';
 import { ARENA_MAX_FRAMES } from '../arena/types';
+import { animateProj } from './weaponAnim';
 
 /** Called every frame by the scene. Runs 0..maxStepsPerFrame whole steps, then updates the visuals. */
 export function update(b: BattleState, delta: number, nowMs: number): void {
@@ -132,5 +133,6 @@ function syncSprites(b: BattleState, time: number): void {
   if (b.proj) {
     b.proj.sprite.setPosition(b.proj.body.position.x, b.proj.body.position.y);
     b.proj.sprite.setRotation(b.proj.body.angle);
+    animateProj(b, b.proj);
   }
 }

@@ -8,6 +8,7 @@ import { data } from '../data/load';
 import { materialDef } from '../data/lookup';
 import { battleWeapon } from './weapon';
 import { forgeHit } from './forgeHits';
+import { abilityAnim, impactAnim } from './weaponAnim';
 import { weaponImpl } from '../content/weapons';
 import { blockTextureKey } from '../builder/physics';
 import { artifactMult } from './artifacts';
@@ -73,11 +74,14 @@ function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y
   const p = b.proj && b.proj.body === pb ? b.proj : info.forgeProj ?? null;
   if (p) {
     if (p.data.ended) return;
+    if (p === b.proj) impactAnim(b, p, rel);
     const impl = p === b.proj ? b.wpn : weaponImpl(p.def);
     const hit = { target: t, rel, x, y };
     if (!p.tapped && p.def.ability.mode !== 'button' && impl.onImpact) {
       p.tapped = true;
+      const animDone = abilityAnim(b, p); // the crash fires the ability, so it gets the ability move too
       impl.onImpact(b.ctx, p, hit);
+      animDone();
       return;
     } else if (impl.onImpact) {
       impl.onImpact(b.ctx, p, hit);

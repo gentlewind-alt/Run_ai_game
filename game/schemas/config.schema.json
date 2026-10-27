@@ -31,6 +31,11 @@
             "relicBonus": { "type": "number", "exclusiveMinimum": 0 }
           }
         },
+        "weaponAnim": {
+          "type": "object", "additionalProperties": false,
+          "description": "Code-drawn weapon launch and ability animation (battle/weaponAnim.ts): pop, punch and flash lengths in steps, sizes, spark counts, trail spacing (steps) and ghost fade (ms), tumble/rock/pulse amounts.",
+          "properties": { "launchSteps": { "type": "number", "minimum": 0 }, "launchPop": { "type": "number", "minimum": 0 }, "launchSparks": { "type": "number", "minimum": 0 }, "abilitySteps": { "type": "number", "minimum": 0 }, "abilityPunch": { "type": "number", "minimum": 0 }, "abilityRing": { "type": "number", "minimum": 0 }, "abilitySparks": { "type": "number", "minimum": 0 }, "flashSteps": { "type": "number", "minimum": 0 }, "ghostAlpha": { "type": "number", "minimum": 0 }, "ghostMs": { "type": "number", "minimum": 0 }, "tumble": { "type": "number", "minimum": 0 }, "rock": { "type": "number", "minimum": 0 }, "rockSpeed": { "type": "number", "minimum": 0 }, "pulse": { "type": "number", "minimum": 0 }, "pulseSpeed": { "type": "number", "minimum": 0 }, "slashMs": { "type": "number", "minimum": 0 }, "kick": { "type": "number", "minimum": 0 }, "impactMinSpeed": { "type": "number", "minimum": 0 }, "impactSteps": { "type": "number", "minimum": 0 }, "impactSquash": { "type": "number", "minimum": 0 }, "aimTurn": { "type": "number", "minimum": 0 }, "trailEvery": { "type": "integer", "minimum": 1 } }
+        },
         "uiTextMin": { "type": "integer", "minimum": 4 }
       }
     },

@@ -16,6 +16,7 @@ import { groundAt } from './terrain';
 import type { Proj } from './BattleCtx';
 import type { BattleState } from './state';
 import { ARENA_MAX_ACTIONS } from '../arena/types';
+import { abilityAnim, launchAnim } from './weaponAnim';
 
 export function setWeapon(b: BattleState, id: string): void {
   b.wdef = battleWeapon(b, id);
@@ -160,7 +161,9 @@ export function activateAbility(b: BattleState): void {
   if (b.arena) b.arena.actions.push({ type: 'ability', frame: b.arena.frames });
   p.tapped = true;
   const { x, y } = p.body.position;
+  const animDone = abilityAnim(b, p);
   b.wpn.onAbility?.(b.ctx, p);
+  animDone();
   b.events.emit('shot:ability', { weaponId: p.wid, x, y });
 }
 
@@ -300,6 +303,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   if (speedMult > 1) pData.speedLines = true;
   b.proj = { body, sprite, wid: id, def: b.wdef, steps: 0, slow: 0, tapped: false, t: 0, data: pData };
   if (b.wdef.forge) body.proj.forgeProj = b.proj;
+  launchAnim(b, b.proj);
   // Prime Serum: this shot is buffed if any charges are left
   const buffed = b.mods.serumShots > 0;
   if (buffed) b.mods.serumShots--;

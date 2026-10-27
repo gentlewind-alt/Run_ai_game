@@ -9,7 +9,13 @@ export const silklineShooters: WeaponImpl = {
   onLaunch(_ctx, p) {
     p.data.webbed = false;
   },
+  // the tap, or the first crash if it was never tapped ('both' mode); later contacts do nothing
+  onImpact(ctx, p) {
+    if (!p.data.fired) silklineShooters.onAbility!(ctx, p);
+  },
   onAbility(ctx, p) {
+    if (p.data.fired) return;
+    p.data.fired = true;
     const P = p.def.params;
     // Find nearest monster, or nearest block if no monsters
     const monsters = ctx.nearestMonsters(p.body.position.x, p.body.position.y, 1);

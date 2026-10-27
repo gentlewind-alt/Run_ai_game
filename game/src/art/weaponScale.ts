@@ -4,7 +4,7 @@ import type { WeaponDef } from '../data/types';
 
 export type WeaponSize = 'flight' | 'sling' | 'queue';
 
-/** Relic art is 32 px, normal weapon art 16 px (see art/relicTextures.ts). */
+/** Generated weapon art (art/generatedSprites.ts) is 32 px, procedural art 16-24 px. */
 const isRelicArt = (srcW: number): boolean => srcW >= 32;
 
 /**

@@ -1,5 +1,5 @@
 // Sprites made with the RUN CLI (`rundot generate sprite`) and processed by tools/process_sprites.ps1.
-// A weapon row with `sprite: "sprites/relics/<id>"` gets <path>.png (in flight, on the sling, in the queue) and <path>_card.png (cards),
+// A weapon row with `sprite: "sprites/weapons/<id>"` gets <path>.png (in flight, on the sling, in the queue) and <path>_card.png (cards),
 // replacing the procedural textures of the same keys. Weapons without the field keep their procedural art.
 import Phaser from 'phaser';
 import { data } from '../data/load';

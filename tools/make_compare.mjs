@@ -10,7 +10,7 @@ const CHROME_PATH = process.env.CHROME_BIN ||
 
 const repoRoot = path.resolve('.');
 const refDir = path.join(repoRoot, 'docs/handoff/ref');
-const spriteDir = path.join(repoRoot, 'game/public/sprites/relics');
+const spriteDir = path.join(repoRoot, 'game/public/sprites/weapons');
 const outFile = path.join(repoRoot, 'docs/handoff/shots/weapons/compare.png');
 
 const toB64 = (filePath) => {

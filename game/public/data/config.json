@@ -48,7 +48,8 @@
       "slingPx": 24,
       "queuePx": 24,
       "relicBonus": 1.25
-    }
+    },
+    "weaponAnim": { "launchSteps": 10, "launchPop": 0.5, "launchSparks": 8, "abilitySteps": 12, "abilityPunch": 0.7, "abilityRing": 16, "abilitySparks": 10, "flashSteps": 5, "trailEvery": 3, "ghostAlpha": 0.45, "ghostMs": 180, "tumble": 0.4, "rock": 0.4, "rockSpeed": 0.2, "pulse": 0.12, "pulseSpeed": 0.3, "slashMs": 220, "kick": 10, "impactMinSpeed": 1.5, "impactSteps": 8, "impactSquash": 0.35, "aimTurn": 0.2 }
   },
   "world": {
     "groundY": 320,

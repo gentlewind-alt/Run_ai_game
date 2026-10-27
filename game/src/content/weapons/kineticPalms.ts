@@ -3,10 +3,17 @@ import { C } from '../../art/palette';
 import { weaponTexture } from '../../art/textures';
 import type { Actor } from '../../battle/BattleCtx';
 import type { WeaponImpl } from './types';
+import { aimFrom } from './util';
 
 export const kineticPalms: WeaponImpl = {
   texture: weaponTexture('w_kinetic_palms'),
+  // the tap, or the first crash if it was never tapped ('both' mode); later contacts do nothing
+  onImpact(ctx, p) {
+    if (!p.data.fired) kineticPalms.onAbility!(ctx, p);
+  },
   onAbility(ctx, p) {
+    if (p.data.fired) return;
+    p.data.fired = true;
     const P = p.def.params;
     const totalVolleys = P.volleyCount ?? 3;
     const delaySteps = P.volleyDelaySteps ?? 10;
@@ -23,19 +30,21 @@ export const kineticPalms: WeaponImpl = {
       sfx.repulsor();
       const sx = p.body.position.x;
       const sy = p.body.position.y;
+      // each bolt is aimed at the nearest monster (straight ahead when there is none)
+      const { dx, dy } = aimFrom(ctx, sx, sy, 1, 0);
 
       // Cyan muzzle flash at palm
-      ctx.fx.muzzleFlash?.(sx + 10, sy);
+      ctx.fx.muzzleFlash?.(sx + dx * 10, sy + dy * 10);
 
-      // Visible recoil on the shot
+      // Visible recoil on the shot, away from the aim
       ctx.M.Body.setVelocity(p.body, {
-        x: p.body.velocity.x + recoilVx,
+        x: p.body.velocity.x + recoilVx * dx,
         y: p.body.velocity.y + recoilVy,
       });
       ctx.fx.sparks(sx, sy, ['b', 'c'], 6);
 
-      let bx = sx + 12;
-      const by = sy;
+      let bx = sx + dx * 12;
+      let by = sy + dy * 12;
       let bSteps = 0;
 
       // Visible 3px bolt with white core flying forward
@@ -46,14 +55,15 @@ export const kineticPalms: WeaponImpl = {
         pos: () => ({ x: bx, y: by }),
         update() {
           bSteps++;
-          bx += boltSpeed;
-          boltSprite.setPosition(bx, by);
+          bx += dx * boltSpeed;
+          by += dy * boltSpeed;
+          boltSprite.setPosition(bx, by).setRotation(Math.atan2(dy, dx));
           // Check collision with living monsters or blocks
           const hitMonster = ctx.within(bx, by, 10)[0];
           if (hitMonster) {
             ctx.directHit(hitMonster, p.wid, boltMult, bx, by);
             ctx.M.Body.setVelocity(hitMonster.body, {
-              x: hitMonster.body.velocity.x + knockback,
+              x: hitMonster.body.velocity.x + knockback * dx,
               y: hitMonster.body.velocity.y - 1.5,
             });
             ctx.fx.sparks(bx, by, ['b', 'c', '8'], 8);
@@ -63,13 +73,13 @@ export const kineticPalms: WeaponImpl = {
           if (hitBlock) {
             ctx.damage(hitBlock, p.def.baseDamage * boltMult, bx, by, { strong: false, tag: 'norm' });
             ctx.M.Body.setVelocity(hitBlock.body, {
-              x: hitBlock.body.velocity.x + knockback * 0.7,
+              x: hitBlock.body.velocity.x + knockback * 0.7 * dx,
               y: hitBlock.body.velocity.y - 1.0,
             });
             ctx.fx.sparks(bx, by, ['b', 'c'], 8);
             return true;
           }
-          return bSteps > 90 || bx > ctx.worldW + 30;
+          return bSteps > 90 || bx > ctx.worldW + 30 || bx < -30 || by >= ctx.groundAt(bx);
         },
         destroy() {
           boltSprite.destroy();
