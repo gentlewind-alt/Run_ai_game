@@ -3,6 +3,16 @@ import RundotGameAPI from '@series-inc/rundot-game-sdk/api';
 import { boardRoute } from './boards';
 import { noopPlatform, type Platform, type Row, type UgcRow } from './types';
 
+/** This device's cache (survives reloads, never synced). The mock keeps local test saves here. */
+export const deviceCache = {
+  async get(key: string): Promise<string | null> {
+    try { return (await RundotGameAPI.deviceCache.getItem(key)) ?? null; } catch { return null; }
+  },
+  async set(key: string, v: string): Promise<void> {
+    try { await RundotGameAPI.deviceCache.setItem(key, v); } catch { /* optional */ }
+  },
+};
+
 const safe = <T>(f: () => T, fallback: T): T => {
   try {
     return f();

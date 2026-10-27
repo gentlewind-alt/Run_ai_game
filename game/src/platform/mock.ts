@@ -1,8 +1,15 @@
 import { noopPlatform, type Platform, type Row, type UgcRow } from './types';
 import { DEV_CHALLENGES } from '../arena/devChallenges';
+import { deviceCache } from './rundot';
 
-/** Local dev without the RUN host: in-memory storage, console logging, no ads or purchases. */
+/**
+ * Local dev without the RUN host: console logging, no ads or purchases. Saves (tutorials skipped, builder draft,
+ * coins) also go to this device's cache so they survive a reload, except in headless test browsers, which always
+ * start from a fresh save.
+ */
 const store = new Map<string, string>();
+const keep = typeof navigator !== 'undefined' && !/HeadlessChrome/.test(navigator.userAgent);
+const PREFIX = 'mm_mock:';
 let mockTimeOffset = 0;
 
 export const setMockTimeOffset = (ms: number): void => {
@@ -63,8 +70,8 @@ export const mockPlatform: Platform = {
   hosted: false,
   async init(): Promise<void> { /* nothing to do */ },
   storage: {
-    async get(key) { return store.get(key) ?? null; },
-    async set(key, v) { store.set(key, v); },
+    async get(key) { return store.get(key) ?? (keep ? deviceCache.get(PREFIX + key) : null); },
+    async set(key, v) { store.set(key, v); if (keep) await deviceCache.set(PREFIX + key, v); },
   },
   async serverTime(): Promise<number> {
     return Date.now() + mockTimeOffset;

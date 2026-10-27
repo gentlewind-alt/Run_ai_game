@@ -5,6 +5,7 @@ import { DEBUG, SAVE_VERSION, freshProfile, profile, setProfile, type Profile } 
 
 const KEY = 'save';
 const BACKUP = 'save.bak';
+const DEBUG_TUTORIALS = 'debug.tutorials'; // debug sessions keep only which guides were skipped (tut_* flags)
 const DEBOUNCE_MS = 500;
 
 /** Upgrades a blob one version at a time: migrations[n] turns version n into n + 1. Add one with every schema bump. */
@@ -78,6 +79,18 @@ export function sanitize(raw: Record<string, unknown>): Profile {
 
 /** Reads the save at boot. A corrupt blob is copied to a backup key and the player starts fresh; the game never crashes. */
 export async function loadSave(): Promise<'fresh' | 'loaded' | 'recovered'> {
+  const result = await readSave();
+  if (DEBUG) {
+    try {
+      const raw = await platform.storage.get(DEBUG_TUTORIALS);
+      const flags: unknown = raw ? JSON.parse(raw) : null;
+      if (isObj(flags)) for (const [k, v] of Object.entries(flags)) if (k.startsWith('tut_') && v === true) profile.flags[k] = true;
+    } catch { /* a debug convenience only */ }
+  }
+  return result;
+}
+
+async function readSave(): Promise<'fresh' | 'loaded' | 'recovered'> {
   let raw: string | null = null;
   try {
     raw = await platform.storage.get(KEY);
@@ -113,13 +126,17 @@ export async function loadSave(): Promise<'fresh' | 'loaded' | 'recovered'> {
 
 let timer: ReturnType<typeof setTimeout> | undefined;
 
-/** Writes the profile now. Debug sessions never write. */
+/** Writes the profile now. Debug sessions never write it; they only remember which guides were skipped. */
 export async function flushSave(): Promise<void> {
   if (timer !== undefined) {
     clearTimeout(timer);
     timer = undefined;
   }
-  if (DEBUG) return;
+  if (DEBUG) {
+    const tut = Object.fromEntries(Object.entries(profile.flags).filter(([k, v]) => k.startsWith('tut_') && v));
+    try { await platform.storage.set(DEBUG_TUTORIALS, JSON.stringify(tut)); } catch { /* a debug convenience only */ }
+    return;
+  }
   try {
     await platform.storage.set(KEY, JSON.stringify(profile));
   } catch (e) {
@@ -128,7 +145,7 @@ export async function flushSave(): Promise<void> {
 }
 
 export function scheduleSave(): void {
-  if (DEBUG || timer !== undefined) return;
+  if (timer !== undefined) return;
   timer = setTimeout(() => { void flushSave(); }, DEBOUNCE_MS);
 }
 
