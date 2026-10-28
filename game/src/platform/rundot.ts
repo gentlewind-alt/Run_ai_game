@@ -201,6 +201,7 @@ export const rundotPlatform: Platform = {
         return false;
       }
     },
+    async showInterstitial(): Promise<boolean> { return false; }, // RUN builds use rewarded ads only
   },
   iap: {
     available: () => safe(() => RundotGameAPI.isAvailable(), false),

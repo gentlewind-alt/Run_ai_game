@@ -42,9 +42,9 @@ export interface Platform {
   openLink(url: string): Promise<{ copied: boolean }>;
   fullscreen: { available(): boolean; active(): boolean; toggle(): Promise<boolean>; /** Why the last toggle did nothing, or '' */ note(): string; /** Called whenever full screen turns on or off. */ onChange(f: () => void): () => void };
   share(text: string, params?: Record<string, string>): Promise<boolean>;
-  ads: { rewardedReady(): Promise<boolean>; showRewarded(placementId?: string, placementName?: string): Promise<boolean> };
+  ads: { rewardedReady(): Promise<boolean>; showRewarded(placementId?: string, placementName?: string): Promise<boolean>; /** Full-screen ad between battles; false where there are none. */ showInterstitial(): Promise<boolean> };
   iap: { available(): boolean; buy(itemId: string): Promise<boolean>; owned(itemId: string): Promise<boolean> };
-  lifecycle: { onPause(f: () => void): void; onResume(f: () => void): void; onSleep(f: () => void): void; onQuit(f: () => void): void };
+  lifecycle: { onPause(f: () => void): void; onResume(f: () => void): void; onSleep(f: () => void): void; onQuit(f: () => void): void; /** The Android back button (app only). */ onBack?(f: () => void): void };
   haptic(kind: 'light' | 'heavy'): void;
   track(event: string, data?: object): void; // analytics
   funnel(step: number, name: string, funnel: string): void;
@@ -80,7 +80,7 @@ export const noopPlatform = {
   async share(): Promise<boolean> {
     return false;
   },
-  ads: { async rewardedReady(): Promise<boolean> { return false; }, async showRewarded(): Promise<boolean> { return false; } },
+  ads: { async rewardedReady(): Promise<boolean> { return false; }, async showRewarded(): Promise<boolean> { return false; }, async showInterstitial(): Promise<boolean> { return false; } },
   iap: { available: (): boolean => false, async buy(): Promise<boolean> { return false; }, async owned(): Promise<boolean> { return false; } },
   haptic(): void { /* later */ },
 };

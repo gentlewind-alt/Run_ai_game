@@ -241,7 +241,9 @@
             "perWindow": { "type": "integer", "minimum": 0 },
             "windowHours": { "type": "number", "minimum": 0.1 },
             "extraShots": { "type": "integer", "minimum": 1, "maximum": 6 },
-            "bonusDamage": { "type": "number", "minimum": 0, "maximum": 1, "description": "Extra damage on the shots an ad grants, shown to the player (0.25 = 25 percent)." }
+            "bonusDamage": { "type": "number", "minimum": 0, "maximum": 1, "description": "Extra damage on the shots an ad grants, shown to the player (0.25 = 25 percent)." },
+            "interstitialEvery": { "type": "integer", "minimum": 0, "description": "Show a full-screen ad after every N finished battles (0 = never). Only where the platform has interstitials (the Android app)." },
+            "interstitialFromLevel": { "type": "integer", "minimum": 1, "description": "No interstitials before this level, so new players are never interrupted." }
           }
         }
       }

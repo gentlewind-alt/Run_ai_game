@@ -1971,7 +1971,7 @@
       "perWindow": 3,
       "windowHours": 5,
       "extraShots": 2,
-      "bonusDamage": 0.25
+      "bonusDamage": 0.25, "interstitialEvery": 3, "interstitialFromLevel": 4
     }
   },
   "arena": {

@@ -10,3 +10,12 @@ coverage/
 rundot/docs/
 .rundot-docs/
 dist-debug/
+
+# Android app (Capacitor): build outputs and your private upload key never go in git
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/keystore.properties
+*.jks
+*.keystore

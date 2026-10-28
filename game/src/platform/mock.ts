@@ -166,6 +166,10 @@ export const mockPlatform: Platform = {
       console.debug('[mock] showRewarded watched successfully');
       return true;
     },
+    async showInterstitial() {
+      console.debug('[mock] showInterstitial');
+      return true;
+    },
   },
   iap: {
     available: () => true,

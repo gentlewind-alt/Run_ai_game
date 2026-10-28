@@ -112,6 +112,13 @@
     "relics": true,
     "slingshots": true
   },
+  "targets": {
+    "_note": "Per build overrides. android = the Play Store app (vite build --mode android). RUN-only services are off there. AdMob: keep testing true while developing (Google test ads are shown even with these real ids); set it to false only for the release build. Ratings follow the age screen: under 13 gets childRating.",
+    "android": {
+      "features": { "arena": false, "challenges": false, "leaderboard": false, "share": false, "voteButton": false, "iap": false },
+      "admob": { "rewardedId": "ca-app-pub-3304363858852502/7411989021", "interstitialId": "ca-app-pub-3304363858852502/9133546064", "testing": true, "childRating": "General", "teenRating": "ParentalGuidance" }
+    }
+  },
   "debug": {
     "urlOverrides": true,
     "testHook": true

@@ -3,7 +3,7 @@ import { platform } from '../platform';
 import { data } from '../data/load';
 import { addCoins, changed, profile } from './profile';
 
-export interface AdRules { coinReward: number; perWindow: number; windowHours: number; extraShots: number; bonusDamage?: number }
+export interface AdRules { coinReward: number; perWindow: number; windowHours: number; extraShots: number; bonusDamage?: number; interstitialEvery?: number; interstitialFromLevel?: number }
 
 const DEFAULTS: AdRules = { coinReward: 300, perWindow: 3, windowHours: 5, extraShots: 2 };
 export const adRules = (): AdRules => ({ ...DEFAULTS, ...(data.content.economy.ads ?? {}) });
@@ -76,4 +76,17 @@ export async function watchForShots(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+let battlesSinceAd = 0;
+
+/** After a battle: every `interstitialEvery` finished battles (from `interstitialFromLevel` on) shows one full-screen ad. */
+export async function maybeInterstitial(levelId: number): Promise<void> {
+  try {
+    const r = adRules();
+    if (!adsEnabled() || !r.interstitialEvery || levelId < (r.interstitialFromLevel ?? 1)) return;
+    if (++battlesSinceAd < r.interstitialEvery) return;
+    battlesSinceAd = 0;
+    if (await platform.ads.showInterstitial()) platform.track('interstitial_ad_shown', { level: levelId });
+  } catch { /* never block the game */ }
 }

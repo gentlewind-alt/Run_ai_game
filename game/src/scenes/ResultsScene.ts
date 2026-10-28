@@ -13,6 +13,7 @@ import { scoreName } from '../core/identity';
 import { data } from '../data/load';
 import { platform } from '../platform';
 import type { Row } from '../platform/types';
+import { maybeInterstitial } from '../core/ads';
 import { makeButton, panel } from '../ui/widgets';
 import { helpButton } from '../ui/tutorial';
 
@@ -96,7 +97,14 @@ export default class ResultsScene extends Phaser.Scene {
 
     const next = d.levelId + 1;
     const hasNext = d.won && !!data.levels[next] && levelUnlocked(next);
-    const go = (key: string, payload?: object): void => { sfx.click(); goTo(this, key, payload); };
+    let leaving = false;
+    // leaving the results may show a between-battles ad first (core/ads maybeInterstitial decides)
+    const go = (key: string, payload?: object): void => {
+      if (leaving) return;
+      leaving = true;
+      sfx.click();
+      void maybeInterstitial(d.levelId).then(() => goTo(this, key, payload));
+    };
 
     if (d.won) {
       const y1 = py + 153; // the rank line sits at py + 131 and the buttons are 24 tall, so keep clear of it

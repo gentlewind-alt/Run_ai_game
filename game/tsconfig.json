@@ -22,7 +22,10 @@
     /* Additional settings for Phaser */
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    /* Build target module: vite.config.ts points it at android.ts (Android app) or noTarget.ts (RUN); both export the same names */
+    "paths": { "@target-platform": ["./src/platform/android.ts"] }
   },
   "include": ["src"]
 }

@@ -9,6 +9,25 @@
   "patternProperties": { "^_": {} },
   "properties": {
     "$schema": { "type": "string" },
+    "targets": {
+      "type": "object", "description": "Per build target overrides (android = the Play Store app): features switched off, AdMob ad unit ids.",
+      "patternProperties": { "^_": {} },
+      "additionalProperties": {
+        "type": "object", "additionalProperties": false,
+        "properties": {
+          "features": { "type": "object", "additionalProperties": { "type": "boolean" } },
+          "admob": {
+            "type": "object", "additionalProperties": false, "required": ["rewardedId", "interstitialId", "testing", "childRating", "teenRating"],
+            "properties": {
+              "rewardedId": { "type": "string", "pattern": "^ca-app-pub-[0-9]+/[0-9]+$" }, "interstitialId": { "type": "string", "pattern": "^ca-app-pub-[0-9]+/[0-9]+$" },
+              "testing": { "type": "boolean", "description": "true = Google test ads (development); false only in the release build." },
+              "childRating": { "enum": ["General", "ParentalGuidance", "Teen", "MatureAudience"], "description": "Max ad rating for players under 13 (age screen)." },
+              "teenRating": { "enum": ["General", "ParentalGuidance", "Teen", "MatureAudience"], "description": "Max ad rating for players 13 and up." }
+            }
+          }
+        }
+      }
+    },
     "version": { "type": "integer", "minimum": 1 },
     "practice": { "type": "object", "description": "Offline practice match (Handshake build): sample campaign levels, the same weapons for both sides, coin stakes, and how fast and how well the Rival Bot plays (botSkill 0 to 1).", "properties": { "levels": { "type": "array", "items": { "type": "integer" } }, "loadout": { "type": "array", "items": { "type": "string" } }, "stakes": { "type": "array", "items": { "type": "integer", "minimum": 0 } }, "startCoins": { "type": "integer", "minimum": 0 }, "botThinkMs": { "type": "integer", "minimum": 200 }, "botSkill": { "type": "number", "minimum": 0, "maximum": 1 } } },
     "links": { "type": "object", "additionalProperties": { "type": "string" }, "description": "Web links the game can send players to (the jam vote page)." },

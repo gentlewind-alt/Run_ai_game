@@ -7,6 +7,8 @@ import { PAUSE_ICON, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../ar
 import { sfx } from '../audio/sfx';
 import { checkRegistries } from '../content/validate';
 import { DEBUG, debugLevel, loadoutSize, profile, startLevelParam } from '../core/profile';
+import { targetAgeGate } from '@target-platform';
+import { platform } from '../platform';
 
 /** Creates every shared texture (data and save are already loaded by main.ts), then opens the title. */
 export default class BootScene extends Phaser.Scene {
@@ -61,6 +63,12 @@ export default class BootScene extends Phaser.Scene {
     const loadout = (profile.equipped.loadout.length ? profile.equipped.loadout : Array.from({ length: loadoutSize() }, (_, i) => owned[i % owned.length])).slice();
     if (debugLevel) this.scene.start('game', { level: debugLevel, loadout });
     else if (DEBUG && startLevelParam) this.scene.start('game', { level: startLevelParam, loadout });
-    else this.scene.start('title');
+    else void this.startTitle();
+  }
+
+  /** The Android app asks the player's age once (scenes/AgeScene.ts) before the title; every other build goes straight there. */
+  private async startTitle(): Promise<void> {
+    const ageAsked = !targetAgeGate || !!(await platform.storage.get(targetAgeGate.key));
+    this.scene.start(ageAsked ? 'title' : 'age');
   }
 }

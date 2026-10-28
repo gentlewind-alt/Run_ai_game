@@ -28,6 +28,9 @@ import { loadSave, wireSave } from './core/save';
 import { data, loadData } from './data/load';
 import { platform } from './platform';
 import { arena } from './core/arena';
+import AgeScene from './scenes/AgeScene';
+import { targetExit } from '@target-platform';
+import { goTo } from './core/flow';
 
 let bootStep1Fired = false;
 
@@ -61,7 +64,7 @@ async function bootstrap(): Promise<void> {
       backgroundColor: '#1a1c2c',
       pixelArt: S.display.pixelArt,
       roundPixels: true,
-      scene: [BootScene, TitleScene, MapScene, LoadoutScene, ShopScene, ForgeScene, BattleScene, BuilderScene, ArenaScene, PracticeScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
+      scene: [BootScene, AgeScene, TitleScene, MapScene, LoadoutScene, ShopScene, ForgeScene, BattleScene, BuilderScene, ArenaScene, PracticeScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
       physics: {
         default: 'matter',
         matter: {
@@ -87,6 +90,14 @@ async function bootstrap(): Promise<void> {
       if (battle?.scene?.isActive?.()) {
         battle.setPaused?.(true);
       }
+    });
+    // the Android back button: pause a battle, close the app from the title, otherwise go back to the title
+    platform.lifecycle.onBack?.(() => {
+      const active = game.scene.getScenes(true).filter((s) => s.scene.key !== 'boot');
+      const battle = game.scene.getScene('game') as { setPaused?(on: boolean): void; scene?: { isActive(): boolean } } | null;
+      if (battle?.scene?.isActive?.()) battle.setPaused?.(true);
+      else if (active.some((s) => s.scene.key === 'title')) targetExit?.();
+      else if (active.length) goTo(active[active.length - 1], 'title');
     });
     window.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.code === 'KeyM' && !e.repeat) {

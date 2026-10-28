@@ -1,6 +1,7 @@
 import type { MusicData } from '../audio/trackgen';
 import type { Config, Content, Level } from './types';
 import type { ForgeConfig } from './forgeTypes';
+import { TARGET } from '../config/target';
 
 export const data = {
   content: undefined as unknown as Content,
@@ -24,6 +25,8 @@ async function getJson<T>(path: string): Promise<T | undefined> {
 export async function loadData(): Promise<void> {
   const [config, content, forge] = await Promise.all([getJson<Config>('data/config.json'), getJson<Content>('data/content.json'), getJson<ForgeConfig>('data/forge.json')]);
   if (!config || !content || !forge) throw new Error('cannot load game data');
+  // a build target (the Android app) switches features off: config.json targets.<target>.features
+  Object.assign(config.features, config.targets?.[TARGET]?.features ?? {});
   data.config = config;
   data.content = content;
   data.music = await getJson<MusicData>('data/music.json');

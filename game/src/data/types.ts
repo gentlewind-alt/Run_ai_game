@@ -233,6 +233,8 @@ export interface WeaponAnim { flight: 'spin' | 'point' | 'tumble' | 'rock' | 'pu
 
 export interface Config {
   version: number;
+  /** Per build target overrides (the Android app): features switched on or off, AdMob ad unit ids. */
+  targets?: Record<string, { features?: Record<string, boolean>; admob?: { rewardedId: string; interstitialId: string; testing: boolean; childRating: string; teenRating: string } }>;
   levels: number[];
   display: { pixelArt: boolean; maxParticles: number; weapon: WeaponDisplay; weaponAnim: WeaponAnimConfig };
   world: { groundY: number; slingX: number; slingY: number };
