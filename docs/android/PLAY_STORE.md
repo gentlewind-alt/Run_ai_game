@@ -8,7 +8,8 @@ online leaderboards, RUN share links, the jam Vote button) are switched off in `
 
 Needs Android Studio's SDK (with Android 16 / API 36; the app targets API 36 as Play requires from 31 August
 2026) and JDK 21 (`JAVA_HOME`, e.g. `C:\Program Files\Eclipse Adoptium\jdk-21.0.7.6-hotspot`).
-`game/android/local.properties` (git-ignored) says where the SDK is: `sdk.dir=C\:\\Users\\<you>\\AppData\\Local\\Android\\Sdk`.
+`game/android/local.properties` (git-ignored) says where the SDK is, with forward slashes:
+`sdk.dir=C:/Users/<you>/AppData/Local/Android/Sdk` (a single backslash is an escape character in that file).
 
 From `game/` on the `android` branch:
 
