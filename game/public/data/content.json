@@ -1989,7 +1989,7 @@
       {
         "id": "quicksilver",
         "name": "Quicksilver",
-        "desc": "Launch faster with a flatter arc.",
+        "desc": "Faster, flatter launch.",
         "price": 150,
         "skin": "s_quicksilver",
         "mods": { "launchSpeedMult": 1.25 }
@@ -1997,7 +1997,7 @@
       {
         "id": "gemini",
         "name": "Gemini",
-        "desc": "Fire your next weapon as a twin shot.",
+        "desc": "Twin shot, 45% damage.",
         "price": 250,
         "skin": "s_gemini",
         "mods": { "twinFraction": 0.45, "twinDelaySteps": 12 }
@@ -2005,7 +2005,7 @@
       {
         "id": "longsight",
         "name": "Longsight",
-        "desc": "See a longer dotted aim preview.",
+        "desc": "Longer aim preview.",
         "price": 400,
         "skin": null,
         "mods": { "previewMult": 1.5 }
@@ -2015,7 +2015,7 @@
       {
         "id": "power",
         "name": "Power",
-        "desc": "Hit harder with every weapon.",
+        "desc": "All weapons hit harder.",
         "mod": "damageMult",
         "perLevel": 0.05,
         "prices": [60, 120, 200]
@@ -2031,7 +2031,7 @@
       {
         "id": "aim",
         "name": "Aim",
-        "desc": "Extend the dotted aim preview.",
+        "desc": "Longer aim preview.",
         "mod": "previewMult",
         "perLevel": 0.2,
         "prices": [60, 120, 200]

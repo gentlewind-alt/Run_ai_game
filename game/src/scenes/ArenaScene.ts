@@ -71,10 +71,10 @@ export default class ArenaScene extends Phaser.Scene {
     this.button(424, 246, 84, arena.status === 'online' ? 'Refresh' : 'Connect', () => { if (arena.status === 'online') arena.sync(); else void arena.connect(); }, false, arena.status !== 'connecting');
     if (arena.status !== 'online') {
       if (feature('practice')) this.button(240, 100, 250, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
-      this.label(240, 117, arena.status === 'connecting' ? 'Connecting to Arena...' : arena.status === 'reconnecting' ? 'Reconnecting...' : 'Connect to meet players in this game.', C('c'), 420);
-      this.label(240, 146, 'A full attempt each. Clear first, then score.', C('d'), 420);
-      this.label(240, 169, 'Wagers are optional. Arena starts with 100 coins.', C('d'), 420);
-      this.label(240, 195, 'Campaign coins and progress stay separate.', C('d'), 420);
+      this.label(240, 128, arena.status === 'connecting' ? 'Connecting to Arena...' : arena.status === 'reconnecting' ? 'Reconnecting...' : 'Connect to meet players in this game.', C('c'), 420);
+      this.label(240, 152, 'A full attempt each. Clear first, then score.', C('d'), 420);
+      this.label(240, 174, 'Wagers are optional. Arena starts with 100 coins.', C('d'), 420);
+      this.label(240, 196, 'Campaign coins and progress stay separate.', C('d'), 420);
     } else if (state) {
       if (this.tab === 'online') this.drawOnline();
       else if (this.tab === 'invites') this.drawInvites();
