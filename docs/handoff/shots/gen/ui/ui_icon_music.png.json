@@ -1,0 +1,15 @@
+{
+  "generationId": "6d02734b-dd40-49fa-8a9c-d004960aab45",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: golden musical note",
+  "model": "gpt-image-2.5-flare",
+  "width": 26,
+  "height": 26,
+  "spriteCookAssetId": "a752f08f-547e-421e-9424-ba4e607c485a",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

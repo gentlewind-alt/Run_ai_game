@@ -1,0 +1,15 @@
+{
+  "generationId": "770821b9-b1b2-4a9e-9d54-71f35d0cd186",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: two crossed swords over a round red shield",
+  "model": "gpt-image-2.5-flare",
+  "width": 200,
+  "height": 200,
+  "spriteCookAssetId": "c79e6f1f-b986-40a1-aec0-1135d16e4cae",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

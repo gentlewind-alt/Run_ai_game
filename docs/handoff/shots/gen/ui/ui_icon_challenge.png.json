@@ -1,0 +1,15 @@
+{
+  "generationId": "ecbed701-8e2d-44d9-a452-cf1c4ae3ca7d",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: golden trophy cup with a star",
+  "model": "gpt-image-2.5-flare",
+  "width": 36,
+  "height": 36,
+  "spriteCookAssetId": "d0300912-a276-4296-b26a-4f3455985235",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

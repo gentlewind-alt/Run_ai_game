@@ -1,0 +1,15 @@
+{
+  "generationId": "771ad16d-08c5-46c9-97bb-29089a5f4b45",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: blacksmith anvil with a glowing hammer and sparks",
+  "model": "gpt-image-2.5-flare",
+  "width": 180,
+  "height": 180,
+  "spriteCookAssetId": "093494b2-f130-4138-93c1-2885761fa19e",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

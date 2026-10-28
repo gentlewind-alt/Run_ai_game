@@ -89,3 +89,40 @@ foreach ($id in $monsters.Keys) {
   Process $f (Join-Path $outM "$id.png") $monsters[$id][1]
   Write-Output "ok monster $id"
 }
+# UI makeover kit (sources in gen\ui): icons fit a square like the weapons; buttons, the panel frame and the backdrop are
+# cropped to their content and stretched to an exact size, so the game can nine-slice them; the backdrop keeps no alpha.
+function ProcessStretch($file, $dest, $W, $H, $opaque) {
+  $img = New-Object System.Drawing.Bitmap $file
+  $minX = $img.Width; $minY = $img.Height; $maxX = 0; $maxY = 0
+  for ($y = 0; $y -lt $img.Height; $y++) { for ($x = 0; $x -lt $img.Width; $x++) { if ($opaque -or $img.GetPixel($x, $y).A -gt 16) { if ($x -lt $minX) { $minX = $x }; if ($x -gt $maxX) { $maxX = $x }; if ($y -lt $minY) { $minY = $y }; if ($y -gt $maxY) { $maxY = $y } } } }
+  $big = New-Object System.Drawing.Bitmap $W, $H, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $g = [System.Drawing.Graphics]::FromImage($big)
+  $g.Clear([System.Drawing.Color]::Transparent)
+  $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+  $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::Half
+  $g.DrawImage($img, (New-Object System.Drawing.Rectangle 0, 0, $W, $H), $minX, $minY, ($maxX - $minX + 1), ($maxY - $minY + 1), [System.Drawing.GraphicsUnit]::Pixel)
+  $g.Dispose(); $img.Dispose()
+  $res = New-Object System.Drawing.Bitmap $W, $H, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  for ($y = 0; $y -lt $H; $y++) { for ($x = 0; $x -lt $W; $x++) {
+    $c = $big.GetPixel($x, $y)
+    if (-not $opaque -and $c.A -lt 128) { $res.SetPixel($x, $y, [System.Drawing.Color]::FromArgb(0, 0, 0, 0)) }
+    else { $i = Nearest $c.R $c.G $c.B; $p = $palRgb[$i]; $res.SetPixel($x, $y, [System.Drawing.Color]::FromArgb(255, $p[0], $p[1], $p[2])) }
+  } }
+  $res.Save($dest, [System.Drawing.Imaging.ImageFormat]::Png)
+  $big.Dispose(); $res.Dispose()
+}
+$outU = Join-Path $root 'game\public\sprites\ui'
+New-Item -ItemType Directory -Force $outU | Out-Null
+foreach ($f in (Get-ChildItem (Join-Path $src 'ui') -Filter 'ui_icon_*.png' -ErrorAction SilentlyContinue)) {
+  Process $f.FullName (Join-Path $outU $f.Name) 24
+  Write-Output "ok ui $($f.BaseName)"
+}
+$stretch = @{ 'ui_button_go' = @(96, 32, $false); 'ui_button_plain' = @(96, 32, $false); 'ui_button_gold' = @(96, 32, $false);
+  'ui_panel' = @(96, 96, $false); 'ui_emblem' = @(96, 96, $false); 'ui_backdrop' = @(480, 270, $true) }
+foreach ($id in $stretch.Keys) {
+  $f = Join-Path $src "ui\$id.png"
+  if (-not (Test-Path $f)) { Write-Output "missing $f"; continue }
+  $s = $stretch[$id]
+  if ($id -eq 'ui_emblem') { Process $f (Join-Path $outU "$id.png") $s[0] } else { ProcessStretch $f (Join-Path $outU "$id.png") $s[0] $s[1] $s[2] }
+  Write-Output "ok ui $id"
+}

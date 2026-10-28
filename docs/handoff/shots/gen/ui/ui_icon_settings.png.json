@@ -1,0 +1,15 @@
+{
+  "generationId": "c96c6057-c9bf-48e6-ab3f-984afe0d5ec2",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: iron gear cog",
+  "model": "gpt-image-2.5-flare",
+  "width": 60,
+  "height": 60,
+  "spriteCookAssetId": "e1deefe4-547d-4797-83be-060e1214b8a2",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

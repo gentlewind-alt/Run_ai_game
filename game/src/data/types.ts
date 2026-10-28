@@ -234,7 +234,8 @@ export interface WeaponAnim { flight: 'spin' | 'point' | 'tumble' | 'rock' | 'pu
 export interface Config {
   version: number;
   levels: number[];
-  display: { pixelArt: boolean; maxParticles: number; weapon: WeaponDisplay; weaponAnim: WeaponAnimConfig };
+  display: { pixelArt: boolean; maxParticles: number; weapon: WeaponDisplay; weaponAnim: WeaponAnimConfig;
+    ui: { buttonCorner: number; panelCorner: number; iconPx: number; iconGap: number; buttonPadding: number; disabledAlpha: number; backdropAlpha: number } };
   world: { groundY: number; slingX: number; slingY: number };
   physics: { stepHz: number; gravityY: number; positionIterations: number; velocityIterations: number; enableSleeping: boolean; maxStepsPerFrame: number };
   camera: {

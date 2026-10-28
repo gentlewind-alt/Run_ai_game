@@ -1,0 +1,15 @@
+{
+  "generationId": "8a230609-99aa-468f-9686-1b594ee161b7",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: bright gold five-pointed star with a white shine",
+  "model": "gpt-image-2.5-flare",
+  "width": 30,
+  "height": 30,
+  "spriteCookAssetId": "f3f35cc7-d505-4bbf-874b-41b4f0e735c0",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

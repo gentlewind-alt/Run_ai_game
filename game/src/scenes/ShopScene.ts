@@ -20,15 +20,15 @@ import { monsterDef, shortItemName, shortWeaponName } from '../data/lookup';
 import { coinCounter } from '../ui/coins';
 import { createItemCard } from '../ui/cards';
 import { helpButton, maybeTutorial } from '../ui/tutorial';
-import { makeButton, panel, type Btn } from '../ui/widgets';
+import { menuBackdrop, uiIcon, makeButton, panel, type Btn } from '../ui/widgets';
 
 type Tab = 'weapons' | 'relics' | 'artifacts' | 'items' | 'forge' | 'slingshots';
 const TABS: { id: Tab; label: string; w: number }[] = [
   { id: 'weapons', label: 'Weapons', w: 56 },
   { id: 'relics', label: 'Relics', w: 46 },
-  { id: 'artifacts', label: 'Artifacts', w: 56 },
+  { id: 'artifacts', label: 'Artifacts', w: 60 },
   { id: 'items', label: 'Items', w: 46 },
-  { id: 'forge', label: 'Forge', w: 46 },
+  { id: 'forge', label: 'Forge', w: 60 },
   { id: 'slingshots', label: 'Slingshots', w: 68 },
 ];
 
@@ -74,14 +74,14 @@ export default class ShopScene extends Phaser.Scene {
     this.page = 0;
     this.forgeScroll = 0;
     this.forgeDragMoved = false;
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     coinCounter(this, 12, 13);
-    text(this, W / 2, 13, 'Shop', C('c'), 1, C('0'));
+    text(this, 205, 13, 'Shop', C('4'), 2, C('0'));
     this.body = this.add.container(0, 0);
-    makeButton(this, W / 2, H - 16, 110, 22, 'Back to map', 'plain', () => { if (this.forgeDragMoved) return; sfx.click(); goTo(this, 'map'); }, 6);
+    makeButton(this, W / 2, H - 13, 110, 18, 'Back to map', 'plain', () => { if (this.forgeDragMoved) return; sfx.click(); goTo(this, 'map'); }, 6);
     this.render();
     this.adButton();
-    helpButton(this, W - 16, 12, ['shop', 'damage', 'forge', 'flight', 'abilities'], 9);
+    helpButton(this, W - 16, 14, ['shop', 'damage', 'forge', 'flight', 'abilities'], 9);
     maybeTutorial(this, ['shop', 'damage']);
     irisOpen(this);
     this.input.on('wheel', this.onForgeWheel, this);
@@ -103,7 +103,7 @@ export default class ShopScene extends Phaser.Scene {
   private adButton(): void {
     if (!adsEnabled()) return;
     const r = adRules();
-    const btn = makeButton(this, W - 62, 12, 108, 16, `+${r.coinReward} coins (Ad)`, 'go', async () => {
+    const btn = makeButton(this, 381, 13, 112, 20, `+${r.coinReward} coins (Ad)`, 'go', async () => {
       if (this.forgeDragMoved) return;
       sfx.click();
       btn.setEnabled(false);
@@ -141,7 +141,7 @@ export default class ShopScene extends Phaser.Scene {
     const totalTabW = tabs.reduce((acc, t) => acc + t.w, 0) + (tabs.length - 1) * 6;
     let x = (W - totalTabW) / 2;
     tabs.forEach((t) => {
-      const b = makeButton(this, x + t.w / 2, 30, t.w, 20, t.label, t.id === this.tab ? 'go' : 'plain', () => {
+      const b = makeButton(this, x + t.w / 2, 42, t.w, 20, t.label, t.id === this.tab ? 'go' : 'plain', () => {
         if (this.forgeDragMoved) return;
         sfx.click();
         this.tab = t.id;
@@ -304,7 +304,7 @@ export default class ShopScene extends Phaser.Scene {
       const col = i % 4;
       const row = Math.floor(i / 4);
       const x = 10 + col * 116;
-      const y = 46 + row * 42;
+      const y = 58 + row * 40;
       const sel = it.id === this.selected;
       const card = createItemCard({
         scene: this, x, y, w: cardW, icon: it.icon, iconScale: it.scale === 2 ? 1.2 : it.scale,
@@ -318,10 +318,10 @@ export default class ShopScene extends Phaser.Scene {
       } else if (it.state === 'owned') {
         extra.push(text(this, x + 31, y + 26, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
       } else if (it.state === 'locked') {
-        extra.push(this.add.image(x + 35, y + 26, 'icon_lock').setDepth(2), text(this, x + 42, y + 26, fitText(it.note.replace('Reach level', 'Level'), cardW - 48), C('e')).setOrigin(0, 0.5).setDepth(2));
+        extra.push(uiIcon(this, x + 35, y + 26, 'lock', 'icon_lock', 10).setDepth(2), text(this, x + 43, y + 26, fitText(it.note.replace('Reach level', 'Level'), cardW - 49), C('d')).setOrigin(0, 0.5).setDepth(2));
         if (!it.isSilhouette) card.icon.setAlpha(0.4);
       } else {
-        extra.push(this.add.image(x + 35, y + 26, 'icon_coin').setDepth(2), pixText(this, x + 42, y + 26, String(it.price), profile.coins >= it.price ? C('4') : C('3')).setOrigin(0, 0.5).setDepth(2));
+        extra.push(uiIcon(this, x + 35, y + 26, 'coin', 'icon_coin', 10).setDepth(2), pixText(this, x + 43, y + 26, String(it.price), profile.coins >= it.price ? C('4') : C('3')).setOrigin(0, 0.5).setDepth(2));
         if (this.tab === 'items') extra.push(text(this, x + cardW - 5, y + 26, `x${consumableCount(it.id)}`, C('b')).setOrigin(1, 0.5).setDepth(2));
       }
 
@@ -330,18 +330,18 @@ export default class ShopScene extends Phaser.Scene {
 
     if (list.length > maxItems) {
       if (this.page > 0) {
-        const prev = makeButton(this, W / 2 - 50, 139, 36, 18, '<', 'plain', () => { sfx.click(); this.page--; this.render(); }, 5);
+        const prev = makeButton(this, W / 2 - 50, 150, 36, 18, '<', 'plain', () => { sfx.click(); this.page--; this.render(); }, 5);
         this.body.add(prev.box);
       }
-      this.body.add(text(this, W / 2, 139, `${this.page + 1}/${maxPage + 1}`, C('c'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(5));
+      this.body.add(text(this, W / 2, 150, `${this.page + 1}/${maxPage + 1}`, C('c'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(5));
       if (this.page < maxPage) {
-        const next = makeButton(this, W / 2 + 50, 139, 36, 18, '>', 'plain', () => { sfx.click(); this.page++; this.render(); }, 5);
+        const next = makeButton(this, W / 2 + 50, 150, 36, 18, '>', 'plain', () => { sfx.click(); this.page++; this.render(); }, 5);
         this.body.add(next.box);
       }
     }
 
     const it = list.find((x) => x.id === this.selected);
-    const y0 = list.length > maxItems ? 155 : 132;
+    const y0 = list.length > maxItems ? 167 : 144;
     if (!it) {
       this.body.add(text(this, W / 2, y0 + 16, 'Tap something to see what it does.', C('d'), 1, C('0')));
       return;
@@ -358,27 +358,19 @@ export default class ShopScene extends Phaser.Scene {
     const metaY = y0 + 15;
     this.body.add(text(this, W / 2, metaY, fitText(metaStr, W - 40), C('d'), 1, C('0')));
 
-    // 3. Description (wrapped, at most 4 lines)
+    // 3. Description stays inside the detail area above the purchase button.
     const descStartY = metaY + 11;
-    const lines: Phaser.GameObjects.Image[] = [];
     const maxWidth = 420;
-    const maxLines = list.length > maxItems ? 3 : 4;
-    for (const d of it.desc) {
-      if (lines.length >= maxLines) break;
-      const wrapped = textBlock(this, W / 2, 0, d, C('c'), maxWidth);
-      for (const wLine of wrapped) {
-        if (lines.length < maxLines) lines.push(wLine);
-        else wLine.destroy();
-      }
-    }
-    const lineSpacing = 10;
+    const maxLines = list.length > maxItems ? 2 : 3;
+    const lines = textBlock(this, W / 2, 0, it.desc.join(' '), C('c'), maxWidth, C('0'), maxLines);
+    const lineSpacing = 12;
     lines.forEach((l, i) => { l.setY(descStartY + i * lineSpacing); });
     this.body.add(lines);
 
     // 4. Button anchored below with fixed gap
     const descBottom = lines.length > 0 ? descStartY + (lines.length - 1) * lineSpacing + 5 : metaY + 5;
     const gap = 6;
-    const btnH = 20;
+    const btnH = 18;
     const btnY = Math.min(H - 47, Math.round(descBottom + gap + btnH / 2));
 
     const isSlingEquip = this.tab === 'slingshots' && owns('cosmetics', it.id);
@@ -445,7 +437,7 @@ export default class ShopScene extends Phaser.Scene {
 
   private toast(msg: string, color: number): void {
     this.toastTxt?.destroy();
-    const t = text(this, W / 2, H - 36, fitText(msg, W - 24), color, 1, C('0')).setDepth(20);
+    const t = text(this, W / 2, H - 30, fitText(msg, W - 24), color, 1, C('0')).setDepth(20);
     this.toastTxt = t;
     this.tweens.add({ targets: t, alpha: 0, delay: 1400, duration: 400, onComplete: () => t.destroy() });
   }
@@ -457,12 +449,12 @@ export default class ShopScene extends Phaser.Scene {
     const owned = data.content.weapons.filter((w) => owns('weapons', w.id));
     const cardW = 226;
     const cardH = 36;
-    const top = forgeEnabled() ? 78 : 46;
+    const top = forgeEnabled() ? 90 : 58;
     const viewportHeight = 222 - top;
     this.forgeTop = top; this.forgeView = viewportHeight;
     this.forgeMaxScroll = Math.max(0, Math.ceil(owned.length / 2) * 40 - 4 - viewportHeight);
     this.forgeScroll = Phaser.Math.Clamp(this.forgeScroll, 0, this.forgeMaxScroll);
-    if (forgeEnabled()) this.body.add(makeButton(this, 240, 59, 200, 24, 'Create a weapon', 'go', () => goTo(this, 'forge')).box);
+    if (forgeEnabled()) this.body.add(makeButton(this, 240, 71, 200, 24, 'Create a weapon', 'go', () => goTo(this, 'forge')).box);
     const list = this.add.container(0, top - this.forgeScroll);
     this.forgeList = list;
     this.body.add(list);
@@ -480,7 +472,7 @@ export default class ShopScene extends Phaser.Scene {
       const g = panel(this, x, y, cardW, cardH, '8', '9', 'f', 1);
       const icon = this.add.image(x + 16, y + 18, weaponTexture(w.id)).setDepth(2);
       icon.setScale(Math.min(1, 24 / icon.width, 28 / icon.height));
-      const nameTxt = text(this, x + 34, y + 10, fitText(shortWeaponName(w.id, w.name), 124), C('c')).setOrigin(0, 0.5).setDepth(2);
+      const nameTxt = text(this, x + 34, y + 10, fitText(shortWeaponName(w.id, w.name), 112), C('c')).setOrigin(0, 0.5).setDepth(2);
 
       const now = Math.round(w.baseDamage * upgradeMult(w.id));
       const cost = upgradeCost(w.id);
@@ -497,7 +489,7 @@ export default class ShopScene extends Phaser.Scene {
       const btn = makeButton(this, x + cardW - 32, y + 18, 50, 20, cost === null ? 'Max' : String(cost), 'go', () => this.upgrade(w.id), 6);
       this.forgeButtons.push({ button: btn, canUpgrade: cost !== null });
       parts.push(btn.box);
-      if (cost !== null) parts.push(this.add.image(x + cardW - 52, y + 18, 'icon_coin').setDepth(8));
+      if (cost !== null) parts.push(uiIcon(this, x + cardW - 65, y + 18, 'coin', 'icon_coin', 10).setDepth(8));
       list.add(parts);
     });
 

@@ -21,6 +21,19 @@
         "pixelArt": { "type": "boolean" },
         "roundPixels": { "type": "boolean" },
         "maxParticles": { "type": "integer", "minimum": 0 },
+        "ui": {
+          "type": "object", "additionalProperties": false,
+          "required": ["buttonCorner", "panelCorner", "iconPx", "iconGap", "buttonPadding", "disabledAlpha", "backdropAlpha"],
+          "properties": {
+            "buttonCorner": { "type": "integer", "minimum": 0 },
+            "panelCorner": { "type": "integer", "minimum": 0 },
+            "iconPx": { "type": "integer", "minimum": 1 },
+            "iconGap": { "type": "integer", "minimum": 0 },
+            "buttonPadding": { "type": "integer", "minimum": 0 },
+            "disabledAlpha": { "type": "number", "minimum": 0, "maximum": 1 },
+            "backdropAlpha": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
         "weapon": {
           "type": "object", "additionalProperties": false,
           "description": "Drawn weapon size in world px: in flight, loaded on the sling, waiting in the queue. relicBonus scales 32 px relic art.",

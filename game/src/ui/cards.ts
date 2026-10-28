@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { C, rarityColor, rarityStroke } from '../art/palette';
 import { fitText, text } from '../art/font5x7';
-import { panel } from './widgets';
+import { panel, type Panel } from './widgets';
 
 export interface CardOptions {
   scene: Phaser.Scene;
@@ -20,7 +20,7 @@ export interface CardOptions {
 }
 
 export interface CardResult {
-  panel: Phaser.GameObjects.Graphics;
+  panel: Panel;
   iconBox: Phaser.GameObjects.Rectangle;
   icon: Phaser.GameObjects.Image;
   nameTxt: Phaser.GameObjects.Image;
@@ -34,9 +34,8 @@ export function createItemCard(opts: CardOptions): CardResult {
   const baseStroke = opts.rarity ? rarityStroke(opts.rarity) : '9';
   const stroke = opts.selected ? 'a' : baseStroke;
   const p = panel(opts.scene, opts.x, opts.y, opts.w, h, opts.selected ? '9' : '8', stroke, 'f', 1);
-  if (opts.selected) {
-    p.lineStyle(1, C('4'), 1).strokeRect(opts.x - 1, opts.y - 1, opts.w + 2, h + 2);
-  }
+  const selection = opts.selected ? opts.scene.add.graphics().setDepth(2)
+    .lineStyle(1, C('4'), 1).strokeRect(opts.x - 1, opts.y - 1, opts.w + 2, h + 2) : undefined;
 
   const iconBox = opts.scene.add.rectangle(opts.x + 15, opts.y + 19, 24, 30, C('0'))
     .setStrokeStyle(1, C(baseStroke)).setDepth(2);
@@ -81,6 +80,6 @@ export function createItemCard(opts: CardOptions): CardResult {
 
   return {
     panel: p, iconBox, icon, nameTxt, hit,
-    objects: [p, iconBox, ...extraObjs, icon, nameTxt, hit],
+    objects: [p, ...(selection ? [selection] : []), iconBox, ...extraObjs, icon, nameTxt, hit],
   };
 }

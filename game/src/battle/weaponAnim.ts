@@ -131,7 +131,8 @@ export function abilityAnim(b: BattleState, p: Proj): () => void {
 }
 
 /** Contact: the weapon squashes for a moment (only for real knocks, at most once per few steps). */
-export function impactAnim(b: BattleState, p: Proj, rel: number): void {
+export function impactAnim(b: BattleState, p: Proj, rel: number, ground: boolean): void {
+  if (ground && !p.touchedGround) p.groundRotationOffset = p.sprite.rotation - p.body.angle;
   if (!p.def.anim || rel < cfg(b).impactMinSpeed) return;
   const s = state(p);
   if (p.steps - s.hitAt < cfg(b).impactSteps) return;
@@ -179,7 +180,8 @@ export function animateProj(b: BattleState, p: Proj): void {
   const k = cfg(b);
   const t = p.steps;
   const { x, y } = p.body.position;
-  if (a.flight === 'tumble') p.sprite.setRotation(p.body.angle * k.tumble);
+  if (p.touchedGround) p.sprite.setRotation(p.body.angle + (p.groundRotationOffset ?? 0));
+  else if (a.flight === 'tumble') p.sprite.setRotation(p.body.angle * k.tumble);
   else if (a.flight === 'rock') p.sprite.setRotation(Math.sin(t * k.rockSpeed) * k.rock);
   else if (a.flight === 'aim') {
     const want = aimAngle(b, x, y);
@@ -187,7 +189,7 @@ export function animateProj(b: BattleState, p: Proj): void {
     p.sprite.setRotation((s.aim ?? Math.atan2(p.body.velocity.y, p.body.velocity.x)) + ART_TILT);
   }
   let sx = 1;
-  let sy = flightMove(b, p, s, a.flight);
+  let sy = p.touchedGround ? 1 : flightMove(b, p, s, a.flight);
   if (t < k.launchSteps) { const f = k.launchPop * (1 - t / k.launchSteps); sx += f; sy += f; }
   const since = t - s.abilityAt;
   if (since >= 0 && since < k.abilitySteps) { const f = k.abilityPunch * (1 - since / k.abilitySteps); sx += f; sy += f; }

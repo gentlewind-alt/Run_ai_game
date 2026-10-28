@@ -1,0 +1,15 @@
+{
+  "generationId": "c5d00418-1e17-48e2-9988-93e127421ea4",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: small merchant shop stall with a striped awning and a coin sign",
+  "model": "gpt-image-2.5-flare",
+  "width": 62,
+  "height": 62,
+  "spriteCookAssetId": "612ae128-ff58-4d28-829d-5cac9d6a6fd6",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

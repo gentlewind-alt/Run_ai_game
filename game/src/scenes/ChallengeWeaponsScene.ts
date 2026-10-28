@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { text, textBlock } from '../art/font5x7';
+import { fitText, text, textBlock } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
-import { H, W } from '../config/constants';
+import { H } from '../config/constants';
 import { SHOTS_MAX, SHOTS_MIN, challengeLevel, joinOnce, publishChallenge, updateRules, type Challenge } from '../core/challenges';
 import { goTo, irisOpen } from '../core/flow';
 import { owns } from '../core/profile';
@@ -11,7 +11,7 @@ import { data } from '../data/load';
 import { shortWeaponName } from '../data/lookup';
 import type { BuilderDocument } from '../builder/document';
 import { createItemCard } from '../ui/cards';
-import { makeButton, type Btn } from '../ui/widgets';
+import { menuBackdrop, makeButton, type Btn } from '../ui/widgets';
 
 type Mode = 'publish' | 'edit' | 'play';
 const PAGE_SIZE = 10;
@@ -59,13 +59,13 @@ export default class ChallengeWeaponsScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     this.add.rectangle(264, H / 2, 2, H - 20, C('0'), 0.4);
     const heading = this.mode === 'play' ? this.challenge!.title : this.mode === 'publish' ? 'Share as a Global Challenge' : `Rules: ${this.challenge!.title}`;
-    text(this, 370, 10, heading.slice(0, 32), C('4'), 1, C('0'));
+    text(this, 370, 10, fitText(heading, 196), C('4'), 1, C('0'));
     textBlock(this, 370, 22, this.mode === 'play'
       ? 'Fill your shots. Only weapons you own and the author allows are shown.'
-      : 'Tap the weapons challengers may use from their own arsenal.', C('d'), 196);
+      : 'Tap the weapons challengers may use from their own arsenal.', C('c'), 196, C('0'), 2);
     this.renderGrid();
     this.renderPanel();
     makeButton(this, 305, H - 18, 64, 24, 'Back', 'plain', () => {
@@ -78,7 +78,7 @@ export default class ChallengeWeaponsScene extends Phaser.Scene {
 
   private say(message: string): void {
     this.statusLines.forEach((l) => l.destroy());
-    this.statusLines = textBlock(this, 316, 156, message, C('4'), 150, C('0'));
+    this.statusLines = textBlock(this, 370, 156, message, C('4'), 196, C('0'), 3);
   }
 
   private renderGrid(): void {

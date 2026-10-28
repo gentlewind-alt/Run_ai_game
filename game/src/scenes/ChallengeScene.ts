@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { setText, text } from '../art/font5x7';
+import { fitText, setText, text } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { admin } from '../core/admin';
 import { challengeBoard, getChallenge, removeChallenge, resetBoard, type Board, type Challenge } from '../core/challenges';
 import { goTo, irisOpen } from '../core/flow';
-import { makeButton, panel } from '../ui/widgets';
+import { menuBackdrop, makeButton, panel } from '../ui/widgets';
 
 const ROWS = 7;
 const ROW_H = 12;
@@ -31,10 +31,10 @@ export default class ChallengeScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     panel(this, 16, 8, W - 32, H - 16, '8', '9', 'f', 1);
     this.status = text(this, W / 2, 120, 'Loading challenge', C('d'), 1, C('0')).setDepth(3);
-    makeButton(this, 70, H - 22, 90, 22, 'Back', 'plain', () => { sfx.click(); goTo(this, 'challenges'); }, 3);
+    makeButton(this, 56, H - 22, 64, 22, 'Back', 'plain', () => { sfx.click(); goTo(this, 'challenges'); }, 3);
     const mine = ++this.token;
     void (this.challenge ? Promise.resolve(this.challenge) : getChallenge(this.id)).then(async (c) => {
       if (mine !== this.token || !this.scene.isActive()) return;
@@ -49,8 +49,8 @@ export default class ChallengeScene extends Phaser.Scene {
 
   private drawInfo(c: Challenge): void {
     if (this.status) setText(this.status, this, ' ', C('d'), C('0'));
-    text(this, W / 2, 22, c.title.slice(0, 30), C('4'), 2, C('0')).setDepth(3);
-    text(this, W / 2, 40, `by ${c.mine ? 'you' : c.authorName}   ${c.challengers} challengers   ${c.shots} shots`, C('c'), 1, C('0')).setDepth(3);
+    text(this, W / 2, 22, fitText(c.title, admin.is ? 164 : 208), C('4'), 2, C('0')).setDepth(3);
+    text(this, W / 2, 40, fitText(`by ${c.mine ? 'you' : c.authorName}   ${c.challengers} challengers   ${c.shots} shots`, 416), C('c'), 1, C('0')).setDepth(3);
     text(this, 30, 56, 'Allowed weapons', C('d'), 1, C('0')).setOrigin(0, 0.5).setDepth(3);
     c.allowed.slice(0, 18).forEach((id, i) => {
       const x = 36 + (i % 9) * 24;
@@ -63,20 +63,20 @@ export default class ChallengeScene extends Phaser.Scene {
     if (c.allowed.length > 18) text(this, 36 + 9 * 24 - 4, 56, `+${c.allowed.length - 18} more`, C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
     const canDelete = c.mine || admin.is;
     const specs: { label: string; w: number; kind: 'go' | 'plain' | 'danger'; run: () => void }[] = [
-      { label: 'Play', w: 90, kind: 'go', run: () => goTo(this, 'challengeWeapons', { mode: 'play', challenge: c }) },
+      { label: 'Play', w: 70, kind: 'go', run: () => goTo(this, 'challengeWeapons', { mode: 'play', challenge: c }) },
     ];
-    if (c.mine || admin.is) specs.push({ label: 'Edit rules', w: 84, kind: 'plain', run: () => goTo(this, 'challengeWeapons', { mode: 'edit', challenge: c }) });
+    if (c.mine || admin.is) specs.push({ label: 'Edit rules', w: 80, kind: 'plain', run: () => goTo(this, 'challengeWeapons', { mode: 'edit', challenge: c }) });
     if (admin.is) specs.push({ label: 'Reset board', w: 90, kind: 'plain', run: () => { void resetBoard(c).then(() => { if (this.scene.isActive()) this.scene.restart({ id: c.id }); }); } });
-    let x = 120;
+    let x = 96;
     for (const spec of specs) {
       const half = spec.w / 2;
       makeButton(this, x + half, H - 22, spec.w, 22, spec.label, spec.kind, () => { sfx.click(); spec.run(); }, 3);
-      x += spec.w + 8;
+      x += spec.w + 6;
     }
     if (admin.is) text(this, W - 40, 22, 'ADMIN', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
     if (canDelete) {
       let armed = false;
-      const del = makeButton(this, W - 66, H - 22, 70, 22, 'Delete', 'danger', () => {
+      const del = makeButton(this, x + 38, H - 22, 76, 22, 'Delete', 'danger', () => {
         if (!armed) {
           armed = true;
           del.setLabel('Sure?');
@@ -107,9 +107,9 @@ export default class ChallengeScene extends Phaser.Scene {
       youShown = youShown || isMe;
       const col = isMe ? C('4') : C('c');
       this.objs.push(
-        text(this, 40, y, `#${r.rank}`, col, 1, C('0')).setOrigin(0, 0.5).setDepth(3),
-        text(this, 74, y, r.name.slice(0, 20), col, 1, C('0')).setOrigin(0, 0.5).setDepth(3),
-        text(this, W - 40, y, String(r.score), col, 1, C('0')).setOrigin(1, 0.5).setDepth(3),
+        text(this, 40, y, fitText(`#${r.rank}`, 48), col, 1, C('0')).setOrigin(0, 0.5).setDepth(3),
+        text(this, 96, y, fitText(r.name, 230), col, 1, C('0')).setOrigin(0, 0.5).setDepth(3),
+        text(this, W - 40, y, fitText(String(r.score), 100), col, 1, C('0')).setOrigin(1, 0.5).setDepth(3),
       );
     });
     if (board.me && !youShown) {

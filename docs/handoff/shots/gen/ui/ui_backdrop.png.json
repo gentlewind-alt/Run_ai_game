@@ -1,0 +1,15 @@
+{
+  "generationId": "38fcacd4-81e8-456d-88c3-ff970ce595c7",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: atmospheric game menu background: a dark stone castle hall at night, torches on the walls, banners, soft vignette, low detail in the center so menus stay readable",
+  "model": "gpt-image-2.5-flare",
+  "width": 171,
+  "height": 96,
+  "spriteCookAssetId": "860cdb7a-bb36-42d6-aa57-b25c61237d46",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "16:9"
+}

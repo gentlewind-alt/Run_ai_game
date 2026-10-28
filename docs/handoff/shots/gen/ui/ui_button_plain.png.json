@@ -1,0 +1,15 @@
+{
+  "generationId": "27e27e49-e015-48bc-ad02-9c9176c7369e",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: wide empty rectangular button plate, slate blue-grey carved stone with a light top bevel and dark bottom edge, rounded corners, blank center",
+  "model": "gpt-image-2.5-flare",
+  "width": 66,
+  "height": 66,
+  "spriteCookAssetId": "26d6d7eb-0870-4e2f-b6f0-ec09f1a7b198",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "16:9"
+}

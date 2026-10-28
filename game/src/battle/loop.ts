@@ -69,7 +69,7 @@ function stepLogic(b: BattleState): void {
     const p = b.proj;
     p.steps++;
     const body = p.body;
-    if (p.def.physics.align) {
+    if (p.def.physics.align && !p.touchedGround) {
       const v = body.velocity;
       if (Math.hypot(v.x, v.y) > 0.2) MatterLib.Body.setAngle(body, Math.atan2(v.y, v.x) + Math.PI / 2);
       MatterLib.Body.setAngularVelocity(body, 0);
@@ -132,7 +132,7 @@ function syncSprites(b: BattleState, time: number): void {
   }
   if (b.proj) {
     b.proj.sprite.setPosition(b.proj.body.position.x, b.proj.body.position.y);
-    b.proj.sprite.setRotation(b.proj.body.angle);
+    b.proj.sprite.setRotation(b.proj.body.angle + (b.proj.groundRotationOffset ?? 0));
     animateProj(b, b.proj);
   }
 }

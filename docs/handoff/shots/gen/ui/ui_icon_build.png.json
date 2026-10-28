@@ -1,0 +1,15 @@
+{
+  "generationId": "cdeae607-d938-4e4b-ac29-863699fb2ff6",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: builder\u0027s hammer crossed over a wooden plank and a stone brick",
+  "model": "gpt-image-2.5-flare",
+  "width": 70,
+  "height": 70,
+  "spriteCookAssetId": "d5ac1888-82e1-44b9-9421-002c902f7b45",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

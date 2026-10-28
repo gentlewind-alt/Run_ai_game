@@ -334,7 +334,7 @@ export default class BuilderScene extends Phaser.Scene {
 
   private updateWarning(doc: BuilderDocument = this.draft): void {
     const count = findDraftOverlaps(doc, this.monsterSize).length;
-    setText(this.warning, this, count ? `OVERLAP: ${count} ${count === 1 ? 'pair' : 'pairs'} - Test OK; saving blocked` : '', C('4'));
+    setText(this.warning, this, fitText(count ? `OVERLAP: ${count} ${count === 1 ? 'pair' : 'pairs'} - Test OK; saving blocked` : '', VIEW.w - 8), C('4'), C('0'));
     this.warning.setVisible(count > 0);
   }
 
@@ -383,7 +383,7 @@ export default class BuilderScene extends Phaser.Scene {
   private say(message: string): void {
     let display = message;
     while (textWidth(display) > W - 10 && display.length > 4) display = `${display.slice(0, -4)}...`;
-    setText(this.status, this, display, C('c'));
+    setText(this.status, this, display, C('c'), C('0'));
   }
 
   private selectionAt(point: Point): Selection | undefined {

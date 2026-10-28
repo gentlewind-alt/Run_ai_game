@@ -20,6 +20,9 @@ export default class BootScene extends Phaser.Scene {
   preload(): void {
     this.load.on('loaderror', (f: Phaser.Loader.File) => this.failed.push({ key: f.key, url: String(f.url) }));
     preloadGeneratedSprites(this);
+    const ui = ['button_go', 'button_plain', 'button_gold', 'panel', 'emblem', 'backdrop',
+      ...['play', 'shop', 'forge', 'build', 'arena', 'challenge', 'daily', 'coin', 'star', 'back', 'settings', 'lock', 'music', 'help', 'map'].map((name) => `icon_${name}`)];
+    for (const name of ui) this.load.image(`ui_${name}`, `sprites/ui/ui_${name}.png`);
     // Backdrop plates (concept-art scenery)
     const BG_STYLES = ['hills', 'wood', 'keep', 'frost', 'ember', 'sky'];
     for (const style of BG_STYLES) {

@@ -2,7 +2,7 @@
 // the player can Skip it (or Skip all), and a "?" button reopens any section. Seen sections are remembered in profile.flags (tut_<id>).
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { text, textBlock } from '../art/font5x7';
+import { fitText, text, textBlock } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { feature } from '../config/settings';
@@ -45,9 +45,9 @@ export function openTutorial(scene: Phaser.Scene, id: string, onClose?: () => vo
     content.forEach((o) => o.destroy());
     content = [];
     const p = section.pages[page];
-    content.push(text(scene, W / 2, py + 14, section.title, C('4'), 1, C('0')).setDepth(DEPTH + 2));
-    content.push(text(scene, W / 2, py + 32, p.title, C('c'), 1, C('0')).setDepth(DEPTH + 2));
-    const lines = textBlock(scene, px + 16, py + 54, p.body, C('d'), pw - 32, C('0'));
+    content.push(text(scene, W / 2, py + 14, fitText(section.title, pw - 32), C('4'), 1, C('0')).setDepth(DEPTH + 2));
+    content.push(text(scene, W / 2, py + 32, fitText(p.title, pw - 32), C('c'), 1, C('0')).setDepth(DEPTH + 2));
+    const lines = textBlock(scene, px + 16, py + 54, p.body, C('c'), pw - 32, C('0'), 5);
     lines.forEach((l) => { l.setOrigin(0, 0.5).setDepth(DEPTH + 2); content.push(l); });
     content.push(text(scene, W / 2, py + ph - 38, `${page + 1} / ${section.pages.length}`, C('e'), 1, C('0')).setDepth(DEPTH + 2));
     nextBtn.setLabel(page === section.pages.length - 1 ? 'Done' : 'Next');
@@ -84,7 +84,7 @@ export function openGuides(scene: Phaser.Scene, ids?: string[]): void {
   const buttons: ReturnType<typeof makeButton>[] = [];
   objs.push(scene.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.78).setDepth(DEPTH).setInteractive());
   const cols = 2, rows = Math.ceil(list.length / cols);
-  const pw = 360, ph = 52 + rows * 26 + 34, px = (W - pw) / 2, py = Math.max(6, (H - ph) / 2);
+  const pw = 360, ph = Math.min(H - 12, 52 + rows * 26 + 34), px = (W - pw) / 2, py = Math.max(6, (H - ph) / 2);
   objs.push(panel(scene, px, py, pw, ph, '8', '9', 'f', DEPTH + 1));
   objs.push(text(scene, W / 2, py + 14, 'How to play', C('4'), 1, C('0')).setDepth(DEPTH + 2));
   const close = (): void => { objs.forEach((o) => o.destroy()); buttons.forEach((b) => b.box.destroy()); open = Math.max(0, open - 1); };

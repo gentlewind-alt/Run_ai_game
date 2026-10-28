@@ -81,6 +81,8 @@ export interface Proj {
   steps: number;
   slow: number;
   tapped: boolean;
+  touchedGround?: boolean;
+  groundRotationOffset?: number;
   t: number;
   data: Record<string, any>;
 }

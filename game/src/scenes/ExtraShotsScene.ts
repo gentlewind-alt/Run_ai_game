@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C, rarityColor } from '../art/palette';
-import { setText, text } from '../art/font5x7';
+import { fitText, setText, text } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
@@ -41,31 +41,49 @@ export default class ExtraShotsScene extends Phaser.Scene {
       const cols = 8;
       const cell = 38;
       const gx = W / 2 - (cols * cell) / 2 + cell / 2;
-      d.owned.forEach((id, i) => {
-        const def = data.content.weapons.find((w) => w.id === id);
-        if (!def) return;
-        const x = gx + (i % cols) * cell;
-        const y = py + 86 + Math.floor(i / cols) * cell;
-        this.add.rectangle(x, y, cell - 4, cell - 4, C('f')).setStrokeStyle(1, rarityColor(def.rarity)).setDepth(22);
-        const img = this.add.image(x, y, weaponTexture(id)).setDepth(23);
-        img.setScale(Math.min(26 / img.width, 26 / img.height));
-        const hit = this.add.rectangle(x, y, cell - 4, cell - 4, 0xffffff, 0).setDepth(24).setInteractive();
-        hit.on('pointerup', () => {
-          if (picks.length >= d.count) return;
-          sfx.click();
-          picks.push(id);
-          setText(slots, this, picks.map((p) => shortWeaponName(p, data.content.weapons.find((w) => w.id === p)?.name ?? p)).join(' + '), C('4'), C('0'));
-          if (picks.length >= d.count) {
-            sfx.unlock();
-            this.time.delayedCall(250, () => {
-              this.scene.stop();
-              d.onGrant(picks);
-            });
-          } else {
-            setText(info, this, `Pick shot ${picks.length + 1} of ${d.count}`, C('c'), C('0'));
-          }
+      let page = 0;
+      let objects: Phaser.GameObjects.GameObject[] = [];
+      const perPage = cols * 2;
+      const owned = d.owned.filter((id) => data.content.weapons.some((w) => w.id === id));
+      const pages = Math.max(1, Math.ceil(owned.length / perPage));
+      const draw = (): void => {
+        objects.forEach((o) => o.destroy());
+        objects = [];
+        owned.slice(page * perPage, (page + 1) * perPage).forEach((id, i) => {
+          const def = data.content.weapons.find((w) => w.id === id);
+          if (!def) return;
+          const x = gx + (i % cols) * cell;
+          const y = py + 86 + Math.floor(i / cols) * cell;
+          const box = this.add.rectangle(x, y, cell - 4, cell - 4, C('f')).setStrokeStyle(1, rarityColor(def.rarity)).setDepth(22);
+          const img = this.add.image(x, y, weaponTexture(id)).setDepth(23);
+          img.setScale(Math.min(26 / img.width, 26 / img.height));
+          const hit = this.add.rectangle(x, y, cell - 4, cell - 4, 0xffffff, 0).setDepth(24).setInteractive();
+          hit.on('pointerup', () => {
+            if (picks.length >= d.count) return;
+            sfx.click();
+            picks.push(id);
+            setText(slots, this, fitText(picks.map((p) => shortWeaponName(p, data.content.weapons.find((w) => w.id === p)?.name ?? p)).join(' + '), pw - 24), C('4'), C('0'));
+            if (picks.length >= d.count) {
+              sfx.unlock();
+              this.time.delayedCall(250, () => {
+                this.scene.stop();
+                d.onGrant(picks);
+              });
+            } else {
+              setText(info, this, `Pick shot ${picks.length + 1} of ${d.count}`, C('c'), C('0'));
+            }
+          });
+          objects.push(box, img, hit);
         });
-      });
+        if (pages > 1) {
+          const prev = makeButton(this, W / 2 - 64, py + 160, 32, 20, '<', 'plain', () => { sfx.click(); page--; draw(); }, 24);
+          prev.setEnabled(page > 0);
+          const next = makeButton(this, W / 2 + 64, py + 160, 32, 20, '>', 'plain', () => { sfx.click(); page++; draw(); }, 24);
+          next.setEnabled(page < pages - 1);
+          objects.push(prev.box, next.box, text(this, W / 2, py + 160, `${page + 1}/${pages}`, C('c'), 1, C('0')).setDepth(24));
+        }
+      };
+      draw();
     };
 
     const watch = makeButton(this, W / 2 - 70, py + 100, 120, 26, 'Watch ad', 'go', async () => {

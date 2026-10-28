@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { text, textBlock, textWidth } from '../art/font5x7';
+import { fitText, text, textBlock, textWidth } from '../art/font5x7';
 import { buildBackground } from '../art/backgrounds';
 import { MONSTER_ART } from '../art/textures';
 import { beatBob, beatPhase } from '../audio/beat';
@@ -15,7 +15,7 @@ import { helpButton } from '../ui/tutorial';
 import { monsterDef } from '../data/lookup';
 import { goTo, irisOpen } from '../core/flow';
 import { profile, setMusicOn } from '../core/profile';
-import { makeButton } from '../ui/widgets';
+import { makeButton, panel } from '../ui/widgets';
 
 const CONGA = ['goblin_grunt', 'goblin_bomber', 'dark_elf_archer', 'dark_elf_hexer', 'skeleton_runner', 'imp', 'orc_brute', 'troll'];
 const SPACING = 36;
@@ -58,34 +58,33 @@ export default class TitleScene extends Phaser.Scene {
 
     // menu plate: one big Play, a grid of mode tiles, and a small utility row
     const cx = 374;
-    this.add.rectangle(cx, 122, 196, 228, C('0'), 0.45).setStrokeStyle(2, C('9'), 0.9).setDepth(5);
+    panel(this, cx - 98, 4, 196, 240, '8', '9', 'f', 5);
+    if (this.textures.exists('ui_emblem')) this.add.image(cx, 40, 'ui_emblem').setDisplaySize(68, 68).setDepth(6);
     const open = (scene: string, data?: object) => (): void => { sfx.unlock(); sfx.click(); goTo(this, scene, data); };
-    const play = makeButton(this, cx, 46, 172, 40, '', 'go', open('map'), 6);
-    text(this, cx, 46, 'PLAY', C('c'), 2, C('0')).setDepth(8);
+    const play = makeButton(this, cx, 96, 172, 34, 'PLAY', 'go', open('map'), 6);
     this.tweens.add({ targets: play.box, scaleY: 1.06, yoyo: true, repeat: -1, duration: 700, ease: 'Sine.inOut' });
     const tiles: { label: string; note: string; scene: string; data?: object; on: boolean }[] = [
       { label: 'Challenges', note: 'Player levels', scene: 'challenges', on: feature('challenges') },
-      { label: 'Create level', note: 'Build and share', scene: 'builder', on: feature('builder') },
-      { label: 'Global Arena', note: 'Duel players', scene: 'arena', on: feature('arena') },
-      { label: 'Weapon Forge', note: 'Craft weapons', scene: 'forge', data: { returnTo: 'title' }, on: feature('weaponForge') },
+      { label: 'Build', note: 'Build and share', scene: 'builder', on: feature('builder') },
+      { label: 'Arena', note: 'Duel players', scene: 'arena', on: feature('arena') },
+      { label: 'Forge', note: 'Craft weapons', scene: 'forge', data: { returnTo: 'title' }, on: feature('weaponForge') },
     ];
     tiles.filter((t) => t.on).forEach((t, k) => {
       const x = cx + (k % 2 ? 46 : -46);
-      const y = 100 + Math.floor(k / 2) * 50;
-      makeButton(this, x, y, 84, 44, '', 'plain', open(t.scene, t.data), 6);
-      text(this, x, y - 7, t.label, C('c'), 1, C('0')).setDepth(8);
-      text(this, x, y + 9, t.note, C('d'), 1, C('0')).setDepth(8);
+      const y = 139 + Math.floor(k / 2) * 45;
+      makeButton(this, x, y, 84, 30, t.label, 'plain', open(t.scene, t.data), 6);
+      text(this, x, y + 22, fitText(t.note, 84), C('c'), 1, C('0')).setDepth(8);
     });
 
-    const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music off' : 'Music on');
-    const musicBtn = makeButton(this, cx - 64, 214, 60, 22, musicLabel(), 'plain', () => {
+    const musicLabel = (): string => (profile.settings.musicOn === false ? 'Off' : 'On');
+    const musicBtn = makeButton(this, cx - 62, 226, 60, 20, musicLabel(), 'plain', () => {
       sfx.unlock();
       setMusicOn(profile.settings.musicOn === false);
       music.updateVolume();
       sfx.click();
       musicBtn.setLabel(musicLabel());
-    }, 6);
-    makeButton(this, cx + 64, 214, 60, 22, 'Credits', 'plain', open('credits'), 6);
+    }, 6, 'music');
+    makeButton(this, cx + 62, 226, 58, 20, 'Credits', 'plain', open('credits'), 6);
 
     this.input.once('pointerdown', () => {
       sfx.unlock();
@@ -94,7 +93,7 @@ export default class TitleScene extends Phaser.Scene {
     if (platform.fullscreen.available()) {
       const label = (): string => (platform.fullscreen.active() ? 'Exit full' : 'Fullscreen');
       let note: Phaser.GameObjects.Image[] = [];
-      const fsBtn = makeButton(this, cx, 214, 60, 22, label(), 'plain', () => {
+      const fsBtn = makeButton(this, cx, 226, 58, 20, label(), 'plain', () => {
         sfx.unlock();
         void platform.fullscreen.toggle().then(() => {
           if (!this.scene.isActive()) return;
@@ -103,7 +102,7 @@ export default class TitleScene extends Phaser.Scene {
           note.forEach((n) => n.destroy());
           const why = platform.fullscreen.note();
           if (why) {
-            note = textBlock(this, 14, H - 44, why, C('c'), W - 28, C('0'));
+            note = textBlock(this, 140, 184, why, C('c'), 240, C('0'), 2);
             note.forEach((n) => n.setDepth(20));
             this.time.delayedCall(4500, () => note.forEach((n) => n.destroy()));
           }

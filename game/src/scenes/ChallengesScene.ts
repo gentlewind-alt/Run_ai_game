@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { setText, text } from '../art/font5x7';
+import { fitText, setText, text } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { feature } from '../config/settings';
 import { goTo, irisOpen } from '../core/flow';
 import { listChallenges, type Challenge, type ChallengeSort } from '../core/challenges';
 import { helpButton, maybeTutorial } from '../ui/tutorial';
-import { makeButton, panel } from '../ui/widgets';
+import { menuBackdrop, makeButton, panel } from '../ui/widgets';
 
 const TABS: { id: ChallengeSort; label: string }[] = [{ id: 'top', label: 'Top' }, { id: 'new', label: 'New' }, { id: 'mine', label: 'Mine' }];
 const PER_PAGE = 5;
@@ -36,7 +36,7 @@ export default class ChallengesScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     panel(this, 16, 8, W - 32, H - 16, '8', '9', 'f', 1);
     text(this, W / 2, 20, 'Global Challenges', C('4'), 2, C('0')).setDepth(2);
     if (feature('arena')) makeButton(this, W - 53, 20, 70, 22, 'Arena', 'go', () => { sfx.click(); goTo(this, 'arena'); }, 3);
@@ -78,9 +78,9 @@ export default class ChallengesScene extends Phaser.Scene {
       this.rowObjs.push(
         row,
         text(this, 38, y + 7, this.tab === 'top' ? `#${rank}` : '>', rankCol, 1, C('0')).setOrigin(0, 0.5).setDepth(4),
-        text(this, 68, y + 7, c.title.slice(0, 26), C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(4),
-        text(this, 68, y + 19, `by ${c.mine ? 'you' : c.authorName.slice(0, 16)}  ${c.shots} shots  ${c.allowed.length} weapon${c.allowed.length === 1 ? '' : 's'}`, C('d'), 1, C('0')).setOrigin(0, 0.5).setDepth(4),
-        text(this, W - 38, y + 7, `${c.challengers}`, C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(4),
+        text(this, 68, y + 7, fitText(c.title, 280), C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(4),
+        text(this, 68, y + 19, fitText(`by ${c.mine ? 'you' : c.authorName}  ${c.shots} shots  ${c.allowed.length} weapon${c.allowed.length === 1 ? '' : 's'}`, 280), C('d'), 1, C('0')).setOrigin(0, 0.5).setDepth(4),
+        text(this, W - 38, y + 7, fitText(`${c.challengers}`, 80), C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(4),
         text(this, W - 38, y + 19, 'challengers', C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(4),
       );
     });
