@@ -20,7 +20,7 @@ import { monsterDef, shortItemName, shortWeaponName } from '../data/lookup';
 import { coinCounter } from '../ui/coins';
 import { createItemCard } from '../ui/cards';
 import { helpButton, maybeTutorial } from '../ui/tutorial';
-import { menuBackdrop, uiIcon, makeButton, panel, type Btn } from '../ui/widgets';
+import { menuBackdrop, uiIcon, makeButton, plainCard, type Btn } from '../ui/widgets';
 
 type Tab = 'weapons' | 'relics' | 'artifacts' | 'items' | 'forge' | 'slingshots';
 const TABS: { id: Tab; label: string; w: number }[] = [
@@ -74,7 +74,7 @@ export default class ShopScene extends Phaser.Scene {
     this.page = 0;
     this.forgeScroll = 0;
     this.forgeDragMoved = false;
-    menuBackdrop(this);
+    menuBackdrop(this, true);
     coinCounter(this, 12, 13);
     text(this, 205, 13, 'Shop', C('4'), 2, C('0'));
     this.body = this.add.container(0, 0);
@@ -318,7 +318,7 @@ export default class ShopScene extends Phaser.Scene {
       } else if (it.state === 'owned') {
         extra.push(text(this, x + 31, y + 26, 'Owned', C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
       } else if (it.state === 'locked') {
-        extra.push(uiIcon(this, x + 35, y + 26, 'lock', 'icon_lock', 10).setDepth(2), text(this, x + 43, y + 26, fitText(it.note.replace('Reach level', 'Level'), cardW - 49), C('d')).setOrigin(0, 0.5).setDepth(2));
+        extra.push(uiIcon(this, x + 35, y + 26, 'lock', 'icon_lock', 10).setDepth(2), text(this, x + 43, y + 26, fitText(it.note.replace('Reach level', 'Level'), cardW - 49), C('d'), 1, C('0')).setOrigin(0, 0.5).setDepth(2));
         if (!it.isSilhouette) card.icon.setAlpha(0.4);
       } else {
         extra.push(uiIcon(this, x + 35, y + 26, 'coin', 'icon_coin', 10).setDepth(2), pixText(this, x + 43, y + 26, String(it.price), profile.coins >= it.price ? C('4') : C('3')).setOrigin(0, 0.5).setDepth(2));
@@ -469,27 +469,32 @@ export default class ShopScene extends Phaser.Scene {
       const x = 10 + col * 234;
       const y = row * 40;
       const lv = weaponLevel(w.id);
-      const g = panel(this, x, y, cardW, cardH, '8', '9', 'f', 1);
+      const g = plainCard(this, x, y, cardW, cardH, '8', '9', 1);
       const icon = this.add.image(x + 16, y + 18, weaponTexture(w.id)).setDepth(2);
       icon.setScale(Math.min(1, 24 / icon.width, 28 / icon.height));
-      const nameTxt = text(this, x + 34, y + 10, fitText(shortWeaponName(w.id, w.name), 112), C('c')).setOrigin(0, 0.5).setDepth(2);
+      const textX = x + 34;
+      const priceX = x + cardW - 32;
+      const priceW = 50;
+      const coinX = x + cardW - 65;
+      const nameWidth = Math.min(priceX - priceW / 2, coinX - 5) - textX - data.config.display.ui.buttonPadding;
+      const nameTxt = text(this, textX, y + 10, fitText(shortWeaponName(w.id, w.name), nameWidth), C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
 
       const now = Math.round(w.baseDamage * upgradeMult(w.id));
       const cost = upgradeCost(w.id);
       const after = Math.round(w.baseDamage * (1 + R.upgradeDamagePerStep * (lv + 1)));
       const label = w.forge ? 'Base' : 'Dmg';
       const dmgStr = cost === null ? `${label} ${now} (Max)` : `${label} ${now} -> ${after}`;
-      const dmgTxt = text(this, x + 34, y + 26, fitText(dmgStr, 94), cost === null ? C('4') : C('d')).setOrigin(0, 0.5).setDepth(2);
+      const dmgTxt = text(this, textX, y + 26, fitText(dmgStr, 94), C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
 
       const parts: Phaser.GameObjects.GameObject[] = [g, icon, nameTxt, dmgTxt];
       for (let p = 0; p < R.maxUpgradeLevel; p++) {
         parts.push(this.add.rectangle(x + 134 + p * 6, y + 26, 4, 6, p < lv ? C('4') : C('f')).setStrokeStyle(1, C('0')).setDepth(2));
       }
 
-      const btn = makeButton(this, x + cardW - 32, y + 18, 50, 20, cost === null ? 'Max' : String(cost), 'go', () => this.upgrade(w.id), 6);
+      const btn = makeButton(this, priceX, y + 18, priceW, 20, cost === null ? 'Max' : String(cost), 'go', () => this.upgrade(w.id), 6);
       this.forgeButtons.push({ button: btn, canUpgrade: cost !== null });
       parts.push(btn.box);
-      if (cost !== null) parts.push(uiIcon(this, x + cardW - 65, y + 18, 'coin', 'icon_coin', 10).setDepth(8));
+      if (cost !== null) parts.push(uiIcon(this, coinX, y + 18, 'coin', 'icon_coin', 10).setDepth(8));
       list.add(parts);
     });
 

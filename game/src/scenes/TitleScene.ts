@@ -1,13 +1,14 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { fitText, text, textBlock, textWidth } from '../art/font5x7';
+import { text, textBlock, textWidth } from '../art/font5x7';
+import { pixText } from '../art/pix';
 import { buildBackground } from '../art/backgrounds';
 import { MONSTER_ART } from '../art/textures';
 import { beatBob, beatPhase } from '../audio/beat';
 import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
-import { feature } from '../config/settings';
+import { feature, getSettings } from '../config/settings';
 import { platform } from '../platform';
 import { admin, adminReady, lock, unlock } from '../core/admin';
 import { askAdminCode } from '../ui/adminPrompt';
@@ -45,11 +46,13 @@ export default class TitleScene extends Phaser.Scene {
         x += widths[i];
       });
     };
-    const logoX = Math.round(W * 0.34);
+    const menu = getSettings().display.ui.title;
+    const tagline = 'Fling real weapons. Mash the monsters.';
+    const logoX = Math.min(Math.round(W * 0.34), Math.floor(menu.plateX - menu.helpGap - (textWidth(tagline) + 2) / 2));
     word('MONSTER', logoX, 48, 3, C('c'), C('0'));
     word('MASH', logoX, 94, 6, C('4'), C('q'));
     text(this, logoX, 138, 'Slingshot Siege', C('c'), 1, C('0')).setDepth(5);
-    text(this, logoX, 162, 'Fling real weapons. Mash the monsters.', C('d'), 1, C('0')).setDepth(6);
+    text(this, logoX, 162, tagline, C('d'), 1, C('0')).setDepth(6);
 
     CONGA.forEach((id, i) => {
       const img = this.add.image(0, 0, id).setDepth(4);
@@ -57,11 +60,17 @@ export default class TitleScene extends Phaser.Scene {
     });
 
     // menu plate: one big Play, a grid of mode tiles, and a small utility row
-    const cx = 374;
-    panel(this, cx - 98, 4, 196, 240, '8', '9', 'f', 5);
-    if (this.textures.exists('ui_emblem')) this.add.image(cx, 40, 'ui_emblem').setDisplaySize(68, 68).setDepth(6);
+    const cx = menu.plateX + menu.plateW / 2;
+    const contentW = menu.plateW - 2 * menu.insetX;
+    const plateH = menu.insetY * 2 + menu.emblemPx + menu.playH + menu.tileRowH * 2 + menu.utilityH + menu.rowGap * 4;
+    const emblemY = menu.plateY + menu.insetY + menu.emblemPx / 2;
+    const playY = emblemY + menu.emblemPx / 2 + menu.rowGap + menu.playH / 2;
+    const tileTop = playY + menu.playH / 2 + menu.rowGap;
+    const utilityY = tileTop + menu.tileRowH * 2 + menu.rowGap * 2 + menu.utilityH / 2;
+    panel(this, menu.plateX, menu.plateY, menu.plateW, plateH, '8', '9', 'f', 5);
+    if (this.textures.exists('ui_emblem')) this.add.image(cx, emblemY, 'ui_emblem').setDisplaySize(menu.emblemPx, menu.emblemPx).setDepth(6);
     const open = (scene: string, data?: object) => (): void => { sfx.unlock(); sfx.click(); goTo(this, scene, data); };
-    const play = makeButton(this, cx, 96, 172, 34, 'PLAY', 'go', open('map'), 6);
+    const play = makeButton(this, cx, playY, contentW, menu.playH, 'PLAY', 'go', open('map'), 6, '');
     this.tweens.add({ targets: play.box, scaleY: 1.06, yoyo: true, repeat: -1, duration: 700, ease: 'Sine.inOut' });
     const tiles: { label: string; note: string; scene: string; data?: object; on: boolean }[] = [
       { label: 'Challenges', note: 'Player levels', scene: 'challenges', on: feature('challenges') },
@@ -69,31 +78,34 @@ export default class TitleScene extends Phaser.Scene {
       { label: 'Arena', note: 'Duel players', scene: 'arena', on: feature('arena') },
       { label: 'Forge', note: 'Craft weapons', scene: 'forge', data: { returnTo: 'title' }, on: feature('weaponForge') },
     ];
+    const tileW = (contentW - menu.tileGap) / 2;
     tiles.filter((t) => t.on).forEach((t, k) => {
-      const x = cx + (k % 2 ? 46 : -46);
-      const y = 139 + Math.floor(k / 2) * 45;
-      makeButton(this, x, y, 84, 30, t.label, 'plain', open(t.scene, t.data), 6);
-      text(this, x, y + 22, fitText(t.note, 84), C('c'), 1, C('0')).setDepth(8);
+      const x = cx + (k % 2 ? 1 : -1) * (tileW + menu.tileGap) / 2;
+      const y = tileTop + Math.floor(k / 2) * (menu.tileRowH + menu.rowGap) + menu.tileH / 2;
+      makeButton(this, x, y, tileW, menu.tileH, t.label, 'plain', open(t.scene, t.data), 6, undefined, { iconPx: menu.tileIconPx, fixedIcon: true });
+      pixText(this, x, y + menu.captionOffset, t.note, C('d')).setDepth(8);
     });
 
-    const musicLabel = (): string => (profile.settings.musicOn === false ? 'Off' : 'On');
-    const musicBtn = makeButton(this, cx - 62, 226, 60, 20, musicLabel(), 'plain', () => {
+    const utilityW = (contentW - 2 * menu.utilityGap) / 3;
+    const utilityLayout = { compact: true, padding: menu.utilityPadding };
+    const musicLabel = (): string => (profile.settings.musicOn === false ? 'Music off' : 'Music on');
+    const musicBtn = makeButton(this, cx - utilityW - menu.utilityGap, utilityY, utilityW, menu.utilityH, musicLabel(), 'plain', () => {
       sfx.unlock();
       setMusicOn(profile.settings.musicOn === false);
       music.updateVolume();
       sfx.click();
       musicBtn.setLabel(musicLabel());
-    }, 6, 'music');
-    makeButton(this, cx + 62, 226, 58, 20, 'Credits', 'plain', open('credits'), 6);
+    }, 6, '', utilityLayout);
+    makeButton(this, cx + utilityW + menu.utilityGap, utilityY, utilityW, menu.utilityH, 'Credits', 'plain', open('credits'), 6, '', utilityLayout);
 
     this.input.once('pointerdown', () => {
       sfx.unlock();
       music.updateVolume();
     });
     if (platform.fullscreen.available()) {
-      const label = (): string => (platform.fullscreen.active() ? 'Exit full' : 'Fullscreen');
+      const label = (): string => (platform.fullscreen.active() ? 'Exit full' : 'Full screen');
       let note: Phaser.GameObjects.Image[] = [];
-      const fsBtn = makeButton(this, cx, 226, 58, 20, label(), 'plain', () => {
+      const fsBtn = makeButton(this, cx, utilityY, utilityW, menu.utilityH, label(), 'plain', () => {
         sfx.unlock();
         void platform.fullscreen.toggle().then(() => {
           if (!this.scene.isActive()) return;
@@ -107,7 +119,7 @@ export default class TitleScene extends Phaser.Scene {
             this.time.delayedCall(4500, () => note.forEach((n) => n.destroy()));
           }
         });
-      }, 6);
+      }, 6, '', utilityLayout);
     }
     const adminTag = (): void => {
       const tag = text(this, W - 6, H - 8, 'Admin: ` for tools. Tap to lock', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(6).setInteractive();
@@ -128,7 +140,7 @@ export default class TitleScene extends Phaser.Scene {
       });
     });
     music.play({ theme: 'title' });
-    helpButton(this, W - 16, 14, undefined, 8);
+    helpButton(this, menu.plateX - menu.helpGap - 12, menu.plateY + menu.insetY - 2, undefined, 8);
     irisOpen(this);
   }
 

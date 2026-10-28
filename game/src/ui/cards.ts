@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { C, rarityColor, rarityStroke } from '../art/palette';
 import { fitText, text } from '../art/font5x7';
-import { panel, type Panel } from './widgets';
+import { plainCard, type Panel } from './widgets';
 
 export interface CardOptions {
   scene: Phaser.Scene;
@@ -33,11 +33,10 @@ export function createItemCard(opts: CardOptions): CardResult {
   const h = opts.h ?? 38;
   const baseStroke = opts.rarity ? rarityStroke(opts.rarity) : '9';
   const stroke = opts.selected ? 'a' : baseStroke;
-  const p = panel(opts.scene, opts.x, opts.y, opts.w, h, opts.selected ? '9' : '8', stroke, 'f', 1);
-  const selection = opts.selected ? opts.scene.add.graphics().setDepth(2)
-    .lineStyle(1, C('4'), 1).strokeRect(opts.x - 1, opts.y - 1, opts.w + 2, h + 2) : undefined;
+  const p = plainCard(opts.scene, opts.x, opts.y, opts.w, h, '8', stroke, 1);
 
-  const iconBox = opts.scene.add.rectangle(opts.x + 15, opts.y + 19, 24, 30, C('0'))
+  const iconOutline = opts.scene.add.rectangle(opts.x + 15, opts.y + 19, 26, 32, C('0')).setDepth(2);
+  const iconBox = opts.scene.add.rectangle(opts.x + 15, opts.y + 19, 24, 30, C('8'))
     .setStrokeStyle(1, C(baseStroke)).setDepth(2);
   const cardKey = opts.icon.startsWith('wpn_') && !opts.icon.startsWith('wpn_card_') && opts.scene.textures.exists(`wpn_card_${opts.icon.slice(4)}`)
     ? `wpn_card_${opts.icon.slice(4)}`
@@ -68,8 +67,7 @@ export function createItemCard(opts: CardOptions): CardResult {
     icon.setAlpha(0.4);
   }
 
-  const nameColor = opts.locked ? C('e') : opts.rarity ? rarityColor(opts.rarity) : C('c');
-  const nameTxt = text(opts.scene, opts.x + 31, opts.y + 10, fitText(opts.name, opts.w - 36), nameColor)
+  const nameTxt = text(opts.scene, opts.x + 31, opts.y + 10, fitText(opts.name, opts.w - 36), C('c'), 1, C('0'))
     .setOrigin(0, 0.5).setDepth(2);
 
   const hit = opts.scene.add.rectangle(opts.x + opts.w / 2, opts.y + h / 2, opts.w, h, 0xffffff, 0)
@@ -80,6 +78,6 @@ export function createItemCard(opts: CardOptions): CardResult {
 
   return {
     panel: p, iconBox, icon, nameTxt, hit,
-    objects: [p, ...(selection ? [selection] : []), iconBox, ...extraObjs, icon, nameTxt, hit],
+    objects: [p, iconOutline, iconBox, ...extraObjs, icon, nameTxt, hit],
   };
 }

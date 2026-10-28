@@ -53,7 +53,7 @@ export default class LoadoutScene extends Phaser.Scene {
     const cleared = starsFor(this.level) > 0;
     this.fixed = lvl.loadout?.length && !cleared ? lvl.loadout.slice() : null;
     this.forgeCap = forgeEnabled() ? forgeLimit(lvl) : 0;
-    menuBackdrop(this);
+    menuBackdrop(this, true);
 
     // Divider between grid and loadout panel
     this.add.rectangle(264, H / 2, 2, H - 20, C('0'), 0.4);
@@ -77,7 +77,8 @@ export default class LoadoutScene extends Phaser.Scene {
       const sx = 370 + (colIdx - (countInRow - 1) / 2) * colGap;
       const sy = isRow0 ? 44 : 74;
       const boxSize = 26; // touch target 26x26 >= 24px
-      const box = this.add.rectangle(sx, sy, boxSize, boxSize, C('0')).setStrokeStyle(1, C('d')).setInteractive();
+      this.add.rectangle(sx, sy, boxSize + 2, boxSize + 2, C('0'));
+      const box = this.add.rectangle(sx, sy, boxSize, boxSize, C('8')).setStrokeStyle(1, C('9')).setInteractive();
       box.on('pointerdown', () => { if (this.fixed) return; sfx.click(); this.slots[i] = null; this.refresh(); });
       this.slotImgs.push(this.add.image(sx, sy, 'px').setVisible(false).setScale(1.5));
       pixText(this, sx - 9, sy - 9, String(i + 1), C('4'));
@@ -158,7 +159,7 @@ export default class LoadoutScene extends Phaser.Scene {
 
       const elIcon = this.add.image(x + 35, y + 26, `el_${w.element}`).setDepth(2);
       const dmgTxt = pixText(this, x + 42, y + 26, String(Math.round(w.baseDamage * upgradeMult(w.id))), C('4')).setOrigin(0, 0.5).setDepth(2);
-      const abTxt = text(this, x + cardW - 6, y + 26, fitText(w.ability?.label ?? '', 48), C('b')).setOrigin(1, 0.5).setDepth(2);
+      const abTxt = text(this, x + cardW - 6, y + 26, fitText(w.ability?.label ?? '', 48), C('b'), 1, C('0')).setOrigin(1, 0.5).setDepth(2);
 
       this.gridObjs.push(...card.objects, elIcon, dmgTxt, abTxt);
     });
@@ -242,7 +243,8 @@ export default class LoadoutScene extends Phaser.Scene {
     this.equipped = profile.equipped.artifacts.filter((id) => owns('artifacts', id)).slice(0, slots);
     arts.forEach((a, i) => {
       const x = 336 + i * 26;
-      const box = this.add.rectangle(x, 158, 22, 22, C('0')).setStrokeStyle(1, C('d')).setInteractive();
+      this.add.rectangle(x, 158, 24, 24, C('0'));
+      const box = this.add.rectangle(x, 158, 22, 22, C('8')).setStrokeStyle(1, C('9')).setInteractive();
       this.add.image(x, 158, iconKey(a.id)).setDepth(2);
       box.on('pointerdown', () => {
         sfx.click();
@@ -296,7 +298,7 @@ export default class LoadoutScene extends Phaser.Scene {
         img.setVisible(false);
       }
     });
-    for (const a of this.artifactBoxes) a.box.setStrokeStyle(this.equipped.includes(a.id) ? 2 : 1, this.equipped.includes(a.id) ? C('4') : C('d'));
+    for (const a of this.artifactBoxes) a.box.setStrokeStyle(1, this.equipped.includes(a.id) ? C('4') : C('9'));
     this.goBtn?.setEnabled(this.slots.every((s) => s !== null));
     if (!this.fixed && this.detailId === null) this.describe(null);
     this.forgeNote?.destroy();
