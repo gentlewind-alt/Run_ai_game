@@ -7,7 +7,7 @@ import { feature } from '../config/settings';
 import { goTo, irisOpen } from '../core/flow';
 import { listChallenges, type Challenge, type ChallengeSort } from '../core/challenges';
 import { helpButton, maybeTutorial } from '../ui/tutorial';
-import { menuBackdrop, makeButton, panel } from '../ui/widgets';
+import { menuBackdrop, makeButton, panel, plainCard } from '../ui/widgets';
 
 const TABS: { id: ChallengeSort; label: string }[] = [{ id: 'top', label: 'Top' }, { id: 'new', label: 'New' }, { id: 'mine', label: 'Mine' }];
 const PER_PAGE = 5;
@@ -36,7 +36,7 @@ export default class ChallengesScene extends Phaser.Scene {
   }
 
   create(): void {
-    menuBackdrop(this);
+    menuBackdrop(this, true);
     panel(this, 16, 8, W - 32, H - 16, '8', '9', 'f', 1);
     text(this, W / 2, 20, 'Global Challenges', C('4'), 2, C('0')).setDepth(2);
     if (feature('arena')) makeButton(this, W - 53, 20, 70, 22, 'Arena', 'go', () => { sfx.click(); goTo(this, 'arena'); }, 3);
@@ -72,10 +72,12 @@ export default class ChallengesScene extends Phaser.Scene {
     this.items.slice(start, start + PER_PAGE).forEach((c, i) => {
       const y = 62 + i * ROW_H;
       const rank = start + i + 1;
-      const row = this.add.rectangle(W / 2, y + ROW_H / 2 - 2, W - 60, ROW_H - 4, C('9')).setStrokeStyle(1, C('a')).setDepth(3).setInteractive();
+      const card = plainCard(this, 30, y, W - 60, ROW_H - 4, '8', '9', 3);
+      const row = this.add.rectangle(W / 2, y + ROW_H / 2 - 2, W - 60, ROW_H - 4, 0xffffff, 0).setDepth(3).setInteractive();
       row.on('pointerdown', () => { sfx.click(); goTo(this, 'challenge', { id: c.id }); });
       const rankCol = this.tab === 'top' && rank <= 3 ? C('4') : C('c');
       this.rowObjs.push(
+        card,
         row,
         text(this, 38, y + 7, this.tab === 'top' ? `#${rank}` : '>', rankCol, 1, C('0')).setOrigin(0, 0.5).setDepth(4),
         text(this, 68, y + 7, fitText(c.title, 280), C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(4),

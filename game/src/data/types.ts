@@ -235,7 +235,9 @@ export interface Config {
   version: number;
   levels: number[];
   display: { pixelArt: boolean; maxParticles: number; weapon: WeaponDisplay; weaponAnim: WeaponAnimConfig;
-    ui: { buttonCorner: number; panelCorner: number; iconPx: number; iconGap: number; buttonPadding: number; disabledAlpha: number; backdropAlpha: number } };
+    ui: { buttonCorner: number; panelCorner: number; iconPx: number; iconGap: number; buttonPadding: number; disabledAlpha: number; backdropAlpha: number;
+      plainPanelMinWidth: number; plainPanelMinHeight: number; listBackdropDimAlpha: number;
+      title: { plateX: number; plateY: number; plateW: number; insetX: number; insetY: number; rowGap: number; emblemPx: number; playH: number; tileH: number; tileGap: number; tileRowH: number; captionOffset: number; tileIconPx: number; utilityH: number; utilityGap: number; utilityPadding: number; helpGap: number } } };
   world: { groundY: number; slingX: number; slingY: number };
   physics: { stepHz: number; gravityY: number; positionIterations: number; velocityIterations: number; enableSleeping: boolean; maxStepsPerFrame: number };
   camera: {

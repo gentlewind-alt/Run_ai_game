@@ -45,7 +45,7 @@ export default class LeaderboardScene extends Phaser.Scene {
   }
 
   create(): void {
-    menuBackdrop(this);
+    menuBackdrop(this, true);
     panel(this, 16, 8, W - 32, H - 16, '8', '9', 'f', 1);
     text(this, W / 2, 20, 'Leaderboards', C('4'), 2, C('0')).setDepth(2);
 

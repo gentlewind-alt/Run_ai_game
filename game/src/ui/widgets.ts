@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { fitText, text, setText } from '../art/font5x7';
+import { pixText, setPixText } from '../art/pix';
 import { getSettings } from '../config/settings';
 import { H, W } from '../config/constants';
 
@@ -22,11 +23,19 @@ export interface Btn {
 
 export type Panel = Phaser.GameObjects.Graphics | Phaser.GameObjects.NineSlice;
 
+export interface ButtonLayout {
+  compact?: boolean;
+  padding?: number;
+  iconPx?: number;
+  fixedIcon?: boolean;
+}
+
 /** Optional menu art always has a drawn fallback. */
-export function menuBackdrop(scene: Phaser.Scene): void {
+export function menuBackdrop(scene: Phaser.Scene, dim = false): void {
   scene.add.rectangle(W / 2, H / 2, W, H, C('f'));
   if (scene.textures.exists('ui_backdrop')) scene.add.image(W / 2, H / 2, 'ui_backdrop')
     .setDisplaySize(W, H).setAlpha(getSettings().display.ui.backdropAlpha);
+  if (dim) scene.add.rectangle(W / 2, H / 2, W, H, C('0'), getSettings().display.ui.listBackdropDimAlpha);
 }
 
 export function uiIcon(scene: Phaser.Scene, x: number, y: number, name: string, fallback: string, size = getSettings().display.ui.iconPx): Phaser.GameObjects.Image {
@@ -56,7 +65,7 @@ function buttonIcon(label: string): string | undefined {
  */
 export function makeButton(
   scene: Phaser.Scene, x: number, y: number, w: number, h: number, label: string, kind: BtnKind,
-  onClick: () => void, depth = 10, iconName?: string,
+  onClick: () => void, depth = 10, iconName?: string, layout: ButtonLayout = {},
 ): Btn {
   const ui = getSettings().display.ui;
   const [face, hl, sh] = KIND[kind];
@@ -79,7 +88,7 @@ export function makeButton(
     g.fillStyle(C(on ? hl : 'd'), 1).fillRect(-w / 2, -h / 2, w, 1);
   };
   draw(true);
-  const t = text(scene, 0, -1, '', C('c'), 1, C('0'));
+  const t = layout.compact ? pixText(scene, 0, -1, '', C('c')) : text(scene, 0, -1, '', C('c'), 1, C('0'));
   let enabled = true;
   let icon: Phaser.GameObjects.Image | undefined;
   const inner = scene.add.container(0, 0, [g, ...(skin ? [skin] : []), t]);
@@ -87,17 +96,20 @@ export function makeButton(
     icon?.destroy();
     icon = undefined;
     const name = iconName ?? buttonIcon(s);
-    const padding = Math.min(ui.buttonPadding, w < 40 ? 3 : ui.buttonPadding);
-    const size = Math.min(ui.iconPx, h - 6, w < 40 ? 8 : ui.iconPx);
+    const padding = layout.padding ?? Math.min(ui.buttonPadding, w < 40 ? 3 : ui.buttonPadding);
+    const iconPx = layout.iconPx ?? ui.iconPx;
+    const size = Math.min(iconPx, h - 6, w < 40 ? 8 : iconPx);
     const hasIcon = name && scene.textures.exists(`ui_icon_${name}`);
     const room = w - padding * 2 - (hasIcon ? size + ui.iconGap : 0);
-    const scale = s === 'PLAY' && w >= 130 ? 2 : 1;
-    setText(t, scene, fitText(s, room / scale), C('c'), C('0'));
+    const scale = !layout.compact && s === 'PLAY' && w >= 130 ? 2 : 1;
+    if (layout.compact) setPixText(t, scene, s, C('c'));
+    else setText(t, scene, fitText(s, room / scale), C('c'), C('0'));
     t.setScale(scale);
     const total = t.displayWidth + (hasIcon ? size + ui.iconGap : 0);
     t.x = hasIcon ? (size + ui.iconGap) / 2 : 0;
     if (hasIcon) {
-      icon = scene.add.image(-total / 2 + size / 2, -1, `ui_icon_${name}`).setDisplaySize(size, size).setAlpha(enabled ? 1 : ui.disabledAlpha);
+      const iconX = layout.fixedIcon ? -w / 2 + padding + size / 2 : -total / 2 + size / 2;
+      icon = scene.add.image(iconX, -1, `ui_icon_${name}`).setDisplaySize(size, size).setAlpha(enabled ? 1 : ui.disabledAlpha);
       inner.add(icon);
     }
   };
@@ -129,18 +141,25 @@ export function makeButton(
   };
 }
 
-/** Bevelled sticker panel with an Ink outline. (x, y) is the top-left corner. */
-export function panel(
-  scene: Phaser.Scene, x: number, y: number, w: number, h: number, face = '8', hl = '9', shade = 'f', depth = 0,
-): Panel {
-  if (scene.textures.exists('ui_panel')) {
-    const corner = Math.min(getSettings().display.ui.panelCorner, Math.floor(w / 2), Math.floor(h / 2));
-    return scene.add.nineslice(x + w / 2, y + h / 2, 'ui_panel', undefined, w, h, corner, corner, corner, corner).setDepth(depth);
-  }
+/** Flat navy card with a 1px border and dark outer outline. */
+export function plainCard(
+  scene: Phaser.Scene, x: number, y: number, w: number, h: number, face = '8', border = '9', depth = 0,
+): Phaser.GameObjects.Graphics {
   const g = scene.add.graphics().setDepth(depth);
   g.fillStyle(C('0'), 1).fillRect(x - 1, y - 1, w + 2, h + 2);
-  g.fillStyle(C(shade), 1).fillRect(x, y, w, h);
-  g.fillStyle(C(face), 1).fillRect(x, y, w, h - 2);
-  g.fillStyle(C(hl), 1).fillRect(x, y, w, 1);
+  g.fillStyle(C(border), 1).fillRect(x, y, w, h);
+  g.fillStyle(C(face), 1).fillRect(x + 1, y + 1, w - 2, h - 2);
   return g;
+}
+
+/** Ornate framing panel; small panels use a plain card. (x, y) is the top-left corner. */
+export function panel(
+  scene: Phaser.Scene, x: number, y: number, w: number, h: number, face = '8', hl = '9', _shade = 'f', depth = 0,
+): Panel {
+  const ui = getSettings().display.ui;
+  if (w >= ui.plainPanelMinWidth && h >= ui.plainPanelMinHeight && scene.textures.exists('ui_panel')) {
+    const corner = Math.min(ui.panelCorner, Math.floor(w / 2), Math.floor(h / 2));
+    return scene.add.nineslice(x + w / 2, y + h / 2, 'ui_panel', undefined, w, h, corner, corner, corner, corner).setDepth(depth);
+  }
+  return plainCard(scene, x, y, w, h, face === 'f' ? 'f' : '8', hl, depth);
 }

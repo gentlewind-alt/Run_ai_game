@@ -23,7 +23,7 @@
         "maxParticles": { "type": "integer", "minimum": 0 },
         "ui": {
           "type": "object", "additionalProperties": false,
-          "required": ["buttonCorner", "panelCorner", "iconPx", "iconGap", "buttonPadding", "disabledAlpha", "backdropAlpha"],
+          "required": ["buttonCorner", "panelCorner", "iconPx", "iconGap", "buttonPadding", "disabledAlpha", "backdropAlpha", "plainPanelMinWidth", "plainPanelMinHeight", "listBackdropDimAlpha", "title"],
           "properties": {
             "buttonCorner": { "type": "integer", "minimum": 0 },
             "panelCorner": { "type": "integer", "minimum": 0 },
@@ -31,7 +31,33 @@
             "iconGap": { "type": "integer", "minimum": 0 },
             "buttonPadding": { "type": "integer", "minimum": 0 },
             "disabledAlpha": { "type": "number", "minimum": 0, "maximum": 1 },
-            "backdropAlpha": { "type": "number", "minimum": 0, "maximum": 1 }
+            "backdropAlpha": { "type": "number", "minimum": 0, "maximum": 1 },
+            "plainPanelMinWidth": { "type": "integer", "minimum": 1 },
+            "plainPanelMinHeight": { "type": "integer", "minimum": 1 },
+            "listBackdropDimAlpha": { "type": "number", "minimum": 0, "maximum": 1 },
+            "title": {
+              "type": "object", "additionalProperties": false,
+              "required": ["plateX", "plateY", "plateW", "insetX", "insetY", "rowGap", "emblemPx", "playH", "tileH", "tileGap", "tileRowH", "captionOffset", "tileIconPx", "utilityH", "utilityGap", "utilityPadding", "helpGap"],
+              "properties": {
+                "plateX": { "type": "integer", "minimum": 0 },
+                "plateY": { "type": "integer", "minimum": 0 },
+                "plateW": { "type": "integer", "minimum": 1 },
+                "insetX": { "type": "integer", "minimum": 0 },
+                "insetY": { "type": "integer", "minimum": 0 },
+                "rowGap": { "type": "integer", "minimum": 0 },
+                "emblemPx": { "type": "integer", "minimum": 1 },
+                "playH": { "type": "integer", "minimum": 1 },
+                "tileH": { "type": "integer", "minimum": 1 },
+                "tileGap": { "type": "integer", "minimum": 0 },
+                "tileRowH": { "type": "integer", "minimum": 1 },
+                "captionOffset": { "type": "integer", "minimum": 0 },
+                "tileIconPx": { "type": "integer", "minimum": 1 },
+                "utilityH": { "type": "integer", "minimum": 1 },
+                "utilityGap": { "type": "integer", "minimum": 0 },
+                "utilityPadding": { "type": "integer", "minimum": 0 },
+                "helpGap": { "type": "integer", "minimum": 0 }
+              }
+            }
           }
         },
         "weapon": {

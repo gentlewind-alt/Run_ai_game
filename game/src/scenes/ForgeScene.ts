@@ -40,7 +40,7 @@ export default class ForgeScene extends Phaser.Scene {
     this.legendsPage = 0;
     this.recipe = forgeRecipe(data.forge.weapons[0].id);
     this.kind = data.forge.traits.find((t) => t.id === this.recipe.traitId)!.kind;
-    menuBackdrop(this);
+    menuBackdrop(this, true);
     text(this, 16, 14, 'WEAPON FORGE', C('4'), 2, C('0')).setOrigin(0, 0.5);
     uiIcon(this, 234, 14, 'coin', 'icon_coin', 12);
     text(this, 302, 14, fitText(String(profile.coins), 56), C('4'), 1, C('0')).setOrigin(1, 0.5);
