@@ -74,7 +74,9 @@ function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y
   const p = b.proj && b.proj.body === pb ? b.proj : info.forgeProj ?? null;
   if (p) {
     if (p.data.ended) return;
-    if (p === b.proj) impactAnim(b, p, rel);
+    const ground = ob.label === 'ground';
+    if (p === b.proj) impactAnim(b, p, rel, ground);
+    if (ground) p.touchedGround = true;
     const impl = p === b.proj ? b.wpn : weaponImpl(p.def);
     const hit = { target: t, rel, x, y };
     if (!p.tapped && p.def.ability.mode !== 'button' && impl.onImpact) {

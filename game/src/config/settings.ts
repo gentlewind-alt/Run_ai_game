@@ -12,6 +12,7 @@ const DEFAULTS: Config = {
   version: 1,
   levels: [1],
   display: { pixelArt: true, maxParticles: 90, weapon: { flightPx: 16, slingPx: 24, queuePx: 24, relicBonus: 1.25 },
+    ui: { buttonCorner: 10, panelCorner: 24, iconPx: 14, iconGap: 3, buttonPadding: 6, disabledAlpha: 0.55, backdropAlpha: 1 },
     weaponAnim: { launchSteps: 10, launchPop: 0.5, launchSparks: 8, abilitySteps: 12, abilityPunch: 0.7, abilityRing: 16, abilitySparks: 10, flashSteps: 5, trailEvery: 3, ghostAlpha: 0.45, ghostMs: 180, tumble: 0.4, rock: 0.4, rockSpeed: 0.2, pulse: 0.12, pulseSpeed: 0.3, slashMs: 220, kick: 10, impactMinSpeed: 1.5, impactSteps: 8, impactSquash: 0.35, aimTurn: 0.2, flipSteps: 18, flipTurns: 2, flipLazy: 0.08, frisbeeSpeed: 0.35, corkSpeed: 0.45, twirlSpeed: 0.3, windmill: 0.07 } },
   world: { groundY: 320, slingX: 56, slingY: 262 },
   physics: { stepHz: 60, gravityY: 1, positionIterations: 8, velocityIterations: 6, enableSleeping: true, maxStepsPerFrame: 3 },

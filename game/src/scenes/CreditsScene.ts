@@ -4,7 +4,7 @@ import { text } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
-import { makeButton, panel } from '../ui/widgets';
+import { menuBackdrop, makeButton, panel } from '../ui/widgets';
 
 export default class CreditsScene extends Phaser.Scene {
   constructor() {
@@ -12,7 +12,7 @@ export default class CreditsScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     panel(this, 16, 12, W - 32, H - 24, '8', '9', 'f', 1);
 
     text(this, W / 2, 28, 'MONSTER MASH', C('4'), 2, C('0')).setDepth(2);

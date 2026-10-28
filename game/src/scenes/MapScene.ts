@@ -12,7 +12,7 @@ import { setDailyLevel } from '../data/lookup';
 import { generateDailyLevel, getDailySeed } from '../content/levelKinds/daily';
 import { platform } from '../platform';
 import { coinCounter } from '../ui/coins';
-import { makeButton, panel, type Btn } from '../ui/widgets';
+import { menuBackdrop, uiIcon, makeButton, panel, type Btn } from '../ui/widgets';
 import { helpButton, maybeTutorial } from '../ui/tutorial';
 
 const PANEL_W = 330;
@@ -58,13 +58,14 @@ export default class MapScene extends Phaser.Scene {
     this.nextCountdownTime = 0;
     this.buildId++;
     this.events.once('shutdown', () => { this.buildId++; });
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     coinCounter(this, 12, 13);
 
     const realms = data.content.realms;
     const total = realms.reduce((n, r) => n + r.levels.filter((id) => data.levels[id]).length * 3, 0);
     const got = realms.reduce((n, r) => n + r.levels.reduce((m, id) => m + starsFor(id), 0), 0);
-    text(this, W - 12, 13, `Stars ${got} of ${total}`, C('4'), 1, C('0')).setOrigin(1, 0.5);
+    uiIcon(this, 350, 13, 'star', 'star_on', 12);
+    text(this, W - 12, 13, fitText(`${got} of ${total}`, 104), C('4'), 1, C('0')).setOrigin(1, 0.5);
 
     realms.slice(this.page * REALMS_PER_PAGE, (this.page + 1) * REALMS_PER_PAGE).forEach((realm, li) => {
       const ri = this.page * REALMS_PER_PAGE + li;
@@ -118,7 +119,8 @@ export default class MapScene extends Phaser.Scene {
     const doneToday = dInfo.lastDay === dateStr;
 
     const cx = x + w / 2;
-    text(this, cx, y0 + 16, 'Daily Mash', C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
+    uiIcon(this, cx - 43, y0 + 16, 'daily', 'star_on', 14).setDepth(2);
+    text(this, cx + 8, y0 + 16, 'Daily Mash', C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
     text(this, cx, y0 + 32, dateStr, C('c'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(2);
 
     const streakStr = dInfo.streak > 0 ? `Streak ${dInfo.streak}d` : 'Streak 0d';
@@ -166,19 +168,20 @@ export default class MapScene extends Phaser.Scene {
     const w = PANEL_W;
     panel(this, x, y0, w, PANEL_H, light.sky[0], light.sky[0], light.sky[0]);
     const g = this.add.graphics();
-    const band = (c: string, from: number, h: number): void => { g.fillStyle(C(c), 1).fillRect(x, y0 + from, w, h); };
+    const innerX = x + 6, innerY = y0 + 14, innerW = w - 12, innerH = PANEL_H - 20;
+    const band = (c: string, from: number, h: number): void => { g.fillStyle(C(c), 1).fillRect(innerX, innerY + from, innerW, Math.min(h, innerH - from)); };
     band(light.sky[0], 0, 20);
     band(light.sky[1], 20, 20);
     band(light.sky[2], 40, 14);
     g.fillStyle(C(light.sky[1]), 1);
-    for (let i = 0; i < w; i += 2) g.fillRect(x + i, y0 + 19, 1, 1);
+    for (let i = 0; i < innerW; i += 2) g.fillRect(innerX + i, innerY + 19, 1, 1);
     g.fillStyle(C(light.sky[2]), 1);
-    for (let i = 1; i < w; i += 2) g.fillRect(x + i, y0 + 39, 1, 1);
-    band(light.ground, PANEL_H - 10, 10);
-    band(light.edge, PANEL_H - 10, 2);
+    for (let i = 1; i < innerW; i += 2) g.fillRect(innerX + i, innerY + 39, 1, 1);
+    band(light.ground, innerH - 10, 10);
+    band(light.edge, innerH - 10, 2);
     g.fillStyle(C(light.dots), 1);
     for (let i = 0; i < light.dotCount; i++) {
-      g.fillRect(x + 8 + ((i * 47) % (w - 16)), y0 + 4 + ((i * 23) % 32), light.dots === 'c' ? 6 : 1, light.dots === 'c' ? 2 : 1);
+      g.fillRect(innerX + 8 + ((i * 47) % (innerW - 16)), innerY + 4 + ((i * 23) % 26), light.dots === 'c' ? 6 : 1, light.dots === 'c' ? 2 : 1);
     }
     text(this, x + 8, y0 + 8, fitText(name, w - 16), C('c'), 1, C('0')).setOrigin(0, 0.5);
     if (!open) {
@@ -211,12 +214,13 @@ export default class MapScene extends Phaser.Scene {
     }, 6);
     if (!built || !unlocked) {
       btn.setEnabled(false);
-      this.add.image(x, y - 1, 'icon_lock').setDepth(7);
+      uiIcon(this, x, y - 1, 'lock', 'icon_lock', 12).setDepth(7);
     }
     if (unlocked && id === reachedLevel() && !cleared) this.pulse.push({ box: btn.box });
     const stars = starsFor(id);
     for (let s = 0; s < 3; s++) {
-      this.add.image(x - 9 + s * 9, y + 16, s < stars ? 'star_on' : 'star_off').setScale(0.8).setDepth(6);
+      if (s < stars) uiIcon(this, x - 9 + s * 9, y + 16, 'star', 'star_on', 8).setDepth(6);
+      else this.add.image(x - 9 + s * 9, y + 16, 'star_off').setScale(0.8).setDepth(6);
     }
   }
 

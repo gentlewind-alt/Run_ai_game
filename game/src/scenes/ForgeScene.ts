@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { text, textBlock } from '../art/font5x7';
+import { fitText, text, textBlock } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { goTo, irisOpen } from '../core/flow';
@@ -9,7 +9,7 @@ import { drawForgeWeapon } from '../art/forgeTextures';
 import { owns, profile, upgradeMult } from '../core/profile';
 import { data } from '../data/load';
 import type { ForgeRecipe } from '../data/forgeTypes';
-import { makeButton, panel } from '../ui/widgets';
+import { menuBackdrop, uiIcon, makeButton, panel } from '../ui/widgets';
 
 type Tab = 'Body' | 'Trait' | 'Ability' | 'Aura' | 'Legends';
 
@@ -40,10 +40,10 @@ export default class ForgeScene extends Phaser.Scene {
     this.legendsPage = 0;
     this.recipe = forgeRecipe(data.forge.weapons[0].id);
     this.kind = data.forge.traits.find((t) => t.id === this.recipe.traitId)!.kind;
-    this.add.rectangle(240, 135, 480, 270, C('f'));
-    text(this, 16, 14, 'WEAPON FORGE', C('4'), 1, C('0')).setOrigin(0, 0.5);
-    this.add.image(236, 14, 'icon_coin');
-    text(this, 302, 14, `${profile.coins} coins`, C('4'), 1).setOrigin(1, 0.5);
+    menuBackdrop(this);
+    text(this, 16, 14, 'WEAPON FORGE', C('4'), 2, C('0')).setOrigin(0, 0.5);
+    uiIcon(this, 234, 14, 'coin', 'icon_coin', 12);
+    text(this, 302, 14, fitText(String(profile.coins), 56), C('4'), 1, C('0')).setOrigin(1, 0.5);
     sfx.preload(['forge_craft']);
     this.body = this.add.container(0, 0);
     this.render();
@@ -104,7 +104,7 @@ export default class ForgeScene extends Phaser.Scene {
         const y = 107 + Math.floor(i / 2) * 37;
         const owned = owns('weapons', w.id);
         this.add.image(x - 54, y, weaponTexture(w.id)).setDisplaySize(24, 24).setTint(owned ? C('c') : C('0'));
-        text(this, x - 35, y - 5, w.name.slice(0, 17), owned ? C('4') : C('d')).setOrigin(0, 0.5);
+        text(this, x - 35, y - 5, fitText(w.name, 104), owned ? C('4') : C('d')).setOrigin(0, 0.5);
         text(this, x - 35, y + 7, owned ? 'Owned' : 'Earn in campaign', C('d')).setOrigin(0, 0.5);
       });
       if (pages > 1) {
@@ -119,7 +119,7 @@ export default class ForgeScene extends Phaser.Scene {
     const poor = price > profile.coins;
     if (this.tab !== 'Legends') {
       const p = cost.parts;
-      text(this, 158, 224, `Body ${p.body} Power ${p.ability} Trait ${p.trait} Aura ${p.radiance} Total ${cost.total}`, C('d'));
+      text(this, 158, 224, fitText(`Body ${p.body} Power ${p.ability} Trait ${p.trait} Aura ${p.radiance} Total ${cost.total}`, 284), C('c'), 1, C('0'));
     }
     makeButton(this, 59, 252, 96, 26, 'Back', 'plain', () => {
       if (!this.saving) goTo(this, this.returnTo, { level: this.level });
@@ -128,7 +128,7 @@ export default class ForgeScene extends Phaser.Scene {
     const save = makeButton(this, 396, 252, 148, 26, label, poor ? 'plain' : 'go', () => { void this.save(); });
     save.setEnabled(!this.saving && this.tab !== 'Legends' && price > 0 && !poor);
     const status = this.message || (poor ? `Need ${price - profile.coins} more coins` : price === 0 ? 'Saved build' : forgeRecipes().some((r) => r.weaponId === this.recipe.weaponId) ? `Change costs ${price} (half price)` : 'New weapon');
-    text(this, 213, 251, status, this.message ? C('4') : poor ? C('3') : C('d'));
+    text(this, 213, 251, fitText(status, 200), this.message ? C('4') : poor ? C('3') : C('c'), 1, C('0'));
     this.children.list.filter((o) => !before.has(o) && o !== this.body).forEach((o) => this.body.add(o));
   }
   private choice(label: string, i: number, top: number, selected: boolean, apply: () => void, price?: number): void {
@@ -142,8 +142,8 @@ export default class ForgeScene extends Phaser.Scene {
   }
   /** Name on top, coin price underneath, both inside the button. */
   private caption(x: number, y: number, label: string, price: number): void {
-    text(this, x, y - 6, label, C('c'), 1, C('0')).setDepth(12);
-    text(this, x, y + 7, price === 0 ? 'free' : `${price} coins`, C('4'), 1, C('0')).setDepth(12);
+    text(this, x, y - 6, fitText(label, 80), C('c'), 1, C('0')).setDepth(12);
+    text(this, x, y + 7, fitText(price === 0 ? 'free' : `${price} coins`, 80), C('4'), 1, C('0')).setDepth(12);
   }
   private isSaved(): boolean {
     return forgeRecipes().some((r) => JSON.stringify(r) === JSON.stringify(this.recipe));
@@ -153,17 +153,17 @@ export default class ForgeScene extends Phaser.Scene {
     const trait = data.forge.traits.find((t) => t.id === this.recipe.traitId)!;
     const ability = data.forge.abilities.find((a) => a.id === this.recipe.abilityId)!;
     const aura = data.forge.radiances.find((a) => a.id === this.recipe.radianceId)!;
-    text(this, 396, 24, w.name.replace('Forge ', ''), C('c'));
+    text(this, 396, 24, fitText(w.name.replace('Forge ', ''), 136), C('c'), 1, C('0'));
     this.aura = this.add.graphics().setDepth(2);
     this.aura.lineStyle(2, C(aura.color), 0.8).strokeCircle(396, 65, 27);
     this.aura.lineStyle(1, C('c'), 0.25).strokeCircle(396, 65, 30);
     drawForgeWeapon(this, this.recipe, 'forge_preview');
     this.preview = this.add.image(396, 65, 'forge_preview').setScale(2).setDepth(3);
     text(this, 396, 104, `${Math.round(w.baseDamage * upgradeMult(w.id) * (w.params.damageMult ?? 1))} base damage`, C('4'));
-    text(this, 396, 122, `${trait.kind === 'bless' ? 'Bless' : 'Curse'}: ${trait.name}`, C('b'));
-    textBlock(this, 396, 132, trait.description, C('d'), 136);
+    text(this, 396, 122, fitText(`${trait.kind === 'bless' ? 'Bless' : 'Curse'}: ${trait.name}`, 136), C('b'), 1, C('0'));
+    textBlock(this, 396, 136, trait.description, C('c'), 136, C('0'), 2);
     text(this, 396, 172, ability.name, C('4'));
-    textBlock(this, 396, 185, ability.description, C('c'), 136);
+    textBlock(this, 396, 185, ability.description, C('c'), 136, C('0'), 2);
     text(this, 396, 225, `${aura.name} radiance`, C(aura.color));
   }
   private async save(): Promise<void> {

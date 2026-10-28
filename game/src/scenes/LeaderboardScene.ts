@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { setText, text } from '../art/font5x7';
+import { fitText, setText, text } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
@@ -10,14 +10,14 @@ import { platform } from '../platform';
 import { DAILY_BOARD, OVERALL_BOARD, levelBoard } from '../platform/boards';
 import type { Row } from '../platform/types';
 import { helpButton, maybeTutorial } from '../ui/tutorial';
-import { makeButton, panel } from '../ui/widgets';
+import { menuBackdrop, makeButton, panel } from '../ui/widgets';
 import { askText } from '../ui/adminPrompt';
 import { cleanName, setNickname, whoAmI } from '../core/identity';
 
 type Tab = 'daily' | 'level' | 'overall';
 const TABS: { id: Tab; label: string }[] = [{ id: 'daily', label: 'Daily' }, { id: 'level', label: 'This level' }, { id: 'overall', label: 'Overall' }];
 const ROWS = 10;
-const ROW_H = 14;
+const ROW_H = 12;
 const REFRESH_COOLDOWN_MS = 4000;
 
 /** Daily, per-level and overall score boards, with your own row highlighted. */
@@ -45,7 +45,7 @@ export default class LeaderboardScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     panel(this, 16, 8, W - 32, H - 16, '8', '9', 'f', 1);
     text(this, W / 2, 20, 'Leaderboards', C('4'), 2, C('0')).setDepth(2);
 
@@ -72,13 +72,13 @@ export default class LeaderboardScene extends Phaser.Scene {
       this.myName = me.shown;
       if (!me.isGuest) return;
       // a guest has no RUN account: let them pick the name their scores carry
-      const nameTxt = text(this, W / 2, H - 46, `Playing as ${me.shown}`, C('c'), 1, C('0')).setDepth(3);
+      const nameTxt = text(this, W / 2, H - 46, fitText(`Playing as ${me.shown}`, 400), C('c'), 1, C('0')).setDepth(3);
       makeButton(this, W / 2, H - 24, 84, 22, 'Set name', 'plain', () => {
         sfx.click();
         void askText('Your name for the boards', { initial: cleanName(this.myName.startsWith('Guest-') ? '' : this.myName), ok: 'Save' }).then(async (v) => {
           if (v === null || !this.scene.isActive()) return;
           this.myName = await setNickname(v);
-          setText(nameTxt, this, `Playing as ${this.myName}`, C('c'), C('0'));
+          setText(nameTxt, this, fitText(`Playing as ${this.myName}`, 400), C('c'), C('0'));
           void this.resubmit();
         });
       }, 3);
@@ -115,7 +115,7 @@ export default class LeaderboardScene extends Phaser.Scene {
     const now = this.time.now;
     if (manual && now - this.lastRefresh < REFRESH_COOLDOWN_MS) return;
     this.lastRefresh = now;
-    if (this.titleTxt) setText(this.titleTxt, this, this.heading(), C('c'), C('0'));
+    if (this.titleTxt) setText(this.titleTxt, this, fitText(this.heading(), this.tab === 'level' ? 196 : 400), C('c'), C('0'));
     if (this.statusTxt) setText(this.statusTxt, this, 'Loading scores', C('d'), C('0'));
     const mine = ++this.token;
     const board = this.boardId();
@@ -145,14 +145,14 @@ export default class LeaderboardScene extends Phaser.Scene {
       const isMe = r.mine === true || r.name === 'You';
       youShown = youShown || isMe;
       const col = isMe ? C('4') : C('c');
-      this.rowObjs.push(text(this, x0, y, `#${r.rank}`, col, 1, C('0')).setOrigin(0, 0.5).setDepth(3));
-      this.rowObjs.push(text(this, x0 + 34, y, isMe ? `You (${r.name.slice(0, 14)})` : r.name.slice(0, 18), col, 1, C('0')).setOrigin(0, 0.5).setDepth(3));
-      this.rowObjs.push(text(this, x1, y, String(r.score), isMe ? C('4') : C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3));
+      this.rowObjs.push(text(this, x0, y, fitText(`#${r.rank}`, 48), col, 1, C('0')).setOrigin(0, 0.5).setDepth(3));
+      this.rowObjs.push(text(this, x0 + 56, y, fitText(isMe ? `You (${r.name})` : r.name, 230), col, 1, C('0')).setOrigin(0, 0.5).setDepth(3));
+      this.rowObjs.push(text(this, x1, y, fitText(String(r.score), 100), isMe ? C('4') : C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3));
     });
     if (me && me.rank > 0 && !youShown) {
       const y = 84 + ROWS * ROW_H + 2;
-      this.rowObjs.push(text(this, x0, y, `You #${me.rank}`, C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(3));
-      this.rowObjs.push(text(this, x1, y, String(me.score), C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(3));
+      this.rowObjs.push(text(this, x0, y, fitText(`You #${me.rank}`, 220), C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(3));
+      this.rowObjs.push(text(this, x1, y, fitText(String(me.score), 100), C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(3));
     }
   }
 }

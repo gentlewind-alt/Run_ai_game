@@ -1,0 +1,15 @@
+{
+  "generationId": "9fbd5716-1aea-49cf-8af9-5c479c6081d6",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: round blue speech bubble with a white question mark",
+  "model": "gpt-image-2.5-flare",
+  "width": 24,
+  "height": 24,
+  "spriteCookAssetId": "b30533a4-72f0-4e1b-86e3-5c68c58137c8",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

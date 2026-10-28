@@ -409,46 +409,46 @@
   "costs": {
     "_note": "Coins to create or change a build. Total = body + ability + trait + radiance. A new build pays the full total, changing a saved build pays reforgeFactor of the new total.",
     "weapons": {
-      "w_forge_dagger": 300,
-      "w_forge_sword": 380,
-      "w_forge_spear": 420,
-      "w_forge_longsword": 480,
-      "w_forge_cleaver": 560,
-      "w_forge_double_sword": 700
+      "w_forge_dagger": 450,
+      "w_forge_sword": 570,
+      "w_forge_spear": 630,
+      "w_forge_longsword": 720,
+      "w_forge_cleaver": 840,
+      "w_forge_double_sword": 1050
     },
     "abilities": {
-      "strike": 120,
-      "slash": 130,
-      "whip": 140,
-      "dance": 150,
-      "spirit": 200,
-      "burst": 220,
-      "clone": 240,
-      "rain": 260,
-      "phantom": 300
+      "strike": 180,
+      "slash": 200,
+      "whip": 210,
+      "dance": 230,
+      "spirit": 300,
+      "burst": 330,
+      "clone": 360,
+      "rain": 390,
+      "phantom": 450
     },
     "traits": {
       "balanced": 0,
-      "reach": 160,
-      "vulnerable": 140,
-      "poison": 150,
-      "shieldbreak": 180,
-      "wither": 190,
-      "fortune": 200,
-      "overcharge": 220,
-      "zap": 240,
-      "critical": 260
+      "reach": 240,
+      "vulnerable": 210,
+      "poison": 230,
+      "shieldbreak": 270,
+      "wither": 290,
+      "fortune": 300,
+      "overcharge": 330,
+      "zap": 360,
+      "critical": 390
     },
     "radiances": {
-      "blue": 40,
-      "dark": 60,
-      "red": 60,
-      "orange": 60,
-      "green": 60,
-      "pink": 60,
-      "purple": 90,
-      "white": 100,
-      "gold": 120
+      "blue": 60,
+      "dark": 90,
+      "red": 90,
+      "orange": 90,
+      "green": 90,
+      "pink": 90,
+      "purple": 140,
+      "white": 150,
+      "gold": 180
     },
     "reforgeFactor": 0.5
   }

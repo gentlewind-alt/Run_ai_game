@@ -43,6 +43,7 @@
   "display": {
     "pixelArt": true,
     "maxParticles": 90,
+    "ui": { "buttonCorner": 10, "panelCorner": 24, "iconPx": 14, "iconGap": 3, "buttonPadding": 6, "disabledAlpha": 0.55, "backdropAlpha": 1 },
     "weapon": {
       "flightPx": 16,
       "slingPx": 24,

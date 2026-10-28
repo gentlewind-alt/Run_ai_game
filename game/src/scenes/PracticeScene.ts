@@ -6,7 +6,7 @@ import { H, W } from '../config/constants';
 import { clearMatch, currentMatch, matchOutcome, practiceCoins, practiceConfig, practiceRecord, recordTurn, settle, startMatch, turnFor, type PracticeResult } from '../core/practice';
 import { goTo, irisOpen } from '../core/flow';
 import { data } from '../data/load';
-import { makeButton, panel } from '../ui/widgets';
+import { menuBackdrop, uiIcon, makeButton, panel } from '../ui/widgets';
 
 /** Offline practice match: the Arena rules with a Rival Bot or a friend on the same device, so the whole flow can be tried alone. */
 export default class PracticeScene extends Phaser.Scene {
@@ -27,7 +27,7 @@ export default class PracticeScene extends Phaser.Scene {
       const finished = recordTurn(d.result);
       if (finished) settle(finished);
     }
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     panel(this, 8, 7, W - 16, H - 14, '8', '9', 'f');
     this.draw();
     irisOpen(this);
@@ -48,9 +48,10 @@ export default class PracticeScene extends Phaser.Scene {
     this.objects = [];
     const cfg = practiceConfig();
     const rec = practiceRecord();
-    this.label(240, 22, 'Practice Match', C('4'));
+    this.objects.push(text(this, 240, 22, 'Practice Match', C('4'), 2, C('0')).setDepth(4));
     this.label(240, 38, 'Offline: no other player needed. Same rules as the Global Arena.', C('d'));
-    this.label(20, 54, `Practice coins ${practiceCoins()}`, C('4'), 210, 0);
+    this.objects.push(uiIcon(this, 24, 54, 'coin', 'icon_coin', 12).setDepth(4));
+    this.label(36, 54, `Practice coins ${practiceCoins()}`, C('4'), 194, 0);
     this.label(460, 54, `W ${rec.wins}  L ${rec.losses}  D ${rec.draws}`, C('d'), 210, 1);
     const m = currentMatch();
     if (!m) this.drawSetup(cfg);

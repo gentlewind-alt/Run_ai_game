@@ -12,7 +12,7 @@ import { listChallenges, type Challenge } from '../core/challenges';
 import { goTo, irisOpen } from '../core/flow';
 import { data } from '../data/load';
 import { helpButton, maybeTutorial } from '../ui/tutorial';
-import { makeButton, panel, type Btn } from '../ui/widgets';
+import { menuBackdrop, uiIcon, makeButton, panel, type Btn } from '../ui/widgets';
 
 type Tab = 'online' | 'invites' | 'match';
 const PAGE_SIZE = 4;
@@ -35,7 +35,7 @@ export default class ArenaScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.add.rectangle(W / 2, H / 2, W, H, C('f'));
+    menuBackdrop(this);
     panel(this, 8, 7, W - 16, H - 14, '8', '9', 'f');
     const off = arena.subscribe(() => { if (this.scene.isActive() && !this.navigating) this.draw(); });
     const offSetup = arena.onSetup((setup) => this.play(setup));
@@ -50,8 +50,12 @@ export default class ArenaScene extends Phaser.Scene {
   private label(x: number, y: number, value: string, color = C('c'), width?: number, origin = 0.5, depth = 4): void {
     this.objects.push(text(this, x, y, width ? fitText(value, width) : value, color, 1, C('0')).setOrigin(origin, 0.5).setDepth(depth));
   }
-  private button(x: number, y: number, w: number, label: string, action: () => void, go = false, enabled = true): Btn {
-    const button = makeButton(this, x, y, w, 24, fitText(label, w - 8), go ? 'go' : 'plain', () => { sfx.unlock(); sfx.click(); action(); }, 5);
+  private button(x: number, y: number, w: number, label: string, action: () => void, go = false, enabled = true, h = 24): Btn {
+    const button = makeButton(this, x, y, w, h, fitText(label, w - 8), go ? 'go' : 'plain', () => { sfx.unlock(); sfx.click(); action(); }, 5);
+    if (h < 24) {
+      button.box.setSize(w, h);
+      (button.box.input!.hitArea as Phaser.Geom.Rectangle).setTo(0, 0, w, h);
+    }
     button.setEnabled(enabled);
     this.objects.push(button.box);
     return button;
@@ -59,10 +63,11 @@ export default class ArenaScene extends Phaser.Scene {
 
   private draw(): void {
     this.objects.forEach((object) => object.destroy()); this.objects = [];
-    this.label(240, 22, 'Global Arena', C('4'));
+    this.objects.push(text(this, 240, 22, 'Global Arena', C('4'), 2, C('0')).setDepth(4));
     const state = arena.snapshot;
-    this.label(20, 42, `Arena coins ${state?.coins ?? '--'}`, C('4'), 210, 0);
-    this.label(460, 42, state ? `W ${state.wins}  L ${state.losses}  D ${state.draws}` : 'Sign in to play', C('d'), 210, 1);
+    this.objects.push(uiIcon(this, 24, 42, 'coin', 'icon_coin', 12).setDepth(4));
+    this.label(36, 42, `Arena coins ${state?.coins ?? '--'}`, C('4'), 198, 0);
+    this.label(460, 42, state ? `W ${state.wins}  L ${state.losses}  D ${state.draws}` : 'Sign in to play', C('d'), 100, 1);
     this.button(304, 42, 96, 'Slingshot', () => { this.picker = undefined; this.armoryOpen = true; this.draw(); }, false, !!state && arena.compatible());
     const incoming = state?.invitations.filter((invite) => invite.to === state.me).length ?? 0;
     const tabs: [Tab, string][] = [['online', 'Online'], ['invites', incoming ? `Invites ${incoming}` : 'Invites'], ['match', 'Match']];
@@ -147,7 +152,7 @@ export default class ArenaScene extends Phaser.Scene {
     this.label(240, 96, match.title, C('4'), 420);
     match.names.forEach((name, i) => {
       const result = match.results[i];
-      this.label(32, 121 + i * 28, `${name}${match.players[i] === state.me ? ' (you)' : ''}`, C('c'), 220, 0);
+      this.label(32, 121 + i * 28, `${name}${match.players[i] === state.me ? ' (you)' : ''}`, C('c'), 190, 0);
       this.label(448, 121 + i * 28, result ? result.forfeit ? 'Forfeit' : `${result.cleared ? 'Clear' : 'Not cleared'}  ${result.score}` : 'Awaiting turn', C('d'), 205, 1);
       const equipment: ArenaEquipmentSnapshot | undefined = match.equipment?.[i] ?? undefined;
       const sling = state.slingCatalog?.find((row) => row.id === equipment?.slingId);
@@ -222,23 +227,23 @@ export default class ArenaScene extends Phaser.Scene {
       const action = owned ? equipped ? 'Equipped' : 'Equip' : `Buy ${sling.price}`;
       const button = this.button(416, y, 76, action, () => {
         arena.send(owned ? { type: 'arena:equip-sling', slingId: sling.id } : { type: 'arena:buy-sling', slingId: sling.id });
-      }, !owned || equipped, !ownTurn && (owned ? !equipped : state.coins >= sling.price));
+      }, !owned || equipped, !ownTurn && (owned ? !equipped : state.coins >= sling.price), 18);
       button.box.setDepth(26);
     });
     this.label(24, 150, 'Boost tracks', C('4'), 150, 0, 23);
     state.boostCatalog.forEach((boost, i) => {
       const x = 25 + i * 143, center = x + 68, level = state.boostLevels[boost.id] ?? 0;
       const price = boost.prices[level];
-      this.objects.push(panel(this, x, 158, 136, 82, '9', 'b', 'f', 22));
+      this.objects.push(panel(this, x, 158, 136, 88, '9', 'b', 'f', 22));
       this.label(center, 168, boost.name, C('4'), 128, 0.5, 23);
       for (let pip = 0; pip < boost.prices.length; pip++) {
         const shape = this.add.rectangle(center - 12 + pip * 12, 181, 7, 7, C(pip < level ? '6' : '8')).setStrokeStyle(1, C('0')).setDepth(24);
         this.objects.push(shape);
       }
-      this.label(center, 193, `${level}/${boost.prices.length} levels`, C('c'), 128, 0.5, 23);
+      this.label(center, 192, `${level}/${boost.prices.length} levels`, C('c'), 128, 0.5, 23);
       this.label(center, 204, boost.desc, C('d'), 128, 0.5, 23);
-      this.label(center, 215, price === undefined ? 'Max level' : `Next ${price} coins`, C('d'), 128, 0.5, 23);
-      const button = this.button(center, 231, 110, price === undefined ? 'Maxed' : `Boost ${price}`, () => { arena.send({ type: 'arena:boost', boostId: boost.id }); }, true, !ownTurn && price !== undefined && state.coins >= price);
+      this.label(center, 216, price === undefined ? 'Max level' : `Next ${price} coins`, C('d'), 128, 0.5, 23);
+      const button = this.button(center, 234, 110, price === undefined ? 'Maxed' : `Boost ${price}`, () => { arena.send({ type: 'arena:boost', boostId: boost.id }); }, true, !ownTurn && price !== undefined && state.coins >= price, 18);
       button.box.setDepth(26);
     });
     const note = ownTurn ? 'Armory changes unlock after your turn.' : arena.error || 'Upgrades apply when your next turn starts.';

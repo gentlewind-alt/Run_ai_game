@@ -146,9 +146,9 @@ export function fitText(str: string, maxWidth: number): string {
   return `${prefix}...`;
 }
 
-/** Word-wrapped text block, centred on x, first line at y. Returns the line images. */
+/** Word-wrapped text block, centred on x, first line at y. Extra lines ellipsize inside maxLines. */
 export function textBlock(
-  scene: Phaser.Scene, x: number, y: number, str: string, color = 0xf4f4f4, maxWidth = 196, shade: number | null = null,
+  scene: Phaser.Scene, x: number, y: number, str: string, color = 0xf4f4f4, maxWidth = 196, shade: number | null = C('0'), maxLines = Infinity,
 ): Phaser.GameObjects.Image[] {
   const lines: string[] = [];
   let cur = '';
@@ -162,5 +162,7 @@ export function textBlock(
     }
   }
   if (cur) lines.push(cur);
-  return lines.map((l, i) => text(scene, x, y + i * 12, l, color, 1, shade));
+  const visible = lines.slice(0, maxLines);
+  if (lines.length > maxLines && visible.length) visible[visible.length - 1] += '...';
+  return visible.map((l, i) => text(scene, x, y + i * 12, fitText(l, maxWidth), color, 1, shade));
 }

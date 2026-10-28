@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C, rarityColor, rarityStroke } from '../art/palette';
-import { text, textBlock } from '../art/font5x7';
+import { fitText, text, textBlock } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { goTo } from '../core/flow';
@@ -14,7 +14,7 @@ import { data } from '../data/load';
 import { platform } from '../platform';
 import type { Row } from '../platform/types';
 import { maybeInterstitial } from '../core/ads';
-import { makeButton, panel } from '../ui/widgets';
+import { menuBackdrop, uiIcon, makeButton, panel } from '../ui/widgets';
 import { helpButton } from '../ui/tutorial';
 
 export interface ResultsData {
@@ -40,7 +40,7 @@ export default class ResultsScene extends Phaser.Scene {
 
   create(d: ResultsData): void {
     this.ghosts = [];
-    this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.72);
+    menuBackdrop(this);
 
     if (d.levelId === 0) {
       this.drawDailyResults(d);
@@ -63,12 +63,14 @@ export default class ResultsScene extends Phaser.Scene {
       const g2 = this.add.image(W / 2 + 76, py + 48, 'ghost_dance_2').setScale(1.4).setDepth(4);
       this.ghosts = [g1, g2];
       for (let i = 0; i < 3; i++) {
-        const star = this.add.image(W / 2 - 24 + i * 24, py + 48, 'star_off').setScale(2).setDepth(2);
+        const star = i < d.stars ? uiIcon(this, W / 2 - 24 + i * 24, py + 48, 'star', 'star_on', 18).setDepth(2)
+          : this.add.image(W / 2 - 24 + i * 24, py + 48, 'star_off').setScale(2).setDepth(2);
         if (i < d.stars) {
-          star.setTexture('star_on').setScale(0.1);
+          const size = star.scaleX;
+          star.setScale(0.1);
           this.tweens.add({
-            targets: star, scale: 2.4, duration: 180, delay: 250 + i * 200, ease: 'Back.out',
-            onStart: () => sfx.coin(), onComplete: () => this.tweens.add({ targets: star, scale: 2, duration: 100 }),
+            targets: star, scale: size * 1.2, duration: 180, delay: 250 + i * 200, ease: 'Back.out',
+            onStart: () => sfx.coin(), onComplete: () => this.tweens.add({ targets: star, scale: size, duration: 100 }),
           });
         }
       }
@@ -83,15 +85,15 @@ export default class ResultsScene extends Phaser.Scene {
 
     let coinsTxt: Phaser.GameObjects.Image | undefined;
     if (r) {
-      this.add.image(W / 2 - 34, py + 104, 'icon_coin').setDepth(2);
-      coinsTxt = text(this, W / 2 - 26, py + 104, `+${r.credited} coins`, C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
+      uiIcon(this, W / 2 - 50, py + 104, 'coin', 'icon_coin', 12).setDepth(2);
+      coinsTxt = text(this, W / 2 - 40, py + 104, fitText(`+${r.credited} coins`, 190), C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2);
       text(this, W / 2, py + 117, r.credited < r.earned ? (d.won ? 'Replays pay less' : 'Losses pay a quarter') : `Total ${profile.coins}`, C('d')).setDepth(2);
     }
 
     if (d.won && d.levelId > 0) {
       const rankTxt = text(this, W / 2, py + 131, ' ', C('d')).setDepth(2);
       void levelRankLine(d.levelId, d.seconds).then((line) => {
-        if (line && rankTxt.scene) setText(rankTxt, this, line, C('d'));
+        if (line && rankTxt.scene) setText(rankTxt, this, fitText(line, pw - 30), C('d'), C('0'));
       });
     }
 
@@ -161,7 +163,7 @@ export default class ResultsScene extends Phaser.Scene {
 
       const voteUrl = data.config.links?.vote;
       if (voteUrl && data.config.features?.voteButton !== false) {
-        let note: Phaser.GameObjects.Image[] = [];
+        let note: Phaser.GameObjects.GameObject[] = [];
         const voteBtn = makeButton(this, hasNext ? W / 2 - 64 : W / 2, y3, hasNext ? 116 : 130, 20, 'Vote for us!', 'ability', async () => {
           sfx.click();
           const { copied } = await platform.openLink(voteUrl);
@@ -169,8 +171,10 @@ export default class ResultsScene extends Phaser.Scene {
           if (!this.scene.isActive()) return;
           voteBtn.setLabel('Thanks!');
           note.forEach((n) => n.destroy());
-          note = textBlock(this, W / 2 - 150, py + 226 + 22, copied ? 'Vote page opens in a new tab. If not, the link is copied: paste it in your browser.' : 'Open run.world/jams/octoberjam, find MONSTER MASH and tap Vote.', C('d'), 300, C('0'));
-          note.forEach((n) => n.setDepth(5));
+          note = [this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.8).setDepth(40).setInteractive(),
+            panel(this, 70, 82, 340, 110, '8', '9', 'f', 41),
+            ...textBlock(this, W / 2, 106, copied ? 'Vote page opens in a new tab. If not, the link is copied: paste it in your browser.' : 'Open run.world/jams/octoberjam, find MONSTER MASH and tap Vote.', C('c'), 304, C('0'), 3).map((n) => n.setDepth(42)),
+            makeButton(this, W / 2, 170, 90, 22, 'Close', 'plain', () => { sfx.click(); note.forEach((n) => n.destroy()); note = []; }, 43).box];
         }, 3);
       }
       if (hasNext) {
@@ -210,7 +214,7 @@ export default class ResultsScene extends Phaser.Scene {
     ico.setScale(Math.min(1.4, 44 / ico.width, 44 / ico.height));
     group.push(ico);
 
-    const t2 = text(this, W / 2, py + 86, w.name, rarityColor(w.rarity), 1, C('0')).setDepth(22);
+    const t2 = text(this, W / 2, py + 86, fitText(w.name, 166), rarityColor(w.rarity), 1, C('0')).setDepth(22);
     group.push(t2);
 
     const t3 = text(this, W / 2, py + 100, (w.rarity ?? 'rare').toUpperCase(), C('d'), 1).setDepth(22);
@@ -218,7 +222,7 @@ export default class ResultsScene extends Phaser.Scene {
 
     // Whole description, word-wrapped inside the card (up to 3 lines of 12 px).
     const eff = (w.tap || w.launch || '');
-    group.push(...textBlock(this, W / 2, py + 114, eff, C('c'), 166).slice(0, 3).map((l) => l.setDepth(22)));
+    group.push(...textBlock(this, W / 2, py + 114, eff, C('c'), 166, C('0'), 3).map((l) => l.setDepth(22)));
 
     const btn = makeButton(this, W / 2, py + 164, 100, 22, 'Claim', 'go', () => {
       sfx.click();
@@ -229,7 +233,7 @@ export default class ResultsScene extends Phaser.Scene {
     sfx.unlock();
     this.tweens.add({
       targets: ico,
-      scale: 3.2,
+      scale: ico.scaleX * 1.05,
       duration: 260,
       ease: 'Back.out',
       yoyo: true,
@@ -245,11 +249,11 @@ export default class ResultsScene extends Phaser.Scene {
 
     // Left summary panel
     panel(this, 16, py, leftW, h, '8', '9', 'f', 1);
-    text(this, 16 + leftW / 2, py + 16, d.won ? 'Daily Cleared!' : 'Daily Attempt', d.won ? C('4') : C('3'), 2, C('0')).setDepth(2);
+    text(this, 16 + leftW / 2, py + 16, fitText(d.won ? 'Daily Cleared!' : 'Daily Attempt', (leftW - 24) / 2), d.won ? C('4') : C('3'), 2, C('0')).setDepth(2);
     text(this, 16 + leftW / 2, py + 36, `Score ${d.score}`, C('c'), 1, C('0')).setDepth(2);
     text(this, 16 + leftW / 2, py + 50, `Streak: ${profile.daily.streak}d`, C('4'), 1, C('0')).setDepth(2);
     if (profile.daily.streak % 7 === 0 && profile.daily.streak > 0) {
-      text(this, 16 + leftW / 2, py + 66, 'Day 7 Bonus: +500 Coins!', C('4'), 1, C('0')).setDepth(2);
+      text(this, 16 + leftW / 2, py + 66, fitText('Day 7 Bonus: +500 Coins!', leftW - 24), C('4'), 1, C('0')).setDepth(2);
     }
 
     if (d.won) {
@@ -285,12 +289,12 @@ export default class ResultsScene extends Phaser.Scene {
     rows.forEach((r, i) => {
       const isMe = r.name === 'You';
       const ry = py + 30 + i * 17;
-      text(this, rx + 10, ry, `#${r.rank} ${r.name.slice(0, 13)}`, isMe ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(3);
-      text(this, rx + rightW - 10, ry, String(r.score), isMe ? C('4') : C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
+      text(this, rx + 10, ry, fitText(`#${r.rank} ${r.name}`, 136), isMe ? C('4') : C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(3);
+      text(this, rx + rightW - 10, ry, fitText(String(r.score), 72), isMe ? C('4') : C('d'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
     });
 
     const rankStr = myRank ? `Your rank: #${myRank.rank} (Best ${myRank.score})` : `Your score: ${d.score}`;
-    text(this, rx + rightW / 2, py + 220, rankStr, C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(3);
+    text(this, rx + rightW / 2, py + 220, fitText(rankStr, rightW - 20), C('4'), 1, C('0')).setOrigin(0.5, 0.5).setDepth(3);
   }
 
   update(time: number): void {

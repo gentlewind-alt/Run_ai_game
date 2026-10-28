@@ -1,0 +1,15 @@
+{
+  "generationId": "1df330da-fc4e-4712-a86b-43c6d9861f7d",
+  "prompt": "16-bit SNES pixel art game UI element, dark fantasy monster castle theme, bold dark outline, crisp pixels, single object, no text, no letters: heraldic crest: a grinning green goblin head over a crossed wooden slingshot and a castle tower, gold banner ribbon with no text",
+  "model": "gpt-image-2.5-flare",
+  "width": 140,
+  "height": 140,
+  "spriteCookAssetId": "d4d628b3-bd09-49fc-bb66-53ca6cecd933",
+  "referenceFileKey": null,
+  "referenceImportAssetId": null,
+  "editFileKey": null,
+  "editImportAssetId": null,
+  "creditsUsed": null,
+  "quality": "medium",
+  "aspectRatio": "1:1"
+}

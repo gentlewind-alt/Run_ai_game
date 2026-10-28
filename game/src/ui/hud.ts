@@ -2,14 +2,14 @@
 // the MASH banner and the pause menu.
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { setText, text, textBlock } from '../art/font5x7';
+import { fitText, setText, text, textBlock, textWidth } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { msToNextBeat } from '../audio/beat';
 import { H, W } from '../config/constants';
 import { music } from '../audio/music';
 import { setMuted, setMusicOn, profile } from '../core/profile';
 import { platform } from '../platform';
-import { makeButton, panel, type Btn } from './widgets';
+import { makeButton, panel, uiIcon, type Btn } from './widgets';
 import { helpButton } from './tutorial';
 import type { BattleUi } from '../battle/state';
 
@@ -53,10 +53,11 @@ export function createHud(
   let pauseObjs: Phaser.GameObjects.GameObject[] = [];
 
   host.inUi(() => {
-    coinsTxt = text(scene, 8, top + 6, 'Coins 0', C('4')).setOrigin(0, 0.5).setDepth(10);
-    scoreTxt = text(scene, 8, top + 18, 'Score 0', C('c')).setOrigin(0, 0.5).setDepth(10);
+    uiIcon(scene, 14, top + 6, 'coin', 'icon_coin', 12).setDepth(10);
+    coinsTxt = text(scene, 24, top + 6, '0', C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(10);
+    scoreTxt = text(scene, 8, top + 18, 'Score 0', C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(10);
     if (o.escapeLimit !== undefined) {
-      escTxt = text(scene, 8, top + 30, `Runners out 0/${o.escapeLimit}`, C('d')).setOrigin(0, 0.5).setDepth(10);
+      escTxt = text(scene, 8, top + 30, fitText(`Runners out 0/${o.escapeLimit}`, 96), C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(10);
     }
 
     muteBtn = scene.add.image(W - 14, top + 6, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
@@ -98,7 +99,7 @@ export function createHud(
       const by = top + 26;
       const bubblePanel = panel(scene, bx, by, bubbleW, bubbleH, '8', '9', 'f', 10);
       const face = scene.add.image(bx + 14, by + bubbleH / 2, 'goblin_grunt').setScale(1.1).setDepth(11);
-      const textLines = textBlock(scene, bx + 27, by + 10, o.hint, C('c'), bubbleW - 32, C('0'));
+      const textLines = textBlock(scene, bx + 27, by + 10, o.hint, C('c'), bubbleW - 38, C('0'), 2);
       textLines.forEach((t) => t.setOrigin(0, 0.5).setDepth(11));
       const bubbleTail = scene.add.triangle(bx + 20, by + bubbleH + 4, 0, 0, 8, 0, 4, 6, C('8')).setDepth(10);
       const allHint = [bubblePanel, face, ...textLines, bubbleTail];
@@ -140,27 +141,27 @@ export function createHud(
           const container = scene.add.container(W / 2, top + 6).setDepth(15);
           const bg = scene.add.rectangle(0, 10, 130, 7, C('0')).setStrokeStyle(1, C('4'));
           const fill = scene.add.rectangle(-63, 10, 126, 5, C('2')).setOrigin(0, 0.5);
-          const nameTxt = text(scene, 0, 1, name ?? 'Boss', C('4'), 1, C('0')).setOrigin(0.5, 0.5);
+          const nameTxt = text(scene, 0, 1, fitText(name ?? 'Boss', 138), C('4'), 1, C('0')).setOrigin(0.5, 0.5);
           container.add([bg, fill, nameTxt]);
           bossBar = { container, nameTxt, fill, bg };
         });
       }
       if (bossBar) {
         bossBar.container.setVisible(true);
-        if (name && bossBar.nameTxt) setText(bossBar.nameTxt, scene, name, C('4'));
+        if (name && bossBar.nameTxt) setText(bossBar.nameTxt, scene, fitText(name, 138), C('4'), C('0'));
         const frac = Math.max(0, Math.min(1, hp / maxHp));
         bossBar.fill.width = Math.max(1, Math.round(126 * frac));
       }
     },
     setEscaped: (escaped, limit) => {
-      if (escTxt) setText(escTxt, scene, `Runners out ${escaped}/${limit}`, escaped > limit ? C('2') : C('d'));
+      if (escTxt) setText(escTxt, scene, fitText(`Runners out ${escaped}/${limit}`, 96), escaped > limit ? C('2') : C('c'), C('0'));
     },
     setTargeting: (on, label) => {
       targetTxt?.destroy();
       targetTxt = undefined;
       tray.forEach((t) => t.box.setStrokeStyle(1, C('d')));
       if (on && label) {
-        targetTxt = host.inUi(() => text(scene, W / 2, H - 42, label, C('4'), 1, C('0')).setDepth(12));
+        targetTxt = host.inUi(() => text(scene, W / 2, H - 42, fitText(label, 220), C('4'), 1, C('0')).setDepth(12));
         scene.tweens.add({ targets: targetTxt, alpha: 0.4, duration: 360, yoyo: true, repeat: -1 });
       }
     },
@@ -174,8 +175,8 @@ export function createHud(
 
   return {
     ui,
-    setCoins: (n) => setText(coinsTxt, scene, `Coins ${n}`, C('4')),
-    setScore: (n) => setText(scoreTxt, scene, `Score ${n}`, C('c')),
+    setCoins: (n) => setText(coinsTxt, scene, fitText(String(n), 96), C('4'), C('0')),
+    setScore: (n) => setText(scoreTxt, scene, fitText(`Score ${n}`, 112), C('c'), C('0')),
 
     /** MASH! lands on the next beat: a white flash and shake, then the banner drops. */
     mash(mult) {
@@ -203,8 +204,9 @@ export function createHud(
       if (pauseObjs.length) return;
       host.inUi(() => {
         const dim = scene.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.74).setDepth(40).setInteractive();
-        const g = panel(scene, W / 2 - 90, 35, 180, 195, '8', '9', 'f', 41);
-        const title = text(scene, W / 2, 54, h.title ?? 'Paused', C('4'), 2, C('0')).setDepth(42);
+        const g = panel(scene, W / 2 - 90, 35, 180, 207, '8', '9', 'f', 41);
+        const titleScale = textWidth(h.title ?? 'Paused') * 2 <= 110 ? 2 : 1;
+        const title = text(scene, W / 2, 54, fitText(h.title ?? 'Paused', 110 / titleScale), C('4'), titleScale, C('0')).setDepth(42);
         const soundLabel = (): string => (profile.settings.muted ? 'Sound is off' : 'Sound is on');
         const sound = makeButton(scene, W / 2, 148, 126, 22, soundLabel(), 'plain', () => {
           setMuted(!profile.settings.muted);
@@ -221,26 +223,26 @@ export function createHud(
         }, 42);
         const fsLabel = (): string => (platform.fullscreen.active() ? 'Exit full screen' : 'Full screen');
         const fsBtn = platform.fullscreen.available()
-          ? makeButton(scene, W / 2, 178, 126, 22, fsLabel(), 'plain', () => {
+          ? makeButton(scene, W / 2, 194, 126, 22, fsLabel(), 'plain', () => {
             void platform.fullscreen.toggle().then(() => {
               fsBtn?.setLabel(fsLabel());
               sfx.click();
               const why = platform.fullscreen.note();
               if (why) {
-                const lines = textBlock(scene, W / 2, 232, why, C('c'), 170, C('0'));
+                const lines = textBlock(scene, W / 2, 248, why, C('c'), 440, C('0'), 1);
                 lines.forEach((l) => l.setDepth(43));
                 pauseObjs.push(...lines);
               }
             });
           }, 42)
           : undefined;
-        sound.box.setY(130);
-        musicBtn.box.setY(154);
+        sound.box.setY(138);
+        musicBtn.box.setY(166);
         pauseObjs = [
           dim, g, title, sound.box, musicBtn.box,
-          ...(h.resume ? [makeButton(scene, W / 2, 78, 126, 26, 'Resume', 'go', () => { sfx.click(); h.resume?.(); }, 42).box] : []),
-          ...(h.restart ? [makeButton(scene, W / 2, 106, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart?.(); }, 42).box] : []),
-          makeButton(scene, W / 2, 204, 126, 22, h.mapLabel ?? 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
+          ...(h.resume ? [makeButton(scene, W / 2, 82, 126, 26, 'Resume', 'go', () => { sfx.click(); h.resume?.(); }, 42).box] : []),
+          ...(h.restart ? [makeButton(scene, W / 2, 110, 126, 22, 'Restart', 'plain', () => { sfx.click(); h.restart?.(); }, 42).box] : []),
+          makeButton(scene, W / 2, 222, 126, 22, h.mapLabel ?? 'Back to map', 'plain', () => { sfx.click(); h.map(); }, 42).box,
           ...(fsBtn ? [fsBtn.box] : []),
           helpButton(scene, W / 2 + 74, 47, ['battle', 'abilities', 'flight', 'reach', 'damage'], 44).box,
         ];
