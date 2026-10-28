@@ -88,9 +88,9 @@ export default class ChallengesScene extends Phaser.Scene {
     });
     if (maxPage > 0) {
       const py = H - 22;
-      if (this.page > 0) this.rowObjs.push(makeButton(this, 160, py, 36, 20, '<', 'plain', () => { sfx.click(); this.page--; this.draw(); }, 5).box);
+      if (this.page > 0) this.rowObjs.push(makeButton(this, W / 2 - 80, py, 36, 20, '<', 'plain', () => { sfx.click(); this.page--; this.draw(); }, 5).box);
       this.rowObjs.push(text(this, W / 2, py, `${this.page + 1}/${maxPage + 1}`, C('c'), 1, C('0')).setDepth(5));
-      if (this.page < maxPage) this.rowObjs.push(makeButton(this, 320, py, 36, 20, '>', 'plain', () => { sfx.click(); this.page++; this.draw(); }, 5).box);
+      if (this.page < maxPage) this.rowObjs.push(makeButton(this, W / 2 + 80, py, 36, 20, '>', 'plain', () => { sfx.click(); this.page++; this.draw(); }, 5).box);
     }
   }
 }

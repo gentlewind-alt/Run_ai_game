@@ -63,29 +63,29 @@ export default class ArenaScene extends Phaser.Scene {
 
   private draw(): void {
     this.objects.forEach((object) => object.destroy()); this.objects = [];
-    this.objects.push(text(this, 240, 22, 'Global Arena', C('4'), 2, C('0')).setDepth(4));
+    this.objects.push(text(this, W / 2, 22, 'Global Arena', C('4'), 2, C('0')).setDepth(4));
     const state = arena.snapshot;
     this.objects.push(uiIcon(this, 24, 42, 'coin', 'icon_coin', 12).setDepth(4));
     this.label(36, 42, `Arena coins ${state?.coins ?? '--'}`, C('4'), 198, 0);
-    this.label(460, 42, state ? `W ${state.wins}  L ${state.losses}  D ${state.draws}` : 'Sign in to play', C('d'), 100, 1);
-    this.button(304, 42, 96, 'Slingshot', () => { this.picker = undefined; this.armoryOpen = true; this.draw(); }, false, !!state && arena.compatible());
+    this.label(W - 20, 42, state ? `W ${state.wins}  L ${state.losses}  D ${state.draws}` : 'Sign in to play', C('d'), 100, 1);
+    this.button(W - 176, 42, 96, 'Slingshot', () => { this.picker = undefined; this.armoryOpen = true; this.draw(); }, false, !!state && arena.compatible());
     const incoming = state?.invitations.filter((invite) => invite.to === state.me).length ?? 0;
     const tabs: [Tab, string][] = [['online', 'Online'], ['invites', incoming ? `Invites ${incoming}` : 'Invites'], ['match', 'Match']];
-    tabs.forEach(([tab, label], i) => this.button(90 + i * 150, 67, 134, label, () => { this.tab = tab; this.page = 0; this.picker = undefined; this.draw(); }, this.tab === tab));
+    tabs.forEach(([tab, label], i) => this.button(W / 2 + (i - 1) * 150, 67, 134, label, () => { this.tab = tab; this.page = 0; this.picker = undefined; this.draw(); }, this.tab === tab));
     this.button(58, 246, 84, 'Back', () => goTo(this, 'title'));
-    this.button(424, 246, 84, arena.status === 'online' ? 'Refresh' : 'Connect', () => { if (arena.status === 'online') arena.sync(); else void arena.connect(); }, false, arena.status !== 'connecting');
+    this.button(W - 56, 246, 84, arena.status === 'online' ? 'Refresh' : 'Connect', () => { if (arena.status === 'online') arena.sync(); else void arena.connect(); }, false, arena.status !== 'connecting');
     if (arena.status !== 'online') {
-      if (feature('practice')) this.button(240, 100, 250, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
-      this.label(240, 128, arena.status === 'connecting' ? 'Connecting to Arena...' : arena.status === 'reconnecting' ? 'Reconnecting...' : 'Connect to meet players in this game.', C('c'), 420);
-      this.label(240, 152, 'A full attempt each. Clear first, then score.', C('d'), 420);
-      this.label(240, 174, 'Wagers are optional. Arena starts with 100 coins.', C('d'), 420);
-      this.label(240, 196, 'Campaign coins and progress stay separate.', C('d'), 420);
+      if (feature('practice')) this.button(W / 2, 100, 250, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
+      this.label(W / 2, 128, arena.status === 'connecting' ? 'Connecting to Arena...' : arena.status === 'reconnecting' ? 'Reconnecting...' : 'Connect to meet players in this game.', C('c'), W - 60);
+      this.label(W / 2, 152, 'A full attempt each. Clear first, then score.', C('d'), W - 60);
+      this.label(W / 2, 174, 'Wagers are optional. Arena starts with 100 coins.', C('d'), W - 60);
+      this.label(W / 2, 196, 'Campaign coins and progress stay separate.', C('d'), W - 60);
     } else if (state) {
       if (this.tab === 'online') this.drawOnline();
       else if (this.tab === 'invites') this.drawInvites();
       else this.drawMatch();
-    } else this.label(240, 145, 'Loading players...', C('d'));
-    this.label(16, 225, arena.error || (!arena.compatible() ? 'Update the game before joining a match.' : 'No wager is required. Three rejections block invites for 1 hour.'), arena.error ? C('4') : C('d'), 448, 0);
+    } else this.label(W / 2, 145, 'Loading players...', C('d'));
+    this.label(16, 225, arena.error || (!arena.compatible() ? 'Update the game before joining a match.' : 'No wager is required. Three rejections block invites for 1 hour.'), arena.error ? C('4') : C('d'), W - 32, 0);
     if (this.picker) this.drawPicker();
     if (this.armoryOpen && state) this.drawArmory(state);
   }
@@ -94,9 +94,9 @@ export default class ArenaScene extends Phaser.Scene {
     const count = Math.max(1, Math.ceil(length / PAGE_SIZE));
     this.page = Math.min(this.page, count - 1);
     if (count > 1) {
-      this.button(170, 246, 32, '<', () => { this.page--; this.draw(); }, false, this.page > 0);
-      this.label(240, 246, `${this.page + 1}/${count}`, C('c'));
-      this.button(310, 246, 32, '>', () => { this.page++; this.draw(); }, false, this.page < count - 1);
+      this.button(W / 2 - 70, 246, 32, '<', () => { this.page--; this.draw(); }, false, this.page > 0);
+      this.label(W / 2, 246, `${this.page + 1}/${count}`, C('c'));
+      this.button(W / 2 + 70, 246, 32, '>', () => { this.page++; this.draw(); }, false, this.page < count - 1);
     }
     return this.page * PAGE_SIZE;
   }
@@ -106,21 +106,21 @@ export default class ArenaScene extends Phaser.Scene {
     const players = state.players.filter((player) => player.id !== state.me);
     const start = this.pages(players.length);
     if (!players.length) {
-      this.label(240, 112, 'No other players are online.', C('c'));
-      this.label(240, 134, 'Leave the game open or check back shortly.', C('d'), 420);
-      if (feature('practice')) this.button(240, 176, 270, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
+      this.label(W / 2, 112, 'No other players are online.', C('c'));
+      this.label(W / 2, 134, 'Leave the game open or check back shortly.', C('d'), W - 60);
+      if (feature('practice')) this.button(W / 2, 176, 270, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
       return;
     }
     players.slice(start, start + PAGE_SIZE).forEach((player, i) => {
       const y = 100 + i * 30;
-      this.objects.push(this.add.rectangle(240, y + 7, 428, 28, C('9')).setStrokeStyle(1, C('a')).setDepth(2));
+      this.objects.push(this.add.rectangle(W / 2, y + 7, W - 52, 28, C('9')).setStrokeStyle(1, C('a')).setDepth(2));
       this.label(34, y + 1, player.name, C('c'), 184, 0);
       this.label(34, y + 13, `${player.busy ? 'In a match' : 'Available'}  W ${player.wins} / L ${player.losses}`, C('d'), 260, 0);
       const blocked = Math.max(0, (state.cooldowns[player.id] ?? 0) - arena.now());
       const pending = state.invitations.some((invite) => invite.from === state.me && invite.to === player.id);
       const busy = !!state.match && state.match.state !== 'finished';
       const label = blocked ? `${Math.ceil(blocked / 60000)}m wait` : pending ? 'Invited' : player.busy ? 'Busy' : 'Invite';
-      this.button(409, y + 7, 76, label, () => this.openPicker(player), true, !blocked && !pending && !player.busy && !busy && arena.compatible());
+      this.button(W - 71, y + 7, 76, label, () => this.openPicker(player), true, !blocked && !pending && !player.busy && !busy && arena.compatible());
     });
   }
 
@@ -128,32 +128,32 @@ export default class ArenaScene extends Phaser.Scene {
     const state = arena.snapshot!;
     const invitations = state.invitations.filter((invite) => invite.expiresAt > arena.now());
     const start = this.pages(invitations.length);
-    if (!invitations.length) { this.label(240, 137, 'No pending invitations.', C('c')); return; }
+    if (!invitations.length) { this.label(W / 2, 137, 'No pending invitations.', C('c')); return; }
     invitations.slice(start, start + PAGE_SIZE).forEach((invite, i) => {
       const y = 100 + i * 30, incoming = invite.to === state.me;
-      this.objects.push(this.add.rectangle(240, y + 7, 428, 28, C('9')).setStrokeStyle(1, C('a')).setDepth(2));
+      this.objects.push(this.add.rectangle(W / 2, y + 7, W - 52, 28, C('9')).setStrokeStyle(1, C('a')).setDepth(2));
       this.label(32, y, `${incoming ? 'From' : 'To'} ${incoming ? invite.fromName : invite.toName}`, C('c'), 175, 0);
       this.label(32, y + 13, `${invite.title} / ${invite.wager ? `${invite.wager} coins` : 'Friendly'}`, C('d'), 175, 0);
       if (incoming) {
-        if (invite.wager > 0) this.button(252, y + 7, 76, `${invite.wager} coins`, () => { arena.send({ type: 'arena:respond', inviteId: invite.id, accept: true, wager: invite.wager }); this.tab = 'match'; }, true, state.coins >= invite.wager && arena.compatible());
-        this.button(326, y + 7, 58, 'Free', () => { arena.send({ type: 'arena:respond', inviteId: invite.id, accept: true, wager: 0 }); this.tab = 'match'; }, true, arena.compatible());
-        this.button(413, y + 7, 66, 'Reject', () => { arena.send({ type: 'arena:respond', inviteId: invite.id, accept: false, wager: 0 }); });
-      } else this.button(410, y + 7, 72, 'Cancel', () => { arena.send({ type: 'arena:cancel', inviteId: invite.id }); });
+        if (invite.wager > 0) this.button(W - 228, y + 7, 76, `${invite.wager} coins`, () => { arena.send({ type: 'arena:respond', inviteId: invite.id, accept: true, wager: invite.wager }); this.tab = 'match'; }, true, state.coins >= invite.wager && arena.compatible());
+        this.button(W - 154, y + 7, 58, 'Free', () => { arena.send({ type: 'arena:respond', inviteId: invite.id, accept: true, wager: 0 }); this.tab = 'match'; }, true, arena.compatible());
+        this.button(W - 67, y + 7, 66, 'Reject', () => { arena.send({ type: 'arena:respond', inviteId: invite.id, accept: false, wager: 0 }); });
+      } else this.button(W - 70, y + 7, 72, 'Cancel', () => { arena.send({ type: 'arena:cancel', inviteId: invite.id }); });
     });
   }
 
   private drawMatch(): void {
     const state = arena.snapshot!, match = state.match;
     if (!match) {
-      this.label(240, 116, 'No match yet. Invite an online player.', C('c'), 420);
-      if (feature('practice')) this.button(240, 160, 270, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
+      this.label(W / 2, 116, 'No match yet. Invite an online player.', C('c'), W - 60);
+      if (feature('practice')) this.button(W / 2, 160, 270, 'Practice match (play solo)', () => goTo(this, 'practice'), true);
       return;
     }
-    this.label(240, 96, match.title, C('4'), 420);
+    this.label(W / 2, 96, match.title, C('4'), W - 60);
     match.names.forEach((name, i) => {
       const result = match.results[i];
       this.label(32, 121 + i * 28, `${name}${match.players[i] === state.me ? ' (you)' : ''}`, C('c'), 190, 0);
-      this.label(448, 121 + i * 28, result ? result.forfeit ? 'Forfeit' : `${result.cleared ? 'Clear' : 'Not cleared'}  ${result.score}` : 'Awaiting turn', C('d'), 205, 1);
+      this.label(W - 32, 121 + i * 28, result ? result.forfeit ? 'Forfeit' : `${result.cleared ? 'Clear' : 'Not cleared'}  ${result.score}` : 'Awaiting turn', C('d'), 205, 1);
       const equipment: ArenaEquipmentSnapshot | undefined = match.equipment?.[i] ?? undefined;
       const sling = state.slingCatalog?.find((row) => row.id === equipment?.slingId);
       const boosts = state.boostCatalog?.map((row) => `${row.name} ${equipment?.boosts[row.id] ?? 0}`).join(' / ') ?? '';
@@ -161,16 +161,16 @@ export default class ArenaScene extends Phaser.Scene {
     });
     if (match.state === 'finished') {
       const result = match.resolution === 'cancelled' ? 'Match cancelled - coins returned' : match.resolution === 'draw' ? 'Draw - both stakes returned' : match.winnerId === state.me ? 'You win!' : `${match.names[match.players.indexOf(match.winnerId!)] || 'Opponent'} wins`;
-      this.label(240, 183, result, C('4'), 430);
-      this.label(240, 205, match.wager ? `Wager ${match.wager} each / pot ${match.wager * 2}` : 'Friendly match - no coins wagered', C('d'), 430);
+      this.label(W / 2, 183, result, C('4'), W - 50);
+      this.label(W / 2, 205, match.wager ? `Wager ${match.wager} each / pot ${match.wager * 2}` : 'Friendly match - no coins wagered', C('d'), W - 50);
       return;
     }
     const mine = match.players[match.turn] === state.me;
     const seconds = Math.max(0, Math.ceil((match.deadline - arena.now()) / 1000));
-    this.label(240, 177, `${mine ? 'Your turn' : `${match.names[match.turn]}'s turn`} / ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`, C('c'), 430);
-    if (mine && match.state === 'ready') this.button(240, 204, 130, arena.isStarting() ? 'Starting...' : 'Play turn', () => { arena.startTurn(); }, true, arena.compatible() && !arena.isStarting());
-    else this.label(240, 204, mine ? arena.isStarting() ? 'Preparing your attempt...' : 'Attempt interrupted. Forfeit to finish this turn.' : 'Your opponent gets one full attempt.', C('d'), 430);
-    this.button(318, 246, 92, match.state === 'ready' && match.turn === 0 ? 'Cancel match' : 'Forfeit', () => { arena.forfeit(); });
+    this.label(W / 2, 177, `${mine ? 'Your turn' : `${match.names[match.turn]}'s turn`} / ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`, C('c'), W - 50);
+    if (mine && match.state === 'ready') this.button(W / 2, 204, 130, arena.isStarting() ? 'Starting...' : 'Play turn', () => { arena.startTurn(); }, true, arena.compatible() && !arena.isStarting());
+    else this.label(W / 2, 204, mine ? arena.isStarting() ? 'Preparing your attempt...' : 'Attempt interrupted. Forfeit to finish this turn.' : 'Your opponent gets one full attempt.', C('d'), W - 50);
+    this.button(W / 2 + 78, 246, 92, match.state === 'ready' && match.turn === 0 ? 'Cancel match' : 'Forfeit', () => { arena.forfeit(); });
   }
 
   private openPicker(player: ArenaPlayer): void {
@@ -185,22 +185,22 @@ export default class ArenaScene extends Phaser.Scene {
 
   private drawPicker(): void {
     const picker = this.picker!;
-    const overlay = this.add.rectangle(240, 135, W, H, C('0'), 0.86).setDepth(20).setInteractive();
-    this.objects.push(overlay, panel(this, 32, 48, 416, 211, '8', '9', 'f', 21));
+    const overlay = this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.86).setDepth(20).setInteractive();
+    this.objects.push(overlay, panel(this, W / 2 - 208, 48, 416, 211, '8', '9', 'f', 21));
     const first = this.objects.length;
-    this.label(240, 64, `Invite ${picker.player.name}`, C('4'), 385);
-    if (picker.loading || !picker.challenges.length) this.label(240, 128, picker.loading ? 'Loading shared challenges...' : 'Publish a challenge before inviting a player.', C('d'), 385);
+    this.label(W / 2, 64, `Invite ${picker.player.name}`, C('4'), 385);
+    if (picker.loading || !picker.challenges.length) this.label(W / 2, 128, picker.loading ? 'Loading shared challenges...' : 'Publish a challenge before inviting a player.', C('d'), 385);
     const pages = Math.max(1, Math.ceil(picker.challenges.length / 3));
     picker.challenges.slice(picker.page * 3, picker.page * 3 + 3).forEach((challenge, row) => {
       const index = picker.page * 3 + row;
-      this.button(240, 95 + row * 30, 380, `${index + 1}. ${challenge.title} / ${challenge.shots} shots`, () => { picker.selected = index; this.draw(); }, index === picker.selected);
+      this.button(W / 2, 95 + row * 30, 380, `${index + 1}. ${challenge.title} / ${challenge.shots} shots`, () => { picker.selected = index; this.draw(); }, index === picker.selected);
     });
-    this.label(240, 181, 'Optional stake - opponent can choose friendly', C('d'), 390);
-    (arena.snapshot?.stakes ?? []).forEach((stake, i) => this.button(114 + i * 84, 204, 76, stake ? `${stake} coins` : 'No wager', () => { picker.wager = stake; this.draw(); }, picker.wager === stake, (arena.snapshot?.coins ?? 0) >= stake));
-    this.button(104, 238, 106, 'Cancel', () => { this.picker = undefined; this.generation++; this.draw(); });
-    this.button(195, 238, 30, '<', () => { picker.page--; this.draw(); }, false, picker.page > 0);
-    this.button(236, 238, 30, '>', () => { picker.page++; this.draw(); }, false, picker.page < pages - 1);
-    this.button(354, 238, 120, 'Send invite', () => {
+    this.label(W / 2, 181, 'Optional stake - opponent can choose friendly', C('d'), 390);
+    (arena.snapshot?.stakes ?? []).forEach((stake, i) => this.button(W / 2 - 126 + i * 84, 204, 76, stake ? `${stake} coins` : 'No wager', () => { picker.wager = stake; this.draw(); }, picker.wager === stake, (arena.snapshot?.coins ?? 0) >= stake));
+    this.button(W / 2 - 136, 238, 106, 'Cancel', () => { this.picker = undefined; this.generation++; this.draw(); });
+    this.button(W / 2 - 45, 238, 30, '<', () => { picker.page--; this.draw(); }, false, picker.page > 0);
+    this.button(W / 2 - 4, 238, 30, '>', () => { picker.page++; this.draw(); }, false, picker.page < pages - 1);
+    this.button(W / 2 + 114, 238, 120, 'Send invite', () => {
       const challenge = picker.challenges[picker.selected];
       if (challenge && arena.send({ type: 'arena:invite', targetId: picker.player.id, challengeId: challenge.id, wager: picker.wager })) { this.picker = undefined; this.tab = 'invites'; this.page = 0; this.draw(); }
     }, true, !picker.loading && !!picker.challenges[picker.selected] && arena.compatible());
@@ -209,30 +209,30 @@ export default class ArenaScene extends Phaser.Scene {
 
   private drawArmory(state: ArenaSnapshot): void {
     if (!state.slingCatalog || !state.boostCatalog) return;
-    const overlay = this.add.rectangle(240, 135, W, H, C('0'), 0.84).setDepth(20).setInteractive();
-    this.objects.push(overlay, panel(this, 10, 8, 460, 254, '8', '9', 'f', 21));
+    const overlay = this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.84).setDepth(20).setInteractive();
+    this.objects.push(overlay, panel(this, 10, 8, W - 20, 254, '8', '9', 'f', 21));
     this.label(24, 21, 'Slingshot armory', C('4'), 260, 0, 23);
     this.label(24, 38, `Arena coins ${state.coins}`, C('d'), 220, 0, 23);
-    const close = this.button(438, 22, 34, 'X', () => { this.armoryOpen = false; this.draw(); });
+    const close = this.button(W - 42, 22, 34, 'X', () => { this.armoryOpen = false; this.draw(); });
     close.box.setDepth(26);
     this.label(24, 52, 'Slingshots', C('4'), 120, 0, 23);
     const ownTurn = state.match?.state === 'playing' && state.match.players[state.match.turn] === state.me;
     state.slingCatalog.forEach((sling, i) => {
       const y = 66 + i * 20;
       const owned = state.ownedSlings.includes(sling.id), equipped = state.equippedSling === sling.id;
-      this.objects.push(this.add.rectangle(240, y, 438, 18, C('9')).setStrokeStyle(1, C('a')).setDepth(22));
+      this.objects.push(this.add.rectangle(W / 2, y, W - 42, 18, C('9')).setStrokeStyle(1, C('a')).setDepth(22));
       this.label(24, y, sling.name, C('c'), 94, 0, 23);
       this.label(124, y, sling.desc, C('d'), 150, 0, 23);
-      this.label(358, y, sling.price ? `${sling.price} coins` : 'Free', C('4'), 68, 1, 23);
+      this.label(W - 122, y, sling.price ? `${sling.price} coins` : 'Free', C('4'), 68, 1, 23);
       const action = owned ? equipped ? 'Equipped' : 'Equip' : `Buy ${sling.price}`;
-      const button = this.button(416, y, 76, action, () => {
+      const button = this.button(W - 64, y, 76, action, () => {
         arena.send(owned ? { type: 'arena:equip-sling', slingId: sling.id } : { type: 'arena:buy-sling', slingId: sling.id });
       }, !owned || equipped, !ownTurn && (owned ? !equipped : state.coins >= sling.price), 18);
       button.box.setDepth(26);
     });
     this.label(24, 150, 'Boost tracks', C('4'), 150, 0, 23);
     state.boostCatalog.forEach((boost, i) => {
-      const x = 25 + i * 143, center = x + 68, level = state.boostLevels[boost.id] ?? 0;
+      const x = W / 2 - 215 + i * 143, center = x + 68, level = state.boostLevels[boost.id] ?? 0;
       const price = boost.prices[level];
       this.objects.push(panel(this, x, 158, 136, 88, '9', 'b', 'f', 22));
       this.label(center, 168, boost.name, C('4'), 128, 0.5, 23);
@@ -247,7 +247,7 @@ export default class ArenaScene extends Phaser.Scene {
       button.box.setDepth(26);
     });
     const note = ownTurn ? 'Armory changes unlock after your turn.' : arena.error || 'Upgrades apply when your next turn starts.';
-    this.label(240, 252, fitText(note, 438), arena.error ? C('4') : C('d'), 438, 0.5, 23);
+    this.label(W / 2, 252, fitText(note, W - 42), arena.error ? C('4') : C('d'), W - 42, 0.5, 23);
   }
 
   private play(setup: ArenaSetup): void {

@@ -46,10 +46,10 @@ export default class CreditsScene extends Phaser.Scene {
 
     let y1 = 60;
     for (const sec of col1) {
-      text(this, 130, y1, sec.title, C('4'), 1, C('0')).setDepth(2);
+      text(this, W / 2 - 110, y1, sec.title, C('4'), 1, C('0')).setDepth(2);
       y1 += 13;
       for (const name of sec.names) {
-        text(this, 130, y1, name, C('c'), 1, C('0')).setDepth(2);
+        text(this, W / 2 - 110, y1, name, C('c'), 1, C('0')).setDepth(2);
         y1 += 12;
       }
       y1 += 8;
@@ -57,10 +57,10 @@ export default class CreditsScene extends Phaser.Scene {
 
     let y2 = 60;
     for (const sec of col2) {
-      text(this, 350, y2, sec.title, C('4'), 1, C('0')).setDepth(2);
+      text(this, W / 2 + 110, y2, sec.title, C('4'), 1, C('0')).setDepth(2);
       y2 += 13;
       for (const name of sec.names) {
-        text(this, 350, y2, name, C('c'), 1, C('0')).setDepth(2);
+        text(this, W / 2 + 110, y2, name, C('c'), 1, C('0')).setDepth(2);
         y2 += 12;
       }
       y2 += 8;

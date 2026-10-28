@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { H, W } from '../config/constants';
+import { TARGET } from '../config/target';
 import { events } from './events';
 import { platform } from '../platform';
 import type BattleScene from '../scenes/BattleScene';
@@ -106,7 +107,7 @@ export function setBackdropRealm(realm: RealmTheme, customName?: string): void {
   }
 }
 
-/** Computes responsive display dimensions preserving aspect ratio 216:384. */
+/** Computes responsive display dimensions preserving the logical W:H aspect ratio. */
 export function calculateResponsiveScale(viewportW: number, viewportH: number, fill = false): {
   displayW: number;
   displayH: number;
@@ -144,14 +145,17 @@ export function initResponsive(game: Phaser.Game): () => void {
   const app = document.getElementById('app');
   const hud = document.getElementById('desktop-hud');
 
-  // Setup dither pattern on backdrop
-  const patternUrl = generateDitherPattern();
-  if (backdrop && patternUrl) {
-    backdrop.style.backgroundImage = `
-      radial-gradient(ellipse at center, var(--realm-glow, rgba(41, 54, 111, 0.38)) 0%, var(--realm-tint, #16192b) 60%, #111322 100%),
-      url(${patternUrl})
-    `;
-    backdrop.style.backgroundRepeat = 'no-repeat, repeat';
+  if (TARGET === 'android') {
+    if (backdrop) backdrop.style.background = '#111322';
+  } else {
+    const patternUrl = generateDitherPattern();
+    if (backdrop && patternUrl) {
+      backdrop.style.backgroundImage = `
+        radial-gradient(ellipse at center, var(--realm-glow, rgba(41, 54, 111, 0.38)) 0%, var(--realm-tint, #16192b) 60%, #111322 100%),
+        url(${patternUrl})
+      `;
+      backdrop.style.backgroundRepeat = 'no-repeat, repeat';
+    }
   }
 
   // Prevent right-click context menu on canvas so right-drag works seamlessly

@@ -6,6 +6,7 @@ import { fitText, setText, text, textBlock, textWidth } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { msToNextBeat } from '../audio/beat';
 import { H, W } from '../config/constants';
+import { TARGET } from '../config/target';
 import { music } from '../audio/music';
 import { setMuted, setMusicOn, profile } from '../core/profile';
 import { platform } from '../platform';
@@ -39,7 +40,9 @@ export function createHud(
 ): Hud {
   const { scene } = host;
   const sa = platform.safeArea();
-  const top = Math.max(6, sa.top * scene.scale.displayScale.y);
+  const android = TARGET === 'android';
+  const top = Math.max(android ? 12 : 6, sa.top * scene.scale.displayScale.y);
+  const controlsY = top + (android ? 9 : 6);
 
   let coinsTxt!: Phaser.GameObjects.Image;
   let scoreTxt!: Phaser.GameObjects.Image;
@@ -60,8 +63,8 @@ export function createHud(
       escTxt = text(scene, 8, top + 30, fitText(`Runners out 0/${o.escapeLimit}`, 96), C('c'), 1, C('0')).setOrigin(0, 0.5).setDepth(10);
     }
 
-    muteBtn = scene.add.image(W - 14, top + 6, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
-    muteBtn.setInteractive(new Phaser.Geom.Rectangle(-6, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
+    muteBtn = scene.add.image(W - (android ? 21 : 14), controlsY, sfx.muted ? 'spk_off' : 'spk_on').setDepth(10);
+    muteBtn.setInteractive(android ? new Phaser.Geom.Rectangle(muteBtn.displayOriginX - 13, muteBtn.displayOriginY - 13, 26, 26) : new Phaser.Geom.Rectangle(-6, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
     muteBtn.on('pointerdown', () => {
       sfx.unlock();
       setMuted(!profile.settings.muted);
@@ -70,24 +73,25 @@ export function createHud(
       sfx.click();
     });
 
-    const pauseBtn = scene.add.image(W - 38, top + 6, 'pause_icon').setDepth(10);
-    pauseBtn.setInteractive(new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
+    const pauseBtn = scene.add.image(W - (android ? 45 : 38), controlsY, 'pause_icon').setDepth(10);
+    pauseBtn.setInteractive(android ? new Phaser.Geom.Rectangle(pauseBtn.displayOriginX - 13, pauseBtn.displayOriginY - 13, 26, 26) : new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
     pauseBtn.on('pointerdown', () => { sfx.unlock(); sfx.click(); o.onPause(); });
 
     if (o.showZoom) {
-      const zoomBtn = scene.add.image(W - 62, top + 6, 'zoom_icon').setDepth(10);
-      zoomBtn.setInteractive(new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
+      const zoomBtn = scene.add.image(W - (android ? 69 : 62), controlsY, 'zoom_icon').setDepth(10);
+      zoomBtn.setInteractive(android ? new Phaser.Geom.Rectangle(zoomBtn.displayOriginX - 13, zoomBtn.displayOriginY - 13, 26, 26) : new Phaser.Geom.Rectangle(-8, -10, 25, 27), Phaser.Geom.Rectangle.Contains);
       zoomBtn.on('pointerdown', () => { sfx.unlock(); sfx.click(); o.onToggleView(); });
     }
 
-    ability = makeButton(scene, W - 40, H - 28, 62, 34, o.abilityLabel, 'ability', o.onAbility);
+    ability = makeButton(scene, W - (android ? 41 : 40), H - 28, 62, 34, o.abilityLabel, 'ability', o.onAbility);
     ability.box.setVisible(false);
 
     // Consumable tray bottom-left row
     o.consumables.forEach((c, i) => {
-      const x = 20 + i * 32;
-      const box = scene.add.rectangle(x, H - 18, 26, 26, C('0')).setStrokeStyle(1, C('d')).setDepth(10).setInteractive();
-      const icon = scene.add.image(x, H - 18, c.icon).setDepth(11);
+      const x = (android ? 22 : 20) + i * 32;
+      const y = H - (android ? 22 : 18);
+      const box = scene.add.rectangle(x, y, 26, 26, C('0')).setStrokeStyle(1, C('d')).setDepth(10).setInteractive();
+      const icon = scene.add.image(x, y, c.icon).setDepth(11);
       box.on('pointerdown', () => { sfx.unlock(); o.onUse(i); });
       tray.push({ box, icon });
     });
@@ -119,7 +123,7 @@ export function createHud(
       ability.box.setVisible(inAir);
       if (charges !== undefined) {
         if (!pipCircle) {
-          pipCircle = host.inUi(() => scene.add.circle(W - 18, H - 40, 3, C('4')).setStrokeStyle(1, C('0')).setDepth(12));
+          pipCircle = host.inUi(() => scene.add.circle(ability.box.x + 22, ability.box.y - 12, 3, C('4')).setStrokeStyle(1, C('0')).setDepth(12));
         }
         pipCircle.setVisible(inAir);
         pipCircle.setFillStyle(charges.left > 0 ? C('4') : C('f'));
@@ -130,6 +134,10 @@ export function createHud(
       }
       ability.setEnabled(ready);
       ability.box.setScale(scale);
+      if (android) {
+        ability.box.setPosition(W - Math.max(41, 8 + 32 * scale), H - Math.max(28, 8 + 19 * scale));
+        pipCircle?.setPosition(ability.box.x + 22, ability.box.y - 12);
+      }
     },
     setBossHp: (hp, maxHp, name) => {
       if (hp <= 0) {
@@ -229,7 +237,7 @@ export function createHud(
               sfx.click();
               const why = platform.fullscreen.note();
               if (why) {
-                const lines = textBlock(scene, W / 2, 248, why, C('c'), 440, C('0'), 1);
+                const lines = textBlock(scene, W / 2, 248, why, C('c'), W - 40, C('0'), 1);
                 lines.forEach((l) => l.setDepth(43));
                 pauseObjs.push(...lines);
               }

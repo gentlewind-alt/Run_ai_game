@@ -15,7 +15,6 @@ import { coinCounter } from '../ui/coins';
 import { menuBackdrop, uiIcon, makeButton, panel, type Btn } from '../ui/widgets';
 import { helpButton, maybeTutorial } from '../ui/tutorial';
 
-const PANEL_W = 330;
 const PANEL_H = 64;
 const PANEL_Y0 = 26;
 const PANEL_GAP = 5;
@@ -64,7 +63,7 @@ export default class MapScene extends Phaser.Scene {
     const realms = data.content.realms;
     const total = realms.reduce((n, r) => n + r.levels.filter((id) => data.levels[id]).length * 3, 0);
     const got = realms.reduce((n, r) => n + r.levels.reduce((m, id) => m + starsFor(id), 0), 0);
-    uiIcon(this, 350, 13, 'star', 'star_on', 12);
+    uiIcon(this, W - 130, 13, 'star', 'star_on', 12);
     text(this, W - 12, 13, fitText(`${got} of ${total}`, 104), C('4'), 1, C('0')).setOrigin(1, 0.5);
 
     realms.slice(this.page * REALMS_PER_PAGE, (this.page + 1) * REALMS_PER_PAGE).forEach((realm, li) => {
@@ -165,7 +164,7 @@ export default class MapScene extends Phaser.Scene {
 
   private drawRealm(y0: number, light: (typeof LIGHT)[string], name: string, open: boolean, prev: string): void {
     const x = 8;
-    const w = PANEL_W;
+    const w = W - 150;
     panel(this, x, y0, w, PANEL_H, light.sky[0], light.sky[0], light.sky[0]);
     const g = this.add.graphics();
     const innerX = x + 6, innerY = y0 + 14, innerW = w - 12, innerH = PANEL_H - 20;
@@ -191,8 +190,9 @@ export default class MapScene extends Phaser.Scene {
   }
 
   private node(id: number, k: number, y0: number, open: boolean, count: number): void {
-    const step = count > 1 ? (PANEL_W - 56) / (count - 1) : 0;
-    const x = count > 1 ? 8 + 28 + k * step : 8 + PANEL_W / 2;
+    const panelW = W - 150;
+    const step = count > 1 ? (panelW - 56) / (count - 1) : 0;
+    const x = count > 1 ? 8 + 28 + k * step : 8 + panelW / 2;
     const y = y0 + 34 + (k % 2 === 0 ? 3 : -3);
     const built = !!data.levels[id];
     const unlocked = open && levelUnlocked(id);

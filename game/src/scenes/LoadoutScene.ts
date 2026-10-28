@@ -6,7 +6,7 @@ import { iconKey } from '../art/icons';
 import { pixText } from '../art/pix';
 import { slingTexture, weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
-import { H } from '../config/constants';
+import { H, W } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
 import { artifactSlots, consumableCount, loadoutSize, owns, profile, setArtifacts, setLoadout, starsFor, upgradeMult } from '../core/profile';
 import { data } from '../data/load';
@@ -56,13 +56,13 @@ export default class LoadoutScene extends Phaser.Scene {
     menuBackdrop(this, true);
 
     // Divider between grid and loadout panel
-    this.add.rectangle(264, H / 2, 2, H - 20, C('0'), 0.4);
+    this.add.rectangle(W - 216, H / 2, 2, H - 20, C('0'), 0.4);
 
     // Right side: Header & level info
-    text(this, 370, 10, fitText(`Level ${this.level}: ${lvl.name}`, 196), C('4'), 1, C('0'));
-    if (lvl.loadout?.length && cleared) text(this, 370, 22, fitText('Cleared! Bring your own arsenal.', 196), C('5'), 1, C('0'));
+    text(this, W - 110, 10, fitText(`Level ${this.level}: ${lvl.name}`, 196), C('4'), 1, C('0'));
+    if (lvl.loadout?.length && cleared) text(this, W - 110, 22, fitText('Cleared! Bring your own arsenal.', 196), C('5'), 1, C('0'));
     else if (lvl.hints?.[0]) {
-      text(this, 370, 22, fitText(lvl.hints[0], 196), C('c'), 1, C('0'));
+      text(this, W - 110, 22, fitText(lvl.hints[0], 196), C('c'), 1, C('0'));
     }
 
     // Right side: Firing Slots (2 rows of 3, up to 7 with Gold Quiver)
@@ -74,7 +74,7 @@ export default class LoadoutScene extends Phaser.Scene {
       const colIdx = isRow0 ? i : i - row0Count;
       const countInRow = isRow0 ? row0Count : row1Count;
       const colGap = 42;
-      const sx = 370 + (colIdx - (countInRow - 1) / 2) * colGap;
+      const sx = W - 110 + (colIdx - (countInRow - 1) / 2) * colGap;
       const sy = isRow0 ? 44 : 74;
       const boxSize = 26; // touch target 26x26 >= 24px
       this.add.rectangle(sx, sy, boxSize + 2, boxSize + 2, C('0'));
@@ -115,8 +115,8 @@ export default class LoadoutScene extends Phaser.Scene {
     this.itemRow();
     this.slingRow();
 
-    makeButton(this, 305, H - 18, 64, 24, 'Back', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
-    this.goBtn = makeButton(this, 415, H - 18, 110, 26, 'Fling!', 'go', () => this.start(), 6);
+    makeButton(this, W - 175, H - 18, 64, 24, 'Back', 'plain', () => { sfx.click(); goTo(this, 'map'); }, 6);
+    this.goBtn = makeButton(this, W - 65, H - 18, 110, 26, 'Fling!', 'go', () => this.start(), 6);
 
     if (!this.fixed && forgeEnabled()) makeButton(this, 132, 13, 90, 24, 'Forge weapon', 'go', () => { setLoadout(this.slots.filter((id): id is string => id !== null)); setArtifacts(this.equipped); goTo(this, 'forge', { returnTo: 'loadout', level: this.level }); }, 6);
 
@@ -192,7 +192,7 @@ export default class LoadoutScene extends Phaser.Scene {
     this.detailId = id;
     this.info.forEach((i) => i.destroy());
     this.info = [];
-    const infoX = 370;
+    const infoX = W - 110;
     if (!id) {
       this.info.push(text(this, infoX, 102, fitText(message || (this.slots.some((s) => s === null) ? 'Tap weapons to fill slots.' : 'Ready: tap Fling!'), 196), message ? C('4') : C('c'), 1, C('0')));
       return;
@@ -235,14 +235,14 @@ export default class LoadoutScene extends Phaser.Scene {
   private artifactRow(): void {
     const arts = data.content.artifacts.filter((a) => owns('artifacts', a.id));
     const slots = artifactSlots();
-    text(this, 274, 158, 'Artifact', C('d')).setOrigin(0, 0.5);
+    text(this, W - 206, 158, 'Artifact', C('d')).setOrigin(0, 0.5);
     if (arts.length === 0) {
-      text(this, 330, 158, fitText('None yet (from shop)', 140), C('d')).setOrigin(0, 0.5);
+      text(this, W - 150, 158, fitText('None yet (from shop)', 140), C('d')).setOrigin(0, 0.5);
       return;
     }
     this.equipped = profile.equipped.artifacts.filter((id) => owns('artifacts', id)).slice(0, slots);
     arts.forEach((a, i) => {
-      const x = 336 + i * 26;
+      const x = W - 144 + i * 26;
       this.add.rectangle(x, 158, 24, 24, C('0'));
       const box = this.add.rectangle(x, 158, 22, 22, C('8')).setStrokeStyle(1, C('9')).setInteractive();
       this.add.image(x, 158, iconKey(a.id)).setDepth(2);
@@ -259,18 +259,18 @@ export default class LoadoutScene extends Phaser.Scene {
   private describeArtifact(id: string): void {
     const a = data.content.artifacts.find((x) => x.id === id)!;
     this.info.forEach((i) => i.destroy());
-    this.info = [text(this, 370, 96, fitText(a.name, 196), C('4'), 1, C('0')), ...textBlock(this, 370, 110, a.effect, C('c'), 196, C('0'), 2)];
+    this.info = [text(this, W - 110, 96, fitText(a.name, 196), C('4'), 1, C('0')), ...textBlock(this, W - 110, 110, a.effect, C('c'), 196, C('0'), 2)];
   }
 
   private itemRow(): void {
     const items = data.content.consumables.filter((c) => consumableCount(c.id) > 0);
-    text(this, 274, 184, 'Items', C('d')).setOrigin(0, 0.5);
+    text(this, W - 206, 184, 'Items', C('d')).setOrigin(0, 0.5);
     if (items.length === 0) {
-      text(this, 330, 184, 'None yet (1 use each)', C('e')).setOrigin(0, 0.5);
+      text(this, W - 150, 184, 'None yet (1 use each)', C('e')).setOrigin(0, 0.5);
       return;
     }
     items.forEach((c, i) => {
-      const x = 326 + i * 36;
+      const x = W - 154 + i * 36;
       this.add.image(x, 184, iconKey(c.id)).setDepth(2);
       text(this, x + 9, 184, fitText(`x${consumableCount(c.id)}`, 24), C('b')).setOrigin(0, 0.5);
     });
@@ -281,9 +281,9 @@ export default class LoadoutScene extends Phaser.Scene {
     const def = data.content.cosmetics?.find((c) => c.id === skin);
     const name = def?.name ?? 'Standard Sling';
     const icon = slingTexture(skin);
-    text(this, 274, 210, 'Sling', C('d')).setOrigin(0, 0.5);
-    this.add.image(320, 210, icon).setScale(0.5).setDepth(2);
-    text(this, 336, 210, fitText(name, 134), C('4'), 1, C('0')).setOrigin(0, 0.5);
+    text(this, W - 206, 210, 'Sling', C('d')).setOrigin(0, 0.5);
+    this.add.image(W - 160, 210, icon).setScale(0.5).setDepth(2);
+    text(this, W - 144, 210, fitText(name, 134), C('4'), 1, C('0')).setOrigin(0, 0.5);
   }
 
   private refresh(): void {
@@ -302,7 +302,7 @@ export default class LoadoutScene extends Phaser.Scene {
     this.goBtn?.setEnabled(this.slots.every((s) => s !== null));
     if (!this.fixed && this.detailId === null) this.describe(null);
     this.forgeNote?.destroy();
-    if (!this.fixed && this.forgeCap > 0) this.forgeNote = text(this, 370, 230, `Forged ${this.forgedCount()}/${this.forgeCap}`, this.forgedCount() >= this.forgeCap ? C('4') : C('d'));
+    if (!this.fixed && this.forgeCap > 0) this.forgeNote = text(this, W - 110, 230, `Forged ${this.forgedCount()}/${this.forgeCap}`, this.forgedCount() >= this.forgeCap ? C('4') : C('d'));
   }
 
   private start(): void {

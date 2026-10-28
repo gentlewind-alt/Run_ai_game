@@ -7,7 +7,7 @@ import { MONSTER_ART } from '../art/textures';
 import { beatBob, beatPhase } from '../audio/beat';
 import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
-import { H, W } from '../config/constants';
+import { BASE_W, H, W } from '../config/constants';
 import { feature, getSettings } from '../config/settings';
 import { platform } from '../platform';
 import { admin, adminReady, lock, unlock } from '../core/admin';
@@ -47,8 +47,9 @@ export default class TitleScene extends Phaser.Scene {
       });
     };
     const menu = getSettings().display.ui.title;
+    const plateX = W - (BASE_W - menu.plateX);
     const tagline = 'Fling real weapons. Mash the monsters.';
-    const logoX = Math.min(Math.round(W * 0.34), Math.floor(menu.plateX - menu.helpGap - (textWidth(tagline) + 2) / 2));
+    const logoX = Math.min(Math.round(W * 0.34), Math.floor(plateX - menu.helpGap - (textWidth(tagline) + 2) / 2));
     word('MONSTER', logoX, 48, 3, C('c'), C('0'));
     word('MASH', logoX, 94, 6, C('4'), C('q'));
     text(this, logoX, 138, 'Slingshot Siege', C('c'), 1, C('0')).setDepth(5);
@@ -60,14 +61,14 @@ export default class TitleScene extends Phaser.Scene {
     });
 
     // menu plate: one big Play, a grid of mode tiles, and a small utility row
-    const cx = menu.plateX + menu.plateW / 2;
+    const cx = plateX + menu.plateW / 2;
     const contentW = menu.plateW - 2 * menu.insetX;
     const plateH = menu.insetY * 2 + menu.emblemPx + menu.playH + menu.tileRowH * 2 + menu.utilityH + menu.rowGap * 4;
     const emblemY = menu.plateY + menu.insetY + menu.emblemPx / 2;
     const playY = emblemY + menu.emblemPx / 2 + menu.rowGap + menu.playH / 2;
     const tileTop = playY + menu.playH / 2 + menu.rowGap;
     const utilityY = tileTop + menu.tileRowH * 2 + menu.rowGap * 2 + menu.utilityH / 2;
-    panel(this, menu.plateX, menu.plateY, menu.plateW, plateH, '8', '9', 'f', 5);
+    panel(this, plateX, menu.plateY, menu.plateW, plateH, '8', '9', 'f', 5);
     if (this.textures.exists('ui_emblem')) this.add.image(cx, emblemY, 'ui_emblem').setDisplaySize(menu.emblemPx, menu.emblemPx).setDepth(6);
     const open = (scene: string, data?: object) => (): void => { sfx.unlock(); sfx.click(); goTo(this, scene, data); };
     const play = makeButton(this, cx, playY, contentW, menu.playH, 'PLAY', 'go', open('map'), 6, '');
@@ -140,7 +141,7 @@ export default class TitleScene extends Phaser.Scene {
       });
     });
     music.play({ theme: 'title' });
-    helpButton(this, menu.plateX - menu.helpGap - 12, menu.plateY + menu.insetY - 2, undefined, 8);
+    helpButton(this, plateX - menu.helpGap - 12, menu.plateY + menu.insetY - 2, undefined, 8);
     irisOpen(this);
   }
 

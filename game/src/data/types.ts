@@ -236,7 +236,7 @@ export interface Config {
   /** Per build target overrides (the Android app): features switched on or off, AdMob ad unit ids. */
   targets?: Record<string, { features?: Record<string, boolean>; admob?: { rewardedId: string; interstitialId: string; testing: boolean; childRating: string; teenRating: string } }>;
   levels: number[];
-  display: { pixelArt: boolean; maxParticles: number; weapon: WeaponDisplay; weaponAnim: WeaponAnimConfig;
+  display: { pixelArt: boolean; androidMaxWidth: number; maxParticles: number; weapon: WeaponDisplay; weaponAnim: WeaponAnimConfig;
     ui: { buttonCorner: number; panelCorner: number; iconPx: number; iconGap: number; buttonPadding: number; disabledAlpha: number; backdropAlpha: number;
       plainPanelMinWidth: number; plainPanelMinHeight: number; listBackdropDimAlpha: number;
       title: { plateX: number; plateY: number; plateW: number; insetX: number; insetY: number; rowGap: number; emblemPx: number; playH: number; tileH: number; tileGap: number; tileRowH: number; captionOffset: number; tileIconPx: number; utilityH: number; utilityGap: number; utilityPadding: number; helpGap: number } } };

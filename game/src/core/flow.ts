@@ -4,7 +4,7 @@ import Phaser from 'phaser';
 import { W, H } from '../config/constants';
 
 type Wrap = <T>(fn: () => T) => T;
-const R_MAX = Math.hypot(W, H) * 0.62;
+const irisRadius = (): number => Math.hypot(W, H) * 0.62;
 const IRIS_MS = 300;
 
 function starPoints(cx: number, cy: number, r: number): Phaser.Geom.Point[] {
@@ -31,7 +31,7 @@ function iris(scene: Phaser.Scene, from: number, to: number, done?: () => void, 
   };
   draw(from);
   // An opening iris must never leave its black cover up if the scene's clock stalls (the host throttles, the scene restarts).
-  if (to >= R_MAX - 1) {
+  if (to >= irisRadius() - 1) {
     setTimeout(() => {
       if (cover.active) cover.destroy();
       if (hole.active) hole.destroy();
@@ -41,7 +41,7 @@ function iris(scene: Phaser.Scene, from: number, to: number, done?: () => void, 
     from: 0, to: 1, duration: IRIS_MS, ease: 'Cubic.inOut',
     onUpdate: (tw) => draw(from + (to - from) * (tw.getValue() ?? 0)),
     onComplete: () => {
-      if (to >= R_MAX - 1) {
+      if (to >= irisRadius() - 1) {
         if (cover.active) cover.destroy();
         if (hole.active) hole.destroy();
       }
@@ -52,7 +52,7 @@ function iris(scene: Phaser.Scene, from: number, to: number, done?: () => void, 
 
 /** Opens the iris at the start of a scene. Battle scenes pass `wrap` so the cover lands on the fixed UI camera. */
 export function irisOpen(scene: Phaser.Scene, wrap?: Wrap): void {
-  iris(scene, 0, R_MAX, undefined, wrap);
+  iris(scene, 0, irisRadius(), undefined, wrap);
 }
 
 /** Transition to another scene with the iris. Stops all other running scenes first. */
@@ -69,7 +69,7 @@ export function goTo(from: Phaser.Scene, key: string, data?: object): void {
     }
     from.scene.start(key, data);
   };
-  iris(from, R_MAX, 0, go);
+  iris(from, irisRadius(), 0, go);
   // The iris is a tween: if the host throttles or stalls the scene's clock the transition must still happen.
   setTimeout(go, IRIS_MS + 400);
 }

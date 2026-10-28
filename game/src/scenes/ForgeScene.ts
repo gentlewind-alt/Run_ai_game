@@ -3,6 +3,7 @@ import { C } from '../art/palette';
 import { fitText, text, textBlock } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
+import { W } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
 import { compileForgeRecipe, forgeCost, forgeEnabled, forgePrice, forgeRecipe, forgeRecipes, saveForgeRecipe } from '../core/forge';
 import { drawForgeWeapon } from '../art/forgeTextures';
@@ -62,7 +63,7 @@ export default class ForgeScene extends Phaser.Scene {
       });
     });
     panel(this, 8, 65, 300, 169, 'f', 'e', '0');
-    panel(this, 320, 8, 152, 226, '8', '9', '0');
+    panel(this, W - 160, 8, 152, 226, '8', '9', '0');
     if (this.tab === 'Body') {
       text(this, 158, 79, 'Choose a weapon shape', C('d'));
       data.forge.weapons.forEach((w, i) => {
@@ -125,10 +126,10 @@ export default class ForgeScene extends Phaser.Scene {
       if (!this.saving) goTo(this, this.returnTo, { level: this.level });
     });
     const label = this.saving ? 'Forging...' : price === 0 ? 'Saved' : this.isSaved() ? 'Saved' : `Forge for ${price}`;
-    const save = makeButton(this, 396, 252, 148, 26, label, poor ? 'plain' : 'go', () => { void this.save(); });
+    const save = makeButton(this, W - 84, 252, 148, 26, label, poor ? 'plain' : 'go', () => { void this.save(); });
     save.setEnabled(!this.saving && this.tab !== 'Legends' && price > 0 && !poor);
     const status = this.message || (poor ? `Need ${price - profile.coins} more coins` : price === 0 ? 'Saved build' : forgeRecipes().some((r) => r.weaponId === this.recipe.weaponId) ? `Change costs ${price} (half price)` : 'New weapon');
-    text(this, 213, 251, fitText(status, 200), this.message ? C('4') : poor ? C('3') : C('c'), 1, C('0'));
+    text(this, W / 2 - 27, 251, fitText(status, 200), this.message ? C('4') : poor ? C('3') : C('c'), 1, C('0'));
     this.children.list.filter((o) => !before.has(o) && o !== this.body).forEach((o) => this.body.add(o));
   }
   private choice(label: string, i: number, top: number, selected: boolean, apply: () => void, price?: number): void {
@@ -153,18 +154,18 @@ export default class ForgeScene extends Phaser.Scene {
     const trait = data.forge.traits.find((t) => t.id === this.recipe.traitId)!;
     const ability = data.forge.abilities.find((a) => a.id === this.recipe.abilityId)!;
     const aura = data.forge.radiances.find((a) => a.id === this.recipe.radianceId)!;
-    text(this, 396, 24, fitText(w.name.replace('Forge ', ''), 136), C('c'), 1, C('0'));
+    text(this, W - 84, 24, fitText(w.name.replace('Forge ', ''), 136), C('c'), 1, C('0'));
     this.aura = this.add.graphics().setDepth(2);
-    this.aura.lineStyle(2, C(aura.color), 0.8).strokeCircle(396, 65, 27);
-    this.aura.lineStyle(1, C('c'), 0.25).strokeCircle(396, 65, 30);
+    this.aura.lineStyle(2, C(aura.color), 0.8).strokeCircle(W - 84, 65, 27);
+    this.aura.lineStyle(1, C('c'), 0.25).strokeCircle(W - 84, 65, 30);
     drawForgeWeapon(this, this.recipe, 'forge_preview');
-    this.preview = this.add.image(396, 65, 'forge_preview').setScale(2).setDepth(3);
-    text(this, 396, 104, `${Math.round(w.baseDamage * upgradeMult(w.id) * (w.params.damageMult ?? 1))} base damage`, C('4'));
-    text(this, 396, 122, fitText(`${trait.kind === 'bless' ? 'Bless' : 'Curse'}: ${trait.name}`, 136), C('b'), 1, C('0'));
-    textBlock(this, 396, 136, trait.description, C('c'), 136, C('0'), 2);
-    text(this, 396, 172, ability.name, C('4'));
-    textBlock(this, 396, 185, ability.description, C('c'), 136, C('0'), 2);
-    text(this, 396, 225, `${aura.name} radiance`, C(aura.color));
+    this.preview = this.add.image(W - 84, 65, 'forge_preview').setScale(2).setDepth(3);
+    text(this, W - 84, 104, `${Math.round(w.baseDamage * upgradeMult(w.id) * (w.params.damageMult ?? 1))} base damage`, C('4'));
+    text(this, W - 84, 122, fitText(`${trait.kind === 'bless' ? 'Bless' : 'Curse'}: ${trait.name}`, 136), C('b'), 1, C('0'));
+    textBlock(this, W - 84, 136, trait.description, C('c'), 136, C('0'), 2);
+    text(this, W - 84, 172, ability.name, C('4'));
+    textBlock(this, W - 84, 185, ability.description, C('c'), 136, C('0'), 2);
+    text(this, W - 84, 225, `${aura.name} radiance`, C(aura.color));
   }
   private async save(): Promise<void> {
     if (this.saving || this.tab === 'Legends') return;

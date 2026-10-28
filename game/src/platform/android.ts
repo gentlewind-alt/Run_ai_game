@@ -105,6 +105,13 @@ export const androidPlatform: Platform = {
     return { id, name: 'Player', anonymous: true };
   },
   safeArea: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+  fullscreen: {
+    available: () => false,
+    active: () => true,
+    async toggle() { return true; },
+    note: () => '',
+    onChange: () => () => {},
+  },
   ads: {
     async rewardedReady() { return rewardedLoaded || loadRewarded(); },
     showRewarded,

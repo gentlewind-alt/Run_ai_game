@@ -76,7 +76,7 @@ export default class ShopScene extends Phaser.Scene {
     this.forgeDragMoved = false;
     menuBackdrop(this, true);
     coinCounter(this, 12, 13);
-    text(this, 205, 13, 'Shop', C('4'), 2, C('0'));
+    text(this, W / 2 - 35, 13, 'Shop', C('4'), 2, C('0'));
     this.body = this.add.container(0, 0);
     makeButton(this, W / 2, H - 13, 110, 18, 'Back to map', 'plain', () => { if (this.forgeDragMoved) return; sfx.click(); goTo(this, 'map'); }, 6);
     this.render();
@@ -103,7 +103,7 @@ export default class ShopScene extends Phaser.Scene {
   private adButton(): void {
     if (!adsEnabled()) return;
     const r = adRules();
-    const btn = makeButton(this, 381, 13, 112, 20, `+${r.coinReward} coins (Ad)`, 'go', async () => {
+    const btn = makeButton(this, W - 99, 13, 112, 20, `+${r.coinReward} coins (Ad)`, 'go', async () => {
       if (this.forgeDragMoved) return;
       sfx.click();
       btn.setEnabled(false);
@@ -303,7 +303,7 @@ export default class ShopScene extends Phaser.Scene {
     pageItems.forEach((it, i) => {
       const col = i % 4;
       const row = Math.floor(i / 4);
-      const x = 10 + col * 116;
+      const x = 10 + col * (W - 132) / 3;
       const y = 58 + row * 40;
       const sel = it.id === this.selected;
       const card = createItemCard({
@@ -360,7 +360,7 @@ export default class ShopScene extends Phaser.Scene {
 
     // 3. Description stays inside the detail area above the purchase button.
     const descStartY = metaY + 11;
-    const maxWidth = 420;
+    const maxWidth = W - 60;
     const maxLines = list.length > maxItems ? 2 : 3;
     const lines = textBlock(this, W / 2, 0, it.desc.join(' '), C('c'), maxWidth, C('0'), maxLines);
     const lineSpacing = 12;
@@ -454,7 +454,7 @@ export default class ShopScene extends Phaser.Scene {
     this.forgeTop = top; this.forgeView = viewportHeight;
     this.forgeMaxScroll = Math.max(0, Math.ceil(owned.length / 2) * 40 - 4 - viewportHeight);
     this.forgeScroll = Phaser.Math.Clamp(this.forgeScroll, 0, this.forgeMaxScroll);
-    if (forgeEnabled()) this.body.add(makeButton(this, 240, 71, 200, 24, 'Create a weapon', 'go', () => goTo(this, 'forge')).box);
+    if (forgeEnabled()) this.body.add(makeButton(this, W / 2, 71, 200, 24, 'Create a weapon', 'go', () => goTo(this, 'forge')).box);
     const list = this.add.container(0, top - this.forgeScroll);
     this.forgeList = list;
     this.body.add(list);
@@ -466,7 +466,7 @@ export default class ShopScene extends Phaser.Scene {
     owned.forEach((w, i) => {
       const col = i % 2;
       const row = Math.floor(i / 2);
-      const x = 10 + col * 234;
+      const x = col === 0 ? 10 : W - 10 - cardW;
       const y = row * 40;
       const lv = weaponLevel(w.id);
       const g = plainCard(this, x, y, cardW, cardH, '8', '9', 1);

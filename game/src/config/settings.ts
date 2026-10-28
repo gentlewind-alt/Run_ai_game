@@ -11,7 +11,7 @@ export interface Settings extends Config {
 const DEFAULTS: Config = {
   version: 1,
   levels: [1],
-  display: { pixelArt: true, maxParticles: 90, weapon: { flightPx: 16, slingPx: 24, queuePx: 24, relicBonus: 1.25 },
+  display: { pixelArt: true, androidMaxWidth: 640, maxParticles: 90, weapon: { flightPx: 16, slingPx: 24, queuePx: 24, relicBonus: 1.25 },
     ui: { buttonCorner: 10, panelCorner: 24, iconPx: 14, iconGap: 3, buttonPadding: 6, disabledAlpha: 0.55, backdropAlpha: 1,
       plainPanelMinWidth: 140, plainPanelMinHeight: 80, listBackdropDimAlpha: 0.7,
       title: { plateX: 256, plateY: 4, plateW: 220, insetX: 24, insetY: 16, rowGap: 12, emblemPx: 44, playH: 32, tileH: 26, tileGap: 8, tileRowH: 40, captionOffset: 23, tileIconPx: 10, utilityH: 24, utilityGap: 5, utilityPadding: 4, helpGap: 6 } },

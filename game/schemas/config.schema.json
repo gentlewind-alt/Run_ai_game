@@ -38,6 +38,7 @@
         "width": { "type": "integer", "minimum": 120 },
         "height": { "type": "integer", "minimum": 120 },
         "pixelArt": { "type": "boolean" },
+        "androidMaxWidth": { "type": "integer", "minimum": 480, "description": "Maximum logical viewport width for the Android app; height remains 270." },
         "roundPixels": { "type": "boolean" },
         "maxParticles": { "type": "integer", "minimum": 0 },
         "ui": {

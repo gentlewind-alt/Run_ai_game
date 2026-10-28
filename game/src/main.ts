@@ -19,7 +19,8 @@ import ShopScene from './scenes/ShopScene';
 import TitleScene from './scenes/TitleScene';
 import './style.css';
 import { sfx } from './audio/sfx';
-import { H, W } from './config/constants';
+import { H, W, setLogicalWidth } from './config/constants';
+import { TARGET } from './config/target';
 import { feature, getSettings, initSettings } from './config/settings';
 import { adminReady, onAdmin } from './core/admin';
 import { DEBUG, applyDebug, setMuted, wireProfile } from './core/profile';
@@ -56,6 +57,15 @@ async function bootstrap(): Promise<void> {
     await loadForge();
     applyDebug();
     const S = getSettings();
+    if (TARGET === 'android') {
+      // the app's own view size (immersive full screen), falling back to the physical screen
+      const useView = window.innerWidth > 0 && window.innerHeight > 0;
+      const width = useView ? window.innerWidth : window.screen.width;
+      const height = useView ? window.innerHeight : window.screen.height;
+      const longSide = Math.max(width, height);
+      const shortSide = Math.max(1, Math.min(width, height));
+      setLogicalWidth(Math.min(S.display.androidMaxWidth, Math.round(H * longSide / shortSide)));
+    }
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       width: W,

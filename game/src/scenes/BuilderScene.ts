@@ -16,7 +16,7 @@ import { maybeTutorial, tutorialOpen } from '../ui/tutorial';
 
 const STORAGE_KEY = 'monster-mash.builder.v1';
 const FILE_LIMIT = 100000;
-const VIEW = { x: 116, y: 34, w: 360, h: 196 };
+const VIEW = { x: 116, y: 34, get w(): number { return W - 120; }, h: 196 };
 let currentDraft: BuilderDocument | undefined;
 let saveQueue: Promise<void> = Promise.resolve();
 let nextId = 0;
@@ -219,11 +219,11 @@ export default class BuilderScene extends Phaser.Scene {
     this.undoButton = button(63, 15, 40, 'Undo', () => this.history(false));
     this.redoButton = button(105, 15, 40, 'Redo', () => this.history(true));
     this.editButtons.push(button(147, 15, 40, 'Clear', () => this.clearAll()));
-    this.testButton = button(199, 15, 56, 'Test', () => this.simulate(!this.running), 'go');
-    const play = button(255, 15, 52, 'Play', () => this.play(), 'go');
-    const save = button(307, 15, 46, 'Save', () => { void this.save(true); });
-    const exportBtn = button(357, 15, 46, 'Export', () => this.exportFile());
-    const challenge = button(436, 15, 76, 'Challenge', () => this.publish());
+    this.testButton = button(W - 281, 15, 56, 'Test', () => this.simulate(!this.running), 'go');
+    const play = button(W - 225, 15, 52, 'Play', () => this.play(), 'go');
+    const save = button(W - 173, 15, 46, 'Save', () => { void this.save(true); });
+    const exportBtn = button(W - 123, 15, 46, 'Export', () => this.exportFile());
+    const challenge = button(W - 44, 15, 76, 'Challenge', () => this.publish());
     this.editButtons.push(play, save, exportBtn, challenge);
     this.releaseButtons.push(save, exportBtn, challenge);
     text(this, 56, 35, 'PIECES', C('4')).setDepth(12);
@@ -261,12 +261,12 @@ export default class BuilderScene extends Phaser.Scene {
     }
     this.pinButton = button(181, 243, 48, 'Pin', () => this.pinWheel());
     this.editButtons.push(this.pinButton, button(221, 243, 26, '-45', () => this.rotate(-45)), button(249, 243, 26, '+45', () => this.rotate(45)));
-    this.anchorButton = button(289, 243, 48, 'Anchor', () => this.anchor());
-    this.editButtons.push(this.anchorButton, button(341, 243, 48, 'Delete', () => this.deleteSelection()), button(393, 243, 48, 'Unlink', () => this.unlink()), button(449, 243, 54, 'Import', () => this.importFile()));
+    this.anchorButton = button(W - 191, 243, 48, 'Anchor', () => this.anchor());
+    this.editButtons.push(this.anchorButton, button(W - 139, 243, 48, 'Delete', () => this.deleteSelection()), button(W - 87, 243, 48, 'Unlink', () => this.unlink()), button(W - 31, 243, 54, 'Import', () => this.importFile()));
     // view controls sit on the canvas corner and work while testing too
-    const view: [string, number, number, () => void][] = [['Fit', 373, 28, () => this.fitView()], ['-', 401, 22, () => this.zoomBy(-1)], ['+', 427, 22, () => this.zoomBy(1)], ['Hand', 457, 34, () => { this.panMode = !this.panMode; this.refreshControls(); this.say(this.panMode ? 'Hand: drag the canvas to move the zoomed view.' : 'Hand off.'); }]];
+    const view: [string, number, number, () => void][] = [['Fit', W - 107, 28, () => this.fitView()], ['-', W - 79, 22, () => this.zoomBy(-1)], ['+', W - 53, 22, () => this.zoomBy(1)], ['Hand', W - 23, 34, () => { this.panMode = !this.panMode; this.refreshControls(); this.say(this.panMode ? 'Hand: drag the canvas to move the zoomed view.' : 'Hand off.'); }]];
     for (const [label, x, w, action] of view) button(x, 218, w, label, action, 'plain', 18);
-    const handMarker = this.add.rectangle(457, 218, 36, 20).setStrokeStyle(1, C('4')).setFillStyle(C('4'), 0).setDepth(14);
+    const handMarker = this.add.rectangle(W - 23, 218, 36, 20).setStrokeStyle(1, C('4')).setFillStyle(C('4'), 0).setDepth(14);
     this.activeMarkers.push({ marker: handMarker, active: () => this.panMode });
     this.refreshControls();
   }

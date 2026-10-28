@@ -11,6 +11,7 @@ import { C } from '../art/palette';
 import { setText, text } from '../art/font5x7';
 import { challengeBoard, submitScore, type Challenge } from '../core/challenges';
 import { H, W } from '../config/constants';
+import { TARGET } from '../config/target';
 import { events } from '../core/events';
 import { irisOpen } from '../core/flow';
 import { snapshot } from '../battle/snapshot';
@@ -97,7 +98,7 @@ export default class BattleScene extends Phaser.Scene {
       if (p.bot) this.input.enabled = false;
     }
     if (b.custom && !this.challenge && !this.arenaSetup && !this.practice) b.inUi(() => {
-      makeButton(this, W - 98, 14, 42, 24, 'Edit', 'plain', () => goTo(this, 'builder'), 12);
+      makeButton(this, W - (TARGET === 'android' ? 112 : 98), TARGET === 'android' ? 21 : 14, 42, 24, 'Edit', 'plain', () => goTo(this, 'builder'), 12);
     });
     this.wireHud(b);
     startBattle(b);

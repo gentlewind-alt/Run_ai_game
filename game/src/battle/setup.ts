@@ -1,6 +1,6 @@
 // Creates the battle state for a level and wires the world, the physics listener and the input.
 import Phaser from 'phaser';
-import { W } from '../config/constants';
+import { BASE_W, W } from '../config/constants';
 import { levelSettings } from '../config/settings';
 import { events } from '../core/events';
 import { profile } from '../core/profile';
@@ -46,7 +46,7 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
     arena: competitive ? { frames: 0, actions: [] } : undefined,
     loadout: effectiveLoadout, forgeWeapons: settings.features.weaponForge && !competitive ? forgeSnapshot() : {}, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
-    worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
+    worldW: level.worldW ?? BASE_W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
     mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: competitive ? arenaMods?.previewMult ?? 1 : 1, launchSpeedMult, twinFraction, twinDelaySteps },
     slingSkin, arenaDamageMult: competitive ? arenaMods?.damageMult ?? 1 : 1, artifacts: [], consumables: [], targeting: null, paused: false,
     ents: [], actors: [], proj: null, state: 'intro', shotIdx: 0, coins: 0, score: 0, chain: 0, chainT: 999, escaped: 0,

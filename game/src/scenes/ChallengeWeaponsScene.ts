@@ -3,7 +3,7 @@ import { C } from '../art/palette';
 import { fitText, text, textBlock } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
-import { H } from '../config/constants';
+import { H, W } from '../config/constants';
 import { SHOTS_MAX, SHOTS_MIN, challengeLevel, joinOnce, publishChallenge, updateRules, type Challenge } from '../core/challenges';
 import { goTo, irisOpen } from '../core/flow';
 import { owns } from '../core/profile';
@@ -60,15 +60,15 @@ export default class ChallengeWeaponsScene extends Phaser.Scene {
 
   create(): void {
     menuBackdrop(this);
-    this.add.rectangle(264, H / 2, 2, H - 20, C('0'), 0.4);
+    this.add.rectangle(W - 216, H / 2, 2, H - 20, C('0'), 0.4);
     const heading = this.mode === 'play' ? this.challenge!.title : this.mode === 'publish' ? 'Share as a Global Challenge' : `Rules: ${this.challenge!.title}`;
-    text(this, 370, 10, fitText(heading, 196), C('4'), 1, C('0'));
-    textBlock(this, 370, 22, this.mode === 'play'
+    text(this, W - 110, 10, fitText(heading, 196), C('4'), 1, C('0'));
+    textBlock(this, W - 110, 22, this.mode === 'play'
       ? 'Fill your shots. Only weapons you own and the author allows are shown.'
       : 'Tap the weapons challengers may use from their own arsenal.', C('c'), 196, C('0'), 2);
     this.renderGrid();
     this.renderPanel();
-    makeButton(this, 305, H - 18, 64, 24, 'Back', 'plain', () => {
+    makeButton(this, W - 175, H - 18, 64, 24, 'Back', 'plain', () => {
       sfx.click();
       if (this.mode === 'publish') goTo(this, 'builder');
       else goTo(this, this.mode === 'edit' || this.mode === 'play' ? 'challenge' : 'challenges', { id: this.challenge?.id, challenge: this.challenge });
@@ -78,7 +78,7 @@ export default class ChallengeWeaponsScene extends Phaser.Scene {
 
   private say(message: string): void {
     this.statusLines.forEach((l) => l.destroy());
-    this.statusLines = textBlock(this, 370, 156, message, C('4'), 196, C('0'), 3);
+    this.statusLines = textBlock(this, W - 110, 156, message, C('4'), 196, C('0'), 3);
   }
 
   private renderGrid(): void {
@@ -135,7 +135,7 @@ export default class ChallengeWeaponsScene extends Phaser.Scene {
         const row = i < perRow ? 0 : 1;
         const col = row === 0 ? i : i - perRow;
         const count = row === 0 ? perRow : n - perRow;
-        const sx = 370 + (col - (count - 1) / 2) * 42;
+        const sx = W - 110 + (col - (count - 1) / 2) * 42;
         const sy = 62 + row * 32;
         const box = this.add.rectangle(sx, sy, 26, 26, C('0')).setStrokeStyle(1, C('d')).setInteractive();
         box.on('pointerdown', () => { if (this.busy) return; sfx.click(); this.slots[i] = null; this.renderPanel(); });
@@ -146,26 +146,26 @@ export default class ChallengeWeaponsScene extends Phaser.Scene {
           this.panelObjs.push(this.add.image(sx, sy, tex).setScale(w >= 32 ? 0.75 : 1.3).setDepth(2));
         }
       });
-      this.panelObjs.push(text(this, 370, 124, `${this.shots} shots, fired in order`, C('d'), 1, C('0')));
+      this.panelObjs.push(text(this, W - 110, 124, `${this.shots} shots, fired in order`, C('d'), 1, C('0')));
       this.goBtn?.box.destroy();
-      this.goBtn = makeButton(this, 415, H - 18, 110, 26, 'Fling!', 'go', () => this.fling(), 6);
+      this.goBtn = makeButton(this, W - 65, H - 18, 110, 26, 'Fling!', 'go', () => this.fling(), 6);
       this.goBtn.setEnabled(this.slots.every((s) => s !== null));
       return;
     }
     // author view: shots stepper, select all or none, publish / save
-    this.panelObjs.push(text(this, 316, 62, 'Shots', C('d'), 1, C('0')).setOrigin(0, 0.5));
+    this.panelObjs.push(text(this, W - 164, 62, 'Shots', C('d'), 1, C('0')).setOrigin(0, 0.5));
     this.panelObjs.push(
-      makeButton(this, 376, 62, 28, 22, '-', 'plain', () => { if (this.shots > SHOTS_MIN) { this.shots--; this.renderPanel(); } }, 6).box,
-      text(this, 410, 62, String(this.shots), C('4'), 2, C('0')),
-      makeButton(this, 444, 62, 28, 22, '+', 'plain', () => { if (this.shots < SHOTS_MAX) { this.shots++; this.renderPanel(); } }, 6).box,
+      makeButton(this, W - 104, 62, 28, 22, '-', 'plain', () => { if (this.shots > SHOTS_MIN) { this.shots--; this.renderPanel(); } }, 6).box,
+      text(this, W - 70, 62, String(this.shots), C('4'), 2, C('0')),
+      makeButton(this, W - 36, 62, 28, 22, '+', 'plain', () => { if (this.shots < SHOTS_MAX) { this.shots++; this.renderPanel(); } }, 6).box,
     );
-    this.panelObjs.push(text(this, 316, 92, `${this.allowed.size} weapons allowed`, C('c'), 1, C('0')).setOrigin(0, 0.5));
+    this.panelObjs.push(text(this, W - 164, 92, `${this.allowed.size} weapons allowed`, C('c'), 1, C('0')).setOrigin(0, 0.5));
     this.panelObjs.push(
-      makeButton(this, 332, 114, 60, 22, 'All', 'plain', () => { this.allowed = new Set(data.content.weapons.map((w) => w.id)); this.renderGrid(); this.renderPanel(); }, 6).box,
-      makeButton(this, 400, 114, 60, 22, 'None', 'plain', () => { this.allowed.clear(); this.renderGrid(); this.renderPanel(); }, 6).box,
+      makeButton(this, W - 148, 114, 60, 22, 'All', 'plain', () => { this.allowed = new Set(data.content.weapons.map((w) => w.id)); this.renderGrid(); this.renderPanel(); }, 6).box,
+      makeButton(this, W - 80, 114, 60, 22, 'None', 'plain', () => { this.allowed.clear(); this.renderGrid(); this.renderPanel(); }, 6).box,
     );
     this.goBtn?.box.destroy();
-    this.goBtn = makeButton(this, 415, H - 18, 110, 26, this.mode === 'publish' ? 'Share' : 'Save rules', 'go', () => { void this.submit(); }, 6);
+    this.goBtn = makeButton(this, W - 65, H - 18, 110, 26, this.mode === 'publish' ? 'Share' : 'Save rules', 'go', () => { void this.submit(); }, 6);
     this.goBtn.setEnabled(this.allowed.size > 0 && !this.busy);
   }
 

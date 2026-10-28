@@ -172,7 +172,7 @@ export default class ResultsScene extends Phaser.Scene {
           voteBtn.setLabel('Thanks!');
           note.forEach((n) => n.destroy());
           note = [this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.8).setDepth(40).setInteractive(),
-            panel(this, 70, 82, 340, 110, '8', '9', 'f', 41),
+            panel(this, W / 2 - 170, 82, 340, 110, '8', '9', 'f', 41),
             ...textBlock(this, W / 2, 106, copied ? 'Vote page opens in a new tab. If not, the link is copied: paste it in your browser.' : 'Open run.world/jams/octoberjam, find MONSTER MASH and tap Vote.', C('c'), 304, C('0'), 3).map((n) => n.setDepth(42)),
             makeButton(this, W / 2, 170, 90, 22, 'Close', 'plain', () => { sfx.click(); note.forEach((n) => n.destroy()); note = []; }, 43).box];
         }, 3);
@@ -272,7 +272,7 @@ export default class ResultsScene extends Phaser.Scene {
     }, 4);
 
     // Right leaderboard panel
-    const rx = 228;
+    const rx = W - 16 - rightW;
     panel(this, rx, py, rightW, h, '0', 'f', 'f', 2);
     text(this, rx + rightW / 2, py + 12, 'Daily Leaderboard', C('4'), 1, C('0')).setDepth(3);
 

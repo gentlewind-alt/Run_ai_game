@@ -6,6 +6,7 @@ import type { BattleState } from './state';
 /** Adds the fixed UI camera. Objects created while `b.uiMode` is true are drawn by it only; everything else by the world camera. */
 export function setupCameras(b: BattleState): void {
   b.uiMode = false;
+  b.scene.cameras.main.setViewport(0, 0, W, H);
   b.uiCam = b.scene.cameras.add(0, 0, W, H);
   const route = (go: Phaser.GameObjects.GameObject): void => {
     if (b.uiMode) b.scene.cameras.main.ignore(go);
@@ -21,9 +22,9 @@ export function minZoom(b: BattleState): number {
 
 export function clampCx(b: BattleState, cx: number, z: number): number {
   const half = W / z / 2;
+  if (half * 2 > b.worldW) return b.worldW / 2;
   const minCx = b.tune.homeLeft !== undefined ? Math.min(half, b.tune.homeLeft + half) : half;
-  const hcx = homeCx(b);
-  const maxCx = Math.max(minCx, b.worldW - half, hcx);
+  const maxCx = Math.max(minCx, b.worldW - half);
   return Phaser.Math.Clamp(cx, minCx, maxCx);
 }
 
@@ -115,7 +116,7 @@ export function updateCamera(b: BattleState): void {
 
 /** Default framing: the sling near the left edge and every monster in view, down to a minimum zoom. */
 export function homeZoom(b: BattleState): number {
-  if (b.level.homeZoom) return b.level.homeZoom;
+  if (b.level.homeZoom) return Phaser.Math.Clamp(b.level.homeZoom, minZoom(b), b.settings.camera.maxZoom);
   const monsters = b.level.monsters ?? [];
   const blocks = b.level.blocks ?? [];
   const monsterMaxX = monsters.length ? Math.max(...monsters.map((m) => m.x)) : b.slingX + 100;
@@ -124,7 +125,7 @@ export function homeZoom(b: BattleState): number {
   const marginR = b.tune.homeMarginRight ?? 36;
   const slingFrac = b.tune.homeSlingFrac ?? 0.24;
   const reqVw = (maxX + marginR - b.slingX) / (1 - slingFrac);
-  return Phaser.Math.Clamp(W / reqVw, b.tune.homeZoomMin, 1);
+  return Phaser.Math.Clamp(W / reqVw, Math.max(b.tune.homeZoomMin, minZoom(b)), 1);
 }
 
 export function homeCx(b: BattleState): number {
