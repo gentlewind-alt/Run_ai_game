@@ -3,7 +3,7 @@ import { C, css } from '../art/palette';
 import { blockKey, makeBattleTextures } from '../art/textures';
 import { MatterLib as M } from '../battle/matter';
 import { data } from '../data/load';
-import type { LevelBlock, LevelConnection } from '../data/types';
+import type { LevelBlock, LevelConnection, StandTuning } from '../data/types';
 import { blockParts } from './geometry';
 
 type Point = { x: number; y: number };
@@ -42,8 +42,64 @@ export function createBlockBody(scene: Phaser.Scene, block: LevelBlock): any {
   body.builderShape = block.shape ?? 'rectangle';
   body.builderVariant = block.variant;
   M.Body.setAngle(body, (block.angle ?? 0) * Math.PI / 180);
+  if (!body.isStatic && (!block.shape || block.shape === 'rectangle') && (!block.variant || block.variant === 'hollow')) {
+    body.stand = {
+      aspect: Math.max(block.w, block.h) / Math.min(block.w, block.h),
+      axisOffset: block.w > block.h ? Math.PI / 2 : 0,
+      frictionStatic: body.frictionStatic,
+      partFrictionStatic: body.parts.map((part: any) => part.frictionStatic), released: false, wasStanding: false,
+    };
+  }
   scene.matter.world.add(body);
   return body;
+}
+
+/** Firm footing ends permanently once a standing piece tips beyond its release angle. */
+export function applyStandResistance(body: any, stand: StandTuning): void {
+  const footing = body.stand;
+  if (!footing || body.isStatic || footing.aspect < stand.standAspect) return;
+  const angle = body.angle + footing.axisOffset;
+  const tilt = Math.atan2(Math.sin(angle * 2), Math.cos(angle * 2)) / 2;
+  if (Math.abs(tilt) > stand.tipAngleDeg * Math.PI / 180 && !footing.released) release(body, stand);
+  // a falling piece tips slowly at first; keep it awake so the engine does not freeze it leaning mid-fall
+  if (footing.released && footing.awakeSteps > 0) { footing.awakeSteps--; M.Sleeping.set(body, false); }
+  const resting = !footing.released && Math.hypot(body.velocity.x, body.velocity.y) <= stand.restSpeed;
+  if (resting) footing.wasStanding = true;
+  body.frictionStatic = resting ? Math.max(footing.frictionStatic, stand.standFrictionStatic) : footing.frictionStatic;
+  for (let i = 0; i < body.parts.length; i++) {
+    const frictionStatic = footing.partFrictionStatic[i];
+    body.parts[i].frictionStatic = resting ? Math.max(frictionStatic, stand.standFrictionStatic) : frictionStatic;
+  }
+  if (!resting || body.isSleeping) return;
+  body.torque -= stand.restoreTorque * body.mass * tilt;
+  M.Body.setAngularVelocity(body, body.angularVelocity * (1 - stand.standDamping));
+}
+
+/** Firm footing is off for good: the piece falls freely and stays awake for `fallAwakeSteps`. */
+function release(body: any, stand: StandTuning): void {
+  body.stand.released = true;
+  body.stand.awakeSteps = stand.fallAwakeSteps;
+  M.Sleeping.set(body, false);
+}
+
+/** A fallen standing piece passes its release to standing neighbours in contact. */
+export function propagateStandRelease(pairs: any[], stand: StandTuning): void {
+  for (const pair of pairs) {
+    if (!pair.isActive || pair.isSensor) continue;
+    const a = pair.bodyA.parent ?? pair.bodyA;
+    const b = pair.bodyB.parent ?? pair.bodyB;
+    if (a === b || a.label !== 'block' || b.label !== 'block' || a.isStatic || b.isStatic || a.ent?.dead || b.ent?.dead) continue;
+    const fa = a.stand, fb = b.stand;
+    // Pieces authored lying down never had firm footing, so they cannot start a chain.
+    if (!fa?.wasStanding || !fb?.wasStanding || fa.aspect < stand.standAspect || fb.aspect < stand.standAspect || fa.released === fb.released) continue;
+    const source = fa.released ? a : b;
+    const target = fa.released ? b : a;
+    release(target, stand);
+    // the push carries on down the row: spin the struck piece away from the one that fell on it (the engine alone lets
+    // a leaning piece come to rest against its neighbour instead of knocking it over)
+    const dir = Math.sign(target.position.x - source.position.x) || 1;
+    M.Body.setAngularVelocity(target, target.angularVelocity + dir * stand.chainSpin);
+  }
 }
 
 export function blockTextureKey(block: Pick<LevelBlock, 'm' | 'w' | 'h' | 'shape' | 'variant'>, cracked = false): string {

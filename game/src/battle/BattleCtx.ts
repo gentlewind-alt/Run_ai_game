@@ -51,7 +51,10 @@ export interface Ent {
   dir: number;
   speed: number;
   fireT: number;
-  aim?: { x: number; y: number }; // archers: the fixed arrow direction chosen at spawn
+  aim?: { x: number; y: number }; // wand direction chosen at spawn, rotated with the body when firing
+  aimBodyAngle?: number;
+  handFacing?: number;
+  wand?: Phaser.GameObjects.Graphics;
   delay: number; // seconds a runner waits before it starts (level data)
   runFrom?: number; // step a runner starts running, set once the battle is live
   params: Record<string, any>; // from the monster's data row
@@ -113,7 +116,7 @@ export interface PelletOpts {
   onEnd?: (x: number, y: number) => void;
 }
 
-/** `aim` is a fixed direction chosen when the shooter spawned (never re-aimed); `shooter` is its body, which its own shots pass through. */
+/** `aim` is the firing direction at the moment of release; `shooter` is its body, which its own shots pass through. */
 export interface EnemyAttackOpts { x: number; y: number; color: number; boss?: boolean; aim?: { x: number; y: number }; shooter?: { id: number; collisionFilter: { group: number } } }
 
 /** Numbers artifacts and consumables adjust during a battle. */

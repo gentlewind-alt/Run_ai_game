@@ -98,6 +98,8 @@
     "arena": true,
     "weaponForge": true,
     "enemyAttackPhysics": true,
+    "standResistance": true,
+    "enemyWands": true,
     "builder": true,
     "challenges": true,
     "map": true,

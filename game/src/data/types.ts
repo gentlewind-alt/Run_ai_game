@@ -27,6 +27,11 @@ export interface WeaponDef {
   params: Params;
 }
 
+export interface MonsterWandDef {
+  length: number; handX: number; handY: number; shaftWidth: number;
+  woodColor: string; tipColor: string; tipRadius: number; glowRadius: number; glowAlpha: number; depthOffset: number;
+}
+
 export interface MonsterDef {
   id: string;
   name?: string;
@@ -38,6 +43,7 @@ export interface MonsterDef {
   density?: number;
   boss?: boolean;
   flying?: boolean;
+  wand?: MonsterWandDef;
   params?: Params;
 }
 
@@ -49,7 +55,12 @@ export interface MaterialDef {
   friction?: number;
 }
 
+export interface StandTuning {
+  standAspect: number; tipAngleDeg: number; restoreTorque: number; standDamping: number; standFrictionStatic: number; restSpeed: number; fallAwakeSteps: number; chainSpin: number;
+}
+
 export interface Tuning {
+  physics: { stand: StandTuning };
   launchK: number;
   maxPull: number;
   debrisK: number;

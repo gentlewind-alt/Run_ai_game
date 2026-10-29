@@ -174,6 +174,16 @@
   },
   "tuning": {
     "_note": "Feel/balance numbers read by the game. Edit here, not in code.",
+    "physics": {
+      "stand": {
+        "standAspect": 1.8,
+        "tipAngleDeg": 14,
+        "restoreTorque": 0.03,
+        "standDamping": 0.08,
+        "standFrictionStatic": 3,
+        "restSpeed": 0.5, "fallAwakeSteps": 150, "chainSpin": 0.05
+      }
+    },
     "launchK": 0.27,
     "homeZoomMin": 0.5,
     "homeLeft": -40,
@@ -345,7 +355,7 @@
       "archetype": "staff",
       "element": "radiant",
       "rarity": "common", "sprite": "sprites/weapons/w_ashwood_staff", "anim": { "flight": "twirl", "trail": "sparks", "ability": "charge", "colors": ["4", "3"] },
-      "baseDamage": 11,
+      "baseDamage": 13,
       "unlock": "level 3",
       "price": 150,
       "launch": "Light, floaty.",
@@ -415,7 +425,7 @@
       "archetype": "spear",
       "element": "physical",
       "rarity": "uncommon", "sprite": "sprites/weapons/w_hunters_pike", "anim": { "flight": "point", "trail": "ghost", "ability": "slash", "colors": ["c", "i"] },
-      "baseDamage": 19.1,
+      "baseDamage": 22,
       "unlock": "level 5",
       "price": 250,
       "launch": "Flies point-first, flat and fast.",
@@ -445,7 +455,7 @@
       "archetype": "chakram",
       "element": "physical",
       "rarity": "common", "sprite": "sprites/weapons/w_hunters_boomerang", "anim": { "flight": "frisbee", "trail": "ghost", "ability": "slash", "colors": ["i", "6"] },
-      "baseDamage": 15,
+      "baseDamage": 18,
       "unlock": "level 6",
       "price": 300,
       "launch": "Flies out, then curves back on its own.",
@@ -508,7 +518,7 @@
       "archetype": "staff",
       "element": "hellfire",
       "rarity": "uncommon", "sprite": "sprites/weapons/w_horned_scepter", "anim": { "flight": "twirl", "trail": "sparks", "ability": "charge", "colors": ["2", "3"] },
-      "baseDamage": 11.7,
+      "baseDamage": 14,
       "unlock": "level 8",
       "price": 400,
       "launch": "Light, trails ember particles.",
@@ -1439,6 +1449,18 @@
       "resist": "void",
       "note": "Stands on towers. Fires arrows at your launcher pad (visual only, no player damage).",
       "behavior": "archer",
+      "wand": {
+        "length": 11,
+        "handX": 5,
+        "handY": -3,
+        "shaftWidth": 2,
+        "woodColor": "#3e2a19",
+        "tipColor": "#8b5a2b",
+        "tipRadius": 2,
+        "glowRadius": 3,
+        "glowAlpha": 0.4,
+        "depthOffset": 0.1
+      },
       "params": {
         "fireMin": 120,
         "fireSpread": 120,
@@ -1480,7 +1502,7 @@
     {
       "id": "orc_brute",
       "name": "Orc Brute",
-      "hp": 120,
+      "hp": 90,
       "weak": "void",
       "resist": "physical",
       "note": "Heavy. Needs blast or a heavy weapon.",
@@ -1520,7 +1542,7 @@
     {
       "id": "troll",
       "name": "Troll",
-      "hp": 160,
+      "hp": 120,
       "weak": "hellfire",
       "resist": null,
       "note": "Regenerates 5 HP/s unless burning.",
@@ -1533,7 +1555,7 @@
     {
       "id": "iron_warlord",
       "name": "Iron Warlord",
-      "hp": 340,
+      "hp": 260,
       "weak": "void",
       "resist": "physical",
       "behavior": "iron_warlord",
@@ -1594,6 +1616,18 @@
       "score": 2500,
       "note": "Armoured boss. The crystal in its chest glows now and then: hit it for 2x.",
       "behavior": "frost_giant",
+      "wand": {
+        "length": 11,
+        "handX": 18,
+        "handY": -6,
+        "shaftWidth": 2,
+        "woodColor": "#3e2a19",
+        "tipColor": "#dff8ff",
+        "tipRadius": 2,
+        "glowRadius": 3,
+        "glowAlpha": 0.4,
+        "depthOffset": 0.1
+      },
       "density": 0.004,
       "sprite": "sprites/monsters/frost_giant",
       "params": {
@@ -1649,6 +1683,18 @@
       "score": 3000,
       "note": "Armoured boss. The anvil on its back opens for 2x hits now and then.",
       "behavior": "frost_giant",
+      "wand": {
+        "length": 11,
+        "handX": 18,
+        "handY": -6,
+        "shaftWidth": 2,
+        "woodColor": "#3e2a19",
+        "tipColor": "#ff8a3c",
+        "tipRadius": 2,
+        "glowRadius": 3,
+        "glowAlpha": 0.4,
+        "depthOffset": 0.1
+      },
       "density": 0.004,
       "sprite": "sprites/monsters/forge_tyrant",
       "params": {
@@ -1702,6 +1748,18 @@
       "score": 3500,
       "note": "Armoured boss. The eye in its chest opens for 2x hits now and then.",
       "behavior": "frost_giant",
+      "wand": {
+        "length": 11,
+        "handX": 18,
+        "handY": -6,
+        "shaftWidth": 2,
+        "woodColor": "#3e2a19",
+        "tipColor": "#ffffaa",
+        "tipRadius": 2,
+        "glowRadius": 3,
+        "glowAlpha": 0.4,
+        "depthOffset": 0.1
+      },
       "density": 0.004,
       "sprite": "sprites/monsters/storm_sovereign",
       "params": {

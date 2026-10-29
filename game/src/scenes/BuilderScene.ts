@@ -4,7 +4,7 @@ import { text, setText, textWidth, fitText } from '../art/font5x7';
 import { MONSTER_ART } from '../art/textures';
 import { blockBounds, blockParts, blocksOverlap, closestBlockPoint, closestPair, findDraftOverlaps, localToWorld, magnetSnap, pointInBlock, snapBlock, touchOffset, worldToLocal } from '../builder/geometry';
 import { cloneDraft, newDraft, settle, toLevel, validateDraft, type BuilderDocument } from '../builder/document';
-import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
+import { applyStandResistance, blockTextureKey, createBlockBody, ensureBlockTextures, installConnections, propagateStandRelease } from '../builder/physics';
 import { getSettings } from '../config/settings';
 import { H, W } from '../config/constants';
 import { goTo } from '../core/flow';
@@ -1171,7 +1171,11 @@ export default class BuilderScene extends Phaser.Scene {
     while (this.acc >= stepMs && count < settings.physics.maxStepsPerFrame) {
       this.acc -= stepMs;
       count++;
+      if (settings.features.standResistance) {
+        for (const body of this.blockBodies) applyStandResistance(body, settings.tune.physics.stand);
+      }
       this.matter.world.step(stepMs);
+      if (settings.features.standResistance) propagateStandRelease(this.matter.world.engine.pairs.list, settings.tune.physics.stand);
     }
     for (const { body, image } of this.sprites) image.setPosition(body.position.x, body.position.y).setRotation(body.angle);
     this.overlay?.clear();

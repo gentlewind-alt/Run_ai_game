@@ -1,22 +1,24 @@
 import type { MonsterBehavior } from './types';
 import { data } from '../../data/load';
+import { enemyWandPose, initEnemyWand } from './wand';
 
-interface Theme { open: string; stomp: string; death: string; drop: number; dropStroke: number; sparks: string[] }
+interface Theme { open: string; stomp: string; death: string; dropStroke: number; sparks: string[] }
 
 // Words and colours per theme; chosen by the monster's params: `lava = 1` (Forge Tyrant), `storm = 1` (Storm Sovereign), else ice.
-const ICE: Theme = { open: 'CHEST OPEN!', stomp: 'ICICLES!', death: 'FROZEN FALL!', drop: 0xdff8ff, dropStroke: 0x41a6f6, sparks: ['b', 'c'] };
-const LAVA: Theme = { open: 'ANVIL OPEN!', stomp: 'LAVA SURGE!', death: 'MELTED DOWN!', drop: 0xff8a3c, dropStroke: 0xffcd75, sparks: ['3', '4'] };
-const STORM: Theme = { open: 'EYE OPEN!', stomp: 'LIGHTNING!', death: 'STORM FALLS!', drop: 0xffffaa, dropStroke: 0x41a6f6, sparks: ['4', 'b'] };
+const ICE: Theme = { open: 'CHEST OPEN!', stomp: 'ICICLES!', death: 'FROZEN FALL!', dropStroke: 0x41a6f6, sparks: ['b', 'c'] };
+const LAVA: Theme = { open: 'ANVIL OPEN!', stomp: 'LAVA SURGE!', death: 'MELTED DOWN!', dropStroke: 0xffcd75, sparks: ['3', '4'] };
+const STORM: Theme = { open: 'EYE OPEN!', stomp: 'LIGHTNING!', death: 'STORM FALLS!', dropStroke: 0x41a6f6, sparks: ['4', 'b'] };
 const themeOf = (params: Record<string, number>): Theme => (params.lava === 1 ? LAVA : params.storm === 1 ? STORM : ICE);
 
 /**
- * Frost Giant (boss), also the Forge Tyrant and the Storm Sovereign through a theme flag: armoured, stomps and drops a
+ * Frost Giant (boss), also the Forge Tyrant and the Storm Sovereign through a theme flag: armoured, stomps and fires a
  * volley on a timer, and every so often its weak point glows: hits on it do double damage. Numbers come from `params`.
  */
 export const frostGiant: MonsterBehavior = {
-  onSpawn(_ctx, m) {
+  onSpawn(ctx, m) {
     m.params.timer = 0;
     m.params.chestOpen = 0;
+    initEnemyWand(ctx, m);
   },
 
   onUpdate(ctx, m) {
@@ -34,18 +36,23 @@ export const frostGiant: MonsterBehavior = {
       ctx.fx.word(x0, m.body.position.y - 20, theme.stomp);
       ctx.fx.shake(0.012);
       const R = data.forge.enemyAttack;
+      const { tip, aim } = enemyWandPose(m);
+      const color = parseInt(m.def!.wand!.tipColor.slice(1), 16);
       for (let k = 0; k < R.volleyCount; k++) {
-        const x = x0 + (k - (R.volleyCount - 1) / 2) * R.volleySpacing + (ctx.rng.next() - 0.5) * R.jitter;
-        if (ctx.spawnEnemyAttack({ x, y: -10, color: theme.drop, boss: true, shooter: m.body })) continue;
-        const dot = ctx.fx.dot(x, -10, 2, theme.drop, theme.dropStroke);
-        let y = -10;
+        if (ctx.spawnEnemyAttack({ x: tip.x, y: tip.y, color, boss: true, aim, shooter: m.body })) continue;
+        const dot = ctx.fx.dot(tip.x, tip.y, R.radius, color, theme.dropStroke);
+        let x = tip.x;
+        let y = tip.y;
+        let steps = 0;
         ctx.addActor({
           update() {
-            y += 4;
-            dot.setY(y);
+            steps++;
+            x += aim.x * R.bossSpeed;
+            y += aim.y * R.bossSpeed;
+            dot.setPosition(x, y);
+            if (steps >= R.lifetimeSteps || x < 0 || x > ctx.worldW || y < 0) return true;
             if (y >= ctx.groundAt(x)) {
               ctx.fx.sparks(x, y, theme.sparks, 3);
-              dot.destroy();
               return true;
             }
             return false;

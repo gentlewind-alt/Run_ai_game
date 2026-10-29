@@ -181,10 +181,14 @@
     },
     "tuning": {
       "type": "object",
-      "required": ["launchK", "maxPull", "debrisK", "hitStopFrames", "coins"],
+      "required": ["launchK", "maxPull", "debrisK", "hitStopFrames", "coins", "physics"],
       "patternProperties": { "^_": {} },
       "additionalProperties": { "type": ["number", "object"] },
       "properties": {
+        "physics": {
+          "type": "object", "additionalProperties": false, "required": ["stand"],
+          "properties": { "stand": { "$ref": "#/$defs/stand" } }
+        },
         "launchK": { "type": "number", "exclusiveMinimum": 0, "maximum": 2, "description": "Pull px to launch px/step." },
         "maxPull": { "type": "number", "minimum": 5, "maximum": 120 },
         "debrisK": { "type": "number", "minimum": 0 },
@@ -200,6 +204,20 @@
           "additionalProperties": { "type": "number", "minimum": 0 },
           "description": "Coins per kill, keyed by monster or material id, or 'monster' as the fallback for monsters."
         }
+      }
+    },
+    "stand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["standAspect", "tipAngleDeg", "restoreTorque", "standDamping", "standFrictionStatic", "restSpeed", "fallAwakeSteps", "chainSpin"],
+      "properties": {
+        "standAspect": { "type": "number", "exclusiveMinimum": 1, "description": "Minimum long/short side ratio for upright rectangular pieces." },
+        "tipAngleDeg": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 90, "description": "Tilt past upright that permanently releases footing." },
+        "restoreTorque": { "type": "number", "minimum": 0, "description": "Restoring torque per mass per radian of tilt, applied before each physics step." },
+        "standDamping": { "type": "number", "minimum": 0, "maximum": 1, "description": "Fraction of angular velocity removed per standing step." },
+        "standFrictionStatic": { "type": "number", "minimum": 0 },
+        "restSpeed": { "type": "number", "minimum": 0, "description": "Maximum linear speed in px/step for the resting support approximation." },
+        "fallAwakeSteps": { "type": "integer", "minimum": 0, "description": "Steps a released (falling) piece is kept awake so the physics engine does not freeze it leaning mid-fall." },
+        "chainSpin": { "type": "number", "minimum": 0, "description": "Spin (rad/step) given to a standing piece when a falling piece knocks it, away from the faller, so a row topples like dominoes." }
       }
     },
     "damageRules": {
@@ -344,6 +362,22 @@
         "params": { "$ref": "#/$defs/params" }
       }
     },
+    "monsterWand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["length", "handX", "handY", "shaftWidth", "woodColor", "tipColor", "tipRadius", "glowRadius", "glowAlpha", "depthOffset"],
+      "properties": {
+        "length": { "type": "number", "exclusiveMinimum": 0, "description": "Hand-to-tip length in world pixels." },
+        "handX": { "type": "number", "minimum": 0, "description": "Body-local hand offset, mirrored toward the sling at spawn." },
+        "handY": { "type": "number", "description": "Body-local vertical hand offset in world pixels." },
+        "shaftWidth": { "type": "number", "exclusiveMinimum": 0 },
+        "woodColor": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "tipColor": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "tipRadius": { "type": "number", "exclusiveMinimum": 0 },
+        "glowRadius": { "type": "number", "exclusiveMinimum": 0 },
+        "glowAlpha": { "type": "number", "minimum": 0, "maximum": 1 },
+        "depthOffset": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
     "monster": {
       "type": "object",
       "required": ["id", "name", "hp", "weak", "resist"],
@@ -366,6 +400,7 @@
         "score": { "type": "number", "minimum": 0 },
         "boss": { "type": "boolean" },
         "flying": { "type": "boolean", "description": "True if monster flies above the ground." },
+        "wand": { "$ref": "#/$defs/monsterWand" },
         "note": { "type": "string" },
         "params": { "$ref": "#/$defs/params" }
       }

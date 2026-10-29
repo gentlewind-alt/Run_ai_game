@@ -1,21 +1,19 @@
-import { C } from '../../art/palette';
 import type { BattleCtx } from '../../battle/BattleCtx';
+import { enemyWandPose, initEnemyWand } from './wand';
+import { data } from '../../data/load';
 import type { MonsterBehavior } from './types';
 
-/** Visual only: an arrow flies at the launcher pad and fizzles. */
-function fireArrow(ctx: BattleCtx, x: number, y: number, steps: number, aim?: { x: number; y: number }, shooter?: any): void {
-  if (ctx.spawnEnemyAttack({ x, y, color: C('g'), aim, shooter })) return;
-  const sprite = ctx.fx.image(x, y, 'px').setTint(C('g')).setScale(5, 1).setDepth(6);
-  const sx = x;
-  const sy = y;
+/** The visual fallback follows the same wand direction as a physical shot. */
+function fireArrow(ctx: BattleCtx, x: number, y: number, steps: number, aim: { x: number; y: number }, color: number, shooter: any): void {
+  if (ctx.spawnEnemyAttack({ x, y, color, aim, shooter })) return;
+  const sprite = ctx.fx.image(x, y, 'px').setTint(color).setScale(5, 1).setDepth(6).setRotation(Math.atan2(aim.y, aim.x));
+  const speed = data.forge.enemyAttack.speed;
   let t = 0;
   ctx.addActor({
     update: () => {
       t++;
-      const k = t / steps;
-      const px = sx + (ctx.sling.x - sx) * k;
-      const py = sy + (ctx.sling.y + 6 - sy) * k - Math.sin(Math.PI * k) * 22;
-      sprite.setRotation(Math.atan2(py - sprite.y, px - sprite.x));
+      const px = x + aim.x * speed * t;
+      const py = y + aim.y * speed * t;
       sprite.setPosition(px, py);
       if (t >= steps) {
         ctx.fx.sparks(px, py, ['g', 'c'], 4);
@@ -31,14 +29,14 @@ function fireArrow(ctx: BattleCtx, x: number, y: number, steps: number, aim?: { 
 export const archer: MonsterBehavior = {
   onSpawn(ctx, m) {
     m.fireT = m.params.fireMin + Math.floor(ctx.rng.next() * m.params.fireSpread);
-    // the arrow line is fixed now, so an archer that gets knocked elsewhere keeps shooting along it and can hit its own side
-    m.aim = { x: ctx.sling.x - m.body.position.x, y: ctx.sling.y + 6 - (m.body.position.y - 2) };
+    initEnemyWand(ctx, m);
   },
   onUpdate(ctx, m) {
     m.fireT--;
     if (m.fireT <= 0 && ['ready', 'aiming', 'loading', 'flying', 'settling'].includes(ctx.phase)) {
       m.fireT = m.params.fireEvery;
-      fireArrow(ctx, m.body.position.x, m.body.position.y - 2, m.params.arrowSteps, m.aim, m.body);
+      const { tip, aim } = enemyWandPose(m);
+      fireArrow(ctx, tip.x, tip.y, m.params.arrowSteps, aim, parseInt(m.def!.wand!.tipColor.slice(1), 16), m.body);
     }
   },
 };

@@ -120,6 +120,8 @@
       "additionalProperties": { "type": "boolean" },
       "properties": {
         "map": { "type": "boolean" },
+        "standResistance": { "type": "boolean", "description": "Firm footing for upright blocks in battle and builder Test." },
+        "enemyWands": { "type": "boolean", "description": "Draw shooter wands; body-relative shot direction remains authoritative." },
         "shop": { "type": "boolean" },
         "forge": { "type": "boolean" },
         "challenges": { "type": "boolean" },

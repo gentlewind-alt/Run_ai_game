@@ -8,17 +8,18 @@ import type { BattleState } from './state';
 export function spawnEnemyAttack(b: BattleState, o: EnemyAttackOpts): boolean {
   if (!b.settings.features.enemyAttackPhysics || !['flying', 'settling'].includes(b.state)) return false;
   const R = data.forge.enemyAttack;
-  // a fixed line: the shooter's own aim from when it spawned, or toward the sling's place. It never follows the player's weapon.
+  // The wand supplies its current grip direction; callers without one aim toward the sling's place.
   const dx = o.aim ? o.aim.x : b.slingX - o.x;
   const dy = o.aim ? o.aim.y : b.slingY - o.y;
-  const d = Math.max(1, Math.hypot(dx, dy));
+  const d = Math.hypot(dx, dy) || 1;
   if (o.shooter) o.shooter.collisionFilter.group = -o.shooter.id;
   const body: any = b.scene.matter.add.circle(o.x, o.y, R.radius, {
     density: o.boss ? R.bossDensity : R.density, friction: R.friction, restitution: R.restitution,
     label: 'enemyAttack', collisionFilter: { category: 0x4, mask: 0x3, group: o.shooter ? -o.shooter.id : 0 },
   });
   setGravity(body, o.boss ? R.bossGravity : R.gravity);
-  MatterLib.Body.setVelocity(body, o.boss ? { x: 0, y: R.bossSpeed } : { x: dx / d * R.speed, y: dy / d * R.speed });
+  const speed = o.boss ? R.bossSpeed : R.speed;
+  MatterLib.Body.setVelocity(body, { x: dx / d * speed, y: dy / d * speed });
   const sprite = b.scene.add.image(o.x, o.y, 'px').setTint(o.color).setDisplaySize(o.boss ? R.radius * 2 : R.radius * 4, R.radius * 2).setDepth(6);
   let steps = 0;
   b.actors.push({ body,

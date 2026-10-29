@@ -219,6 +219,7 @@ export function discard(b: BattleState, t: Ent): void {
   b.connections?.removeBody(t.body);
   b.scene.matter.world.remove(t.body);
   t.sprite.destroy();
+  t.wand?.destroy();
   t.shieldSprite?.destroy();
   t.icon?.destroy();
 }

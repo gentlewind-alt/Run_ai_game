@@ -4,6 +4,7 @@ import { MONSTER_ART, slingTexture } from '../art/textures';
 import { blockTextureKey, createBlockBody, ensureBlockTextures, installConnections } from '../builder/physics';
 import { behaviorFor } from '../content/monsters';
 import { buildTerrain, groundAt } from './terrain';
+import { createEnemyWand } from './enemyWands';
 import { data } from '../data/load';
 import { materialDef, monsterDef } from '../data/lookup';
 import type { LevelBlock, LevelMonster } from '../data/types';
@@ -40,7 +41,10 @@ export function populate(b: BattleState): void {
     if (monster.id && body) bodies.set(monster.id, body);
   }
   if (b.level.connections?.length) b.connections = installConnections(s, bodies, b.level.connections);
-  for (const e of b.ents) if (e.kind === 'monster') e.behavior?.onSpawn?.(b.ctx, e);
+  for (const e of b.ents) if (e.kind === 'monster') {
+    e.behavior?.onSpawn?.(b.ctx, e);
+    if (e.def?.wand && b.settings.features.enemyWands) createEnemyWand(b, e);
+  }
   if (b.level.exit) s.add.image(b.level.exit.x, b.level.exit.y ?? groundAt(b, b.level.exit.x) - 13, 'door').setDepth(1);
 }
 
