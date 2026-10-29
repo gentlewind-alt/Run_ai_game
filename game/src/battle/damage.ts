@@ -59,7 +59,9 @@ export function onCollide(b: BattleState, ev: any): void {
     const cx = sup ? sup.x : (A.position.x + B.position.x) / 2;
     const cy = sup ? sup.y : (A.position.y + B.position.y) / 2;
     if (aProj || bProj) {
-      projContact(b, aProj ? A : B, aProj ? B : A, rel, cx, cy);
+      const n = pr.collision?.normal;
+      const normal = n ? { x: aProj ? n.x : -n.x, y: aProj ? n.y : -n.y } : undefined;
+      projContact(b, aProj ? A : B, aProj ? B : A, rel, cx, cy, normal);
       continue;
     }
     if (rel < b.tune.debrisMinSpeed) continue;
@@ -68,7 +70,7 @@ export function onCollide(b: BattleState, ev: any): void {
   }
 }
 
-function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y: number): void {
+function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y: number, normal?: { x: number; y: number }): void {
   const info = pb.proj;
   const t: Ent | undefined = ob.ent;
   const p = b.proj && b.proj.body === pb ? b.proj : info.forgeProj ?? null;
@@ -78,7 +80,7 @@ function projContact(b: BattleState, pb: any, ob: any, rel: number, x: number, y
     if (p === b.proj) impactAnim(b, p, rel, ground);
     if (ground) p.touchedGround = true;
     const impl = p === b.proj ? b.wpn : weaponImpl(p.def);
-    const hit = { target: t, rel, x, y };
+    const hit = { target: t, rel, x, y, normal, bodyId: ob.id, label: ob.label };
     if (!p.tapped && p.def.ability.mode !== 'button' && impl.onImpact) {
       p.tapped = true;
       const animDone = abilityAnim(b, p); // the crash fires the ability, so it gets the ability move too
