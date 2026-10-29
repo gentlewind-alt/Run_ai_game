@@ -2,8 +2,109 @@ import Phaser from 'phaser';
 import { sfx } from '../../audio/sfx';
 import { C } from '../../art/palette';
 import { weaponTexture } from '../../art/textures';
-import type { Ent, LegendVisual } from '../../battle/BattleCtx';
-import type { WeaponImpl } from './types';
+import type { BattleCtx, LegendVisual, Proj } from '../../battle/BattleCtx';
+import type { ImpactInfo, WeaponImpl } from './types';
+
+interface LightFlight {
+  velocity: { x: number; y: number };
+  mirrors: [number, number];
+  flash: [number, number];
+}
+
+function countBounce(ctx: BattleCtx, p: Proj, key: string): boolean {
+  const P = p.def.params;
+  if (p.data.ended || p.data.pendingFinal || p.data.bounces >= P.maxBounces) return false;
+  // Separate surfaces still count; the gap only suppresses another knock on the same contact.
+  if (p.data.lastBounceKey === key && ctx.step - p.data.lastBounce < P.bounceGapSteps) return false;
+  p.data.lastBounceKey = key;
+  p.data.lastBounce = ctx.step;
+  p.data.bounces++;
+  p.body.proj.mul = (1 + p.data.bounces * P.bounceDamageBonus) * Math.pow(P.ricochetFalloff, p.data.bounces);
+  const b = p.body.position;
+  sfx.ping();
+  ctx.fx.pingStar?.(b.x, b.y);
+  ctx.fx.sparks(b.x, b.y, ['c', '4', 'b'], P.bounceSparkCount);
+  ctx.fx.legendWave(b.x, b.y, P.bounceRuneRadius, P.bounceRuneRadius, P.bounceRuneSteps, 0xffd66e, P.bounceRuneWidth);
+  if (p.data.bounces === P.maxBounces) p.data.pendingFinal = true;
+  return true;
+}
+
+function showMirrors(ctx: BattleCtx, p: Proj, light: LightFlight): void {
+  const P = p.def.params;
+  const sides = light.mirrors.map((x) => {
+    const height = ctx.groundAt(x);
+    const glow = ctx.fx.image(x, height / 2, 'px').setTint(C('a')).setDisplaySize(P.mirrorGlowWidth, height).setDepth(p.sprite.depth - 1);
+    const core = ctx.fx.image(x, height / 2, 'px').setTint(C('b')).setDisplaySize(P.mirrorWidth, height).setDepth(p.sprite.depth - 1);
+    const runes: Phaser.GameObjects.Image[] = [];
+    for (let i = 1; i <= P.mirrorRuneMarks; i++) {
+      const y = height * i / (P.mirrorRuneMarks + 1);
+      for (const sign of [-1, 1]) {
+        runes.push(ctx.fx.image(x, y, 'px').setTint(C('b')).setDisplaySize(P.mirrorRuneSize, P.mirrorWidth).setRotation(sign * Math.PI / 4).setDepth(p.sprite.depth - 1));
+      }
+    }
+    glow.setAlpha(P.mirrorGlowAlpha);
+    core.setAlpha(P.mirrorAlpha);
+    runes.forEach((rune) => rune.setAlpha(P.mirrorAlpha));
+    return { glow, core, runes };
+  });
+  let age = 0;
+  let fade = 0;
+  ctx.addActor({
+    update() {
+      age++;
+      if (p.data.ended || !p.sprite.active) fade++;
+      const alpha = 1 - Math.min(1, fade / P.mirrorFadeSteps);
+      const pulse = Math.sin(age * Math.PI * 2 / P.mirrorPulseSteps) * P.mirrorPulseAlpha;
+      sides.forEach((side, i) => {
+        const flash = light.flash[i] / P.mirrorFlashSteps * P.mirrorFlashAlpha;
+        side.glow.setAlpha(Phaser.Math.Clamp(P.mirrorGlowAlpha + pulse + flash, 0, 1) * alpha);
+        const coreAlpha = Phaser.Math.Clamp(P.mirrorAlpha + pulse + flash, 0, 1) * alpha;
+        side.core.setAlpha(coreAlpha);
+        side.runes.forEach((rune) => rune.setAlpha(coreAlpha));
+        light.flash[i] = Math.max(0, light.flash[i] - 1);
+      });
+      return fade >= P.mirrorFadeSteps;
+    },
+    destroy() {
+      sides.forEach(({ glow, core, runes }) => {
+        glow.destroy();
+        core.destroy();
+        runes.forEach((rune) => rune.destroy());
+      });
+    },
+  });
+}
+
+function shieldBlast(ctx: BattleCtx, p: Proj): void {
+  const P = p.def.params;
+  const { x, y } = p.body.position;
+  ctx.blast(x, y, P.finalRadius, P.finalMult, p.wid);
+  ctx.fx.ring(x, y, P.finalRadius, C('4'));
+  ctx.fx.shake(P.finalShake);
+  ctx.hitStop?.(P.legendHitStopSteps);
+  ctx.fx.legendOverlay(0xc9f5ff, P.legendFlashAlpha, P.legendFlashSteps, 'flash');
+  ctx.fx.legendWave(x, y, P.finalVisualRadiusX, P.finalVisualRadiusY, P.finalWaveSteps, 0x8feaff, P.finalWaveWidth);
+  ctx.fx.legendShards(x, y, P.glassShardCount, P.glassShardSpread, P.glassShardSteps, 0xc5f4ff);
+  ctx.fx.legendRuneLink(x, y, x, y, P.domeRuneRadius, P.domeSteps, P.legendRuneMarks, P.legendRuneWidth);
+  const dome: LegendVisual = ctx.fx.legendArt('legend_shield_dome', x, y, P.domeSize, P.domeSize).setScale(P.domeStartScale).setAlpha(P.domeAlpha);
+  let domeStep = 0;
+  ctx.addActor({
+    pos: () => ({ x, y }),
+    update() {
+      domeStep++;
+      const f = Math.min(1, domeStep / P.domeSteps);
+      const scale = P.domeStartScale + (P.domeScale - P.domeStartScale) * f;
+      dome.setScale(scale).setRotation(f * P.domeTurns * Math.PI * 2).setAlpha(P.domeAlpha * (1 - f * P.domeFade));
+      return domeStep >= P.domeSteps;
+    },
+    destroy: () => dome.destroy(),
+  });
+  ctx.endProj(p);
+}
+
+function contactKey(hit?: ImpactInfo, axis?: 'x' | 'y', side?: number): string {
+  return hit?.label === 'ground' ? 'ground' : `body:${hit?.bodyId ?? hit?.target?.body.id}:${axis ?? ''}:${side ?? ''}`;
+}
 
 export const bulwarkDisc: WeaponImpl = {
   texture: weaponTexture('w_bulwark_disc'),
@@ -12,152 +113,128 @@ export const bulwarkDisc: WeaponImpl = {
     p.data.trail = [];
   },
   onAbility(ctx, p) {
-    // Tap: redirects once toward the nearest monster
+    // Tap: redirects once toward the nearest monster.
     const P = p.def.params;
     const nearest = ctx.nearestMonsters(p.body.position.x, p.body.position.y, 1)[0];
     if (!nearest) return;
     const dx = nearest.body.position.x - p.body.position.x;
     const dy = nearest.body.position.y - p.body.position.y;
     const d = Math.hypot(dx, dy);
-    if (d < 0.1) return;
-    const sp = P.redirectSpeed ?? 9;
-    ctx.M.Body.setVelocity(p.body, { x: (dx / d) * sp, y: (dy / d) * sp });
+    if (d < P.directionEpsilon) return;
+    const light = p.data.light as LightFlight | undefined;
+    const sp = light ? P.lightSpeed : P.redirectSpeed;
+    const velocity = { x: (dx / d) * sp, y: (dy / d) * sp };
+    if (light) light.velocity = velocity;
+    else ctx.M.Body.setVelocity(p.body, velocity);
     ctx.fx.legendRuneLink(p.body.position.x, p.body.position.y, nearest.body.position.x, nearest.body.position.y, P.legendRuneRadius, P.legendRuneSteps, P.legendRuneMarks, P.legendRuneWidth);
-    ctx.fx.ring(p.body.position.x, p.body.position.y, 16, C('b'));
+    ctx.fx.ring(p.body.position.x, p.body.position.y, P.redirectRingRadius, C('b'));
     sfx.saw();
   },
   onImpact(ctx, p, hit) {
     const P = p.def.params;
-    const maxBounces = P.maxBounces ?? 6;
-    // Only a real knock counts as a bounce: resting or rolling contact on the ground does not.
-    if (hit && hit.rel < (P.minBounceSpeed ?? 1.5)) return;
-    if (ctx.step - (p.data.lastBounce ?? -9999) < (P.bounceGapSteps ?? 8)) return;
-    p.data.lastBounce = ctx.step;
-    p.data.bounces = (p.data.bounces ?? 0) + 1;
-    const bCount = Math.min(p.data.bounces, maxBounces);
-
-    // Damage per bounce: an optional bonus (bounceDamageBonus, 0 in the data now) times the ricochet falloff, so each jump hits
-    // a little softer than the last: ricochetFalloff ^ jumps so far.
-    const bonus = P.bounceDamageBonus ?? 0;
-    p.body.proj.mul = (1 + bCount * bonus) * Math.pow(P.ricochetFalloff ?? 0.7, p.data.jumps ?? 0);
-
-    sfx.ping();
-    ctx.fx.pingStar?.(p.body.position.x, p.body.position.y);
-    ctx.fx.sparks(p.body.position.x, p.body.position.y, ['c', '4', 'b'], 12);
-    ctx.fx.legendWave(p.body.position.x, p.body.position.y, P.bounceRuneRadius, P.bounceRuneRadius, P.bounceRuneSteps, 0xffd66e, P.bounceRuneWidth);
-
-    // Ricochet: after any real knock (monster, block, ground or wall) fly on to the next monster in range, preferring one not yet hit.
-    if (p.data.bounces < maxBounces && (p.data.jumps ?? 0) < (P.ricochetJumps ?? 4)) {
-      const b = p.body.position;
-      const range = P.ricochetRange ?? 170;
-      const seen = (p.data.seen ??= []) as Ent[];
-      if (hit?.target && hit.target.kind === 'monster' && !seen.includes(hit.target)) seen.push(hit.target);
-      const near = ctx.nearestMonsters(b.x, b.y, 8).filter((m) => m !== hit?.target && Math.hypot(m.body.position.x - b.x, m.body.position.y - b.y) <= range);
-      const next = near.find((m) => !seen.includes(m)) ?? near[0];
-      if (next) {
-        // A lob first, not a straight line: the thing just hit is usually between the disc and the next monster. The new velocity
-        // is applied in onUpdate, after the physics solver has finished with this contact, or the solver would cancel it.
-        const g = P.ricochetGravity ?? 0.25;
-        const dx = next.body.position.x - b.x;
-        const dy = next.body.position.y - b.y;
-        const lift = Math.max(P.ricochetLift ?? 4.5, dy < 0 ? Math.sqrt(-2 * g * dy) + 0.5 : 0);
-        const t = (lift + Math.sqrt(lift * lift + 2 * g * dy)) / g; // steps to arrive
-        const maxSp = P.ricochetSpeed ?? 7;
-        p.data.jumps = (p.data.jumps ?? 0) + 1;
-        p.body.proj.mul = (1 + bCount * (P.bounceDamageBonus ?? 0)) * Math.pow(P.ricochetFalloff ?? 0.7, p.data.jumps);
-        p.data.ricochet = { x: Phaser.Math.Clamp(dx / t, -maxSp, maxSp), y: -lift };
-        // then the disc steers itself onto the target, so a mis-judged lob still lands
-        p.data.home = next;
-        p.data.homeFrom = ctx.step + (P.homingDelay ?? 10);
-        p.data.homeUntil = ctx.step + (P.homingSteps ?? 70);
-        ctx.fx.ring(b.x, b.y, 12, C('b'));
-      }
+    if (p.data.ended || p.data.pendingFinal) return;
+    const light = p.data.light as LightFlight | undefined;
+    const n = hit?.normal ?? (hit ? { x: p.body.position.x - hit.x, y: p.body.position.y - hit.y } : { x: 0, y: -1 });
+    const axis = hit?.label === 'ground' || Math.abs(n.y) > Math.abs(n.x) * P.verticalContactRatio ? 'y' : 'x';
+    if (!light) {
+      // Cache the incoming direction before the solver changes it. Launch physics lasts until this knock.
+      if (p.data.firstKnock || (hit && hit.rel < P.minBounceSpeed)) return;
+      if (!countBounce(ctx, p, contactKey(hit, axis, Math.sign(n[axis])))) return;
+      p.data.firstKnock = { x: hit?.x ?? p.body.position.x, vx: p.body.velocity.x, vy: p.body.velocity.y };
+      return;
     }
-
-    // The last bounce rings out as a shield blast, once
-    if (p.data.bounces === maxBounces) {
-      const b = p.body.position;
-      ctx.blast(b.x, b.y, P.finalRadius, P.finalMult, p.wid);
-      ctx.fx.ring(b.x, b.y, P.finalRadius, C('4'));
-      ctx.fx.shake(0.012);
-      ctx.hitStop?.(P.legendHitStopSteps);
-      ctx.fx.legendOverlay(0xc9f5ff, P.legendFlashAlpha, P.legendFlashSteps, 'flash');
-      ctx.fx.legendWave(b.x, b.y, P.finalVisualRadiusX, P.finalVisualRadiusY, P.finalWaveSteps, 0x8feaff, P.finalWaveWidth);
-      ctx.fx.legendShards(b.x, b.y, P.glassShardCount, P.glassShardSpread, P.glassShardSteps, 0xc5f4ff);
-      ctx.fx.legendRuneLink(b.x, b.y, b.x, b.y, P.domeRuneRadius, P.domeSteps, P.legendRuneMarks, P.legendRuneWidth);
-      const dome: LegendVisual = ctx.fx.legendArt('legend_shield_dome', b.x, b.y, P.domeSize, P.domeSize).setScale(P.domeStartScale).setAlpha(P.domeAlpha);
-      let domeStep = 0;
-      ctx.addActor({
-        pos: () => ({ x: b.x, y: b.y }),
-        update() {
-          domeStep++;
-          const f = Math.min(1, domeStep / P.domeSteps);
-          const scale = P.domeStartScale + (P.domeScale - P.domeStartScale) * f;
-          dome.setScale(scale).setRotation(f * P.domeTurns * Math.PI * 2).setAlpha(P.domeAlpha * (1 - f * 0.45));
-          return domeStep >= P.domeSteps;
-        },
-        destroy: () => dome.destroy(),
-      });
-    }
+    if (light.velocity[axis] * n[axis] >= 0) return;
+    const mirror = hit?.label === 'wall' ? (n.x > 0 ? 0 : 1) : undefined;
+    const key = mirror === undefined ? contactKey(hit, axis, Math.sign(n[axis])) : `mirror:${mirror}`;
+    const counted = countBounce(ctx, p, key);
+    light.velocity[axis] = -light.velocity[axis];
+    if (counted && mirror !== undefined) light.flash[mirror] = P.mirrorFlashSteps;
   },
   onUpdate(ctx, p) {
-    const r = p.data.ricochet as { x: number; y: number } | undefined;
-    if (r) {
-      ctx.M.Body.setVelocity(p.body, r);
-      p.data.ricochet = undefined;
-    } else if (p.data.home && ctx.step >= p.data.homeFrom && ctx.step <= p.data.homeUntil) {
-      const P = p.def.params;
-      let target = p.data.home as Ent;
-      if (target.dead) {
-        const b = p.body.position;
-        target = ctx.nearestMonsters(b.x, b.y, 1)[0];
-        p.data.home = target;
-      }
-      if (target) {
-        const dx = target.body.position.x - p.body.position.x;
-        const dy = target.body.position.y - p.body.position.y;
-        const d = Math.hypot(dx, dy) || 1;
-        const sp = P.ricochetSpeed ?? 7;
-        const turn = P.homingTurn ?? 0.14;
-        const v = p.body.velocity;
-        ctx.M.Body.setVelocity(p.body, { x: v.x + ((dx / d) * sp - v.x) * turn, y: v.y + ((dy / d) * sp - v.y) * turn });
-      }
+    const P = p.def.params;
+    let light = p.data.light as LightFlight | undefined;
+    const first = p.data.firstKnock as { x: number; vx: number; vy: number } | undefined;
+    if (first) {
+      const angle = Phaser.Math.Clamp(Math.atan2(Math.abs(first.vy), Math.abs(first.vx)), Phaser.Math.DegToRad(P.lightMinAngleDeg), Phaser.Math.DegToRad(P.lightMaxAngleDeg));
+      light = {
+        velocity: {
+          x: (Math.sign(-first.vx) || -1) * Math.cos(angle) * P.lightSpeed,
+          y: (Math.sign(first.vy) || -1) * Math.sin(angle) * P.lightSpeed,
+        },
+        mirrors: [Phaser.Math.Clamp(first.x - P.mirrorSpan / 2, 0, ctx.worldW), Phaser.Math.Clamp(first.x + P.mirrorSpan / 2, 0, ctx.worldW)],
+        flash: [0, 0],
+      };
+      p.data.light = light;
+      p.data.firstKnock = undefined;
+      ctx.setGravity(p.body, 0);
+      p.body.frictionAir = 0;
+      p.body.friction = 0;
+      p.body.frictionStatic = 0;
+      p.body.restitution = 1;
+      ctx.M.Sleeping.set(p.body, false);
+      showMirrors(ctx, p, light);
     }
-    // Record trail positions for dithered ghost copies
+    if (p.data.pendingFinal) {
+      shieldBlast(ctx, p);
+      return;
+    }
+    if (light) {
+      const flight = light;
+      const radius = p.def.physics.radius;
+      const pos = { x: p.body.position.x, y: p.body.position.y };
+      const reflect = (axis: 'x' | 'y', boundary: number, key: string, mirror?: number): void => {
+        const counted = countBounce(ctx, p, key);
+        pos[axis] = boundary * 2 - pos[axis];
+        flight.velocity[axis] = -flight.velocity[axis];
+        if (counted && mirror !== undefined) flight.flash[mirror] = P.mirrorFlashSteps;
+      };
+      if (pos.x <= light.mirrors[0] + radius && light.velocity.x < 0) reflect('x', light.mirrors[0] + radius, 'mirror:0', 0);
+      else if (pos.x >= light.mirrors[1] - radius && light.velocity.x > 0) reflect('x', light.mirrors[1] - radius, 'mirror:1', 1);
+      if (!p.data.pendingFinal) {
+        const ground = ctx.groundAt(pos.x) - radius;
+        if (pos.y <= radius && light.velocity.y < 0) reflect('y', radius, 'top');
+        else if (pos.y >= ground && light.velocity.y > 0) reflect('y', ground, 'ground');
+      }
+      // The solver may leave a little penetration after a physical ground/wall contact already reflected.
+      pos.x = Phaser.Math.Clamp(pos.x, light.mirrors[0] + radius, light.mirrors[1] - radius);
+      pos.y = Phaser.Math.Clamp(pos.y, radius, ctx.groundAt(pos.x) - radius);
+      ctx.M.Body.setPosition(p.body, pos);
+      if (p.data.pendingFinal) {
+        shieldBlast(ctx, p);
+        return;
+      }
+      // Restore the intended beam velocity after every solver step, including collision steps.
+      ctx.M.Body.setVelocity(p.body, light.velocity);
+    }
+    // Record trail positions for dithered ghost copies.
     const trail = p.data.trail as { x: number; y: number }[];
     if (trail) {
       trail.unshift({ x: p.body.position.x, y: p.body.position.y });
-      if (trail.length > 8) trail.pop();
+      if (trail.length > P.trailSteps) trail.pop();
     }
   },
-  drawFx(ctx, p, g) {
-    // 1. Dithered ghost trail behind disc
+  drawFx(_ctx, p, g) {
+    const P = p.def.params;
+    // Dithered ghost trail behind disc.
     const trail = p.data.trail as { x: number; y: number }[] | undefined;
     if (trail && trail.length > 1) {
-      trail.slice(1, 5).forEach((pt, idx) => {
-        const alpha = 0.7 - idx * 0.14;
-        g.lineStyle(2, C('b'), alpha).strokeCircle(pt.x, pt.y, 11 - idx * 2);
-        g.lineStyle(1, C('c'), alpha * 0.9).strokeCircle(pt.x, pt.y, 7 - idx);
+      trail.slice(1, P.trailGhostCount + 1).forEach((pt, idx) => {
+        const alpha = P.trailAlpha - idx * P.trailFade;
+        g.lineStyle(P.trailWidth, C('b'), alpha).strokeCircle(pt.x, pt.y, P.trailRadius - idx * P.trailShrink);
+        g.lineStyle(1, C('c'), alpha * P.trailCoreAlpha).strokeCircle(pt.x, pt.y, P.trailCoreRadius - idx);
       });
     }
-
-    // 1b. Faint aim line to the monster it is homing on
-    const home = p.data.home as Ent | undefined;
-    if (home && !home.dead && ctx.step <= (p.data.homeUntil ?? 0)) {
-      g.lineStyle(1, C('b'), 0.45).lineBetween(p.body.position.x, p.body.position.y, home.body.position.x, home.body.position.y);
-    }
-
-    // 2. Bounce counter pips floating above disc
+    // Bounce counter pips floating above disc.
     const bCount = (p.data.bounces as number) ?? 0;
     if (bCount > 0) {
       const bx = p.body.position.x;
-      const by = p.body.position.y - 15;
-      const totalPips = Math.min(bCount, 6);
-      const startX = bx - ((totalPips - 1) * 5) / 2;
+      const by = p.body.position.y - P.pipOffsetY;
+      const totalPips = Math.min(bCount, P.maxBounces);
+      const startX = bx - ((totalPips - 1) * P.pipSpacing) / 2;
       for (let i = 0; i < totalPips; i++) {
-        const px = startX + i * 5;
-        g.fillStyle(C('0'), 1).fillRect(px - 1, by - 1, 4, 4);
-        g.fillStyle(C('4'), 1).fillRect(px, by, 2, 2);
+        const px = startX + i * P.pipSpacing;
+        g.fillStyle(C('0'), 1).fillRect(px - 1, by - 1, P.pipBorderSize, P.pipBorderSize);
+        g.fillStyle(C('4'), 1).fillRect(px, by, P.pipSize, P.pipSize);
       }
     }
   },

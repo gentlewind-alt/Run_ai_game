@@ -1,7 +1,13 @@
 import type Phaser from 'phaser';
 import type { BattleCtx, Ent, Proj } from '../../battle/BattleCtx';
 
-export interface ImpactInfo { target?: Ent; rel: number; x: number; y: number }
+export interface ImpactInfo {
+  target?: Ent; rel: number; x: number; y: number;
+  /** Optional contact normal toward the projectile and identity of the touched body. */
+  normal?: { x: number; y: number };
+  bodyId?: number;
+  label?: string;
+}
 
 /**
  * Behaviour for one weapon id. Stats and numbers come from the data row (`physics`, `ability`, `params`), read through `p.def`.

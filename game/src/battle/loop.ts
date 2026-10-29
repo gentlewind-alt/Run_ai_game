@@ -13,6 +13,8 @@ import { updateCamera } from './camera';
 import { beatBob } from '../audio/beat';
 import { ARENA_MAX_FRAMES } from '../arena/types';
 import { animateProj } from './weaponAnim';
+import { applyStandResistance, propagateStandRelease } from '../builder/physics';
+import { syncEnemyWand } from './enemyWands';
 
 /** Called every frame by the scene. Runs 0..maxStepsPerFrame whole steps, then updates the visuals. */
 export function update(b: BattleState, delta: number, nowMs: number): void {
@@ -33,7 +35,13 @@ export function update(b: BattleState, delta: number, nowMs: number): void {
       continue;
     }
     applyCustomGravity(b);
+    // Keep the initial level settling unchanged; firm footing starts when play is ready.
+    const standResistance = b.settings.features.standResistance && b.state !== 'intro' && (b.state !== 'loading' || b.shotIdx > 0);
+    if (standResistance) {
+      for (const e of b.ents) if (!e.dead && e.kind === 'block') applyStandResistance(e.body, b.tune.physics.stand);
+    }
     b.scene.matter.world.step(b.stepMs);
+    if (standResistance) propagateStandRelease(b.scene.matter.world.engine.pairs.list, b.tune.physics.stand);
     stepLogic(b);
     if (b.arena?.frames === ARENA_MAX_FRAMES) finish(b, false);
     if (b.arena && (b.state === 'won' || b.state === 'lost')) break;
@@ -129,6 +137,7 @@ function syncSprites(b: BattleState, time: number): void {
     e.sprite.setFlipX(running && e.dir < 0);
     e.shieldSprite?.setPosition(bp.x, bp.y).setAlpha(0.55 + 0.2 * beat);
     e.icon?.setPosition(bp.x, bp.y - e.h / 2 - 9);
+    syncEnemyWand(e);
   }
   if (b.proj) {
     b.proj.sprite.setPosition(b.proj.body.position.x, b.proj.body.position.y);
