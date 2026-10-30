@@ -27,6 +27,11 @@ type Point = { x: number; y: number };
 interface Group { blocks: Set<string>; monsters: Set<number> }
 interface GroupDrag { start: Point; preview: BuilderDocument; valid: boolean; moved: boolean }
 interface Drag { selection: Selection; offset: Point; preview: BuilderDocument; valid: boolean; moved: boolean; start: Point }
+interface TouchAction {
+  tool: Tool; selection?: Selection; group?: Group;
+  pending?: { id: string | null; point: Point }; tap?: Point;
+}
+interface Gesture { ids: [number, number]; midpoint: Point; distance: number }
 
 /** A paused authoring view; only Test advances its isolated Matter world. */
 export default class BuilderScene extends Phaser.Scene {
@@ -54,6 +59,11 @@ export default class BuilderScene extends Phaser.Scene {
   private focus?: Point;
   private panMode = false;
   private panning?: { sx: number; sy: number; fx: number; fy: number };
+  private touches = new Map<number, Phaser.Input.Pointer>();
+  private editPointer?: number;
+  private touchAction?: TouchAction;
+  private gestureActive = false;
+  private gesture?: Gesture;
   private running = false;
   private loading = false;
   private restoreGeneration = 0;
@@ -106,6 +116,12 @@ export default class BuilderScene extends Phaser.Scene {
     this.focus = undefined;
     this.panMode = false;
     this.panning = undefined;
+    this.touches.clear();
+    this.editPointer = undefined;
+    this.touchAction = undefined;
+    this.gestureActive = false;
+    this.gesture = undefined;
+    this.hover = undefined;
     this.tool = 'piece';
     this.preset = 0;
     this.family = 'Planks';
@@ -132,6 +148,7 @@ export default class BuilderScene extends Phaser.Scene {
     this.buildControls();
     this.renderWorld();
     this.say(message);
+    if (!this.input.pointer2) this.input.addPointer(1);
     this.input.on('pointerdown', this.pointerDown, this);
     this.input.on('pointermove', this.pointerMove, this);
     this.input.on('pointerup', this.pointerUp, this);
@@ -143,6 +160,11 @@ export default class BuilderScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC', this.cancelLink, this);
     this.events.once('shutdown', () => {
       this.restoreGeneration++;
+      this.touches.clear();
+      this.editPointer = undefined;
+      this.touchAction = undefined;
+      this.gestureActive = false;
+      this.gesture = undefined;
       this.input.off('pointerdown', this.pointerDown, this);
       this.input.off('pointermove', this.pointerMove, this);
       this.input.off('pointerup', this.pointerUp, this);
@@ -209,7 +231,9 @@ export default class BuilderScene extends Phaser.Scene {
 
   private buildControls(): void {
     const button = (x: number, y: number, w: number, label: string, action: () => void, kind: 'plain' | 'go' = 'plain', h = 24): Btn => {
-      const btn = makeButton(this, x, y, w, h, fitText(label, w - 8), kind, action, 12);
+      const btn = makeButton(this, x, y, w, h, fitText(label, w - 8), kind, () => {
+        if (!this.gestureActive && !this.touches.size) action();
+      }, 12);
       // Compact palette rows have exact hit areas, so neighbouring rows cannot steal a click.
       btn.box.setSize(w, h);
       (btn.box.input!.hitArea as Phaser.Geom.Rectangle).setTo(0, 0, w, h);
@@ -347,17 +371,16 @@ export default class BuilderScene extends Phaser.Scene {
     const fit = Math.min(VIEW.w / (this.config.worldW - this.config.minX), VIEW.h / (this.config.groundY - this.config.minY));
     return Math.max(1, Math.floor(fit * cell)) / cell;
   }
-  /** Whole screen pixels per grid cell at every zoom step, so the grid and the pieces stay crisp. */
+  /** Keep the fit scale crisp while allowing continuous pinch zoom. */
   private scaleValue(): number {
-    const cell = this.config.grid;
-    return Math.max(1, Math.round(cell * this.baseScale() * this.zoom)) / cell;
+    return this.baseScale() * this.zoom;
   }
   private offset(): Point {
     const scale = this.scaleValue();
     const c = this.config;
     if (this.zoom > 1) {
       const f = this.focus ?? { x: (c.minX + c.worldW) / 2, y: (c.minY + c.groundY) / 2 };
-      const lim = (v: number, lo: number, hi: number): number => Math.round(Math.max(Math.min(lo, hi), Math.min(Math.max(lo, hi), v)));
+      const lim = (v: number, lo: number, hi: number): number => Math.max(Math.min(lo, hi), Math.min(Math.max(lo, hi), v));
       return {
         x: lim(VIEW.x + VIEW.w / 2 - f.x * scale, VIEW.x + VIEW.w - c.worldW * scale, VIEW.x - c.minX * scale),
         y: lim(VIEW.y + VIEW.h / 2 - f.y * scale, VIEW.y + VIEW.h - c.groundY * scale, VIEW.y - c.minY * scale),
@@ -367,12 +390,12 @@ export default class BuilderScene extends Phaser.Scene {
     const height = (this.config.groundY - this.config.minY) * scale;
     return { x: VIEW.x + Math.round((VIEW.w - width) / 2) - this.config.minX * scale, y: VIEW.y + Math.round((VIEW.h - height) / 2) - this.config.minY * scale };
   }
-  private worldPoint(pointer: Phaser.Input.Pointer): Point {
+  private worldPoint(pointer: Point): Point {
     const offset = this.offset();
     const scale = this.scaleValue();
     return { x: (pointer.x - offset.x) / scale, y: (pointer.y - offset.y) / scale };
   }
-  private inside(pointer: Phaser.Input.Pointer): boolean {
+  private inside(pointer: Point): boolean {
     return pointer.x >= VIEW.x && pointer.x <= VIEW.x + VIEW.w && pointer.y >= VIEW.y && pointer.y <= VIEW.y + VIEW.h;
   }
 
@@ -393,13 +416,21 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private wheel(pointer: Phaser.Input.Pointer, _over: unknown, _dx: number, dy: number): void {
-    if (tutorialOpen() || !this.inside(pointer)) return;
+    if (tutorialOpen() || this.gestureActive || this.touches.size || !this.inside(pointer)) return;
     this.zoomBy(dy < 0 ? 1 : -1, pointer);
   }
 
-  private pointerDown(pointer: Phaser.Input.Pointer): void {
+  private pointerDown(pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[] = []): void {
     if (tutorialOpen()) return;
-    if (this.loading || !this.inside(pointer)) return;
+    if (this.loading || !this.inside(pointer) || over.length) return;
+    if (pointer.wasTouch) {
+      if (this.editPointer !== undefined && !this.touches.size) return;
+      this.touches.set(pointer.id, pointer);
+      if (this.gestureActive || this.touches.size > 1) { this.beginGesture(); return; }
+    } else if (this.gestureActive || this.touches.size) return;
+    if (this.editPointer !== undefined) return;
+    this.editPointer = pointer.id;
+    if (pointer.wasTouch) this.touchAction = { tool: this.tool, selection: this.selection, group: this.group, pending: this.pending };
     if (this.panMode || pointer.middleButtonDown()) {
       if (this.zoom <= 1) { this.say('Zoom in first, then drag to move the view.'); return; }
       this.panning = { sx: pointer.x, sy: pointer.y, fx: (this.focus ?? this.viewCentre()).x, fy: (this.focus ?? this.viewCentre()).y };
@@ -410,6 +441,7 @@ export default class BuilderScene extends Phaser.Scene {
     if (pointer.rightButtonDown()) { this.rotate(pointer.event.shiftKey ? -45 : 45); return; }
     this.hover = point;
     const hit = this.selectionAt(point);
+    if (hit && this.tool !== 'glue' && this.tool !== 'rope') this.tool = 'select';
     if (this.tool === 'select') {
       const inGroup = hit && this.group && (hit.kind === 'block' ? this.group.blocks.has(hit.id) : this.group.monsters.has(hit.index));
       if (inGroup) {
@@ -429,12 +461,18 @@ export default class BuilderScene extends Phaser.Scene {
       if (hit) {
         const entity = hit.kind === 'block' ? this.draft.blocks.find((b) => b.id === hit.id)! : this.draft.monsters[hit.index];
         this.drag = { selection: hit, offset: { x: entity.x - point.x, y: entity.y - point.y }, preview: cloneDraft(this.draft), valid: true, moved: false, start: point };
-        this.say(hit.kind === 'block' ? 'Block selected. Drag to move; Anchor fixes it in place.' : 'Target selected. Drag to move or Delete.');
+        this.say('Selected. Drag to move');
       }
       this.refreshControls();
       this.renderOverlay(this.draft);
       return;
     }
+    if (this.touchAction) { this.touchAction.tap = point; return; }
+    this.applyTap(point);
+  }
+
+  private applyTap(point: Point): void {
+    const hit = this.selectionAt(point);
     if (this.tool === 'glue' || this.tool === 'rope') { this.connect(point, hit); return; }
     const next = cloneDraft(this.draft);
     if (this.tool === 'piece') {
@@ -460,7 +498,69 @@ export default class BuilderScene extends Phaser.Scene {
     }
   }
 
+  private cancelTouchAction(): void {
+    const preview = this.drag?.moved || this.groupDrag?.moved;
+    const action = this.touchAction;
+    if (action) {
+      this.tool = action.tool;
+      this.selection = action.selection;
+      this.group = action.group;
+      this.pending = action.pending;
+    }
+    this.touchAction = undefined;
+    this.editPointer = undefined;
+    this.drag = undefined;
+    this.groupDrag = undefined;
+    this.marquee = undefined;
+    this.panning = undefined;
+    this.hover = undefined;
+    if (preview) this.renderWorld();
+    else this.renderOverlay(this.draft);
+    this.refreshControls();
+  }
+
+  private beginGesture(): void {
+    if (!this.gestureActive) {
+      this.cancelTouchAction();
+      this.gestureActive = true;
+    }
+    if (this.gesture?.ids.every(id => this.touches.has(id))) return;
+    const [a, b] = [...this.touches.values()];
+    if (!b) { this.gesture = undefined; return; }
+    this.gesture = {
+      ids: [a.id, b.id],
+      midpoint: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+      distance: Math.hypot(a.x - b.x, a.y - b.y),
+    };
+    this.say('Pinch to zoom. Move both fingers to pan.');
+  }
+
+  private moveGesture(): void {
+    const gesture = this.gesture!;
+    const a = this.touches.get(gesture.ids[0])!, b = this.touches.get(gesture.ids[1])!;
+    const midpoint = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    const distance = Math.hypot(a.x - b.x, a.y - b.y);
+    const anchor = this.worldPoint(gesture.midpoint);
+    const steps = BuilderScene.ZOOMS;
+    if (gesture.distance > 0 && distance > 0) this.zoom = Phaser.Math.Clamp(this.zoom * distance / gesture.distance, steps[0], steps[steps.length - 1]);
+    if (this.zoom <= steps[0]) this.focus = undefined;
+    else {
+      const scale = this.scaleValue();
+      this.focus = { x: anchor.x + (VIEW.x + VIEW.w / 2 - midpoint.x) / scale, y: anchor.y + (VIEW.y + VIEW.h / 2 - midpoint.y) / scale };
+      this.focus = this.viewCentre();
+    }
+    gesture.midpoint = midpoint;
+    gesture.distance = distance;
+    this.redrawView();
+  }
+
   private pointerMove(pointer: Phaser.Input.Pointer): void {
+    if (this.gestureActive) {
+      if (this.gesture?.ids.includes(pointer.id)) this.moveGesture();
+      return;
+    }
+    if (this.editPointer !== undefined && pointer.id !== this.editPointer) return;
+    if (pointer.isDown && pointer.id !== this.editPointer) return;
     if (this.panning && pointer.isDown) {
       const s = this.scaleValue();
       this.focus = { x: this.panning.fx - (pointer.x - this.panning.sx) / s, y: this.panning.fy - (pointer.y - this.panning.sy) / s };
@@ -541,8 +641,23 @@ export default class BuilderScene extends Phaser.Scene {
     this.renderOverlay(this.draft);
   }
 
-  private pointerUp(): void {
+  private pointerUp(pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[] = []): void {
+    this.touches.delete(pointer.id);
+    if (this.gestureActive) {
+      if (!this.touches.size) { this.gestureActive = false; this.gesture = undefined; }
+      else this.beginGesture();
+      return;
+    }
+    if (pointer.id !== this.editPointer) return;
+    if (pointer.wasCanceled) { this.cancelTouchAction(); return; }
+    const tap = this.touchAction?.tap;
+    this.touchAction = undefined;
+    this.editPointer = undefined;
     if (this.panning) { this.panning = undefined; return; }
+    if (tap) {
+      if (!tutorialOpen() && !this.running && !this.loading && this.inside(pointer) && !over.length) this.applyTap(tap);
+      return;
+    }
     if (this.marquee) { this.finishMarquee(); return; }
     const gd = this.groupDrag;
     if (gd) {
@@ -963,10 +1078,10 @@ export default class BuilderScene extends Phaser.Scene {
   /** Zooms one step in or out. With a pointer the point under it stays put, like a map. */
   private zoomBy(step: number, pointer?: Phaser.Input.Pointer): void {
     const steps = BuilderScene.ZOOMS;
-    const next = Math.max(0, Math.min(steps.length - 1, steps.indexOf(this.zoom) + step));
-    if (steps[next] === this.zoom) return;
+    const next = step > 0 ? steps.find(zoom => zoom > this.zoom) ?? steps[steps.length - 1] : steps.slice().reverse().find(zoom => zoom < this.zoom) ?? steps[0];
+    if (next === this.zoom) return;
     const before = pointer ? this.worldPoint(pointer) : undefined;
-    this.zoom = steps[next];
+    this.zoom = next;
     if (this.zoom <= 1) this.focus = undefined;
     else if (before && pointer) {
       const scale = this.scaleValue();
@@ -1001,12 +1116,12 @@ export default class BuilderScene extends Phaser.Scene {
     g.setMask(this.gridMask.createGeometryMask());
     const scale = this.scaleValue();
     const cell = this.config.grid;
-    const px = Math.round(cell * scale);
+    const px = cell * scale;
     const cols = Math.round((this.config.worldW - this.config.minX) / cell);
     const rows = Math.round((this.config.groundY - this.config.minY) / cell);
     const o = this.offset();
-    const x0 = Math.round(o.x + this.config.minX * scale);
-    const y0 = Math.round(o.y + this.config.minY * scale);
+    const x0 = o.x + this.config.minX * scale;
+    const y0 = o.y + this.config.minY * scale;
     const w = cols * px, h = rows * px;
     g.fillStyle(C('9'), 1).fillRect(x0, y0, w, h);
     g.fillStyle(C('a'), 0.2);

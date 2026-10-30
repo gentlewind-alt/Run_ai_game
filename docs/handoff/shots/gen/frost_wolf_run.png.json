@@ -1,0 +1,9 @@
+{
+  "generationId": "b290c754-9567-4472-a102-50599ce78f25",
+  "prompt": "the frost wolf gallops in place: a smooth looping side-view run cycle, legs stretching and gathering, body bobbing slightly, same size and position every frame",
+  "frameCount": 6,
+  "frameWidth": 68,
+  "frameHeight": 68,
+  "creditsUsed": null,
+  "negativePrompt": "changing size, turning around, background, extra wolves"
+}
