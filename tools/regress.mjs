@@ -582,13 +582,13 @@ async function run() {
         def: b.wdef,
         wid: 'w_bulwark_disc',
         body: { proj: { mul: 1 }, position: { x: -5000, y: -5000 } }, // far from every monster, so no ricochet jump happens
-        data: { bounces: 0 }
+        data: { bounces: 0, damageMult: 1, light: { velocity: { x: 0, y: 1 }, mirrors: [0, 9999], flash: [0, 0] } } // already in mirror (light) mode
       };
       for (let i = 0; i < 8; i++) {
         mockP.data.lastBounce = -9999; // the real disc ignores knocks closer than bounceGapSteps; space these out
-        discImpl.onImpact(b.ctx, mockP);
+        discImpl.onImpact(b.ctx, mockP, { label: 'ground', normal: { x: 0, y: i % 2 ? 1 : -1 }, x: 0, y: 0, rel: 10 }); // alternate sides so every knock reflects
       }
-      const bouncesClampedAt6 = mockP.data.bounces === 8 && Math.abs(mockP.body.proj.mul - 1) < 0.001; // no ricochet jumps in this mock, so no falloff yet
+      const bouncesClampedAt6 = mockP.data.bounces === 8 && Math.abs(mockP.body.proj.mul - b.wdef.params.lightHitMult) < 0.001; // each mirror-mode hit deals lightHitMult
       mm.settle();
 
       const discPassed = redirected && discChargesAfter === 0 && bouncesClampedAt6;

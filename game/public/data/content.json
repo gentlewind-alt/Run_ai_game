@@ -1089,7 +1089,7 @@
         "volleyCount": 3,
         "volleyDelaySteps": 10,
         "boltSpeed": 10,
-        "boltMult": 0.4,
+        "boltMult": 0.3,
         "knockback": 1.8,
         "recoilVx": -1.5,
         "recoilVy": -0.6
