@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 // The Play Store app (Capacitor): saves on the phone, AdMob ads, the Android back button and app pause/resume.
 // Ads follow Google's Families policy: the player's age band (asked once, see scenes/AgeScene.ts) picks child-safe
 // ads under 13; Google's consent form is shown where the law asks for it (EEA, UK). RUN-only services (leaderboards,
@@ -11,7 +12,8 @@ import { noopPlatform, type Platform } from './types';
 export const AGE_KEY = 'age.band';
 export type AgeBand = 'child' | 'teen';
 
-const admob = () => data.config.targets?.android?.admob;
+// Real ads only in the store build (`npm run build:android:release`); every other build shows Google test ads.
+const admob = () => { const cfg = data.config.targets?.android?.admob; return cfg && import.meta.env.VITE_LIVE_ADS === '1' ? { ...cfg, testing: false } : cfg; };
 let adsReady = false;
 let rewardedLoaded = false;
 
