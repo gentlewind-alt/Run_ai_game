@@ -828,6 +828,7 @@
         "domeTurns": 1.5,
         "blockBreakMult": 1.5,
         "maxDamageMult": 12,
+        "lightHitMult": 0.7,
         "growthPulseSteps": 12,
       "multiplierOffsetY": 24,
       "lightMaxSteps": 960
