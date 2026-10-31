@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "task_kind": "coding_only",
+  "decision_owner": "codex",
+  "decisions_complete": true,
+  "ambiguity_policy": "stop_and_report",
+  "objective": "Implement frozen combat batch items 1/3/4 plus exact shared sling damage/type hooks. Do not run commands, game, servers, browser, tests, or checks. Data/schema edits are handled separately by root. Only the specified files may be edited.",
+  "read_paths": [
+    "game/src/battle/BattleCtx.ts",
+    "game/src/core/events.ts",
+    "game/src/data/types.ts",
+    "game/src/battle/fx.ts",
+    "game/src/battle/status.ts",
+    "game/src/battle/ctxImpl.ts",
+    "game/src/battle/damage.ts",
+    "game/src/battle/forgeHits.ts",
+    "game/src/battle/enemyAttacks.ts",
+    "game/src/content/weapons/skyforgeMaul.ts",
+    "game/src/content/weapons/bulwarkDisc.ts",
+    "game/src/scenes/BootScene.ts",
+    "game/src/battle/world.ts",
+    "game/src/battle/loop.ts"
+  ],
+  "edits": [
+    {
+      "path": "game/src/battle/BattleCtx.ts",
+      "instructions": "Change Ent.sprite to Phaser.GameObjects.Image | Phaser.GameObjects.Sprite. Add optional burningUntil?:number and burningFx?:Phaser.GameObjects.Graphics to Ent. Add Mods optional slingDamageMult, explosionRadiusMult, poisonChance,curseChance numeric fields. Add fx.label(x:number,y:number,value:string):Phaser.GameObjects.Image. Do not otherwise change interface."
+    },
+    {
+      "path": "game/src/core/events.ts",
+      "instructions": "Add optional weaponId?:string to existing kill event payload; retain all other fields."
+    },
+    {
+      "path": "game/src/data/types.ts",
+      "instructions": "Tuning.status retains existing fields and adds slingStatusSteps:number; burning:{durationSteps:number;fadeSteps:number;tongueCount:number;tongueWidth:number;tongueHeight:number;tongueSpacing:number;flickerSteps:number;emberCount:number;emberRise:number;contactRadius:number}. CosmeticDef.mods adds optional damageMult,previewMult,explosionRadiusMult,poisonChance,curseChance:number. CosmeticDef adds upgrade?:{stat:'launchSpeedMult'|'twinFraction'|'curseChance'|'damageMult'|'explosionRadiusMult'|'poisonChance';perLevel:number;prices:number[]}. No Arena type changes."
+    },
+    {
+      "path": "game/src/battle/fx.ts",
+      "instructions": "Import Ent type. Add ignite(b:BattleState,e:Ent):void, guarding dead, only block/monster, and feature burningVisuals; refresh e.burningUntil=b.steps+b.tune.status.burning.durationSteps; create one e.burningFx graphics at sprite depth+1 only if absent. Add syncBurning(b,e):void called from render: if expired/dead destroy and unset graphics; otherwise redraw same graphics at sprite x/y/rotation, scale matching sprite scale; alpha=min(1,(until-b.steps)/fadeSteps). Draw configured tongueCount (3) pixel tongues at local top=-e.h/2 with configured spacing/width/height, red base/orange/yellow core; deterministic flicker from floor(b.steps/flickerSteps)+index alternating heights (no gameplay RNG), and configured emberCount small yellow/orange rects looping upward by emberRise with different phase. All sizes/duration use data fields; geometric halves and unit pixel raster constants allowed. Add igniteNear(b,x,y,r): iterate living block/monster entities distance <=r+max(w,h)/2 then ignite. bolt calls igniteNear at impact endpoint with burning.contactRadius. flameBlast calls igniteNear with supplied r initially. electricField calls igniteNear with r initially. Do not change existing FX behavior or RNG."
+    },
+    {
+      "path": "game/src/battle/status.ts",
+      "instructions": "Import ignite from fx. inflict uses b instead of _b; when kind burn, call ignite(b,e) and extend e.burningUntil to max(current,b.steps+steps) so burn visuals last full existing burn duration. Preserve existing burn damage/ticks completely, remove only old every-6-step single burst to avoid duplicate old burn sparks; other statuses unchanged."
+    },
+    {
+      "path": "game/src/battle/ctxImpl.ts",
+      "instructions": "Import text from art/font5x7. Add fx.label implementation (x,y,value)=>text(b.scene,x,y,value).setDepth(13). Existing interface new label used by Bulwark. No other actions needed."
+    },
+    {
+      "path": "game/src/battle/damage.ts",
+      "instructions": "Import ignite from fx. damage() after dead guard before shield return: if o.weaponId points to weapon with element hellfire or params.burningHit===1, ignite(b,t). discard destroys/clears burningFx. kill emits optional weaponId in kill payload. Preserve weapon identity across nonforge explosion damage by adding weaponId:wid??undefined to damage options. At explode entry if wid multiply r by b.mods.explosionRadiusMult??1. All weapon explosions (forge and nonforge) multiply dmg by b.mods.damageMult while preserving existing artifactMult application only for forged explosions. Enemy projectile collisions: retain existing friendly damage on monsters, but when shot.enemyBurning true and hit.ent alive block OR monster call ignite(b,hit.ent), without adding block damage. No other balance changes."
+    },
+    {
+      "path": "game/src/battle/forgeHits.ts",
+      "instructions": "At forgeHit start after live guard, if t.kind==='monster', apply sling bonus chances once per hit: if (b.mods.poisonChance??0)>0 && b.rng.next()<chance set t.status.poison=b.tune.status.slingStatusSteps,t.params.poisonWeaponId=wid; similarly curseChance assigns t.status.curse same duration. When !w.forge path damage receives {...opts,weaponId:wid} (currently loses wid); rest of existing trait pipeline retained."
+    },
+    {
+      "path": "game/src/battle/enemyAttacks.ts",
+      "instructions": "After enemy body creation set body.enemyBurning = o.shooter?.ent?.params?.burningAttack === 1. This is visual marking only. Source monsters own data params; no color/id checks."
+    },
+    {
+      "path": "game/src/content/weapons/skyforgeMaul.ts",
+      "instructions": "In fieldActor's existing ctx.damage options add weaponId:p.wid so electric hits get centralized burning visual. Do not change field damage/status."
+    },
+    {
+      "path": "game/src/content/weapons/bulwarkDisc.ts",
+      "instructions": "In countBounce stop rewriting damage for light mode; set p.body.proj.mul to p.data.damageMult (initial1). In onLaunch(ctx,p), initialize p.data.damageMult=1; set body.proj.mul=1; create label with ctx.fx.label current x1.0; create pulse overlay via ctx.fx.image same texture, tintFill white, alpha0 depth p.sprite.depth+1. Register ctx.events.on('kill') closure that ignores ended/inactive and anything except block whose weaponId===p.wid; then set damageMult=min(P.maxDamageMult,old*P.blockBreakMult), copy to body.proj.mul, set growthUntil=ctx.step+P.growthPulseSteps; replace existing label with freshly-created fx.label x${mult.toFixed(1)} (destroy old). Only pulse on actual increase. Add actor without pos to follow label at projectile body x,y-P.multiplierOffsetY and glow at sprite pose/scale; alpha=max(0,(growthUntil-ctx.step)/growthPulseSteps); finish when ended/inactive; destroy unsubscribes kill listener and destroys both label/glow. All branches damage from subsequent direct physical hits remain body.proj.mul. ShieldBlast calls ctx.blast with P.finalMult*(p.data.damageMult??1) so grown multiplier applies final blast. Keep mirror physics and bounce counts otherwise unchanged."
+    },
+    {
+      "path": "game/src/scenes/BootScene.ts",
+      "instructions": "Import data. Preload optional frost_wolf_run strip as image key frost_wolf_run_strip with URL sprites/monsters/frost_wolf_run.png; existing failed load retry handles it safely. In create after retry branch and before scene start: if strip exists and frost_wolf_run doesn't, getSourceImage() as HTMLImageElement; size=height,count=width/height; if size>0 and count>=1 and integer use textures.addSpriteSheet('frost_wolf_run',source,{frameWidth:size,frameHeight:size,endFrame:count-1}). Create looping animation key frost_wolf_run if texture exists and animation absent, with frameRate=data.content.monsters.find(m=>m.id==='frost_wolf')!.params!.runFps, repeat:-1. Do not change fallback if optional strip unavailable; retries must never create placeholder sheet."
+    },
+    {
+      "path": "game/src/battle/world.ts",
+      "instructions": "Only addMonster creates scene.add.sprite instead of image; makeEnt sprite argument union Image|Sprite to match Ent. All non-monster images unchanged."
+    },
+    {
+      "path": "game/src/battle/loop.ts",
+      "instructions": "Import syncBurning from fx and Phaser runtime for instanceof Sprite or use type assertion from import type Phaser. Render blocks/chests call syncBurning after sprite pose before continue. For monster render use Sprite union: wolf running animation selected when e.type==='frost_wolf', actual abs(body.velocity.x)>=e.params.runMinSpeed, runFrom defined and b.steps>=runFrom, statuses stun/chain<=0, and animation exists. Play frost_wolf_run only if not already playing; preserve desired display dimensions by setDisplaySize(e.size,e.size) for run frames. Otherwise stop running animation when playing then set existing tex (still frost_wolf); use normal size/scale when standing. Existing sync currently setTexture every frame; avoid that while running animation. Preserve flipX by direction. After final pose call syncBurning. Do not change gameplay runner logic."
+    }
+  ],
+  "acceptance_checks": [
+    {
+      "command": "OWNER ONLY: inspect Bulwark growth, burning refresh and moving/standing wolf animation on phone; no commands run in this task",
+      "expected": "20 bounces; x1.5 per disc block kill capped12; flame visual only with no duplicate; wolf6frames11fps when moving; fallback still when absent."
+    }
+  ]
+}

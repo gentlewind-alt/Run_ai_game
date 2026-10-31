@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_kind": "coding_only",
+  "decision_owner": "codex",
+  "decisions_complete": true,
+  "ambiguity_policy": "stop_and_report",
+  "objective": "Apply campaign loss-streak ability markup only, without running commands, tests, checks, game, browser or server. User explicitly reserves verification for owner.",
+  "read_paths": ["game/src/core/profile.ts", "game/src/core/save.ts", "game/src/core/forge.ts", "game/src/data/forgeTypes.ts", "game/src/scenes/ForgeScene.ts", "game/public/data/forge.json", "game/schemas/forge.schema.json", "game/schemas/save.schema.json"],
+  "edits": [
+    {"path":"game/src/core/profile.ts","instructions":"Add optional campaignLossStreak?: number to ProfileStats; freshProfile.stats includes campaignLossStreak:0. In recordResult, only when r.levelId>0 && r.levelId<90 && data.levels[r.levelId] exists, set campaignLossStreak to 0 for win or increment existing/default0 for loss. Emit changed('stats'). Keep SAVE_VERSION=2. Do not alter other result semantics."},
+    {"path":"game/src/core/save.ts","instructions":"sanitize stats includes campaignLossStreak:Math.max(0,Math.floor(num(statsObj.campaignLossStreak,0))). Optional old field safe default zero. No migration/version change."},
+    {"path":"game/src/core/forge.ts","instructions":"Export forgeAbilityMarkup():number returning data.forge.lossStreak.abilityMarkup if (profile.stats?.campaignLossStreak??0)>=data.forge.lossStreak.after else0. Export forgeAbilityCost(id:string):number returning Math.ceil((data.forge.costs.abilities[id]??0)*(1+forgeAbilityMarkup())). forgeCost parts.ability uses helper, all other part prices unchanged. forgePrice reforge factor still applies after part markup. No other behavior."},
+    {"path":"game/src/data/forgeTypes.ts","instructions":"Add required lossStreak:{after:number;abilityMarkup:number} to ForgeConfig."},
+    {"path":"game/src/scenes/ForgeScene.ts","instructions":"Import forgeAbilityCost and forgeAbilityMarkup. Ability choice price uses forgeAbilityCost(a.id), so displays actual markup. On Ability tab show text at158,202 with fitText width284, colorC('3'): Prices +${Math.round(forgeAbilityMarkup()*100)}% after two losses. Win a level to reset. only if markup>0. Keep buttons/other prices unchanged."},
+    {"path":"game/public/data/forge.json","instructions":"Add root lossStreak:{\"after\":2,\"abilityMarkup\":0.25}; preserve existing data formatting and numbers."},
+    {"path":"game/schemas/forge.schema.json","instructions":"Add lossStreak to required and properties; type object additionalProperties false required after,abilityMarkup. after integer minimum1, abilityMarkup number minimum0 maximum1."},
+    {"path":"game/schemas/save.schema.json","instructions":"Add optional stats.properties.campaignLossStreak:{type:integer,minimum:0}. No version changes."}
+  ],
+  "acceptance_checks": [{"command":"Owner phone playtest; do not execute in this task","expected":"Two campaign losses increase only forge ability costs by25%; campaign win resets; daily/custom/Arena leave streak unchanged; old save defaults0."}]
+}
