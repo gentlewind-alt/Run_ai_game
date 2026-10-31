@@ -49,16 +49,11 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
     arena: competitive ? { frames: 0, actions: [] } : undefined,
     loadout: effectiveLoadout, forgeWeapons: settings.features.weaponForge && !competitive ? forgeSnapshot() : {}, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
-<<<<<<< HEAD
     worldW: level.worldW ?? BASE_W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
-    mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: competitive ? arenaMods?.previewMult ?? 1 : 1, launchSpeedMult, twinFraction, twinDelaySteps },
-=======
-    worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
     mods: { damageMult: slingDamageMult, slingDamageMult, serumShots: 0, serumMult: 1.2, coinMult: 1,
       previewMult: competitive ? arenaMods?.previewMult ?? 1 : campaignMods.previewMult ?? 1,
       explosionRadiusMult: campaignMods.explosionRadiusMult ?? 1, poisonChance: campaignMods.poisonChance ?? 0, curseChance: campaignMods.curseChance ?? 0,
       launchSpeedMult, twinFraction, twinDelaySteps },
->>>>>>> claude/new-session-c737a3
     slingSkin, arenaDamageMult: competitive ? arenaMods?.damageMult ?? 1 : 1, artifacts: [], consumables: [], targeting: null, paused: false,
     ents: [], actors: [], proj: null, state: 'intro', shotIdx: 0, coins: 0, score: 0, chain: 0, chainT: 999, escaped: 0,
     steps: 0, acc: 0, hitStop: 0, settleSteps: 0, endTimer: 0, lastPop: 0, lastStretch: 0,

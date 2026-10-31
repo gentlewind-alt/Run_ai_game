@@ -7,12 +7,9 @@ import { PAUSE_ICON, SPK_OFF, SPK_ON, STAR_OFF, STAR_ON, ZOOM_ICON } from '../ar
 import { sfx } from '../audio/sfx';
 import { checkRegistries } from '../content/validate';
 import { DEBUG, debugLevel, loadoutSize, profile, startLevelParam } from '../core/profile';
-<<<<<<< HEAD
 import { targetAgeGate } from '@target-platform';
 import { platform } from '../platform';
-=======
 import { data } from '../data/load';
->>>>>>> claude/new-session-c737a3
 
 /** Creates every shared texture (data and save are already loaded by main.ts), then opens the title. */
 export default class BootScene extends Phaser.Scene {
