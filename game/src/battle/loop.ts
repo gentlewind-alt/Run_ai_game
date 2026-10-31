@@ -108,6 +108,19 @@ function stepLogic(b: BattleState): void {
   stepRules(b);
 }
 
+/** Which animation key an enemy type plays (run while moving, fly for a flier, else idle): found once per type and cached, since it is asked every frame. */
+const animKeys = new Map<string, string | null>();
+function animKey(b: BattleState, type: string, behavior: string | undefined, moving: boolean): string | undefined {
+  const id = `${type}|${behavior}|${moving ? 1 : 0}`;
+  let key = animKeys.get(id);
+  if (key === undefined) {
+    const order = [moving ? 'run' : '', behavior === 'imp' ? 'fly' : '', 'idle'].filter(Boolean);
+    key = order.map((n) => `${type}_${n}`).find((k) => b.scene.anims?.exists(k)) ?? null;
+    if (b.scene.anims) animKeys.set(id, key); // not cached without an animation manager (the headless Arena check)
+  }
+  return key ?? undefined;
+}
+
 function syncSprites(b: BattleState, time: number): void {
   for (const e of b.ents) {
     if (e.dead) continue;
@@ -126,13 +139,12 @@ function syncSprites(b: BattleState, time: number): void {
     // Which looping strip plays: run while a runner moves, fly for a hovering flier, idle otherwise. Hurt, stunned or frozen shows the still sprite.
     const still = hurtFrame || e.flash > 0 || e.status.stun > 0 || e.status.chain > 0;
     const moving = e.def?.behavior === 'runner' && e.runFrom !== undefined && b.steps >= e.runFrom && Math.abs(e.body.velocity.x) >= (e.params.runMinSpeed ?? 0.1);
-    const order = [moving ? 'run' : '', e.def?.behavior === 'imp' ? 'fly' : '', 'idle'].filter(Boolean);
-    const wanted = still ? undefined : order.map((n) => `${e.type}_${n}`).find((k) => b.scene.anims?.exists(k));
+    const wanted = still ? undefined : animKey(b, e.type, e.def?.behavior, moving);
     const anim = (e.sprite as Phaser.GameObjects.Sprite).anims ? e.sprite as Phaser.GameObjects.Sprite : null;
     if (wanted && anim) {
       if (anim.anims.currentAnim?.key !== wanted || !anim.anims.isPlaying) {
         // each enemy starts on its own frame, so a group does not move in lockstep
-        const n = b.scene.anims.get(wanted).frames.length;
+        const n = b.scene.anims.get(wanted)?.frames.length ?? 1;
         anim.play({ key: wanted, startFrame: Math.floor(Math.abs(e.phase) * 1000) % n });
       }
     } else {
