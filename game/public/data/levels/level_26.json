@@ -6,6 +6,7 @@
   "worldW": 540,
   "shots": 6,
   "hints": [
+    "Tip: Millstone rolls over the mesa.",
     "Cut the post, not the beam."
   ],
   "scoreTarget": 2300,
@@ -89,11 +90,11 @@
     }
   ],
   "loadout": [
+    "w_rolling_millstone",
     "w_iron_cleaver",
     "w_ashwood_staff",
     "w_hunters_pike",
     "w_blast_tube",
-    "w_scrapheap_scattergun",
-    "w_hunters_boomerang"
+    "w_scrapheap_scattergun"
   ]
 }

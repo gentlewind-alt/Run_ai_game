@@ -59,6 +59,7 @@ export function sanitize(raw: Record<string, unknown>): Profile {
       cosmetics: strs(owned.cosmetics),
     },
     upgrades: numMap(raw.upgrades),
+    slingUpgrades: numMap(raw.slingUpgrades, 3),
     equipped: { loadout, artifacts: strs(eq.artifacts), slingSkin: typeof eq.slingSkin === 'string' ? eq.slingSkin : undefined },
     stars: numMap(raw.stars, 3),
     best: numMap(raw.best),
@@ -71,6 +72,7 @@ export function sanitize(raw: Record<string, unknown>): Profile {
     flags,
     stats: {
       bossLosses,
+      campaignLossStreak: Math.max(0, Math.floor(num(statsObj.campaignLossStreak, 0))),
       adWatches,
     },
     settings: { muted: typeof st.muted === 'boolean' ? st.muted : false, musicOn: typeof st.musicOn === 'boolean' ? st.musicOn : true },

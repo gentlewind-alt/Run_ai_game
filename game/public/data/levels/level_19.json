@@ -6,17 +6,18 @@
   "worldW": 540,
   "shots": 6,
   "hints": [
+    "Tip: Bulwark grows with every pillar.",
     "A chest hides in the rubble.",
     "Iron resists. Shatter the pillars."
   ],
   "scoreTarget": 1900,
   "loadout": [
+    "w_bulwark_disc",
     "w_iron_cleaver",
     "w_ashwood_staff",
     "w_hunters_pike",
     "w_blast_tube",
-    "w_scrapheap_scattergun",
-    "w_hunters_boomerang"
+    "w_scrapheap_scattergun"
   ],
   "terrain": [
     [

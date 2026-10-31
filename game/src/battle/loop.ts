@@ -2,7 +2,8 @@
 import { H } from '../config/constants';
 import { tick as tickStatus } from './status';
 import { step as stepCombo } from './combo';
-import { updateParts } from './fx';
+import { syncBurning, updateParts } from './fx';
+import Phaser from 'phaser';
 import { MatterLib } from './matter';
 import { applyCustomGravity, endProj } from './projectiles';
 import { kindFor } from '../content/levelKinds';
@@ -87,7 +88,7 @@ function stepLogic(b: BattleState): void {
       const speed = Math.hypot(body.velocity.x, body.velocity.y);
       p.slow = speed < 0.3 ? p.slow + 1 : 0;
       const out = body.position.x > b.worldW + 40 || body.position.x < -40 || body.position.y > Math.max(H, b.groundY) + 60;
-      if (out || p.slow > F.projectileSlowSteps || p.steps > F.projectileMaxSteps) endProj(b, p);
+      if (out || p.slow > F.projectileSlowSteps || p.steps > (p.data.maxFlightSteps ?? F.projectileMaxSteps)) endProj(b, p);
     }
   }
   const list = b.actors;
@@ -113,6 +114,7 @@ function syncSprites(b: BattleState, time: number): void {
     const bp = e.body.position;
     if (e.kind === 'block' || e.kind === 'chest') {
       e.sprite.setPosition(bp.x, bp.y).setRotation(e.body.angle);
+      syncBurning(b, e);
       continue;
     }
     const beat = beatBob(time, e.phase);
@@ -121,11 +123,21 @@ function syncSprites(b: BattleState, time: number): void {
     // Generated-art monsters (realms 4-6) have no hurt frame: they keep their sprite and get a red tint instead.
     const hurtFrame = e.hurt > 0 && b.scene.textures.exists(`${e.type}_hurt`);
     const tex = hurtFrame ? `${e.type}_hurt` : (b.scene.textures.exists(openKey) ? openKey : e.type);
-    e.sprite.setTexture(tex);
+    const wolfRun = e.type === 'frost_wolf' && e.runFrom !== undefined && b.steps >= e.runFrom
+      && Math.abs(e.body.velocity.x) >= e.params.runMinSpeed && e.status.stun <= 0 && e.status.chain <= 0
+      && !!b.scene.anims?.exists('frost_wolf_run');
+    const anim = (e.sprite as Phaser.GameObjects.Sprite).anims ? e.sprite as Phaser.GameObjects.Sprite : null;
+    if (wolfRun && anim) {
+      if (anim.anims.currentAnim?.key !== 'frost_wolf_run' || !anim.anims.isPlaying) anim.play('frost_wolf_run');
+    } else {
+      if (anim?.anims.isPlaying) anim.stop();
+      e.sprite.setTexture(tex);
+    }
     e.sprite.setPosition(bp.x, bp.y + e.h / 2 - e.size / 2 + 1 + (running ? -Math.abs(Math.sin(b.steps / 4)) * 2 : 0));
     e.sprite.setRotation(e.body.angle);
     const amp = e.size >= 24 ? 0.03 : 0.05;
-    e.sprite.setScale((running ? 1 : 1 + amp * beat) * (e.visualScaleX ?? 1), (running ? 1 : 1 - amp * 1.4 * beat) * (e.visualScaleY ?? 1));
+    const frameScale = wolfRun ? e.size / e.sprite.frame.realWidth : 1;
+    e.sprite.setScale(frameScale * (running ? 1 : 1 + amp * beat) * (e.visualScaleX ?? 1), frameScale * (running ? 1 : 1 - amp * 1.4 * beat) * (e.visualScaleY ?? 1));
     if (e.flash > 0) e.sprite.setTintFill(0xffffff);
     else if (e.hurt > 0 && !hurtFrame) e.sprite.setTint(0xff8a8a);
     else if (e.status.chain > 0) e.sprite.setTint(0xb8c0c8);
@@ -138,6 +150,7 @@ function syncSprites(b: BattleState, time: number): void {
     e.shieldSprite?.setPosition(bp.x, bp.y).setAlpha(0.55 + 0.2 * beat);
     e.icon?.setPosition(bp.x, bp.y - e.h / 2 - 9);
     syncEnemyWand(e);
+    syncBurning(b, e);
   }
   if (b.proj) {
     b.proj.sprite.setPosition(b.proj.body.position.x, b.proj.body.position.y);

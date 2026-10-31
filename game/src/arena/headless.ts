@@ -96,7 +96,7 @@ function headlessScene(): Phaser.Scene {
   };
   scene = {
     matter: { world, add: { rectangle: (...args: unknown[]) => body('rectangle', args), circle: (...args: unknown[]) => body('circle', args) } },
-    add: { image: (x: number, y: number) => drawing(scene, x, y), circle: (x: number, y: number) => drawing(scene, x, y), rectangle: (x: number, y: number) => drawing(scene, x, y), graphics: () => drawing(scene) },
+    add: { image: (x: number, y: number) => drawing(scene, x, y), sprite: (x: number, y: number) => drawing(scene, x, y), circle: (x: number, y: number) => drawing(scene, x, y), rectangle: (x: number, y: number) => drawing(scene, x, y), graphics: () => drawing(scene) },
     cameras: { main: drawing(null), add: () => drawing(null) },
     textures: { exists: () => true, get: () => ({ getSourceImage: () => ({ width: 16, height: 16 }) }) },
     tweens: { add() {}, addCounter() {}, killAll() {}, killTweensOf() {}, isTweening: () => false },

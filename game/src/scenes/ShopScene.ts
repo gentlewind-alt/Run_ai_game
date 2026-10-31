@@ -10,6 +10,7 @@ import { H, W } from '../config/constants';
 import { adRules, adsEnabled, coinAdStatus, formatWait, watchForCoins } from '../core/ads';
 import { goTo, irisOpen } from '../core/flow';
 import { platform } from '../platform';
+import { slingLevel, slingLines, slingUpgradeCost, upgradeSling } from '../core/slingshots';
 import {
   GOLD_QUIVER, buyArtifact, buyConsumable, buyWeapon, consumableCount, economy, equipSlingSkin, owns, profile, reachedLevel, upgradeCost, upgradeMult,
   upgradeWeapon, weaponLevel, weaponUnlockLevel,
@@ -156,6 +157,7 @@ export default class ShopScene extends Phaser.Scene {
     });
 
     if (this.tab === 'forge') this.renderForge();
+    else if (this.tab === 'slingshots') this.renderSlingshots();
     else this.renderGrid();
   }
 
@@ -289,6 +291,50 @@ export default class ShopScene extends Phaser.Scene {
       });
     }
     return [];
+  }
+
+  private renderSlingshots(): void {
+    const list = this.items();
+    const perPage = 4;
+    const pages = Math.max(1, Math.ceil(list.length / perPage));
+    this.page = Math.min(this.page, pages - 1);
+    list.slice(this.page * perPage, (this.page + 1) * perPage).forEach((it, i) => {
+      const def = data.content.cosmetics!.find((c) => c.id === it.id)!;
+      const x = 10 + i % 2 * 234;
+      const y = 58 + Math.floor(i / 2) * 83;
+      const owned = owns('cosmetics', it.id);
+      const equipped = profile.equipped.slingSkin === it.id;
+      const level = slingLevel(it.id);
+      const lines = slingLines(def);
+      const image = this.add.image(x + 16, y + 28, it.icon).setScale(0.75).setDepth(2);
+      this.body.add([
+        plainCard(this, x, y, 226, 78, '8', '9', 1), image,
+        text(this, x + 34, y + 10, fitText(it.name, 184), C('4'), 1, C('0')).setOrigin(0, 0.5).setDepth(2),
+        text(this, x + 34, y + 26, fitText(lines.pro, 184), C('5'), 1, C('0')).setOrigin(0, 0.5).setDepth(2),
+        text(this, x + 34, y + 38, fitText(lines.con, 184), C('3'), 1, C('0')).setOrigin(0, 0.5).setDepth(2),
+      ]);
+      def.upgrade?.prices.forEach((_price, p) => this.body.add(this.add.rectangle(x + 37 + p * 7, y + 50, 5, 5, p < level ? C('4') : C('f')).setStrokeStyle(1, C('0')).setDepth(2)));
+      const buy = makeButton(this, x + (owned ? 61 : 113), y + 64, owned ? 96 : 150, 20,
+        owned ? equipped ? 'Equipped' : 'Equip' : `Buy ${it.price}`, 'go', () => this.buy(it), 6);
+      buy.setEnabled(!equipped && (owned || profile.coins >= it.price));
+      this.body.add(buy.box);
+      if (owned) {
+        const cost = slingUpgradeCost(it.id);
+        const upgrade = makeButton(this, x + 169, y + 64, 102, 20, cost === null ? 'Max level' : `Upgrade ${cost}`, 'go', () => {
+          const result = upgradeSling(it.id);
+          if (result === 'ok') { sfx.coin(); this.render(); }
+          else if (result === 'coins') { sfx.lose(); this.toast(`Need ${(cost ?? 0) - profile.coins} more coins.`, C('3')); }
+        }, 6);
+        upgrade.setEnabled(cost !== null && profile.coins >= cost);
+        this.body.add(upgrade.box);
+      }
+    });
+    if (pages > 1) {
+      const prev = makeButton(this, 187, 234, 36, 20, '<', 'plain', () => { this.page--; this.render(); }, 6);
+      const next = makeButton(this, 293, 234, 36, 20, '>', 'plain', () => { this.page++; this.render(); }, 6);
+      prev.setEnabled(this.page > 0); next.setEnabled(this.page < pages - 1);
+      this.body.add([prev.box, next.box, text(this, 240, 234, `${this.page + 1}/${pages}`, C('c'))]);
+    }
   }
 
   private renderGrid(): void {

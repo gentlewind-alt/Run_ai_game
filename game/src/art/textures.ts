@@ -207,6 +207,10 @@ export function slingTexture(id?: string): string {
     s_gemini: 'sling_gemini',
     s_skin_bone: 'sling_bone',
     s_skin_iron: 'sling_iron',
+    s_ember_fork: 'sling_ember_fork',
+    s_venom_coil: 'sling_venom_coil',
+    s_hexwood: 'sling_hexwood',
+    s_titan_brace: 'sling_titan_brace',
   };
   return keys[id ?? ''] ?? 'sling';
 }

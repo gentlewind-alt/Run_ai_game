@@ -10,9 +10,17 @@
     "defaults",
     "limits",
     "costs",
-    "enemyAttack"
+    "enemyAttack",
+    "lossStreak"
   ],
   "properties": {
+    "lossStreak": {
+      "type": "object", "additionalProperties": false, "required": ["after", "abilityMarkup"],
+      "properties": {
+        "after": { "type": "integer", "minimum": 1 },
+        "abilityMarkup": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
     "$schema": {
       "type": "string"
     },

@@ -13,7 +13,7 @@ import { weaponImpl } from '../content/weapons';
 import { blockTextureKey } from '../builder/physics';
 import { artifactMult } from './artifacts';
 import { announce, comboMult, registerKill } from './combo';
-import { burst, popWord, ring } from './fx';
+import { burst, ignite, popWord, ring } from './fx';
 import { MatterLib } from './matter';
 import { addCoins, addScore } from './score';
 import { inflict } from './status';
@@ -47,6 +47,7 @@ export function onCollide(b: BattleState, ev: any): void {
     if (A.label === 'enemyAttack' || B.label === 'enemyAttack') {
       const shot = A.label === 'enemyAttack' ? A : B;
       const hit = shot === A ? B : A;
+      if (!shot.enemySpent && shot.enemyBurning && hit.ent && !hit.ent.dead) ignite(b, hit.ent);
       if (!shot.enemySpent && hit.ent?.kind === 'monster' && !hit.ent.dead) damage(b, hit.ent, data.forge.enemyAttack.friendlyDamage, shot.position.x, shot.position.y, { strong: false, tag: 'norm' });
       shot.enemySpent = true;
       continue;
@@ -152,6 +153,10 @@ function impact(b: BattleState, target: Ent | undefined, other: Ent | undefined,
 
 export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: number, o: DamageOpts): void {
   if (t.dead) return;
+  if (o.weaponId) {
+    const w = battleWeapon(b, o.weaponId);
+    if (w.element === 'hellfire' || w.params.burningHit === 1) ignite(b, t);
+  }
   let dmg = dmgIn * (t.status.curse > 0 ? b.tune.status.curseMult : 1);
   if (t.shield > 0) {
     const ab = Math.min(t.shield, dmg);
@@ -219,6 +224,8 @@ export function discard(b: BattleState, t: Ent): void {
   b.connections?.removeBody(t.body);
   b.scene.matter.world.remove(t.body);
   t.sprite.destroy();
+  t.burningFx?.destroy();
+  t.burningFx = undefined;
   t.wand?.destroy();
   t.shieldSprite?.destroy();
   t.icon?.destroy();
@@ -264,7 +271,7 @@ function kill(b: BattleState, t: Ent, silent = false, weaponId?: string): void {
     addCoins(b, Math.round(reward * coinMult));
     if (!silent) sfx.coin();
   }
-  b.events.emit('kill', { target: t, x: px, y: py });
+  b.events.emit('kill', { target: t, x: px, y: py, weaponId });
 
   if (t.kind === 'monster') {
     if (t.def?.boss && !b.custom) {
@@ -313,6 +320,7 @@ export function damageAround(b: BattleState, x: number, y: number, r: number, fa
 
 /** Radial damage that falls off with distance, with a push. wid null = non-weapon (bomber). */
 export function explode(b: BattleState, x: number, y: number, r: number, base: number, exclude: Ent | null, wid: string | null): void {
+  if (wid) r *= b.mods.explosionRadiusMult ?? 1;
   ring(b, x, y, r, C('4'));
   ring(b, x, y, r * 0.6, C('3'));
   burst(b, x, y, ['4', '3', '2', 'c'], 18);
@@ -330,13 +338,13 @@ export function explode(b: BattleState, x: number, y: number, r: number, base: n
     let tag: DamageTag = 'norm';
     if (wid) {
       const el = elementMult(b, e, battleWeapon(b, wid).element);
-      dmg *= el * comboMult(b) * b.rules.globalScale;
+      dmg *= el * comboMult(b) * b.rules.globalScale * b.mods.damageMult;
       tag = el > 1 ? 'weak' : el < 1 ? 'resist' : 'norm';
     }
-    if (wid && battleWeapon(b, wid).forge) {
-      dmg *= b.mods.damageMult * artifactMult(b, { weaponId: wid, target: e });
+    if (wid) {
+      if (battleWeapon(b, wid).forge) dmg *= artifactMult(b, { weaponId: wid, target: e });
       forgeHit(b, e, wid, dmg, bp.x, bp.y, { strong: false, tag });
-    } else damage(b, e, dmg, bp.x, bp.y, { strong: false, tag });
+    } else damage(b, e, dmg, bp.x, bp.y, { strong: false, tag, weaponId: wid ?? undefined });
   }
   push(b, x, y, r, b.tune.explosionPush);
 }

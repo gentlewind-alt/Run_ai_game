@@ -25,6 +25,9 @@ export const scepter: WeaponImpl = {
         if (t % P.poolTick === 0) {
           ctx.fx.ring(px, py, P.poolRadius * 0.6, C('3'));
           for (const e of ctx.within(px, py - 6, P.poolRadius)) ctx.addStatus(e, 'burn', P.poolBurnSteps);
+          for (const e of ctx.blocks()) {
+            if (Math.hypot(e.body.position.x - px, e.body.position.y - (py - 6)) <= P.poolRadius + Math.max(e.w, e.h) / 2) ctx.fx.burn(e);
+          }
         }
         return t >= P.poolSteps;
       },

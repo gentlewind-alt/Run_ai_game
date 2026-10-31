@@ -25,7 +25,7 @@ export interface Ent {
   kind: Kind;
   type: string; // monster id, or material id
   body: any;
-  sprite: Phaser.GameObjects.Image;
+  sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
   hp: number;
   maxHp: number;
   weak: string | null;
@@ -36,6 +36,8 @@ export interface Ent {
   cool: number;
   hurt: number;
   flash: number;
+  burningUntil?: number;
+  burningFx?: Phaser.GameObjects.Graphics;
   dead: boolean;
   phase: number;
   shield: number;
@@ -129,6 +131,10 @@ export interface Mods {
   launchSpeedMult?: number;
   twinFraction?: number;
   twinDelaySteps?: number;
+  slingDamageMult?: number;
+  explosionRadiusMult?: number;
+  poisonChance?: number;
+  curseChance?: number;
 }
 
 export interface BattleCtx {
@@ -181,6 +187,8 @@ export interface BattleCtx {
     dot(x: number, y: number, r: number, fill: number, stroke: number): Phaser.GameObjects.Arc;
     image(x: number, y: number, key: string): Phaser.GameObjects.Image;
     word(x: number, y: number, word: string): void;
+    label(x: number, y: number, value: string): Phaser.GameObjects.Image;
+    burn(target: Ent): void;
     bolt(x: number, y: number): void; // a lightning strike from above
     electricField?(x: number, y: number, r: number, steps?: number): void;
     quakeRings?(x: number, y: number, rangeX?: number): void;

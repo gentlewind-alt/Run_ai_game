@@ -199,6 +199,32 @@
         "homeMarginRight": { "type": "number", "minimum": 0 },
         "homeSlingFrac": { "type": "number", "minimum": 0.1, "maximum": 0.5 },
         "chestHp": { "type": "number", "minimum": 1, "description": "Default HP for breakable treasure chests." },
+        "status": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "burnDamage": { "type": "number", "minimum": 0 },
+            "burnTickSteps": { "type": "integer", "minimum": 1 },
+            "curseMult": { "type": "number", "minimum": 0 },
+            "slowSpeedMult": { "type": "number", "minimum": 0 },
+            "slingStatusSteps": { "type": "integer", "minimum": 1 },
+            "burning": {
+              "type": "object", "additionalProperties": false,
+              "required": ["durationSteps", "fadeSteps", "tongueCount", "tongueWidth", "tongueHeight", "tongueSpacing", "flickerSteps", "emberCount", "emberRise", "contactRadius"],
+              "properties": {
+                "durationSteps": { "type": "integer", "minimum": 1 },
+                "fadeSteps": { "type": "integer", "minimum": 1 },
+                "tongueCount": { "type": "integer", "minimum": 2, "maximum": 3 },
+                "tongueWidth": { "type": "number", "exclusiveMinimum": 0 },
+                "tongueHeight": { "type": "number", "exclusiveMinimum": 0 },
+                "tongueSpacing": { "type": "number", "exclusiveMinimum": 0 },
+                "flickerSteps": { "type": "integer", "minimum": 1 },
+                "emberCount": { "type": "integer", "minimum": 0 },
+                "emberRise": { "type": "number", "exclusiveMinimum": 0 },
+                "contactRadius": { "type": "number", "exclusiveMinimum": 0 }
+              }
+            }
+          }
+        },
         "coins": {
           "type": "object",
           "additionalProperties": { "type": "number", "minimum": 0 },
@@ -456,9 +482,23 @@
           "properties": {
             "launchSpeedMult": { "type": "number", "minimum": 0 },
             "twinFraction": { "type": "number", "minimum": 0 },
-            "twinDelaySteps": { "type": "integer", "minimum": 1 }
+            "twinDelaySteps": { "type": "integer", "minimum": 1 },
+            "damageMult": { "type": "number", "minimum": 0 },
+            "previewMult": { "type": "number", "minimum": 0 },
+            "explosionRadiusMult": { "type": "number", "minimum": 0 },
+            "poisonChance": { "type": "number", "minimum": 0, "maximum": 1 },
+            "curseChance": { "type": "number", "minimum": 0, "maximum": 1 }
           },
           "additionalProperties": false
+        },
+        "upgrade": {
+          "type": "object", "additionalProperties": false,
+          "required": ["stat", "perLevel", "prices"],
+          "properties": {
+            "stat": { "enum": ["launchSpeedMult", "twinFraction", "curseChance", "damageMult", "explosionRadiusMult", "poisonChance"] },
+            "perLevel": { "type": "number", "minimum": 0 },
+            "prices": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "integer", "minimum": 0 } }
+          }
         }
       }
     },

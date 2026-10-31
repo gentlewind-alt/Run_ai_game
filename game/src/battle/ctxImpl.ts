@@ -1,11 +1,12 @@
 // Implements BattleCtx over a BattleState: the only door content code uses to touch the battle.
 import Phaser from 'phaser';
+import { text } from '../art/font5x7';
 import { blast, damage, damageAround, directHit, explode, push } from './damage';
 import {
   bolt, popWord, ring, shake, burst, electricField, quakeRings,
   pingStar, flameBlast, webStrand, webSplat, muzzleFlash, beam,
   legendArt, legendOverlay, legendWave, legendGroundGlow, legendRuneLink,
-  legendShards, legendRays, legendSpiral, legendStretch } from './fx';
+  legendShards, legendRays, legendSpiral, legendStretch, ignite } from './fx';
 import { MatterLib } from './matter';
 import { endProj, setGravity, spawnPellet } from './projectiles';
 import { escape } from './rules';
@@ -71,6 +72,8 @@ export function makeCtx(b: BattleState): BattleCtx {
       dot: (x, y, r, fill, stroke) => b.scene.add.circle(x, y, r, fill).setStrokeStyle(1, stroke).setDepth(6),
       image: (x, y, key) => b.scene.add.image(x, y, key),
       word: (x, y, word) => popWord(b, x, y, word),
+      label: (x, y, value) => text(b.scene, x, y, value).setDepth(13),
+      burn: (target) => ignite(b, target),
       bolt: (x, y) => bolt(b, x, y),
       electricField: (x, y, r, steps) => electricField(b, x, y, r, steps),
       quakeRings: (x, y, rangeX) => quakeRings(b, x, y, rangeX),

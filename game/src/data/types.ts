@@ -91,7 +91,13 @@ export interface Tuning {
   points: Record<string, number>;
   shotBonusPoints: number;
   shotBonusCoins: number;
-  status: { burnDamage: number; burnTickSteps: number; curseMult: number; slowSpeedMult: number };
+  status: {
+    burnDamage: number; burnTickSteps: number; curseMult: number; slowSpeedMult: number; slingStatusSteps: number;
+    burning: {
+      durationSteps: number; fadeSteps: number; tongueCount: number; tongueWidth: number; tongueHeight: number;
+      tongueSpacing: number; flickerSteps: number; emberCount: number; emberRise: number; contactRadius: number;
+    };
+  };
   flow: {
     projectileSlowSteps: number; projectileMaxSteps: number; settleCalmSpeed: number; settleMinSteps: number;
     settleMaxSteps: number; winDelaySteps: number; homeSettleSteps: number;
@@ -146,6 +152,16 @@ export interface CosmeticDef {
     launchSpeedMult?: number;
     twinFraction?: number;
     twinDelaySteps?: number;
+    damageMult?: number;
+    previewMult?: number;
+    explosionRadiusMult?: number;
+    poisonChance?: number;
+    curseChance?: number;
+  };
+  upgrade?: {
+    stat: 'launchSpeedMult' | 'twinFraction' | 'curseChance' | 'damageMult' | 'explosionRadiusMult' | 'poisonChance';
+    perLevel: number;
+    prices: number[];
   };
 }
 

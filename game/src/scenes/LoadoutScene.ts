@@ -9,6 +9,7 @@ import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
 import { goTo, irisOpen } from '../core/flow';
 import { artifactSlots, consumableCount, loadoutSize, owns, profile, setArtifacts, setLoadout, starsFor, upgradeMult } from '../core/profile';
+import { slingLevel, slingLines } from '../core/slingshots';
 import { data } from '../data/load';
 import { levelDef, shortWeaponName } from '../data/lookup';
 import { makeButton, menuBackdrop } from '../ui/widgets';
@@ -281,9 +282,14 @@ export default class LoadoutScene extends Phaser.Scene {
     const def = data.content.cosmetics?.find((c) => c.id === skin);
     const name = def?.name ?? 'Standard Sling';
     const icon = slingTexture(skin);
-    text(this, W - 206, 210, 'Sling', C('d')).setOrigin(0, 0.5);
-    this.add.image(W - 160, 210, icon).setScale(0.5).setDepth(2);
-    text(this, W - 144, 210, fitText(name, 134), C('4'), 1, C('0')).setOrigin(0, 0.5);
+    text(this, W - 206, 201, 'Sling', C('d')).setOrigin(0, 0.5);
+    this.add.image(W - 160, 201, icon).setScale(0.5).setDepth(2);
+    text(this, W - 144, 201, fitText(`${name}${def ? ` Lv${slingLevel(def.id)}` : ''}`, 134), C('4'), 1, C('0')).setOrigin(0, 0.5);
+    if (def) {
+      const lines = slingLines(def);
+      text(this, W - 206, 215, fitText(lines.pro, 196), C('5'), 1, C('0')).setOrigin(0, 0.5);
+      text(this, W - 206, 226, fitText(lines.con, 196), C('3'), 1, C('0')).setOrigin(0, 0.5);
+    }
   }
 
   private refresh(): void {
@@ -302,7 +308,7 @@ export default class LoadoutScene extends Phaser.Scene {
     this.goBtn?.setEnabled(this.slots.every((s) => s !== null));
     if (!this.fixed && this.detailId === null) this.describe(null);
     this.forgeNote?.destroy();
-    if (!this.fixed && this.forgeCap > 0) this.forgeNote = text(this, W - 110, 230, `Forged ${this.forgedCount()}/${this.forgeCap}`, this.forgedCount() >= this.forgeCap ? C('4') : C('d'));
+    if (!this.fixed && this.forgeCap > 0) this.forgeNote = text(this, W - 110, 236, `Forged ${this.forgedCount()}/${this.forgeCap}`, this.forgedCount() >= this.forgeCap ? C('4') : C('d'));
   }
 
   private start(): void {

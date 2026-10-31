@@ -6,6 +6,7 @@ export interface ForgeTrait extends ForgeOption { kind: 'bless' | 'curse' }
 export interface ForgeRadiance { id: string; name: string; color: string }
 export interface ForgeCosts { weapons: Record<string, number>; abilities: Record<string, number>; traits: Record<string, number>; radiances: Record<string, number>; reforgeFactor: number }
 export interface ForgeConfig {
+  lossStreak: { after: number; abilityMarkup: number };
   costs: ForgeCosts;
   weapons: WeaponDef[];
   abilities: ForgeOption[];

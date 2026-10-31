@@ -76,7 +76,7 @@ function addMonster(b: BattleState, m: LevelMonster): any {
   const body: any = b.scene.matter.add.rectangle(m.x, m.y, art.w, art.h, {
     density: def.density ?? DEFAULT_DENSITY, friction: 0.6, frictionStatic: 1, restitution: 0.05, label: 'monster', collisionFilter: { category: 0x2 },
   });
-  const sprite = b.scene.add.image(m.x, m.y, m.t).setDepth(3);
+  const sprite = b.scene.add.sprite(m.x, m.y, m.t).setDepth(3);
   const e = makeEnt(b, 'monster', m.t, body, sprite, def.hp, def.weak, def.resist, art.w, art.h, art.size, { ...(def.params ?? {}) });
   e.dir = m.dir ?? 1;
   e.delay = m.delay ?? 0;
@@ -88,7 +88,7 @@ function addMonster(b: BattleState, m: LevelMonster): any {
 }
 
 function makeEnt(
-  b: BattleState, kind: Kind, type: string, body: any, sprite: Phaser.GameObjects.Image, hp: number,
+  b: BattleState, kind: Kind, type: string, body: any, sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite, hp: number,
   weak: string | null, resist: string | null, w: number, h: number, size: number, params: Record<string, any>,
 ): Ent {
   const e: Ent = {

@@ -6,9 +6,17 @@
   "worldW": 432,
   "shots": 5,
   "hints": [
+    "Tip: Steersong splits in 3. Tap twice.",
     "Sword too short? Slot an arrow weapon."
   ],
   "scoreTarget": 1200,
+  "loadout": [
+    "w_steersong_arrow",
+    "w_militia_blade",
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_scrapheap_scattergun"
+  ],
   "terrain": [
     [
       0,

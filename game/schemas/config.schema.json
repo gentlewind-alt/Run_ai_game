@@ -142,6 +142,7 @@
         "map": { "type": "boolean" },
         "standResistance": { "type": "boolean", "description": "Firm footing for upright blocks in battle and builder Test." },
         "enemyWands": { "type": "boolean", "description": "Draw shooter wands; body-relative shot direction remains authoritative." },
+        "burningVisuals": { "type": "boolean", "description": "Flames and embers on targets struck by fire or lightning; existing burn damage is unchanged." },
         "shop": { "type": "boolean" },
         "forge": { "type": "boolean" },
         "challenges": { "type": "boolean" },

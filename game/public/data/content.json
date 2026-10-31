@@ -1,7 +1,7 @@
 {
   "_note": "Trimmed content for the Monster Mash jam build. Numbers come from data/weapons.json and data/gear.json. 'launch' and 'tap' fields are new: they replace the melee/ranged 'effect' text because weapons are now projectiles on a slingshot.",
   "builder": {
-    "grid": 8,
+    "grid": 2,
     "worldW": 640,
     "groundY": 320,
     "minX": 112,
@@ -55,40 +55,40 @@
       {
         "id": "plank_short",
         "name": "Short plank",
-        "w": 32,
-        "h": 8,
+        "w": 24,
+        "h": 6,
         "shape": "rectangle",
         "family": "Planks"
       },
       {
         "id": "plank",
         "name": "Plank",
-        "w": 64,
-        "h": 8,
+        "w": 48,
+        "h": 6,
         "shape": "rectangle",
         "family": "Planks"
       },
       {
         "id": "beam",
         "name": "Long beam",
-        "w": 96,
-        "h": 8,
+        "w": 72,
+        "h": 6,
         "shape": "rectangle",
         "family": "Planks"
       },
       {
         "id": "post",
         "name": "Post",
-        "w": 8,
-        "h": 64,
+        "w": 6,
+        "h": 48,
         "shape": "rectangle",
         "family": "Planks"
       },
       {
         "id": "square",
         "name": "Solid block",
-        "w": 24,
-        "h": 24,
+        "w": 18,
+        "h": 18,
         "shape": "rectangle",
         "family": "Square"
       },
@@ -96,16 +96,16 @@
         "id": "hollow_square",
         "name": "Hollow block",
         "family": "Square",
-        "w": 32,
-        "h": 32,
+        "w": 24,
+        "h": 24,
         "shape": "rectangle",
         "variant": "hollow"
       },
       {
         "id": "brick",
         "name": "Solid brick",
-        "w": 32,
-        "h": 16,
+        "w": 24,
+        "h": 12,
         "shape": "rectangle",
         "family": "Square"
       },
@@ -113,16 +113,16 @@
         "id": "hollow_brick",
         "name": "Hollow brick",
         "family": "Square",
-        "w": 48,
-        "h": 24,
+        "w": 36,
+        "h": 18,
         "shape": "rectangle",
         "variant": "hollow"
       },
       {
         "id": "ball",
         "name": "Ball",
-        "w": 24,
-        "h": 24,
+        "w": 18,
+        "h": 18,
         "shape": "circle",
         "family": "Circle"
       },
@@ -130,8 +130,8 @@
         "id": "wheel",
         "name": "Wheel",
         "family": "Circle",
-        "w": 32,
-        "h": 32,
+        "w": 24,
+        "h": 24,
         "shape": "circle",
         "variant": "wheel"
       },
@@ -139,8 +139,8 @@
         "id": "wheel_plank",
         "name": "Wheel + plank",
         "family": "Circle",
-        "w": 64,
-        "h": 32,
+        "w": 48,
+        "h": 24,
         "shape": "circle",
         "variant": "wheel_plank"
       },
@@ -148,16 +148,16 @@
         "id": "wheel_wedge",
         "name": "Wheel + wedge",
         "family": "Circle",
-        "w": 64,
-        "h": 32,
+        "w": 48,
+        "h": 24,
         "shape": "circle",
         "variant": "wheel_wedge"
       },
       {
         "id": "wedge",
         "name": "Solid wedge",
-        "w": 32,
-        "h": 24,
+        "w": 24,
+        "h": 18,
         "shape": "triangle",
         "family": "Wedge"
       },
@@ -165,8 +165,8 @@
         "id": "hollow_wedge",
         "name": "Hollow wedge",
         "family": "Wedge",
-        "w": 48,
-        "h": 32,
+        "w": 36,
+        "h": 24,
         "shape": "triangle",
         "variant": "hollow"
       }
@@ -181,7 +181,9 @@
         "restoreTorque": 0.03,
         "standDamping": 0.08,
         "standFrictionStatic": 3,
-        "restSpeed": 0.5, "fallAwakeSteps": 150, "chainSpin": 0.05
+        "restSpeed": 0.5,
+        "fallAwakeSteps": 150,
+        "chainSpin": 0.05
       }
     },
     "launchK": 0.27,
@@ -245,7 +247,20 @@
       "burnDamage": 2,
       "burnTickSteps": 12,
       "curseMult": 1.15,
-      "slowSpeedMult": 0.5
+      "slowSpeedMult": 0.5,
+      "slingStatusSteps": 180,
+      "burning": {
+        "durationSteps": 84,
+        "fadeSteps": 18,
+        "tongueCount": 3,
+        "tongueWidth": 3,
+        "tongueHeight": 8,
+        "tongueSpacing": 4,
+        "flickerSteps": 4,
+        "emberCount": 3,
+        "emberRise": 12,
+        "contactRadius": 10
+      }
     },
     "flow": {
       "projectileSlowSteps": 40,
@@ -290,7 +305,17 @@
       "name": "Militia Blade",
       "archetype": "sword",
       "element": "physical",
-      "rarity": "common", "sprite": "sprites/weapons/w_militia_blade", "anim": { "flight": "flip", "trail": "ghost", "ability": "slash", "colors": ["c", "l"] },
+      "rarity": "common",
+      "sprite": "sprites/weapons/w_militia_blade",
+      "anim": {
+        "flight": "flip",
+        "trail": "ghost",
+        "ability": "slash",
+        "colors": [
+          "c",
+          "l"
+        ]
+      },
       "baseDamage": 14,
       "unlock": "start",
       "price": 0,
@@ -321,7 +346,17 @@
       "name": "Iron Cleaver",
       "archetype": "greatsword",
       "element": "physical",
-      "rarity": "common", "sprite": "sprites/weapons/w_iron_cleaver", "anim": { "flight": "windmill", "trail": "ghost", "ability": "slam", "colors": ["l", "m"] },
+      "rarity": "common",
+      "sprite": "sprites/weapons/w_iron_cleaver",
+      "anim": {
+        "flight": "windmill",
+        "trail": "ghost",
+        "ability": "slam",
+        "colors": [
+          "l",
+          "m"
+        ]
+      },
       "baseDamage": 26,
       "unlock": "level 2",
       "price": 100,
@@ -354,7 +389,17 @@
       "name": "Ashwood Staff",
       "archetype": "staff",
       "element": "radiant",
-      "rarity": "common", "sprite": "sprites/weapons/w_ashwood_staff", "anim": { "flight": "twirl", "trail": "sparks", "ability": "charge", "colors": ["4", "3"] },
+      "rarity": "common",
+      "sprite": "sprites/weapons/w_ashwood_staff",
+      "anim": {
+        "flight": "twirl",
+        "trail": "sparks",
+        "ability": "charge",
+        "colors": [
+          "4",
+          "3"
+        ]
+      },
       "baseDamage": 13,
       "unlock": "level 3",
       "price": 150,
@@ -388,7 +433,17 @@
       "name": "Scrapheap Scattergun",
       "archetype": "shotgun",
       "element": "physical",
-      "rarity": "common", "sprite": "sprites/weapons/w_scrapheap_scattergun", "anim": { "flight": "aim", "trail": "ghost", "ability": "recoil", "colors": ["3", "m"] },
+      "rarity": "common",
+      "sprite": "sprites/weapons/w_scrapheap_scattergun",
+      "anim": {
+        "flight": "aim",
+        "trail": "ghost",
+        "ability": "recoil",
+        "colors": [
+          "3",
+          "m"
+        ]
+      },
       "baseDamage": 30,
       "unlock": "level 4",
       "price": 200,
@@ -424,7 +479,17 @@
       "name": "Hunters Pike",
       "archetype": "spear",
       "element": "physical",
-      "rarity": "uncommon", "sprite": "sprites/weapons/w_hunters_pike", "anim": { "flight": "point", "trail": "ghost", "ability": "slash", "colors": ["c", "i"] },
+      "rarity": "uncommon",
+      "sprite": "sprites/weapons/w_hunters_pike",
+      "anim": {
+        "flight": "point",
+        "trail": "ghost",
+        "ability": "slash",
+        "colors": [
+          "c",
+          "i"
+        ]
+      },
       "baseDamage": 22,
       "unlock": "level 5",
       "price": 250,
@@ -454,7 +519,17 @@
       "name": "Hunters Boomerang",
       "archetype": "chakram",
       "element": "physical",
-      "rarity": "common", "sprite": "sprites/weapons/w_hunters_boomerang", "anim": { "flight": "frisbee", "trail": "ghost", "ability": "slash", "colors": ["i", "6"] },
+      "rarity": "common",
+      "sprite": "sprites/weapons/w_hunters_boomerang",
+      "anim": {
+        "flight": "frisbee",
+        "trail": "ghost",
+        "ability": "slash",
+        "colors": [
+          "i",
+          "6"
+        ]
+      },
       "baseDamage": 18,
       "unlock": "level 6",
       "price": 300,
@@ -486,7 +561,17 @@
       "name": "Blast Tube",
       "archetype": "launcher",
       "element": "physical",
-      "rarity": "common", "sprite": "sprites/weapons/w_blast_tube", "anim": { "flight": "aim", "trail": "sparks", "ability": "recoil", "colors": ["3", "4"] },
+      "rarity": "common",
+      "sprite": "sprites/weapons/w_blast_tube",
+      "anim": {
+        "flight": "aim",
+        "trail": "sparks",
+        "ability": "recoil",
+        "colors": [
+          "3",
+          "4"
+        ]
+      },
       "baseDamage": 35,
       "unlock": "level 7",
       "price": 350,
@@ -509,7 +594,8 @@
         "muzzle": 9,
         "shellSpeed": 8,
         "shellHit": 8,
-        "shellSteps": 120
+        "shellSteps": 120,
+        "burningHit": 1
       }
     },
     {
@@ -517,7 +603,17 @@
       "name": "Horned Scepter",
       "archetype": "staff",
       "element": "hellfire",
-      "rarity": "uncommon", "sprite": "sprites/weapons/w_horned_scepter", "anim": { "flight": "twirl", "trail": "sparks", "ability": "charge", "colors": ["2", "3"] },
+      "rarity": "uncommon",
+      "sprite": "sprites/weapons/w_horned_scepter",
+      "anim": {
+        "flight": "twirl",
+        "trail": "sparks",
+        "ability": "charge",
+        "colors": [
+          "2",
+          "3"
+        ]
+      },
       "baseDamage": 14,
       "unlock": "level 8",
       "price": 400,
@@ -546,11 +642,23 @@
     {
       "id": "w_comet_fists",
       "sprite": "sprites/weapons/w_comet_fists",
-      "extraSprites": ["sprites/legend/legend_comet", "sprites/legend/legend_rock_spike"],
+      "extraSprites": [
+        "sprites/legend/legend_comet",
+        "sprites/legend/legend_rock_spike"
+      ],
       "name": "Comet Fists",
       "archetype": "fists",
       "element": "physical",
-      "rarity": "legendary", "anim": { "flight": "flip", "trail": "sparks", "ability": "slam", "colors": ["3", "4"] },
+      "rarity": "legendary",
+      "anim": {
+        "flight": "flip",
+        "trail": "sparks",
+        "ability": "slam",
+        "colors": [
+          "3",
+          "4"
+        ]
+      },
       "baseDamage": 50,
       "unlock": {
         "boss": "goblin_chief",
@@ -605,17 +713,29 @@
         "spikeArtScale": 1.4,
         "spikeRiseSteps": 5,
         "spikeHoldSteps": 12,
-        "spikeFadeSteps": 6
+        "spikeFadeSteps": 6,
+        "burningHit": 1
       }
     },
     {
       "id": "w_bulwark_disc",
       "sprite": "sprites/weapons/w_bulwark_disc",
-      "extraSprites": ["sprites/legend/legend_shield_dome"],
+      "extraSprites": [
+        "sprites/legend/legend_shield_dome"
+      ],
       "name": "Bulwark Disc",
       "archetype": "shield",
       "element": "physical",
-      "rarity": "legendary", "anim": { "flight": "frisbee", "trail": "ghost", "ability": "burst", "colors": ["a", "b"] },
+      "rarity": "legendary",
+      "anim": {
+        "flight": "frisbee",
+        "trail": "ghost",
+        "ability": "burst",
+        "colors": [
+          "a",
+          "b"
+        ]
+      },
       "baseDamage": 44,
       "unlock": {
         "boss": "dark_elf_matron",
@@ -623,7 +743,7 @@
       },
       "price": 1500,
       "launch": "Concentric rune shield. On its first hit two light mirrors appear and it zigzags between them like a beam of light.",
-      "tap": "Aims at the nearest monster. The sixth bounce rings out as a shield blast.",
+      "tap": "Aims at the nearest monster. Bounces up to 20 times between the mirrors; every block it breaks makes it hit 50% harder. The last bounce rings out as a shield blast.",
       "physics": {
         "tempo": 1.1,
         "radius": 4,
@@ -640,7 +760,7 @@
         "charges": 1
       },
       "params": {
-        "maxBounces": 6,
+        "maxBounces": 20,
         "bounceDamageBonus": 0,
         "ricochetFalloff": 0.45,
         "redirectSpeed": 7,
@@ -705,17 +825,34 @@
         "domeStartScale": 0.25,
         "domeScale": 2.2,
         "domeAlpha": 0.55,
-        "domeTurns": 1.5
+        "domeTurns": 1.5,
+        "blockBreakMult": 1.5,
+        "maxDamageMult": 12,
+        "growthPulseSteps": 12,
+      "multiplierOffsetY": 24,
+      "lightMaxSteps": 960
       }
     },
     {
       "id": "w_skyforge_maul",
       "sprite": "sprites/weapons/w_skyforge_maul",
-      "extraSprites": ["sprites/legend/legend_storm_cloud", "sprites/legend/legend_storm_hammer"],
+      "extraSprites": [
+        "sprites/legend/legend_storm_cloud",
+        "sprites/legend/legend_storm_hammer"
+      ],
       "name": "Skyforge Maul",
       "archetype": "hammer",
       "element": "radiant",
-      "rarity": "legendary", "anim": { "flight": "windmill", "trail": "sparks", "ability": "charge", "colors": ["4", "b"] },
+      "rarity": "legendary",
+      "anim": {
+        "flight": "windmill",
+        "trail": "sparks",
+        "ability": "charge",
+        "colors": [
+          "4",
+          "b"
+        ]
+      },
       "baseDamage": 56,
       "unlock": {
         "boss": "iron_warlord",
@@ -778,7 +915,8 @@
         "strikeGlowRadiusX": 22,
         "strikeGlowRadiusY": 12,
         "strikeGlowAlpha": 0.8,
-        "strikeGlowSteps": 12
+        "strikeGlowSteps": 12,
+        "burningHit": 1
       }
     },
     {
@@ -787,7 +925,16 @@
       "name": "Steersong Arrow",
       "archetype": "bow",
       "element": "hellfire",
-      "rarity": "rare", "anim": { "flight": "point", "trail": "sparks", "ability": "charge", "colors": ["2", "3"] },
+      "rarity": "rare",
+      "anim": {
+        "flight": "point",
+        "trail": "sparks",
+        "ability": "charge",
+        "colors": [
+          "2",
+          "3"
+        ]
+      },
       "baseDamage": 34,
       "unlock": {
         "chest": "c_l3",
@@ -822,7 +969,16 @@
       "name": "Silkline Shooters",
       "archetype": "crossbow",
       "element": "physical",
-      "rarity": "rare", "anim": { "flight": "aim", "trail": "ghost", "ability": "recoil", "colors": ["c", "9"] },
+      "rarity": "rare",
+      "anim": {
+        "flight": "aim",
+        "trail": "ghost",
+        "ability": "recoil",
+        "colors": [
+          "c",
+          "9"
+        ]
+      },
       "baseDamage": 30,
       "unlock": {
         "chest": "c_l5",
@@ -854,7 +1010,16 @@
       "name": "Kinetic Palms",
       "archetype": "gauntlet",
       "element": "radiant",
-      "rarity": "rare", "anim": { "flight": "aim", "trail": "sparks", "ability": "recoil", "colors": ["b", "a"] },
+      "rarity": "rare",
+      "anim": {
+        "flight": "aim",
+        "trail": "sparks",
+        "ability": "recoil",
+        "colors": [
+          "b",
+          "a"
+        ]
+      },
       "baseDamage": 32,
       "unlock": {
         "chest": "c_l7",
@@ -887,11 +1052,22 @@
     {
       "id": "w_brahmastra_arrow",
       "sprite": "sprites/weapons/w_brahmastra_arrow",
-      "extraSprites": ["sprites/legend/legend_sun_eye"],
+      "extraSprites": [
+        "sprites/legend/legend_sun_eye"
+      ],
       "name": "Brahmastra Arrow",
       "archetype": "bow",
       "element": "radiant",
-      "rarity": "legendary", "anim": { "flight": "point", "trail": "sparks", "ability": "charge", "colors": ["4", "t"] },
+      "rarity": "legendary",
+      "anim": {
+        "flight": "point",
+        "trail": "sparks",
+        "ability": "charge",
+        "colors": [
+          "4",
+          "t"
+        ]
+      },
       "baseDamage": 52,
       "unlock": {
         "boss": "frost_giant",
@@ -950,11 +1126,22 @@
     {
       "id": "w_omnitrix_dial",
       "sprite": "sprites/weapons/w_omnitrix_dial",
-      "extraSprites": ["sprites/legend/legend_alien_foot"],
+      "extraSprites": [
+        "sprites/legend/legend_alien_foot"
+      ],
       "name": "Alien Dial",
       "archetype": "dial",
       "element": "void",
-      "rarity": "legendary", "anim": { "flight": "frisbee", "trail": "sparks", "ability": "charge", "colors": ["5", "6"] },
+      "rarity": "legendary",
+      "anim": {
+        "flight": "frisbee",
+        "trail": "sparks",
+        "ability": "charge",
+        "colors": [
+          "5",
+          "6"
+        ]
+      },
       "baseDamage": 46,
       "unlock": {
         "chest": "c_l19",
@@ -1019,7 +1206,17 @@
       "name": "Pinata MIRV",
       "archetype": "bomb",
       "element": "hellfire",
-      "rarity": "epic", "anim": { "flight": "tumble", "trail": "sparks", "ability": "burst", "colors": ["2", "4", "5"] },
+      "rarity": "epic",
+      "anim": {
+        "flight": "tumble",
+        "trail": "sparks",
+        "ability": "burst",
+        "colors": [
+          "2",
+          "4",
+          "5"
+        ]
+      },
       "baseDamage": 38,
       "unlock": {
         "chest": "c_l21",
@@ -1056,7 +1253,16 @@
       "name": "Hailstorm Cauldron",
       "archetype": "cauldron",
       "element": "radiant",
-      "rarity": "epic", "anim": { "flight": "rock", "trail": "sparks", "ability": "slam", "colors": ["b", "a"] },
+      "rarity": "epic",
+      "anim": {
+        "flight": "rock",
+        "trail": "sparks",
+        "ability": "slam",
+        "colors": [
+          "b",
+          "a"
+        ]
+      },
       "baseDamage": 36,
       "unlock": "level 22",
       "price": 1000,
@@ -1089,7 +1295,16 @@
       "name": "Rolling Millstone",
       "archetype": "wheel",
       "element": "physical",
-      "rarity": "rare", "anim": { "flight": "windmill", "trail": "ghost", "ability": "slam", "colors": ["l", "k"] },
+      "rarity": "rare",
+      "anim": {
+        "flight": "windmill",
+        "trail": "ghost",
+        "ability": "slam",
+        "colors": [
+          "l",
+          "k"
+        ]
+      },
       "baseDamage": 24,
       "unlock": "level 23",
       "price": 700,
@@ -1121,7 +1336,16 @@
       "name": "Earthworm Drill",
       "archetype": "drill",
       "element": "physical",
-      "rarity": "rare", "anim": { "flight": "corkscrew", "trail": "ghost", "ability": "slam", "colors": ["i", "t"] },
+      "rarity": "rare",
+      "anim": {
+        "flight": "corkscrew",
+        "trail": "ghost",
+        "ability": "slam",
+        "colors": [
+          "i",
+          "t"
+        ]
+      },
       "baseDamage": 28,
       "unlock": {
         "chest": "c_l22",
@@ -1156,7 +1380,16 @@
       "name": "Chain Rod",
       "archetype": "rod",
       "element": "radiant",
-      "rarity": "rare", "anim": { "flight": "twirl", "trail": "sparks", "ability": "charge", "colors": ["b", "c"] },
+      "rarity": "rare",
+      "anim": {
+        "flight": "twirl",
+        "trail": "sparks",
+        "ability": "charge",
+        "colors": [
+          "b",
+          "c"
+        ]
+      },
       "baseDamage": 22,
       "unlock": {
         "chest": "c_l23",
@@ -1180,17 +1413,29 @@
         "jumps": 4,
         "jumpRange": 90,
         "jumpMult": 1.0,
-        "jumpFalloff": 0.8
+        "jumpFalloff": 0.8,
+        "burningHit": 1
       }
     },
     {
       "id": "w_black_hole_marble",
       "sprite": "sprites/weapons/w_black_hole_marble",
-      "extraSprites": ["sprites/legend/legend_black_hole"],
+      "extraSprites": [
+        "sprites/legend/legend_black_hole"
+      ],
       "name": "Black Hole Marble",
       "archetype": "orb",
       "element": "void",
-      "rarity": "legendary", "anim": { "flight": "pulse", "trail": "ghost", "ability": "charge", "colors": ["r", "1"] },
+      "rarity": "legendary",
+      "anim": {
+        "flight": "pulse",
+        "trail": "ghost",
+        "ability": "charge",
+        "colors": [
+          "r",
+          "1"
+        ]
+      },
       "baseDamage": 40,
       "unlock": {
         "boss": "storm_sovereign",
@@ -1585,7 +1830,9 @@
       "sprite": "sprites/monsters/frost_wolf",
       "params": {
         "speed": 1.1,
-        "selfMoving": 1
+        "selfMoving": 1,
+        "runFps": 11,
+        "runMinSpeed": 0.1
       }
     },
     {
@@ -1703,7 +1950,8 @@
         "weakEvery": 420,
         "weakDuration": 120,
         "weakMult": 2,
-        "lava": 1
+        "lava": 1,
+        "burningAttack": 1
       }
     },
     {
@@ -1734,7 +1982,8 @@
       "sprite": "sprites/monsters/storm_mage",
       "params": {
         "shield": 60,
-        "radius": 52
+        "radius": 52,
+        "burningAttack": 1
       }
     },
     {
@@ -1768,7 +2017,8 @@
         "weakEvery": 420,
         "weakDuration": 120,
         "weakMult": 2,
-        "storm": 1
+        "storm": 1,
+        "burningAttack": 1
       }
     }
   ],
@@ -2000,9 +2250,19 @@
       "kind": "sling_skin",
       "priceCoins": 600,
       "priceBits": 0,
-      "desc": "+25% launch speed and a flatter arc with speed lines.",
+      "desc": "+25% launch speed; -5% damage.",
       "mods": {
-        "launchSpeedMult": 1.25
+        "launchSpeedMult": 1.25,
+        "damageMult": 0.95
+      },
+      "upgrade": {
+        "stat": "launchSpeedMult",
+        "perLevel": 0.02,
+        "prices": [
+          800,
+          1400,
+          2200
+        ]
       }
     },
     {
@@ -2011,10 +2271,20 @@
       "kind": "sling_skin",
       "priceCoins": 1200,
       "priceBits": 0,
-      "desc": "Next queued weapon launches 12 steps behind at 45% damage.",
+      "desc": "Twin shot after 12 steps at 45% damage; -10% aim preview.",
       "mods": {
         "twinFraction": 0.45,
-        "twinDelaySteps": 12
+        "twinDelaySteps": 12,
+        "previewMult": 0.9
+      },
+      "upgrade": {
+        "stat": "twinFraction",
+        "perLevel": 0.03,
+        "prices": [
+          800,
+          1400,
+          2200
+        ]
       }
     },
     {
@@ -2022,14 +2292,126 @@
       "name": "Bone Sling",
       "kind": "sling_skin",
       "priceCoins": 300,
-      "priceBits": 0
+      "priceBits": 0,
+      "mods": {
+        "curseChance": 0.05,
+        "launchSpeedMult": 0.95
+      },
+      "desc": "+5% curse chance; -5% launch speed.",
+      "upgrade": {
+        "stat": "curseChance",
+        "perLevel": 0.01,
+        "prices": [
+          800,
+          1400,
+          2200
+        ]
+      }
     },
     {
       "id": "s_skin_iron",
       "name": "Iron Ballista",
       "kind": "sling_skin",
       "priceCoins": 400,
-      "priceBits": 0
+      "priceBits": 0,
+      "mods": {
+        "damageMult": 1.05,
+        "launchSpeedMult": 0.95
+      },
+      "desc": "+5% damage; -5% launch speed.",
+      "upgrade": {
+        "stat": "damageMult",
+        "perLevel": 0.02,
+        "prices": [
+          800,
+          1400,
+          2200
+        ]
+      }
+    },
+    {
+      "id": "s_ember_fork",
+      "name": "Ember Fork",
+      "kind": "sling_skin",
+      "priceCoins": 1400,
+      "priceBits": 0,
+      "mods": {
+        "explosionRadiusMult": 1.08,
+        "previewMult": 0.95
+      },
+      "desc": "+8% explosion radius; -5% aim preview.",
+      "upgrade": {
+        "stat": "explosionRadiusMult",
+        "perLevel": 0.02,
+        "prices": [
+          800,
+          1400,
+          2200
+        ]
+      }
+    },
+    {
+      "id": "s_venom_coil",
+      "name": "Venom Coil",
+      "kind": "sling_skin",
+      "priceCoins": 1500,
+      "priceBits": 0,
+      "mods": {
+        "poisonChance": 0.06,
+        "damageMult": 0.95
+      },
+      "desc": "+6% poison chance; -5% damage.",
+      "upgrade": {
+        "stat": "poisonChance",
+        "perLevel": 0.01,
+        "prices": [
+          800,
+          1400,
+          2200
+        ]
+      }
+    },
+    {
+      "id": "s_hexwood",
+      "name": "Hexwood",
+      "kind": "sling_skin",
+      "priceCoins": 1600,
+      "priceBits": 0,
+      "mods": {
+        "curseChance": 0.08,
+        "launchSpeedMult": 0.95
+      },
+      "desc": "+8% curse chance; -5% launch speed.",
+      "upgrade": {
+        "stat": "curseChance",
+        "perLevel": 0.01,
+        "prices": [
+          800,
+          1400,
+          2200
+        ]
+      }
+    },
+    {
+      "id": "s_titan_brace",
+      "name": "Titan Brace",
+      "kind": "sling_skin",
+      "priceCoins": 1800,
+      "priceBits": 0,
+      "mods": {
+        "damageMult": 1.1,
+        "launchSpeedMult": 0.92
+      },
+      "desc": "+10% damage; -8% launch speed.",
+      "upgrade": {
+        "stat": "damageMult",
+        "perLevel": 0.02,
+        "prices": [
+          800,
+          1400,
+          2200
+        ]
+      }
     }
   ],
   "economy": {
@@ -2060,7 +2442,12 @@
   },
   "arena": {
     "startCoins": 100,
-    "stakes": [0, 10, 25, 50],
+    "stakes": [
+      0,
+      10,
+      25,
+      50
+    ],
     "slings": [
       {
         "id": "standard",
@@ -2076,7 +2463,9 @@
         "desc": "Faster, flatter launch.",
         "price": 150,
         "skin": "s_quicksilver",
-        "mods": { "launchSpeedMult": 1.25 }
+        "mods": {
+          "launchSpeedMult": 1.25
+        }
       },
       {
         "id": "gemini",
@@ -2084,7 +2473,10 @@
         "desc": "Twin shot, 45% damage.",
         "price": 250,
         "skin": "s_gemini",
-        "mods": { "twinFraction": 0.45, "twinDelaySteps": 12 }
+        "mods": {
+          "twinFraction": 0.45,
+          "twinDelaySteps": 12
+        }
       },
       {
         "id": "longsight",
@@ -2092,7 +2484,9 @@
         "desc": "Longer aim preview.",
         "price": 400,
         "skin": null,
-        "mods": { "previewMult": 1.5 }
+        "mods": {
+          "previewMult": 1.5
+        }
       }
     ],
     "boosts": [
@@ -2102,7 +2496,11 @@
         "desc": "All weapons hit harder.",
         "mod": "damageMult",
         "perLevel": 0.05,
-        "prices": [60, 120, 200]
+        "prices": [
+          60,
+          120,
+          200
+        ]
       },
       {
         "id": "draw",
@@ -2110,7 +2508,11 @@
         "desc": "Launch shots faster.",
         "mod": "launchSpeedMult",
         "perLevel": 0.04,
-        "prices": [60, 120, 200]
+        "prices": [
+          60,
+          120,
+          200
+        ]
       },
       {
         "id": "aim",
@@ -2118,7 +2520,11 @@
         "desc": "Longer aim preview.",
         "mod": "previewMult",
         "perLevel": 0.2,
-        "prices": [60, 120, 200]
+        "prices": [
+          60,
+          120,
+          200
+        ]
       }
     ]
   }

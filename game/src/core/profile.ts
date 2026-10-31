@@ -26,6 +26,7 @@ export interface DailyInfo {
 
 export interface ProfileStats {
   bossLosses: Record<string, number>;
+  campaignLossStreak?: number;
   /** Times (ms, server clock) of the free-coin ads watched in the current window. */
   adWatches?: number[];
 }
@@ -35,6 +36,7 @@ export interface Profile {
   coins: number;
   owned: { weapons: string[]; artifacts: string[]; consumables: Record<string, number>; cosmetics: string[] };
   upgrades: Record<string, number>;
+  slingUpgrades?: Record<string, number>;
   equipped: { loadout: string[]; artifacts: string[]; slingSkin?: string };
   stars: Record<string, number>;
   best: Record<string, number>;
@@ -70,12 +72,13 @@ export function freshProfile(): Profile {
     coins: e.startCoins,
     owned: { weapons: starters.length ? starters : ['w_militia_blade'], artifacts: [], consumables: {}, cosmetics: [] },
     upgrades: {},
+    slingUpgrades: {},
     equipped: { loadout: [], artifacts: [] },
     stars: {},
     best: {},
     daily: { streak: 0, best: 0, rewardsClaimed: [] },
     flags: {},
-    stats: { bossLosses: {} },
+    stats: { bossLosses: {}, campaignLossStreak: 0 },
     settings: { muted: false, musicOn: true },
   };
 }
@@ -230,6 +233,10 @@ export function recordDailyResult(score: number, dateStr: string): { streak: num
 /** Credits coins and records stars and score. First clears pay in full, replays and losses pay less. */
 export function recordResult(r: { levelId: number; won: boolean; stars: number; score: number; coins: number; dateStr?: string }): ResultInfo {
   const e = economy();
+  if (r.levelId > 0 && r.levelId < 90 && data.levels[r.levelId]) {
+    profile.stats.campaignLossStreak = r.won ? 0 : (profile.stats.campaignLossStreak ?? 0) + 1;
+    changed('stats');
+  }
   const key = String(r.levelId);
   const prev = profile.stars[key] ?? 0;
   const first = r.won && prev === 0;

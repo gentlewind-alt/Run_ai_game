@@ -99,6 +99,7 @@
     "arena": true,
     "weaponForge": true,
     "enemyAttackPhysics": true,
+    "burningVisuals": true,
     "standResistance": true,
     "enemyWands": true,
     "builder": true,

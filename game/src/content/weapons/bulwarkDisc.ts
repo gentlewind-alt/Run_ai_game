@@ -19,7 +19,7 @@ function countBounce(ctx: BattleCtx, p: Proj, key: string): boolean {
   p.data.lastBounceKey = key;
   p.data.lastBounce = ctx.step;
   p.data.bounces++;
-  p.body.proj.mul = (1 + p.data.bounces * P.bounceDamageBonus) * Math.pow(P.ricochetFalloff, p.data.bounces);
+  p.body.proj.mul = p.data.damageMult;
   const b = p.body.position;
   sfx.ping();
   ctx.fx.pingStar?.(b.x, b.y);
@@ -78,7 +78,7 @@ function showMirrors(ctx: BattleCtx, p: Proj, light: LightFlight): void {
 function shieldBlast(ctx: BattleCtx, p: Proj): void {
   const P = p.def.params;
   const { x, y } = p.body.position;
-  ctx.blast(x, y, P.finalRadius, P.finalMult, p.wid);
+  ctx.blast(x, y, P.finalRadius, P.finalMult * (p.data.damageMult ?? 1), p.wid);
   ctx.fx.ring(x, y, P.finalRadius, C('4'));
   ctx.fx.shake(P.finalShake);
   ctx.hitStop?.(P.legendHitStopSteps);
@@ -108,9 +108,35 @@ function contactKey(hit?: ImpactInfo, axis?: 'x' | 'y', side?: number): string {
 
 export const bulwarkDisc: WeaponImpl = {
   texture: weaponTexture('w_bulwark_disc'),
-  onLaunch(_ctx, p) {
+  onLaunch(ctx, p) {
     p.data.bounces = 0;
     p.data.trail = [];
+    p.data.damageMult = 1;
+    p.body.proj.mul = 1;
+    const P = p.def.params;
+    let label = ctx.fx.label(p.body.position.x, p.body.position.y - P.multiplierOffsetY, 'x1.0');
+    const glow = ctx.fx.image(p.sprite.x, p.sprite.y, p.sprite.texture.key).setTintFill(0xffffff).setDepth(p.sprite.depth + 1).setAlpha(0);
+    let growthUntil = 0;
+    const off = ctx.events.on('kill', ({ target, weaponId }) => {
+      if (p.data.ended || !p.sprite.active || target.kind !== 'block' || weaponId !== p.wid) return;
+      const previous = p.data.damageMult as number;
+      p.data.damageMult = Math.min(P.maxDamageMult, previous * P.blockBreakMult);
+      p.body.proj.mul = p.data.damageMult;
+      if (p.data.damageMult <= previous) return;
+      growthUntil = ctx.step + P.growthPulseSteps;
+      label.destroy();
+      label = ctx.fx.label(p.body.position.x, p.body.position.y - P.multiplierOffsetY, `x${p.data.damageMult.toFixed(1)}`);
+    });
+    ctx.addActor({
+      update() {
+        if (p.data.ended || !p.sprite.active) return true;
+        label.setPosition(p.body.position.x, p.body.position.y - P.multiplierOffsetY);
+        glow.setPosition(p.sprite.x, p.sprite.y).setRotation(p.sprite.rotation).setScale(p.sprite.scaleX, p.sprite.scaleY);
+        glow.setAlpha(Math.max(0, (growthUntil - ctx.step) / P.growthPulseSteps));
+        return false;
+      },
+      destroy() { off(); label.destroy(); glow.destroy(); },
+    });
   },
   onAbility(ctx, p) {
     // Tap: redirects once toward the nearest monster.
@@ -165,6 +191,7 @@ export const bulwarkDisc: WeaponImpl = {
         flash: [0, 0],
       };
       p.data.light = light;
+      p.data.maxFlightSteps = p.steps + P.lightMaxSteps;
       p.data.firstKnock = undefined;
       ctx.setGravity(p.body, 0);
       p.body.frictionAir = 0;

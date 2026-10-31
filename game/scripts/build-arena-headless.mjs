@@ -11,7 +11,7 @@ const normalized = value => value.replaceAll('\\', '/');
 const files = [];
 const walk = dir => { for (const entry of fs.readdirSync(path.join(root, dir), { withFileTypes: true })) { const name = `${dir}/${entry.name}`; if (entry.isDirectory()) walk(name); else files.push(name); } };
 for (const dir of ['src/battle', 'src/builder', 'src/content', 'src/config', 'src/art']) walk(dir);
-files.push('src/arena/headless.ts', 'src/arena/types.ts', 'src/core/events.ts', 'src/core/rng.ts', 'src/data/lookup.ts', 'public/data/config.json', 'public/data/content.json', 'public/data/forge.json', 'scripts/build-arena-headless.mjs');
+files.push('src/arena/headless.ts', 'src/arena/types.ts', 'src/core/events.ts', 'src/core/rng.ts', 'src/core/slingshots.ts', 'src/data/lookup.ts', 'public/data/config.json', 'public/data/content.json', 'public/data/forge.json', 'scripts/build-arena-headless.mjs');
 const hash = crypto.createHash('sha256');
 for (const file of files.sort()) hash.update(file).update('\0').update(fs.readFileSync(path.join(root, file), 'utf8').replaceAll('\r\n', '\n')).update('\0');
 const version = `arena-${hash.digest('hex').slice(0, 16)}`;
