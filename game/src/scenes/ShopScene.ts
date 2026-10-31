@@ -108,10 +108,16 @@ export default class ShopScene extends Phaser.Scene {
       if (this.forgeDragMoved) return;
       sfx.click();
       btn.setEnabled(false);
+      btn.setLabel('Loading ad...');
       const got = await watchForCoins();
+      if (!this.scene.isActive()) return;
       if (got > 0) {
         sfx.coin();
         this.toast(`+${got} coins`, C('4'));
+      } else {
+        // say why nothing played instead of doing nothing (closing an ad early has no error, so no message)
+        const reason = platform.ads.lastError?.() ?? '';
+        if (reason) { sfx.lose(); this.toast(reason, C('3')); }
       }
       void refresh();
     }, 6);

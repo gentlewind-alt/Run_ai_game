@@ -18,6 +18,8 @@ export type AgeBand = 'child' | 'teen';
 const admob = () => { const cfg = data.config.targets?.android?.admob; return cfg && import.meta.env.VITE_LIVE_ADS === '1' ? { ...cfg, testing: false } : cfg; };
 let adsReady = false;
 let rewardedLoaded = false;
+let lastAdError = '';
+const why = (e: unknown): string => String((e as { message?: string })?.message ?? e).slice(0, 70);
 
 async function get(key: string): Promise<string | null> {
   try { return (await Preferences.get({ key })).value ?? null; } catch { return null; }
@@ -27,7 +29,8 @@ async function get(key: string): Promise<string | null> {
 export async function startAds(): Promise<void> {
   const cfg = admob();
   const band = (await get(AGE_KEY)) as AgeBand | null;
-  if (!cfg || !band || adsReady) return;
+  if (adsReady) return;
+  if (!cfg || !band) { lastAdError = 'Ads: age not set yet'; return; }
   const child = band === 'child';
   try {
     await AdMob.initialize({
@@ -40,8 +43,10 @@ export async function startAds(): Promise<void> {
     const info = consent.status === AdmobConsentStatus.REQUIRED && consent.isConsentFormAvailable ? await AdMob.showConsentForm() : consent;
     adsReady = info.canRequestAds;
     if (adsReady) void loadRewarded();
-  } catch {
+    else lastAdError = 'Ads: consent not given';
+  } catch (e) {
     adsReady = false;
+    lastAdError = `Ads: ${why(e)}`;
   }
 }
 
@@ -49,10 +54,13 @@ async function loadRewarded(): Promise<boolean> {
   const cfg = admob();
   if (!adsReady || !cfg) return false;
   try {
-    await AdMob.prepareRewardVideoAd({ adId: cfg.rewardedId, isTesting: cfg.testing });
+    // a hung request would freeze the Shop button, so give up after 15 seconds
+    await Promise.race([AdMob.prepareRewardVideoAd({ adId: cfg.rewardedId, isTesting: cfg.testing }), new Promise((_r, reject) => setTimeout(() => reject(new Error('ad took too long to load')), 15000))]);
     rewardedLoaded = true;
-  } catch {
+    lastAdError = '';
+  } catch (e) {
     rewardedLoaded = false;
+    lastAdError = `Ad load: ${why(e)}`;
   }
   return rewardedLoaded;
 }
@@ -70,8 +78,8 @@ function showRewarded(): Promise<boolean> {
     };
     subs.push(AdMob.addListener(RewardAdPluginEvents.Rewarded, () => { earned = true; }));
     subs.push(AdMob.addListener(RewardAdPluginEvents.Dismissed, done));
-    subs.push(AdMob.addListener(RewardAdPluginEvents.FailedToShow, done));
-    AdMob.showRewardVideoAd().catch(done);
+    subs.push(AdMob.addListener(RewardAdPluginEvents.FailedToShow, (info) => { lastAdError = `Ad show: ${why(info)}`; done(); }));
+    AdMob.showRewardVideoAd().catch((e) => { lastAdError = `Ad show: ${why(e)}`; done(); });
   });
 }
 
@@ -134,7 +142,11 @@ export const androidPlatform: Platform = {
     onChange: () => () => {},
   },
   ads: {
-    async rewardedReady() { return rewardedLoaded || loadRewarded(); },
+    lastError: () => lastAdError,
+    async rewardedReady() {
+      if (!adsReady) await startAds(); // the first try may have failed (no network at launch)
+      return rewardedLoaded || loadRewarded();
+    },
     showRewarded,
     showInterstitial,
   },
