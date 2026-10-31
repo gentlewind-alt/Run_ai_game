@@ -179,6 +179,6 @@ export function toLevel(doc: BuilderDocument, config: BuilderConfig, sizeOf?: (t
     terrain: [[0, config.groundY], [config.worldW, config.groundY]], sling: { x: 56, y: config.groundY - 58 },
     shots: config.loadout.length, loadout: config.loadout.slice(), blocks: safe.blocks, monsters: safe.monsters,
     connections: safe.connections,
-    overrides: { features: { tutorial: false, consumables: false, artifacts: false }, camera: { introPan: false } },
+    overrides: { features: { tutorial: false, consumables: false, artifacts: false }, camera: { introPan: false }, ...(safe.name.startsWith(config.surprise.namePrefix) ? { damageRules: { bias: config.surprise.damageBias } } : {}) },
   };
 }

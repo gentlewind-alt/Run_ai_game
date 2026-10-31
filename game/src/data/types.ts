@@ -106,6 +106,7 @@ export interface Tuning {
 
 export interface DamageRules {
   globalScale: number;
+  bias?: number; // per-level multiplier on all weapon and ability damage (a level's overrides.damageRules.bias); 1 when absent
   elementWeak: number;
   elementResist: number;
   impactFactorMin: number;
@@ -215,6 +216,21 @@ export interface BuilderConfig {
   materials: string[]; targets: string[]; loadout: string[];
   presets: { id: string; name: string; family: 'Planks' | 'Square' | 'Circle' | 'Wedge'; w: number; h: number; shape: 'rectangle' | 'circle' | 'triangle'; variant?: BlockVariant }[];
   physics: { lockStiffness: number; lockSpan: number; ropeStiffness: number; ropeDamping: number };
+  surprise: BuilderSurpriseConfig;
+}
+export interface BuilderSurpriseConfig {
+  retryLimit: number; edgePadding: number; structureGap: number; headroom: number;
+  supportInset: number; contactTolerance: number; maxSupportWidth: number; maxFloorMass: number; damageBias: number; namePrefix: string; fortMinX: number; fortMaxX: number; excludeBehaviors: string[]; offsetMax: number; taperChance: number;
+  pieces: { post: string; floor: string; taperFloor: string; wall: string; crenellation: string };
+  sizes: Record<'small' | 'medium' | 'large', { tiers: number; bays: number; towers: number; stacks: number; monsters: number }>;
+  styles: {
+    towers: { minTiers: number };
+    bunker: { tiers: number; wallLayers: number };
+    bridge: { pillarTiers: number; topTierReduction: number };
+    castle: { wallTiers: number };
+    stacks: { minTiers: number; maxTiers: number };
+  };
+  realmMaterials: Record<string, string[]>;
 }
 export interface LevelChest { id: string; x: number; y: number; hp: number; reward: string }
 export interface Level {

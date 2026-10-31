@@ -5,13 +5,15 @@ import { MONSTER_ART } from '../art/textures';
 import { blockBounds, blockParts, blocksOverlap, closestBlockPoint, closestPair, findDraftOverlaps, localToWorld, magnetSnap, pointInBlock, snapBlock, touchOffset, worldToLocal } from '../builder/geometry';
 import { cloneDraft, newDraft, settle, toLevel, validateDraft, type BuilderDocument } from '../builder/document';
 import { applyStandResistance, blockTextureKey, createBlockBody, ensureBlockTextures, installConnections, propagateStandRelease } from '../builder/physics';
+import { surpriseFort, type SurpriseSize, type SurpriseStyle } from '../builder/surprise';
 import { getSettings } from '../config/settings';
 import { H, W } from '../config/constants';
 import { goTo } from '../core/flow';
+import { reachedLevel } from '../core/profile';
 import { data } from '../data/load';
 import type { BuilderConfig, LevelBlock, LevelConnection, LevelMonster } from '../data/types';
 import { platform } from '../platform';
-import { makeButton, type Btn } from '../ui/widgets';
+import { makeButton, panel, type Btn } from '../ui/widgets';
 import { maybeTutorial, tutorialOpen } from '../ui/tutorial';
 
 const STORAGE_KEY = 'monster-mash.builder.v1';
@@ -20,6 +22,7 @@ const VIEW = { x: 116, y: 34, get w(): number { return W - 120; }, h: 196 };
 let currentDraft: BuilderDocument | undefined;
 let saveQueue: Promise<void> = Promise.resolve();
 let nextId = 0;
+let surpriseCounter = 0;
 type Tool = 'piece' | 'select' | 'target' | 'glue' | 'rope';
 type Family = BuilderConfig['presets'][number]['family'] | 'Targets';
 type Selection = { kind: 'block'; id: string } | { kind: 'monster'; index: number };
@@ -92,12 +95,23 @@ export default class BuilderScene extends Phaser.Scene {
   private activeMarkers: { marker: Phaser.GameObjects.Rectangle; active: () => boolean }[] = [];
   private importInput?: HTMLInputElement;
   private exportUrls = new Set<string>();
+  private surpriseStyle: SurpriseStyle | 'random' = 'random';
+  private surpriseSize: SurpriseSize = 'medium';
+  private surpriseObjects: Phaser.GameObjects.GameObject[] = [];
+  private surpriseOpen = false;
+  private surpriseConfirm = false;
 
   constructor() { super('builder'); }
 
   create(): void {
     if (!getSettings().features.builder) { goTo(this, 'title'); return; }
     this.config = data.content.builder;
+    this.surpriseObjects.forEach(object => object.destroy());
+    this.surpriseObjects = [];
+    this.surpriseOpen = false;
+    this.surpriseConfirm = false;
+    this.surpriseStyle = 'random';
+    this.surpriseSize = 'medium';
     const generation = ++this.restoreGeneration;
     this.running = false;
     this.loading = currentDraft === undefined;
@@ -160,6 +174,10 @@ export default class BuilderScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC', this.cancelLink, this);
     this.events.once('shutdown', () => {
       this.restoreGeneration++;
+      this.surpriseObjects.forEach(object => object.destroy());
+      this.surpriseObjects = [];
+      this.surpriseOpen = false;
+      this.surpriseConfirm = false;
       this.touches.clear();
       this.editPointer = undefined;
       this.touchAction = undefined;
@@ -232,7 +250,7 @@ export default class BuilderScene extends Phaser.Scene {
   private buildControls(): void {
     const button = (x: number, y: number, w: number, label: string, action: () => void, kind: 'plain' | 'go' = 'plain', h = 24): Btn => {
       const btn = makeButton(this, x, y, w, h, fitText(label, w - 8), kind, () => {
-        if (!this.gestureActive && !this.touches.size) action();
+        if (!this.surpriseOpen && !tutorialOpen() && !this.gestureActive && !this.touches.size) action();
       }, 12);
       // Compact palette rows have exact hit areas, so neighbouring rows cannot steal a click.
       btn.box.setSize(w, h);
@@ -290,9 +308,116 @@ export default class BuilderScene extends Phaser.Scene {
     // view controls sit on the canvas corner and work while testing too
     const view: [string, number, number, () => void][] = [['Fit', W - 107, 28, () => this.fitView()], ['-', W - 79, 22, () => this.zoomBy(-1)], ['+', W - 53, 22, () => this.zoomBy(1)], ['Hand', W - 23, 34, () => { this.panMode = !this.panMode; this.refreshControls(); this.say(this.panMode ? 'Hand: drag the canvas to move the zoomed view.' : 'Hand off.'); }]];
     for (const [label, x, w, action] of view) button(x, 218, w, label, action, 'plain', 18);
+    this.editButtons.push(button(W - 160, 218, 62, 'Surprise', () => this.openSurprise(), 'plain', 18));
     const handMarker = this.add.rectangle(W - 23, 218, 36, 20).setStrokeStyle(1, C('4')).setFillStyle(C('4'), 0).setDepth(14);
     this.activeMarkers.push({ marker: handMarker, active: () => this.panMode });
     this.refreshControls();
+  }
+
+  private openSurprise(): void {
+    if (this.loading || this.running || tutorialOpen()) return;
+    this.selection = undefined;
+    this.group = undefined;
+    this.pending = undefined;
+    this.drag = undefined;
+    this.groupDrag = undefined;
+    this.marquee = undefined;
+    this.hover = undefined;
+    this.panning = undefined;
+    this.touches.clear();
+    this.editPointer = undefined;
+    this.touchAction = undefined;
+    this.gesture = undefined;
+    this.gestureActive = false;
+    this.renderWorld();
+    this.surpriseOpen = true;
+    this.surpriseConfirm = false;
+    this.drawSurprise();
+  }
+
+  private closeSurprise(): void {
+    this.surpriseObjects.forEach(object => object.destroy());
+    this.surpriseObjects = [];
+    this.surpriseOpen = false;
+    this.surpriseConfirm = false;
+    this.refreshControls();
+  }
+
+  private drawSurprise(): void {
+    this.surpriseObjects.forEach(object => object.destroy());
+    this.surpriseObjects = [];
+    const objects = this.surpriseObjects;
+    const dx = (W - 480) / 2; // the panel is laid out for 480 wide and centred on wider Android screens
+    objects.push(this.add.rectangle(W / 2, H / 2, W, H, C('0'), 0.78).setDepth(100).setInteractive());
+    objects.push(panel(this, 60 + dx, 52, 360, 166, '8', '9', 'f', 101));
+    const label = (x: number, y: number, value: string): void => {
+      objects.push(text(this, x + dx, y, value, C('c'), 1, C('0')).setDepth(102));
+    };
+    const button = (x: number, y: number, w: number, value: string, action: () => void, kind: 'plain' | 'go' = 'plain'): void => {
+      const btn = makeButton(this, x + dx, y, w, 20, value, kind, () => {
+        if (this.surpriseOpen && !tutorialOpen() && !this.gestureActive && !this.touches.size) action();
+      }, 103);
+      btn.box.setSize(w, 20);
+      (btn.box.input!.hitArea as Phaser.Geom.Rectangle).setTo(0, 0, w, 20);
+      objects.push(btn.box);
+    };
+    if (this.surpriseConfirm) {
+      label(240, 92, 'Replace your design?');
+      button(126, 193, 96, 'Replace', () => this.buildSurprise(), 'go');
+      button(354, 193, 96, 'Cancel', () => { this.surpriseConfirm = false; this.drawSurprise(); });
+      return;
+    }
+    label(240, 66, 'Surprise me');
+    label(94, 74, 'Style');
+    const styles: [SurpriseStyle | 'random', string][] = [['random', 'Random'], ['towers', 'Towers'], ['bunker', 'Bunker'], ['bridge', 'Bridge'], ['castle', 'Castle'], ['stacks', 'Stacks']];
+    styles.forEach(([style, name], i) => button([128, 240, 352][i % 3], i < 3 ? 92 : 116, 100, `${this.surpriseStyle === style ? '* ' : ''}${name}`, () => {
+      this.surpriseStyle = style;
+      this.drawSurprise();
+    }));
+    const sizes: [SurpriseSize, string][] = [['small', 'S'], ['medium', 'M'], ['large', 'L']];
+    label(128, 145, 'Size');
+    sizes.forEach(([size, name], i) => button([192, 240, 288][i], 145, 44, `${this.surpriseSize === size ? '* ' : ''}${name}`, () => {
+      this.surpriseSize = size;
+      this.drawSurprise();
+    }));
+    const realm = data.content.realms.filter(realm => realm.levels.some(level => level <= reachedLevel())).slice(-1)[0] ?? data.content.realms[0];
+    const name = this.draft.name.startsWith(this.config.surprise.namePrefix) ? ` - ${this.draft.name}` : '';
+    label(240, 169, fitText(`${realm.name ?? realm.id}${name}`, 328));
+    button(126, 193, 96, 'Build', () => this.requestSurprise(), 'go');
+    button(240, 193, 112, 'Roll again', () => this.requestSurprise());
+    button(354, 193, 96, 'Close', () => this.closeSurprise());
+  }
+
+  private requestSurprise(): void {
+    if (this.draft.blocks.length || this.draft.monsters.length) {
+      this.surpriseConfirm = true;
+      this.drawSurprise();
+    } else this.buildSurprise();
+  }
+
+  private buildSurprise(): void {
+    try {
+      const seed = (Date.now() + ++surpriseCounter) >>> 0;
+      const generated = surpriseFort(seed, { content: data.content, sizeOf: this.monsterSize, style: this.surpriseStyle, size: this.surpriseSize, unlockedLevel: reachedLevel() });
+      this.selection = undefined;
+      this.group = undefined;
+      this.pending = undefined;
+      this.drag = undefined;
+      this.groupDrag = undefined;
+      this.marquee = undefined;
+      this.hover = undefined;
+      this.panning = undefined;
+      this.touches.clear();
+      this.editPointer = undefined;
+      this.touchAction = undefined;
+      this.gesture = undefined;
+      this.gestureActive = false;
+      this.commit(generated, 'Surprise fort ready. Edit it, press Test, then save or play.');
+      this.fitView();
+      this.say('Surprise fort ready. Edit it, press Test, then save or play.');
+      this.surpriseConfirm = false;
+      this.drawSurprise();
+    } catch (error) { this.say(this.error(error)); }
   }
 
   private chooseFamily(family: Family): void {
@@ -339,7 +464,12 @@ export default class BuilderScene extends Phaser.Scene {
     this.say(hints[tool]);
   }
 
-  private cancelLink(): void { this.pending = undefined; this.renderOverlay(this.draft); this.say('Connection cancelled.'); }
+  private cancelLink(): void {
+    if (this.surpriseOpen) { this.closeSurprise(); return; }
+    this.pending = undefined;
+    this.renderOverlay(this.draft);
+    this.say('Connection cancelled.');
+  }
 
   private targetShape(monster: LevelMonster): LevelBlock {
     return { ...monster, ...this.monsterSize(monster.t), m: 'wood', shape: 'rectangle' };
@@ -416,12 +546,12 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private wheel(pointer: Phaser.Input.Pointer, _over: unknown, _dx: number, dy: number): void {
-    if (tutorialOpen() || this.gestureActive || this.touches.size || !this.inside(pointer)) return;
+    if (this.surpriseOpen || tutorialOpen() || this.gestureActive || this.touches.size || !this.inside(pointer)) return;
     this.zoomBy(dy < 0 ? 1 : -1, pointer);
   }
 
   private pointerDown(pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[] = []): void {
-    if (tutorialOpen()) return;
+    if (this.surpriseOpen || tutorialOpen()) return;
     if (this.loading || !this.inside(pointer) || over.length) return;
     if (pointer.wasTouch) {
       if (this.editPointer !== undefined && !this.touches.size) return;
@@ -555,6 +685,7 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private pointerMove(pointer: Phaser.Input.Pointer): void {
+    if (this.surpriseOpen) return;
     if (this.gestureActive) {
       if (this.gesture?.ids.includes(pointer.id)) this.moveGesture();
       return;
@@ -642,6 +773,7 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private pointerUp(pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[] = []): void {
+    if (this.surpriseOpen) return;
     this.touches.delete(pointer.id);
     if (this.gestureActive) {
       if (!this.touches.size) { this.gestureActive = false; this.gesture = undefined; }
@@ -824,7 +956,7 @@ export default class BuilderScene extends Phaser.Scene {
   private rotateKey(event: KeyboardEvent): void { this.rotate(event.shiftKey ? -45 : 45); }
 
   private rotate(delta: number): void {
-    if (this.running || this.loading) return;
+    if (this.surpriseOpen || this.running || this.loading) return;
     const selected = this.selection;
     if (selected?.kind !== 'block') {
       if (this.tool === 'piece') {
@@ -865,7 +997,7 @@ export default class BuilderScene extends Phaser.Scene {
   }
 
   private deleteSelection(): void {
-    if (this.running || this.loading) return;
+    if (this.surpriseOpen || this.running || this.loading) return;
     if (!this.selection && !this.group) { this.say('Select a block or target to delete it.'); return; }
     const next = cloneDraft(this.draft);
     const ids = this.selectedIds();
@@ -1007,7 +1139,7 @@ export default class BuilderScene extends Phaser.Scene {
         if (file.size > FILE_LIMIT) throw new Error('File is too large; maximum 100 KB');
         const raw: unknown = JSON.parse(await file.text());
         const safe = validateDraft(raw, this.config, this.monsterSize);
-        if (!this.scene.isActive() || this.running || this.loading) return;
+        if (!this.scene.isActive() || this.surpriseOpen || this.running || this.loading) return;
         this.selection = undefined;
         this.group = undefined;
         this.pending = undefined;

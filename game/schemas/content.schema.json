@@ -41,9 +41,11 @@
         "targets",
         "loadout",
         "physics",
-        "presets"
+        "presets",
+        "surprise"
       ],
       "properties": {
+        "surprise": { "$ref": "#/$defs/builderSurprise" },
         "grid": {
           "type": "number",
           "exclusiveMinimum": 0
@@ -171,6 +173,83 @@
         }
       }
     },
+    "builderSurprise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retryLimit", "edgePadding", "structureGap", "headroom", "supportInset", "contactTolerance", "maxSupportWidth", "maxFloorMass", "damageBias", "namePrefix", "fortMinX", "fortMaxX", "excludeBehaviors", "offsetMax", "taperChance", "pieces", "sizes", "styles", "realmMaterials"],
+      "properties": {
+        "retryLimit": { "type": "integer", "minimum": 1 },
+        "edgePadding": { "type": "number", "minimum": 0 },
+        "structureGap": { "type": "number", "minimum": 0 },
+        "headroom": { "type": "number", "minimum": 0 },
+        "supportInset": { "type": "number", "exclusiveMinimum": 0 },
+        "contactTolerance": { "type": "number", "exclusiveMinimum": 0 },
+        "maxSupportWidth": { "type": "number", "exclusiveMinimum": 0 },
+        "excludeBehaviors": { "type": "array", "items": { "type": "string" }, "description": "Monster behaviours Surprise me never places: hovering fliers and runners need open air or an exit." },
+        "damageBias": { "type": "number", "exclusiveMinimum": 0, "description": "Weapon and ability damage multiplier for Surprise me forts, so a random fort is always beatable." },
+        "namePrefix": { "type": "string", "minLength": 1, "description": "Generated forts are named prefix + seed; the damage bias applies to levels with this name prefix." },
+        "fortMinX": { "type": "number", "description": "Leftmost x a generated fort may use: the slingshot cannot hit behind this." },
+        "fortMaxX": { "type": "number", "description": "Rightmost x a generated fort may reach (hand-made levels stay under about 430)." },
+        "maxFloorMass": { "type": "number", "exclusiveMinimum": 0, "description": "Heaviest target (width x height x density) allowed on an upper floor; heavier ones stand on the ground." },
+        "offsetMax": { "type": "number", "minimum": 0 },
+        "taperChance": { "type": "number", "minimum": 0, "maximum": 1 },
+        "pieces": {
+          "type": "object", "additionalProperties": false,
+          "required": ["post", "floor", "taperFloor", "wall", "crenellation"],
+          "properties": {
+            "post": { "type": "string" }, "floor": { "type": "string" },
+            "taperFloor": { "type": "string" }, "wall": { "type": "string" }, "crenellation": { "type": "string" }
+          }
+        },
+        "sizes": {
+          "type": "object", "additionalProperties": false, "required": ["small", "medium", "large"],
+          "properties": {
+            "small": { "$ref": "#/$defs/builderSurpriseSize" },
+            "medium": { "$ref": "#/$defs/builderSurpriseSize" },
+            "large": { "$ref": "#/$defs/builderSurpriseSize" }
+          }
+        },
+        "styles": {
+          "type": "object", "additionalProperties": false, "required": ["towers", "bunker", "bridge", "castle", "stacks"],
+          "properties": {
+            "towers": {
+              "type": "object", "additionalProperties": false, "required": ["minTiers"],
+              "properties": { "minTiers": { "type": "integer", "minimum": 1 } }
+            },
+            "bunker": {
+              "type": "object", "additionalProperties": false, "required": ["tiers", "wallLayers"],
+              "properties": { "tiers": { "type": "integer", "minimum": 1 }, "wallLayers": { "type": "integer", "minimum": 1 } }
+            },
+            "bridge": {
+              "type": "object", "additionalProperties": false, "required": ["pillarTiers", "topTierReduction"],
+              "properties": { "pillarTiers": { "type": "integer", "minimum": 1 }, "topTierReduction": { "type": "integer", "minimum": 0 } }
+            },
+            "castle": {
+              "type": "object", "additionalProperties": false, "required": ["wallTiers"],
+              "properties": { "wallTiers": { "type": "integer", "minimum": 1 } }
+            },
+            "stacks": {
+              "type": "object", "additionalProperties": false, "required": ["minTiers", "maxTiers"],
+              "properties": { "minTiers": { "type": "integer", "minimum": 1 }, "maxTiers": { "type": "integer", "minimum": 1 } }
+            }
+          }
+        },
+        "realmMaterials": {
+          "type": "object",
+          "additionalProperties": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        }
+      }
+    },
+    "builderSurpriseSize": {
+      "type": "object", "additionalProperties": false, "required": ["tiers", "bays", "towers", "stacks", "monsters"],
+      "properties": {
+        "tiers": { "type": "integer", "minimum": 1 },
+        "bays": { "type": "integer", "minimum": 1 },
+        "towers": { "type": "integer", "minimum": 2, "maximum": 3 },
+        "stacks": { "type": "integer", "minimum": 1 },
+        "monsters": { "type": "integer", "minimum": 2, "maximum": 6 }
+      }
+    },
     "element": { "enum": ["physical", "hellfire", "radiant", "void"] },
     "elementOrNull": { "enum": ["physical", "hellfire", "radiant", "void", null] },
     "rarity": { "enum": ["common", "uncommon", "rare", "epic", "legendary", "mythic"] },
@@ -253,6 +332,7 @@
       "patternProperties": { "^_": {} },
       "properties": {
         "globalScale": { "type": "number", "exclusiveMinimum": 0 },
+        "bias": { "type": "number", "exclusiveMinimum": 0, "description": "Per-level damage multiplier set through a level's overrides.damageRules; 1 when absent." },
         "elementWeak": { "type": "number", "minimum": 1 },
         "elementResist": { "type": "number", "minimum": 0, "maximum": 1 },
         "upgradeDamagePerStep": { "type": "number", "minimum": 0 },
