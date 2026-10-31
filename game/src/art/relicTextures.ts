@@ -41,6 +41,53 @@ export function buildSlingGemini(): Px {
   return p.outline();
 }
 
+function buildSlingEmberFork(): Px {
+  const p = new Px(16, 48);
+  p.rect(6, 15, 5, 33, 'v');
+  p.rect(7, 17, 3, 30, '2');
+  p.rect(2, 4, 4, 15, 'h'); p.rect(11, 4, 4, 15, 'h');
+  p.rect(3, 4, 2, 12, '3'); p.rect(12, 4, 2, 12, '3');
+  p.rect(3, 0, 2, 6, '4'); p.rect(12, 0, 2, 6, '4');
+  p.rect(5, 16, 7, 3, '3');
+  for (let y = 24; y < 45; y += 7) p.rect(6, y, 5, 2, 'h');
+  return p.outline();
+}
+
+function buildSlingVenomCoil(): Px {
+  const p = new Px(16, 48);
+  p.rect(6, 15, 5, 33, 'h');
+  p.rect(7, 17, 3, 30, '6');
+  p.rect(1, 2, 4, 17, '6'); p.rect(12, 2, 4, 17, '6');
+  p.rect(2, 1, 3, 3, '5'); p.rect(12, 1, 3, 3, '5');
+  p.rect(4, 16, 9, 3, '6');
+  for (let y = 21; y < 45; y += 6) p.line(5, y + 4, 12, y, '5');
+  p.set(3, 3, '4'); p.set(13, 3, '4');
+  return p.outline();
+}
+
+function buildSlingHexwood(): Px {
+  const p = new Px(16, 48);
+  p.rect(7, 15, 4, 33, 'v'); p.rect(6, 27, 4, 12, 'h');
+  p.rect(2, 1, 4, 16, 'v'); p.rect(11, 5, 4, 14, 'v');
+  p.line(5, 14, 9, 21, 'h'); p.line(12, 15, 9, 21, 'h');
+  p.rect(2, 1, 3, 4, '8'); p.rect(12, 5, 3, 4, '8');
+  for (let y = 24; y < 44; y += 7) {
+    p.set(8, y, '9'); p.set(7, y + 1, '9'); p.set(9, y + 1, '9'); p.set(8, y + 2, '9');
+  }
+  return p.outline();
+}
+
+function buildSlingTitanBrace(): Px {
+  const p = new Px(16, 48);
+  p.rect(5, 15, 7, 33, 'f'); p.rect(6, 17, 5, 30, 'e');
+  p.rect(0, 2, 6, 18, 'f'); p.rect(11, 2, 5, 18, 'f');
+  p.rect(1, 3, 4, 15, 'l'); p.rect(12, 3, 3, 15, 'l');
+  p.rect(4, 16, 9, 5, 'e'); p.rect(6, 17, 5, 2, 'c');
+  for (let y = 26; y < 47; y += 8) p.rect(4, y, 9, 3, 'l');
+  p.rect(7, 22, 3, 23, 'h');
+  return p.outline();
+}
+
 // ------------------------------------------------------------------ FX Textures
 
 export function buildFxBolt(): Px {
@@ -91,6 +138,10 @@ export function registerRelicTextures(scene: Phaser.Scene): void {
   // Slingshots
   gridTexture(scene, 'sling_quicksilver', buildSlingQuicksilver().rows());
   gridTexture(scene, 'sling_gemini', buildSlingGemini().rows());
+  gridTexture(scene, 'sling_ember_fork', buildSlingEmberFork().rows());
+  gridTexture(scene, 'sling_venom_coil', buildSlingVenomCoil().rows());
+  gridTexture(scene, 'sling_hexwood', buildSlingHexwood().rows());
+  gridTexture(scene, 'sling_titan_brace', buildSlingTitanBrace().rows());
 
   // FX Textures
   gridTexture(scene, 'fx_maul_bolt', buildFxBolt().rows());

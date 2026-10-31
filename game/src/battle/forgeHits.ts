@@ -7,8 +7,15 @@ import type { BattleState } from './state';
 /** All crafted attacks share one trait gateway; secondary poison/lightning never re-enter it. */
 export function forgeHit(b: BattleState, t: Ent, wid: string, amount: number, x: number, y: number, opts: DamageOpts): void {
   if (t.dead || b.closing) return;
+  if (t.kind === 'monster') {
+    if ((b.mods.poisonChance ?? 0) > 0 && b.rng.next() < b.mods.poisonChance!) {
+      t.status.poison = b.tune.status.slingStatusSteps;
+      t.params.poisonWeaponId = wid;
+    }
+    if ((b.mods.curseChance ?? 0) > 0 && b.rng.next() < b.mods.curseChance!) t.status.curse = b.tune.status.slingStatusSteps;
+  }
   const w = battleWeapon(b, wid);
-  if (!w.forge) { damage(b, t, amount, x, y, opts); return; }
+  if (!w.forge) { damage(b, t, amount, x, y, { ...opts, weaponId: wid }); return; }
   const P = w.params;
   amount *= P.damageMult ?? 1;
   if (P.critChance && b.rng.next() < P.critChance) {

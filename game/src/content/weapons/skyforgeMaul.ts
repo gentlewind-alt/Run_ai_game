@@ -144,7 +144,7 @@ export const skyforgeMaul: WeaponImpl = {
             const affected: Ent[] = [...nearMonsters, ...nearIronBlocks];
             for (const ent of affected) {
               ctx.damage(ent, p.def.baseDamage * tickMult, ent.body.position.x, ent.body.position.y, {
-                strong: false, tag: 'norm', quiet: true,
+                strong: false, tag: 'norm', quiet: true, weaponId: p.wid,
               });
               ctx.addStatus(ent, 'chain', 30);
               ctx.fx.sparks(ent.body.position.x, ent.body.position.y, ['b', 'c'], 2);

@@ -2,8 +2,50 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
 import { text } from '../art/font5x7';
-import type { LegendVisual } from './BattleCtx';
+import type { Ent, LegendVisual } from './BattleCtx';
 import type { BattleState } from './state';
+
+/** Fire and electricity share one visual timer; this never adds a damage status. */
+export function ignite(b: BattleState, e: Ent): void {
+  if (!b.settings.features.burningVisuals || e.dead || (e.kind !== 'monster' && e.kind !== 'block')) return;
+  e.burningUntil = Math.max(e.burningUntil ?? 0, b.steps + b.tune.status.burning.durationSteps);
+  e.burningFx ??= b.scene.add.graphics().setDepth(e.sprite.depth + 1);
+}
+
+function igniteNear(b: BattleState, x: number, y: number, r: number): void {
+  for (const e of b.ents) {
+    if (!e.dead && Math.hypot(e.body.position.x - x, e.body.position.y - y) <= r + Math.max(e.w, e.h) / 2) ignite(b, e);
+  }
+}
+
+/** Redrawn with the sprite pose, including the rotation of a falling block. */
+export function syncBurning(b: BattleState, e: Ent): void {
+  const g = e.burningFx;
+  if (!g) return;
+  const left = (e.burningUntil ?? 0) - b.steps;
+  if (left <= 0 || e.dead) {
+    g.destroy();
+    e.burningFx = undefined;
+    return;
+  }
+  const P = b.tune.status.burning;
+  const frame = Math.floor(b.steps / P.flickerSteps);
+  g.clear().setPosition(e.sprite.x, e.sprite.y).setRotation(e.sprite.rotation).setScale(e.sprite.scaleX, e.sprite.scaleY);
+  g.setAlpha(Math.min(1, left / P.fadeSteps));
+  const top = -e.sprite.height / 2;
+  for (let i = 0; i < P.tongueCount; i++) {
+    const x = (i - (P.tongueCount - 1) / 2) * P.tongueSpacing;
+    const h = P.tongueHeight * ((frame + i) % 2 ? 1 : 0.75);
+    g.fillStyle(C('2')).fillRect(x - P.tongueWidth / 2, top - h, P.tongueWidth, h);
+    g.fillStyle(C('3')).fillRect(x - P.tongueWidth / 2, top - h * 0.75, P.tongueWidth, h * 0.75);
+    g.fillStyle(C('4')).fillRect(x, top - h / 2, 1, h / 2);
+  }
+  for (let i = 0; i < P.emberCount; i++) {
+    const rise = (b.steps + i * P.flickerSteps) % P.emberRise;
+    const x = (i - (P.emberCount - 1) / 2) * P.tongueSpacing + Math.sin(frame + i);
+    g.fillStyle(C(i % 2 ? '3' : '4'), 1 - rise / P.emberRise).fillRect(Math.round(x), Math.round(top - P.tongueHeight - rise), 1, 1);
+  }
+}
 
 export function burst(b: BattleState, x: number, y: number, colors: string[], n: number): void {
   for (let i = 0; i < n && b.parts.length < b.settings.display.maxParticles; i++) {
@@ -33,6 +75,7 @@ export function ring(b: BattleState, x: number, y: number, r: number, color: num
 
 /** Full-height lightning bolt 3 px wide with white core and cyan halo, held at peak for 24+ steps. */
 export function bolt(b: BattleState, x: number, y: number): void {
+  igniteNear(b, x, y, b.tune.status.burning.contactRadius);
   const g = b.scene.add.graphics().setDepth(15);
   // Full-screen white flash overlay for 6 frames
   const flashCover = b.scene.add.rectangle(b.worldW / 2, 135, b.worldW + 100, 300, 0xffffff, 0.9).setDepth(20);
@@ -114,6 +157,7 @@ export function bolt(b: BattleState, x: number, y: number): void {
 
 /** Visible electric field: radius ring plus crackling arcs for 180 steps (3s). */
 export function electricField(b: BattleState, x: number, y: number, r: number, totalSteps = 180): void {
+  igniteNear(b, x, y, r);
   const g = b.scene.add.graphics().setDepth(9);
   let steps = 0;
 
@@ -264,6 +308,7 @@ export function pingStar(b: BattleState, x: number, y: number): void {
 
 /** Blast ring at radius 38 with orange/yellow/white flame frames and smoke for 30 steps. */
 export function flameBlast(b: BattleState, x: number, y: number, r = 38, totalSteps = 30): void {
+  igniteNear(b, x, y, r);
   const g = b.scene.add.graphics().setDepth(11);
   let steps = 0;
 

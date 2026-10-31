@@ -19,6 +19,7 @@
       }
     },
     "upgrades": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "slingUpgrades": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 3 } },
     "equipped": {
       "type": "object", "additionalProperties": false,
       "properties": {
@@ -43,6 +44,7 @@
       "type": "object", "additionalProperties": false,
       "properties": {
         "bossLosses": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "campaignLossStreak": { "type": "integer", "minimum": 0 },
         "adWatches": { "type": "array", "items": { "type": "number", "minimum": 0 }, "maxItems": 20 }
       }
     },

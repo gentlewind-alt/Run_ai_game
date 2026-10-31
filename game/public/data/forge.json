@@ -1,4 +1,5 @@
 {
+  "lossStreak": { "after": 2, "abilityMarkup": 0.25 },
   "$schema": "../../schemas/forge.schema.json",
   "weapons": [
     {

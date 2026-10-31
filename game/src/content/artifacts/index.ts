@@ -50,9 +50,10 @@ const lodestoneBracer: ArtifactImpl = {
 /** Analyst Lens: a longer aim preview, and every monster shows its element and HP from the start. */
 const analystLens: ArtifactImpl = {
   install(ctx, p) {
-    ctx.mods.previewMult = num(p.previewMult);
+    const base = ctx.mods.previewMult;
+    ctx.mods.previewMult = base * num(p.previewMult);
     for (const m of ctx.monsters()) ctx.reveal(m);
-    return () => { ctx.mods.previewMult = 1; };
+    return () => { ctx.mods.previewMult = base; };
   },
 };
 

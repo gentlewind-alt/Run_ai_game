@@ -307,7 +307,7 @@ function launch(b: BattleState, vel: Phaser.Math.Vector2): void {
   // Prime Serum: this shot is buffed if any charges are left
   const buffed = b.mods.serumShots > 0;
   if (buffed) b.mods.serumShots--;
-  b.mods.damageMult = b.arenaDamageMult * (buffed ? b.mods.serumMult : 1);
+  b.mods.damageMult = b.arenaDamageMult * (b.mods.slingDamageMult ?? 1) * (buffed ? b.mods.serumMult : 1);
   if (b.adBonusFrom !== undefined && b.shotIdx >= b.adBonusFrom && b.adBonus) b.mods.damageMult *= 1 + b.adBonus;
   b.readySprite.setVisible(false);
   b.pouch.set(b.slingX, b.slingY);

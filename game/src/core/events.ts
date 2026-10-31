@@ -7,7 +7,7 @@ export interface GameEvents {
   'shot:ability': { weaponId: string; x: number; y: number };
   'shot:ended': { weaponId: string };
   hit: { target: Ent; amount: number; x: number; y: number; quiet?: boolean; fall?: boolean };
-  kill: { target: Ent; x: number; y: number };
+  kill: { target: Ent; x: number; y: number; weaponId?: string };
   combo: { count: number; mult: number };
   'runner:escaped': { count: number; limit: number };
   'coins:gained': { amount: number; total: number };

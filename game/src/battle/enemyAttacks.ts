@@ -17,6 +17,7 @@ export function spawnEnemyAttack(b: BattleState, o: EnemyAttackOpts): boolean {
     density: o.boss ? R.bossDensity : R.density, friction: R.friction, restitution: R.restitution,
     label: 'enemyAttack', collisionFilter: { category: 0x4, mask: 0x3, group: o.shooter ? -o.shooter.id : 0 },
   });
+  body.enemyBurning = (o.shooter as any)?.ent?.params?.burningAttack === 1;
   setGravity(body, o.boss ? R.bossGravity : R.gravity);
   const speed = o.boss ? R.bossSpeed : R.speed;
   MatterLib.Body.setVelocity(body, { x: dx / d * speed, y: dy / d * speed });

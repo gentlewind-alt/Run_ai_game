@@ -63,13 +63,13 @@ export const cometFists: WeaponImpl = {
     const blocks = ctx.blocks().filter((b) => !b.dead && Math.abs(b.body.position.x - ix) <= rangeX);
     for (const b of blocks) {
       ctx.M.Body.setVelocity(b.body, { x: b.body.velocity.x * 0.5, y: hopVy });
-      ctx.damage(b, p.def.baseDamage * dmgMult, b.body.position.x, b.body.position.y, { strong: false, tag: 'norm' });
+      ctx.damage(b, p.def.baseDamage * dmgMult, b.body.position.x, b.body.position.y, { strong: false, tag: 'norm', weaponId: p.wid });
     }
 
     // Monsters in the wave are knocked flat and stunned 40 steps and take damage
     const monsters = ctx.monsters().filter((m) => !m.dead && Math.abs(m.body.position.x - ix) <= rangeX);
     for (const m of monsters) {
-      ctx.damage(m, p.def.baseDamage * dmgMult, m.body.position.x, m.body.position.y, { strong: false, tag: 'norm' });
+      ctx.damage(m, p.def.baseDamage * dmgMult, m.body.position.x, m.body.position.y, { strong: false, tag: 'norm', weaponId: p.wid });
       ctx.addStatus(m, 'stun', stunSteps);
       const dir = m.body.position.x >= ix ? 1 : -1;
       ctx.M.Body.setVelocity(m.body, { x: dir * 3.0, y: -2.5 });

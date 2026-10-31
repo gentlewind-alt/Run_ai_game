@@ -4,7 +4,7 @@ import { fitText, text, textBlock } from '../art/font5x7';
 import { weaponTexture } from '../art/textures';
 import { sfx } from '../audio/sfx';
 import { goTo, irisOpen } from '../core/flow';
-import { compileForgeRecipe, forgeCost, forgeEnabled, forgePrice, forgeRecipe, forgeRecipes, saveForgeRecipe } from '../core/forge';
+import { compileForgeRecipe, forgeAbilityCost, forgeAbilityMarkup, forgeCost, forgeEnabled, forgePrice, forgeRecipe, forgeRecipes, saveForgeRecipe } from '../core/forge';
 import { drawForgeWeapon } from '../art/forgeTextures';
 import { owns, profile, upgradeMult } from '../core/profile';
 import { data } from '../data/load';
@@ -88,7 +88,8 @@ export default class ForgeScene extends Phaser.Scene {
       text(this, 158, 199, 'One trait: empower you or weaken enemies.', C('d'));
     } else if (this.tab === 'Ability') {
       text(this, 158, 79, 'Every power uses your chosen weapon.', C('d'));
-      data.forge.abilities.forEach((a, i) => this.choice(a.name, i, 108, a.id === this.recipe.abilityId, () => { this.recipe.abilityId = a.id; }, data.forge.costs.abilities[a.id]));
+      data.forge.abilities.forEach((a, i) => this.choice(a.name, i, 108, a.id === this.recipe.abilityId, () => { this.recipe.abilityId = a.id; }, forgeAbilityCost(a.id)));
+      if (forgeAbilityMarkup() > 0) text(this, 158, 202, fitText(`Prices +${Math.round(forgeAbilityMarkup() * 100)}% after two losses. Win a level to reset.`, 284), C('3'));
     } else if (this.tab === 'Aura') {
       text(this, 158, 79, 'Radiance colors the blade and its glow.', C('d'));
       data.forge.radiances.forEach((a, i) => {

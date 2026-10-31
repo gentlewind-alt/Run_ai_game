@@ -4,6 +4,7 @@ import { W } from '../config/constants';
 import { levelSettings } from '../config/settings';
 import { events } from '../core/events';
 import { profile } from '../core/profile';
+import { slingMods } from '../core/slingshots';
 import { forgeLimit, forgeSnapshot, isForgeWeapon } from '../core/forge';
 import { createRng } from '../core/rng';
 import { data } from '../data/load';
@@ -29,9 +30,11 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
   const settings = levelSettings(level, !competitive);
   const slingSkin = competitive ? arenaSkin ?? undefined : profile.equipped?.slingSkin;
   const slingCosmetic = competitive ? undefined : data.content.cosmetics?.find((c) => c.id === slingSkin);
-  const launchSpeedMult = competitive ? arenaMods?.launchSpeedMult ?? 1 : slingCosmetic?.mods?.launchSpeedMult ?? 1;
-  const twinFraction = competitive ? arenaMods?.twinFraction : slingCosmetic?.mods?.twinFraction;
-  const twinDelaySteps = competitive ? arenaMods?.twinDelaySteps ?? 12 : slingCosmetic?.mods?.twinDelaySteps ?? 12;
+  const campaignMods = slingMods(competitive ? undefined : slingCosmetic);
+  const launchSpeedMult = competitive ? arenaMods?.launchSpeedMult ?? 1 : campaignMods.launchSpeedMult ?? 1;
+  const twinFraction = competitive ? arenaMods?.twinFraction : campaignMods.twinFraction;
+  const twinDelaySteps = competitive ? arenaMods?.twinDelaySteps ?? 12 : campaignMods.twinDelaySteps ?? 12;
+  const slingDamageMult = campaignMods.damageMult ?? 1;
   // a level with a preset set of weapons is yours to replay with your own arsenal once you have cleared it
   const replayOwn = !!level.loadout && !customLevel && !competitive && (profile.stars?.[String(levelId)] ?? 0) > 0;
   let kept = 0;
@@ -47,7 +50,10 @@ export function createBattle(scene: Phaser.Scene, levelId: number, loadout: stri
     loadout: effectiveLoadout, forgeWeapons: settings.features.weaponForge && !competitive ? forgeSnapshot() : {}, settings, tune: settings.tune, rules: settings.rules, stepMs: settings.stepMs,
     groundY: settings.world.groundY, slingX: settings.world.slingX, slingY: settings.world.slingY,
     worldW: level.worldW ?? W, maxSpeed: settings.tune.maxPull * settings.tune.launchK, terrain: [],
-    mods: { damageMult: 1, serumShots: 0, serumMult: 1.2, coinMult: 1, previewMult: competitive ? arenaMods?.previewMult ?? 1 : 1, launchSpeedMult, twinFraction, twinDelaySteps },
+    mods: { damageMult: slingDamageMult, slingDamageMult, serumShots: 0, serumMult: 1.2, coinMult: 1,
+      previewMult: competitive ? arenaMods?.previewMult ?? 1 : campaignMods.previewMult ?? 1,
+      explosionRadiusMult: campaignMods.explosionRadiusMult ?? 1, poisonChance: campaignMods.poisonChance ?? 0, curseChance: campaignMods.curseChance ?? 0,
+      launchSpeedMult, twinFraction, twinDelaySteps },
     slingSkin, arenaDamageMult: competitive ? arenaMods?.damageMult ?? 1 : 1, artifacts: [], consumables: [], targeting: null, paused: false,
     ents: [], actors: [], proj: null, state: 'intro', shotIdx: 0, coins: 0, score: 0, chain: 0, chainT: 999, escaped: 0,
     steps: 0, acc: 0, hitStop: 0, settleSteps: 0, endTimer: 0, lastPop: 0, lastStretch: 0,

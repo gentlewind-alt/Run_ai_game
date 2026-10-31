@@ -33,10 +33,13 @@ export const forgeRecipe = (id: string): ForgeRecipe => ({ ...(recipes[id] ?? { 
 export const forgeRecipes = (): ForgeRecipe[] => Object.values(recipes).map((r) => ({ ...r }));
 const sameRecipe = (a: ForgeRecipe, b: ForgeRecipe): boolean => a.weaponId === b.weaponId && a.traitId === b.traitId && a.abilityId === b.abilityId && a.radianceId === b.radianceId;
 
+export const forgeAbilityMarkup = (): number => (profile.stats?.campaignLossStreak ?? 0) >= data.forge.lossStreak.after ? data.forge.lossStreak.abilityMarkup : 0;
+export const forgeAbilityCost = (id: string): number => Math.ceil((data.forge.costs.abilities[id] ?? 0) * (1 + forgeAbilityMarkup()));
+
 /** Full price of a build: body + ability + trait + radiance, so every combination costs differently. */
 export function forgeCost(raw: ForgeRecipe): { total: number; parts: { body: number; ability: number; trait: number; radiance: number } } {
   const c = data.forge.costs;
-  const parts = { body: c.weapons[raw.weaponId] ?? 0, ability: c.abilities[raw.abilityId] ?? 0, trait: c.traits[raw.traitId] ?? 0, radiance: c.radiances[raw.radianceId] ?? 0 };
+  const parts = { body: c.weapons[raw.weaponId] ?? 0, ability: forgeAbilityCost(raw.abilityId), trait: c.traits[raw.traitId] ?? 0, radiance: c.radiances[raw.radianceId] ?? 0 };
   return { total: parts.body + parts.ability + parts.trait + parts.radiance, parts };
 }
 
