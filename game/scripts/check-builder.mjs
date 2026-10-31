@@ -6,9 +6,14 @@ import ts from 'typescript';
 const transpile = (name) => ts.transpileModule(readFileSync(new URL(`../src/builder/${name}.ts`, import.meta.url), 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
 const moduleUrl = (js) => `data:text/javascript;base64,${Buffer.from(js).toString('base64')}`;
 const geometryUrl = moduleUrl(transpile('geometry'));
-const { findDraftOverlaps, localToWorld } = await import(geometryUrl);
+const { blockBounds, findDraftOverlaps, localToWorld } = await import(geometryUrl);
 const documentJs = transpile('document').replace(/from ['"]\.\/geometry['"]/g, `from '${geometryUrl}'`);
-const { newDraft, validateDraft, toLevel, settle } = await import(moduleUrl(documentJs));
+const documentUrl = moduleUrl(documentJs);
+const { newDraft, validateDraft, toLevel, settle } = await import(documentUrl);
+const surpriseJs = transpile('surprise')
+  .replace(/from ['"]\.\/geometry['"]/g, `from '${geometryUrl}'`)
+  .replace(/from ['"]\.\/document['"]/g, `from '${documentUrl}'`);
+const { surpriseFort, checkSurpriseStable } = await import(moduleUrl(surpriseJs));
 const content = JSON.parse(readFileSync(new URL('../public/data/content.json', import.meta.url), 'utf8'));
 const config = content.builder;
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.001, `${actual} should equal ${expected}`);
@@ -222,4 +227,79 @@ assert.deepEqual(validateDraft(newDraft(), config).blocks, []);
   const far = structuredClone(cart); far.connections[0].pointA = { x: 400, y: 0 };
   assert.throws(() => validateDraft(far, config), /too far/, 'an axle far from its frame is refused');
 }
-console.log('check-builder: v1 IDs, variants, filled geometry, full targets, ropes/pins, overlap editing, settling and trusted level conversion passed');
+// Read literal body dimensions without importing textures.ts and starting Phaser.
+const monsterArtSource = readFileSync(new URL('../src/art/textures.ts', import.meta.url), 'utf8');
+const monsterArt = monsterArtSource.match(/export const MONSTER_ART: Record<string, MonsterArt> = \{([\s\S]*?)\n\};/);
+assert.ok(monsterArt, 'monster body dimension registry is present');
+const monsterSizes = new Map([...monsterArt[1].matchAll(/([a-z_]+): \{ w: (\d+), h: (\d+), size: \d+ \}/g)]
+  .map(([, id, w, h]) => [id, { w: Number(w), h: Number(h) }]));
+const surpriseSizeOf = (type) => {
+  assert.ok(monsterSizes.has(type), `${type} needs actual body dimensions`);
+  return monsterSizes.get(type);
+};
+const assertSupported = (piece, blocks, groundY, label) => {
+  const bounds = blockBounds(piece);
+  if (Math.abs(bounds.b - groundY) < 0.001) return;
+  const contacts = blocks.filter((other) => {
+    if (other === piece) return false;
+    const below = blockBounds(other);
+    return Math.abs(bounds.b - below.t) < 0.001 && Math.min(bounds.r, below.r) - Math.max(bounds.l, below.l) > 0.001;
+  }).map((other) => blockBounds(other));
+  assert.ok(contacts.length, `${label}: ${piece.id} needs ground or block support`);
+  assert.ok(piece.x >= Math.min(...contacts.map((b) => Math.max(bounds.l, b.l))) - 0.001
+    && piece.x <= Math.max(...contacts.map((b) => Math.min(bounds.r, b.r))) + 0.001,
+  `${label}: ${piece.id} centre must lie between its contacts`);
+};
+const assertSurprise = (fort, generationContent, realm, label) => {
+  const builder = generationContent.builder;
+  assert.deepEqual(validateDraft(fort, builder, surpriseSizeOf), fort, `${label}: canonical valid draft`);
+  assert.deepEqual(findDraftOverlaps(fort, surpriseSizeOf), [], `${label}: no overlapping pieces`);
+  assert.equal(checkSurpriseStable(fort, generationContent, surpriseSizeOf), true, `${label}: static stability`);
+  assert.ok(fort.blocks.length <= builder.maxBlocks, `${label}: block cap`);
+  assert.ok(fort.monsters.length >= 2 && fort.monsters.length <= builder.maxMonsters, `${label}: target caps`);
+  assert.ok(fort.connections.length <= builder.maxConnections, `${label}: connection cap`);
+  const roster = generationContent.realms.find((row) => row.id === realm).monsters;
+  for (const block of fort.blocks) {
+    assert.ok(builder.surprise.realmMaterials[realm].includes(block.m), `${label}: material belongs to the realm`);
+    assert.ok(block.angle === 0 || block.angle === 90, `${label}: axis-aligned blocks`);
+    assert.ok(builder.presets.some((preset) => preset.w === block.w && preset.h === block.h
+      && preset.shape === block.shape && preset.variant === block.variant), `${label}: ${block.id} uses a builder preset`);
+    assertSupported(block, fort.blocks, builder.groundY, label);
+  }
+  for (const monster of fort.monsters) {
+    assert.ok(roster.includes(monster.t), `${label}: target belongs to the realm`);
+    assert.ok(!generationContent.monsters.find((row) => row.id === monster.t)?.boss, `${label}: bosses excluded`);
+    assertSupported({ ...monster, ...surpriseSizeOf(monster.t), m: '', shape: 'rectangle' }, fort.blocks, builder.groundY, label);
+  }
+};
+const styles = ['random', 'towers', 'bunker', 'bridge', 'castle', 'stacks'];
+const sizes = ['small', 'medium', 'large'];
+const seeds = [4821, 7290, 20261031];
+const contentBeforeSurprises = JSON.stringify(content);
+let surpriseCases = 0;
+const generateAndAssert = (seed, style, size, realm) => {
+  const options = { content, sizeOf: surpriseSizeOf, style, size, realm };
+  const fort = surpriseFort(seed, options);
+  const label = `${style}/${size}/${realm}/${seed}`;
+  assertSurprise(fort, content, realm, label);
+  assert.equal(fort.monsters.length, config.surprise.sizes[size].monsters, `${label}: size target count`);
+  assert.equal(JSON.stringify(surpriseFort(seed, options)), JSON.stringify(fort), `${label}: byte-identical seeded output`);
+  surpriseCases++;
+};
+for (const style of styles) for (const size of sizes) for (const seed of seeds) {
+  generateAndAssert(seed, style, size, content.realms[surpriseCases % content.realms.length].id);
+}
+for (let index = 0; index < styles.length; index++) {
+  generateAndAssert(seeds[index % seeds.length] + index, styles[index], sizes[index % sizes.length],
+    content.realms[(content.realms.length - styles.length + index) % content.realms.length].id);
+}
+assert.equal(surpriseCases, 60, 'all fixed surprise generation cases ran');
+assert.equal(JSON.stringify(content), contentBeforeSurprises, 'generation leaves its input content unchanged');
+const fallbackContent = structuredClone(content);
+fallbackContent.builder.surprise.retryLimit = 0;
+const fallbackRealm = content.realms[0].id;
+const fallbackOptions = { content: fallbackContent, sizeOf: surpriseSizeOf, style: 'castle', size: 'large', realm: fallbackRealm };
+const fallbackFort = surpriseFort(seeds[0], fallbackOptions);
+assertSurprise(fallbackFort, fallbackContent, fallbackRealm, 'retry-exhausted bunker fallback');
+assert.equal(JSON.stringify(surpriseFort(seeds[0], fallbackOptions)), JSON.stringify(fallbackFort), 'bunker fallback is deterministic');
+console.log('check-builder: v1 IDs, variants, filled geometry, full targets, ropes/pins, overlap editing, settling, trusted level conversion and 60 seeded surprise forts passed');

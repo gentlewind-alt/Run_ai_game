@@ -29,7 +29,7 @@ function elementMult(b: BattleState, t: Ent, element: string): number {
 function weaponDamage(b: BattleState, t: Ent, wid: string, impactFactor: number, mul: number): { dmg: number; tag: DamageTag } {
   const w = battleWeapon(b, wid);
   const el = elementMult(b, t, w.element);
-  const dmg = w.baseDamage * (b.arena ? 1 : upgradeMult(wid)) * impactFactor * el * comboMult(b) * b.rules.globalScale * mul * b.mods.damageMult * artifactMult(b, { weaponId: wid, target: t });
+  const dmg = w.baseDamage * (b.arena ? 1 : upgradeMult(wid)) * impactFactor * el * comboMult(b) * b.rules.globalScale * (b.rules.bias ?? 1) * mul * b.mods.damageMult * artifactMult(b, { weaponId: wid, target: t });
   return { dmg, tag: el > 1 ? 'weak' : el < 1 ? 'resist' : 'norm' };
 }
 
@@ -338,7 +338,7 @@ export function explode(b: BattleState, x: number, y: number, r: number, base: n
     let tag: DamageTag = 'norm';
     if (wid) {
       const el = elementMult(b, e, battleWeapon(b, wid).element);
-      dmg *= el * comboMult(b) * b.rules.globalScale * b.mods.damageMult;
+      dmg *= el * comboMult(b) * b.rules.globalScale * (b.rules.bias ?? 1) * b.mods.damageMult;
       tag = el > 1 ? 'weak' : el < 1 ? 'resist' : 'norm';
     }
     if (wid) {

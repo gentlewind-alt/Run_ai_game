@@ -45,6 +45,47 @@
       "w_militia_blade",
       "w_blast_tube"
     ],
+    "surprise": {
+      "retryLimit": 50,
+      "edgePadding": 16,
+      "structureGap": 24,
+      "headroom": 4,
+      "supportInset": 4,
+      "contactTolerance": 0.1,
+      "maxSupportWidth": 24,
+      "maxFloorMass": 1,
+      "damageBias": 1.5,
+      "namePrefix": "Surprise #",
+      "fortMinX": 130,
+      "fortMaxX": 440,
+      "excludeBehaviors": ["imp", "runner"],
+      "offsetMax": 8,
+      "taperChance": 0.5,
+      "pieces": { "post": "post", "floor": "beam", "taperFloor": "plank", "wall": "brick", "crenellation": "square" },
+      "sizes": {
+        "small": { "tiers": 2, "bays": 2, "towers": 2, "stacks": 2, "monsters": 2 },
+        "medium": { "tiers": 3, "bays": 3, "towers": 2, "stacks": 3, "monsters": 4 },
+        "large": { "tiers": 4, "bays": 4, "towers": 3, "stacks": 4, "monsters": 6 }
+      },
+      "styles": {
+        "towers": { "minTiers": 1 },
+        "bunker": { "tiers": 1, "wallLayers": 2 },
+        "bridge": { "pillarTiers": 1, "topTierReduction": 1 },
+        "castle": { "wallTiers": 1 },
+        "stacks": { "minTiers": 1, "maxTiers": 3 }
+      },
+      "realmMaterials": {
+        "goblin_hills": ["stone", "stone", "wood", "wood"],
+        "dark_elf_wood": ["stone", "wood", "wood", "wood"],
+        "iron_keep": ["iron", "stone", "wood", "wood"],
+        "frost_peaks": ["crystal", "crystal", "crystal", "crystal"],
+        "ember_forge": ["iron", "stone", "wood", "wood"],
+        "sky_citadel": ["stone", "crystal", "crystal", "crystal"],
+        "bonus_yard": ["iron", "stone", "crystal", "wood"],
+        "grand_citadels": ["iron", "stone", "crystal", "crystal"],
+        "citadel_bosses": ["iron", "stone", "crystal", "crystal"]
+      }
+    },
     "physics": {
       "lockStiffness": 1,
       "lockSpan": 12,
