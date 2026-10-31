@@ -15,8 +15,8 @@ export default class CreditsScene extends Phaser.Scene {
     menuBackdrop(this);
     panel(this, 16, 12, W - 32, H - 24, '8', '9', 'f', 1);
 
-    text(this, W / 2, 28, 'MONSTER MASH', C('4'), 2, C('0')).setDepth(2);
-    text(this, W / 2, 44, 'Slingshot Siege', C('c'), 1, C('0')).setDepth(2);
+    text(this, W / 2, 28, 'MONSTER SMASH', C('4'), 2, C('0')).setDepth(2);
+    text(this, W / 2, 44, 'Siege Slingshot', C('c'), 1, C('0')).setDepth(2);
 
     const col1 = [
       {

@@ -1,6 +1,6 @@
 {
   "appId": "com.godspeedsamarth.monstermash",
-  "appName": "MONSTER MASH",
+  "appName": "Monster Smash",
   "webDir": "dist",
   "android": { "backgroundColor": "#1a1c2c" },
   "plugins": { "AdMob": { "appId": "ca-app-pub-3304363858852502~8464170068" } }

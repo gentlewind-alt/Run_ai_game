@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">MONSTER MASH</string>
-    <string name="title_activity_main">MONSTER MASH</string>
+    <string name="app_name">Monster Smash</string>
+    <string name="title_activity_main">Monster Smash: Siege Slingshot</string>
     <string name="package_name">com.godspeedsamarth.monstermash</string>
     <string name="custom_url_scheme">com.godspeedsamarth.monstermash</string>
 </resources>

@@ -1,4 +1,4 @@
-# MONSTER MASH on Google Play: build and release checklist
+# MONSTER SMASH on Google Play: build and release checklist
 
 Branch: `android`. App ID: `com.godspeedsamarth.monstermash` (permanent after the first upload).
 The app is the same game wrapped with Capacitor. It runs offline. RUN-only features (Global Arena, Global Challenges,
@@ -59,7 +59,7 @@ keyPassword=...
 
 ## 4. Play Console listing
 
-- **App name** (store): MONSTER MASH: Slingshot Siege. (The AdMob app is named "MONSTER SMASH - Siege
+- **App name** (store): Monster Smash: Siege Slingshot. (The AdMob app is named "MONSTER SMASH - Siege
   Slingshot"; that name is only a label inside AdMob, but keep the store name consistent everywhere players see it.)
 - **Short description** (80 chars) and **full description** (4000 chars).
 - **Icon** 512x512 PNG, **feature graphic** 1024x500, **phone screenshots** (at least 2, landscape is fine),
