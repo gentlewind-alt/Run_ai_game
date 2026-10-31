@@ -19,6 +19,8 @@ const admob = () => { const cfg = data.config.targets?.android?.admob; return cf
 let adsReady = false;
 let rewardedLoaded = false;
 let lastAdError = '';
+// When Google's consent step itself fails (no privacy message set up in AdMob yet, or no network), ads still run, but non-personalised only.
+let nonPersonalised = false;
 const why = (e: unknown): string => String((e as { message?: string })?.message ?? e).slice(0, 70);
 
 async function get(key: string): Promise<string | null> {
@@ -39,11 +41,17 @@ export async function startAds(): Promise<void> {
       tagForUnderAgeOfConsent: child,
       maxAdContentRating: (child ? cfg.childRating : cfg.teenRating) as MaxAdContentRating,
     });
-    const consent = await AdMob.requestConsentInfo();
-    const info = consent.status === AdmobConsentStatus.REQUIRED && consent.isConsentFormAvailable ? await AdMob.showConsentForm() : consent;
-    adsReady = info.canRequestAds;
+    try {
+      const consent = await AdMob.requestConsentInfo();
+      const info = consent.status === AdmobConsentStatus.REQUIRED && consent.isConsentFormAvailable ? await AdMob.showConsentForm() : consent;
+      adsReady = info.canRequestAds;
+      if (!adsReady) lastAdError = 'Ads: consent not given'; // the player said no: no ads
+    } catch (e) {
+      adsReady = true;
+      nonPersonalised = true;
+      lastAdError = `Consent: ${why(e)}`; // shown only if the ads then fail too
+    }
     if (adsReady) void loadRewarded();
-    else lastAdError = 'Ads: consent not given';
   } catch (e) {
     adsReady = false;
     lastAdError = `Ads: ${why(e)}`;
@@ -55,7 +63,7 @@ async function loadRewarded(): Promise<boolean> {
   if (!adsReady || !cfg) return false;
   try {
     // a hung request would freeze the Shop button, so give up after 15 seconds
-    await Promise.race([AdMob.prepareRewardVideoAd({ adId: cfg.rewardedId, isTesting: cfg.testing }), new Promise((_r, reject) => setTimeout(() => reject(new Error('ad took too long to load')), 15000))]);
+    await Promise.race([AdMob.prepareRewardVideoAd({ adId: cfg.rewardedId, isTesting: cfg.testing, npa: nonPersonalised }), new Promise((_r, reject) => setTimeout(() => reject(new Error('ad took too long to load')), 15000))]);
     rewardedLoaded = true;
     lastAdError = '';
   } catch (e) {
@@ -94,7 +102,7 @@ function showInterstitial(): Promise<boolean> {
     };
     subs.push(AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => done(true)));
     subs.push(AdMob.addListener(InterstitialAdPluginEvents.FailedToShow, () => done(false)));
-    AdMob.prepareInterstitial({ adId: cfg.interstitialId, isTesting: cfg.testing })
+    AdMob.prepareInterstitial({ adId: cfg.interstitialId, isTesting: cfg.testing, npa: nonPersonalised })
       .then(() => AdMob.showInterstitial())
       .catch(() => done(false));
   });
