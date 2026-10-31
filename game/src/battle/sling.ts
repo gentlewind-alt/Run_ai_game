@@ -251,7 +251,13 @@ export function onMove(b: BattleState, p: Phaser.Input.Pointer): void {
   }
 }
 
-export function onUp(b: BattleState): void {
+export function onUp(b: BattleState, p?: Phaser.Input.Pointer, over: unknown[] = []): void {
+  // A quick tap on the open screen while the shot is in the air fires its ability, like the button. A drag (panning), a pinch or a
+  // tap on a button (the ability button fires it itself) does not.
+  if (p && !over.length && b.state === 'flying' && !b.paused && b.settings.features.tapAbility !== false && b.view.pinchPrev === 0 && p.button === 0
+    && Phaser.Math.Distance.Between(p.downX, p.downY, p.upX, p.upY) <= b.tune.tapAbilityMaxMovePx && p.upTime - p.downTime <= b.tune.tapAbilityMaxMs) {
+    activateAbility(b);
+  }
   b.view.pinchPrev = 0;
   b.view.panLast = null;
   if (b.state !== 'aiming') return;

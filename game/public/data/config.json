@@ -118,7 +118,8 @@
     "music": true,
     "zoom": true,
     "relics": true,
-    "slingshots": true
+    "slingshots": true,
+    "tapAbility": true
   },
   "debug": {
     "urlOverrides": true,
