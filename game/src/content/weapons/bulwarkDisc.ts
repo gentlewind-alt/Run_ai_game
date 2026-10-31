@@ -19,7 +19,7 @@ function countBounce(ctx: BattleCtx, p: Proj, key: string): boolean {
   p.data.lastBounceKey = key;
   p.data.lastBounce = ctx.step;
   p.data.bounces++;
-  p.body.proj.mul = p.data.damageMult;
+  p.body.proj.mul = p.data.damageMult * P.lightHitMult;
   const b = p.body.position;
   sfx.ping();
   ctx.fx.pingStar?.(b.x, b.y);
@@ -121,7 +121,7 @@ export const bulwarkDisc: WeaponImpl = {
       if (p.data.ended || !p.sprite.active || target.kind !== 'block' || weaponId !== p.wid) return;
       const previous = p.data.damageMult as number;
       p.data.damageMult = Math.min(P.maxDamageMult, previous * P.blockBreakMult);
-      p.body.proj.mul = p.data.damageMult;
+      p.body.proj.mul = p.data.damageMult * (p.data.bounces > 0 ? P.lightHitMult : 1);
       if (p.data.damageMult <= previous) return;
       growthUntil = ctx.step + P.growthPulseSteps;
       label.destroy();
