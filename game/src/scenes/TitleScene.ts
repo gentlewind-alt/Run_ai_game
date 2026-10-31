@@ -49,10 +49,10 @@ export default class TitleScene extends Phaser.Scene {
     };
     const menu = getSettings().display.ui.title;
     const plateX = W - (BASE_W - menu.plateX);
-    const tagline = 'Fling real weapons. Mash the monsters.';
+    const tagline = 'Fling real weapons. Smash the monsters.';
     const logoX = Math.min(Math.round(W * 0.34), Math.floor(plateX - menu.helpGap - (textWidth(tagline) + 2) / 2));
     word('MONSTER', logoX, 48, 3, C('c'), C('0'));
-    word('MASH', logoX, 94, 6, C('4'), C('q'));
+    word('SMASH', logoX, 94, 5, C('4'), C('q'));
     text(this, logoX, 138, 'Siege Slingshot', C('c'), 1, C('0')).setDepth(5);
     text(this, logoX, 162, tagline, C('d'), 1, C('0')).setDepth(6);
 
