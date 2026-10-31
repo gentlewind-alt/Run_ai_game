@@ -54,6 +54,7 @@
     "@capacitor/core": "^7.6.10",
     "@capacitor/preferences": "^7.0.4",
     "@series-inc/rundot-game-sdk": "5.28.1",
+    "firebase": "^11.10.0",
     "phaser": "3.90.0"
   }
 }

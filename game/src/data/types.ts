@@ -278,6 +278,8 @@ export interface Config {
   version: number;
   /** Per build target overrides (the Android app): features switched on or off, AdMob ad unit ids. */
   targets?: Record<string, { features?: Record<string, boolean>; admob?: { rewardedId: string; interstitialId: string; testing: boolean; childRating: string; teenRating: string } }>;
+  /** Online play in the Android app (Firebase). */
+  social?: { timeoutMs: number; rankScan: number; hideAfterReports: number; maxDataChars: number; maxNameChars: number; numberMax: number; names: { adjectives: string[]; animals: string[] } };
   levels: number[];
   display: { pixelArt: boolean; androidMaxWidth: number; maxParticles: number; weapon: WeaponDisplay; weaponAnim: WeaponAnimConfig;
     ui: { buttonCorner: number; panelCorner: number; iconPx: number; iconGap: number; buttonPadding: number; disabledAlpha: number; backdropAlpha: number;

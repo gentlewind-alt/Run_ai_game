@@ -36,6 +36,8 @@ export interface Platform {
     /** Owner and editors only (the host refuses anyone else): remove any entry, list any entries. */
     adminRemove(id: string): Promise<boolean>;
     adminBrowse(type: string, limit: number): Promise<UgcRow[]>;
+    /** Optional: flag an entry for review (the Android app); one report per player. */
+    report?(id: string): Promise<boolean>;
   };
   /** Full screen. `toggle` must run straight from a tap (the browser drops the gesture otherwise) and returns whether the game is full screen afterwards. */
   /** Opens a web link from a tap and copies it as a fallback. */

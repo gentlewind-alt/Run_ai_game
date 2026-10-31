@@ -119,13 +119,27 @@
     "music": true,
     "zoom": true,
     "relics": true,
-    "slingshots": true
+    "slingshots": true,
+    "social": true
   },
   "targets": {
     "_note": "Per build overrides. android = the Play Store app (vite build --mode android). RUN-only services are off there. AdMob: keep testing true while developing (Google test ads are shown even with these real ids); set it to false only for the release build. Ratings follow the age screen: under 13 gets childRating.",
     "android": {
-      "features": { "arena": false, "challenges": false, "leaderboard": false, "share": false, "voteButton": false, "iap": false },
+      "features": { "arena": false, "challenges": true, "leaderboard": true, "share": true, "voteButton": false, "iap": false },
       "admob": { "rewardedId": "ca-app-pub-3304363858852502/7411989021", "interstitialId": "ca-app-pub-3304363858852502/9133546064", "testing": true, "childRating": "General", "teenRating": "ParentalGuidance" }
+    }
+  },
+  "social": {
+    "_note": "Online play in the Play Store app (Firebase). Names are generated, never typed: the app is for ages 10 and up.",
+    "timeoutMs": 6000,
+    "rankScan": 50,
+    "hideAfterReports": 5,
+    "maxDataChars": 60000,
+    "maxNameChars": 24,
+    "numberMax": 999,
+    "names": {
+      "adjectives": ["Brave","Quick","Mighty","Sneaky","Jolly","Clever","Fuzzy","Lucky","Sunny","Stormy","Bouncy","Cheeky","Dizzy","Fierce","Gentle","Happy","Icy","Jumpy","Kind","Lively","Merry","Noble","Plucky","Quiet","Rowdy","Silly","Speedy","Spiky","Swift","Tiny","Wild","Zesty","Bold","Cosmic","Dusty","Epic","Frosty","Glowing","Hasty","Mellow"],
+      "animals": ["Otter","Falcon","Badger","Panda","Goblin","Wolf","Fox","Tiger","Owl","Lynx","Moose","Newt","Parrot","Rabbit","Seal","Turtle","Yak","Bear","Crab","Dragon","Eagle","Frog","Gecko","Heron","Ibex","Koala","Lemur","Mole","Narwhal","Orca","Puffin","Quokka","Raven","Shark","Toad","Viper","Walrus","Yeti","Zebra","Hawk"]
     }
   },
   "debug": {

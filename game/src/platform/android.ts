@@ -7,6 +7,7 @@ import { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents, MaxAdContentRati
 import { App } from '@capacitor/app';
 import { Preferences } from '@capacitor/preferences';
 import { data } from '../data/load';
+import { firebaseSocial } from './firebase';
 import { noopPlatform, type Platform } from './types';
 
 export const AGE_KEY = 'age.band';
@@ -90,20 +91,28 @@ function showInterstitial(): Promise<boolean> {
   });
 }
 
+const storage: Platform['storage'] = {
+  get,
+  async set(key, v) {
+    try { await Preferences.set({ key, value: v }); } catch { /* storage is optional */ }
+  },
+};
+/** Online play: an anonymous Firebase account, score boards and shared levels (see firebase.ts). Offline it returns the usual empty answers. */
+export const online = firebaseSocial(storage);
+
 export const androidPlatform: Platform = {
   ...noopPlatform,
   hosted: false,
   async init(): Promise<void> { void startAds(); },
-  storage: {
-    get,
-    async set(key, v) {
-      try { await Preferences.set({ key, value: v }); } catch { /* storage is optional */ }
-    },
-  },
+  storage,
+  leaderboard: online.leaderboard,
+  ugc: online.ugc,
   async profile() {
-    // a stable id for this install, so builder drafts and stats stay tied to the phone
+    // The Firebase user id and generated name when online; otherwise a stable id for this install, so builder drafts and stats stay tied to the phone.
+    const account = await online.uid();
+    if (account) return { id: account, name: await online.name(), anonymous: false };
     let id = (await get('player.id')) ?? '';
-    if (!id) { id = `local_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`; await androidPlatform.storage.set('player.id', id); }
+    if (!id) { id = `local_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`; await storage.set('player.id', id); }
     return { id, name: 'Player', anonymous: true };
   },
   safeArea: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
