@@ -146,6 +146,17 @@ if (content) {
     if (new Set(presets).size !== presets.length) err('content.json', 'duplicate builder preset id');
   }
 
+  // monster animation strips: a PNG of square frames side by side (width = a whole number of frames of the height)
+  for (const m of content.monsters ?? []) {
+    for (const name of Object.keys(m.anim ?? {})) {
+      const file = join(root, 'public', 'sprites', 'monsters', 'anim', `${m.id}_${name}.png`);
+      if (!existsSync(file)) { err('content.json', `monster ${m.id} lists anim "${name}" but ${relative(root, file)} is missing`); continue; }
+      const png = readFileSync(file);
+      const w = png.readUInt32BE(16), h = png.readUInt32BE(20);
+      if (png.toString('latin1', 1, 4) !== 'PNG' || !h || w % h !== 0 || w / h < 2) err('content.json', `${relative(root, file)} must be square frames side by side (2 or more), got ${w}x${h}`);
+    }
+  }
+
   for (const r of content.realms ?? []) {
     for (const m of r.monsters ?? []) if (!monsterIds.has(m)) err('content.json', `realm ${r.id} lists unknown monster "${m}"`);
   }

@@ -1695,6 +1695,9 @@
     {
       "id": "goblin_grunt",
       "name": "Goblin Grunt",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 30,
       "weak": "hellfire",
       "resist": null,
@@ -1703,6 +1706,9 @@
     {
       "id": "goblin_bomber",
       "name": "Goblin Bomber",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 25,
       "weak": "hellfire",
       "resist": null,
@@ -1716,6 +1722,9 @@
     {
       "id": "goblin_chief",
       "name": "Goblin Chief",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 140,
       "weak": "hellfire",
       "resist": null,
@@ -1733,6 +1742,9 @@
     {
       "id": "dark_elf_archer",
       "name": "Dark Elf Archer",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 35,
       "weak": "radiant",
       "resist": "void",
@@ -1760,6 +1772,9 @@
     {
       "id": "dark_elf_hexer",
       "name": "Dark Elf Hexer",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 40,
       "weak": "radiant",
       "resist": "void",
@@ -1773,6 +1788,9 @@
     {
       "id": "dark_elf_matron",
       "name": "Dark Elf Matron",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 120,
       "weak": "radiant",
       "resist": "void",
@@ -1791,6 +1809,9 @@
     {
       "id": "orc_brute",
       "name": "Orc Brute",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 90,
       "weak": "void",
       "resist": "physical",
@@ -1800,6 +1821,9 @@
     {
       "id": "skeleton_runner",
       "name": "Skeleton Runner",
+      "anim": {
+        "run": { "fps": 12 }
+      },
       "hp": 20,
       "weak": "radiant",
       "resist": "physical",
@@ -1813,6 +1837,9 @@
     {
       "id": "imp",
       "name": "Imp",
+      "anim": {
+        "fly": { "fps": 12 }
+      },
       "hp": 15,
       "weak": "radiant",
       "resist": "hellfire",
@@ -1831,6 +1858,9 @@
     {
       "id": "troll",
       "name": "Troll",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 120,
       "weak": "hellfire",
       "resist": null,
@@ -1844,6 +1874,9 @@
     {
       "id": "iron_warlord",
       "name": "Iron Warlord",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 260,
       "weak": "void",
       "resist": "physical",
@@ -1866,6 +1899,9 @@
     {
       "id": "frost_wolf",
       "name": "Frost Wolf",
+      "anim": {
+        "run": { "fps": 11 }
+      },
       "hp": 30,
       "weak": "hellfire",
       "resist": null,
@@ -1875,13 +1911,15 @@
       "params": {
         "speed": 1.1,
         "selfMoving": 1,
-        "runFps": 11,
         "runMinSpeed": 0.1
       }
     },
     {
       "id": "ice_golem",
       "name": "Ice Golem",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 220,
       "weak": "hellfire",
       "resist": null,
@@ -1899,6 +1937,9 @@
     {
       "id": "frost_giant",
       "name": "Frost Giant",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 480,
       "weak": "hellfire",
       "resist": null,
@@ -1932,6 +1973,9 @@
     {
       "id": "lava_imp",
       "name": "Lava Imp",
+      "anim": {
+        "fly": { "fps": 12 }
+      },
       "hp": 25,
       "weak": "void",
       "resist": "hellfire",
@@ -1949,6 +1993,9 @@
     {
       "id": "forge_ogre",
       "name": "Forge Ogre",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 330,
       "weak": "void",
       "resist": "hellfire",
@@ -1966,6 +2013,9 @@
     {
       "id": "forge_tyrant",
       "name": "Forge Tyrant",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 520,
       "weak": "void",
       "resist": "hellfire",
@@ -2001,6 +2051,9 @@
     {
       "id": "cloud_harpy",
       "name": "Cloud Harpy",
+      "anim": {
+        "fly": { "fps": 12 }
+      },
       "hp": 30,
       "weak": "radiant",
       "resist": null,
@@ -2018,6 +2071,9 @@
     {
       "id": "storm_mage",
       "name": "Storm Mage",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 45,
       "weak": "void",
       "resist": "radiant",
@@ -2033,6 +2089,9 @@
     {
       "id": "storm_sovereign",
       "name": "Storm Sovereign",
+      "anim": {
+        "idle": { "fps": 6 }
+      },
       "hp": 700,
       "weak": "void",
       "resist": "radiant",
