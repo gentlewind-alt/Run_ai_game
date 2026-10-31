@@ -123,12 +123,18 @@ function syncSprites(b: BattleState, time: number): void {
     // Generated-art monsters (realms 4-6) have no hurt frame: they keep their sprite and get a red tint instead.
     const hurtFrame = e.hurt > 0 && b.scene.textures.exists(`${e.type}_hurt`);
     const tex = hurtFrame ? `${e.type}_hurt` : (b.scene.textures.exists(openKey) ? openKey : e.type);
-    const wolfRun = e.type === 'frost_wolf' && e.runFrom !== undefined && b.steps >= e.runFrom
-      && Math.abs(e.body.velocity.x) >= e.params.runMinSpeed && e.status.stun <= 0 && e.status.chain <= 0
-      && !!b.scene.anims?.exists('frost_wolf_run');
+    // Which looping strip plays: run while a runner moves, fly for a hovering flier, idle otherwise. Hurt, stunned or frozen shows the still sprite.
+    const still = hurtFrame || e.flash > 0 || e.status.stun > 0 || e.status.chain > 0;
+    const moving = e.def?.behavior === 'runner' && e.runFrom !== undefined && b.steps >= e.runFrom && Math.abs(e.body.velocity.x) >= (e.params.runMinSpeed ?? 0.1);
+    const order = [moving ? 'run' : '', e.def?.behavior === 'imp' ? 'fly' : '', 'idle'].filter(Boolean);
+    const wanted = still ? undefined : order.map((n) => `${e.type}_${n}`).find((k) => b.scene.anims?.exists(k));
     const anim = (e.sprite as Phaser.GameObjects.Sprite).anims ? e.sprite as Phaser.GameObjects.Sprite : null;
-    if (wolfRun && anim) {
-      if (anim.anims.currentAnim?.key !== 'frost_wolf_run' || !anim.anims.isPlaying) anim.play('frost_wolf_run');
+    if (wanted && anim) {
+      if (anim.anims.currentAnim?.key !== wanted || !anim.anims.isPlaying) {
+        // each enemy starts on its own frame, so a group does not move in lockstep
+        const n = b.scene.anims.get(wanted).frames.length;
+        anim.play({ key: wanted, startFrame: Math.floor(Math.abs(e.phase) * 1000) % n });
+      }
     } else {
       if (anim?.anims.isPlaying) anim.stop();
       e.sprite.setTexture(tex);
@@ -136,8 +142,8 @@ function syncSprites(b: BattleState, time: number): void {
     e.sprite.setPosition(bp.x, bp.y + e.h / 2 - e.size / 2 + 1 + (running ? -Math.abs(Math.sin(b.steps / 4)) * 2 : 0));
     e.sprite.setRotation(e.body.angle);
     const amp = e.size >= 24 ? 0.03 : 0.05;
-    const frameScale = wolfRun ? e.size / e.sprite.frame.realWidth : 1;
-    e.sprite.setScale(frameScale * (running ? 1 : 1 + amp * beat) * (e.visualScaleX ?? 1), frameScale * (running ? 1 : 1 - amp * 1.4 * beat) * (e.visualScaleY ?? 1));
+    const calm = running || !!wanted; // a playing animation already moves the body, so no extra squash and stretch
+    e.sprite.setScale((calm ? 1 : 1 + amp * beat) * (e.visualScaleX ?? 1), (calm ? 1 : 1 - amp * 1.4 * beat) * (e.visualScaleY ?? 1));
     if (e.flash > 0) e.sprite.setTintFill(0xffffff);
     else if (e.hurt > 0 && !hurtFrame) e.sprite.setTint(0xff8a8a);
     else if (e.status.chain > 0) e.sprite.setTint(0xb8c0c8);

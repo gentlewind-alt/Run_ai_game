@@ -23,7 +23,7 @@ export default class BootScene extends Phaser.Scene {
   preload(): void {
     this.load.on('loaderror', (f: Phaser.Loader.File) => this.failed.push({ key: f.key, url: String(f.url) }));
     preloadGeneratedSprites(this);
-    this.load.image('frost_wolf_run_strip', 'sprites/monsters/frost_wolf_run.png');
+    for (const m of data.content.monsters) for (const name of Object.keys(m.anim ?? {})) this.load.image(`${m.id}_${name}_strip`, `sprites/monsters/anim/${m.id}_${name}.png`);
     const ui = ['button_go', 'button_plain', 'button_gold', 'panel', 'emblem', 'backdrop',
       ...['play', 'shop', 'forge', 'build', 'arena', 'challenge', 'daily', 'coin', 'star', 'back', 'settings', 'lock', 'music', 'help', 'map'].map((name) => `icon_${name}`)];
     for (const name of ui) this.load.image(`ui_${name}`, `sprites/ui/ui_${name}.png`);
@@ -49,17 +49,18 @@ export default class BootScene extends Phaser.Scene {
     makeBattleTextures(this, []);
     applyGeneratedSprites(this);
     ensureMonsterTextures(this);
-    if (this.textures.exists('frost_wolf_run_strip') && !this.textures.exists('frost_wolf_run')) {
-      const strip = this.textures.get('frost_wolf_run_strip').getSourceImage() as HTMLImageElement;
-      const size = strip.height;
-      const count = strip.width / size;
-      if (size > 0 && Number.isInteger(count) && count >= 1) {
-        this.textures.addSpriteSheet('frost_wolf_run', strip, { frameWidth: size, frameHeight: size, endFrame: count - 1 });
+    // Monster animation strips (idle / fly / run): square frames side by side. A strip that failed to load is skipped and the still sprite stays.
+    for (const m of data.content.monsters) {
+      for (const [name, a] of Object.entries(m.anim ?? {})) {
+        const key = `${m.id}_${name}`;
+        if (!this.textures.exists(`${key}_strip`) || this.textures.exists(key)) continue;
+        const strip = this.textures.get(`${key}_strip`).getSourceImage() as HTMLImageElement;
+        const size = strip.height;
+        const count = strip.width / size;
+        if (!(size > 0) || !Number.isInteger(count) || count < 1) continue;
+        this.textures.addSpriteSheet(key, strip, { frameWidth: size, frameHeight: size, endFrame: count - 1 });
+        if (!this.anims.exists(key)) this.anims.create({ key, frames: this.anims.generateFrameNumbers(key), frameRate: a.fps, repeat: -1 });
       }
-    }
-    if (this.textures.exists('frost_wolf_run') && !this.anims.exists('frost_wolf_run')) {
-      const wolf = data.content.monsters.find((m) => m.id === 'frost_wolf');
-      this.anims.create({ key: 'frost_wolf_run', frames: this.anims.generateFrameNumbers('frost_wolf_run'), frameRate: wolf!.params!.runFps, repeat: -1 });
     }
     registerIcons(this);
     gridTexture(this, 'spk_on', SPK_ON);

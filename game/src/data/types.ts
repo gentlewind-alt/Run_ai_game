@@ -40,6 +40,8 @@ export interface MonsterDef {
   resist: Element | null;
   sprite?: string; // generated art under public/ without extension (see art/generatedSprites.ts)
   behavior?: string;
+  /** Looping animation strips (sprites/monsters/anim/<id>_<name>.png): idle standing, fly hovering, run moving. */
+  anim?: Partial<Record<'idle' | 'fly' | 'run', { fps: number }>>;
   density?: number;
   boss?: boolean;
   flying?: boolean;
