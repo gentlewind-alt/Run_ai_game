@@ -385,6 +385,18 @@ export function makeBattleTextures(scene: Phaser.Scene, blocks: { m: string; w: 
               }
             }
           }
+        } else if (m === 'keg') {
+          // Keg: barrel with highlight/shadow, hoops, and fuse/skull mark
+          rect(g, '2', 1, 1, b.w - 2, b.h - 2);
+          rect(g, '3', 1, 1, b.w - 2, 1);
+          rect(g, '3', 1, 1, 1, b.h - 2);
+          rect(g, '1', 1, b.h - 2, b.w - 2, 1);
+          rect(g, '1', b.w - 2, 1, 1, b.h - 2);
+          rect(g, 'h', 1, Math.floor(b.h / 4), b.w - 2, 1);
+          rect(g, 'h', 1, Math.floor((b.h * 3) / 4), b.w - 2, 1);
+          if (b.w >= 8 && b.h >= 8) {
+            rect(g, '4', Math.floor(b.w / 2) - 1, Math.floor(b.h / 2) - 1, 2, 2);
+          }
         } else if (m === 'crystal') {
           // Crystal: base fill with highlight/shadow edges + facet diagonal
           rect(g, 'b', 1, 1, b.w - 2, b.h - 2);

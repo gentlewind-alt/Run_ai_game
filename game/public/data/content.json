@@ -241,6 +241,7 @@
     "hitStopFrames": 3,
     "stretchSoundMs": 80,
     "coins": {
+      "keg": 3,
       "monster": 10,
       "wood": 2,
       "stone": 4,
@@ -254,6 +255,7 @@
       "iron_warlord": 100
     },
     "points": {
+      "keg": 30,
       "goblin_grunt": 100,
       "goblin_bomber": 150,
       "goblin_chief": 800,
@@ -2145,6 +2147,14 @@
       "weak": "void",
       "density": 0.0035,
       "coins": 6
+    },
+    {
+      "id": "keg",
+      "hp": 20,
+      "weak": "hellfire",
+      "density": 0.0012,
+      "note": "powder keg: explodes when broken and sets off nearby kegs",
+      "blast": { "radius": 34, "damage": 60 }
     },
     {
       "id": "crystal",

@@ -55,6 +55,7 @@ export interface MaterialDef {
   weak: Element | null;
   density?: number;
   friction?: number;
+  blast?: { radius: number; damage: number };
 }
 
 export interface StandTuning {
