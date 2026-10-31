@@ -379,7 +379,7 @@ export default class BuilderScene extends Phaser.Scene {
       this.drawSurprise();
     }));
     const realm = data.content.realms.filter(realm => realm.levels.some(level => level <= reachedLevel())).slice(-1)[0] ?? data.content.realms[0];
-    const name = this.draft.name.startsWith(this.config.surprise.namePrefix) ? ` | ${this.draft.name}` : '';
+    const name = this.draft.name.startsWith(this.config.surprise.namePrefix) ? ` - ${this.draft.name}` : '';
     label(W / 2, 169, fitText(`${realm.name ?? realm.id}${name}`, 328));
     button(126, 193, 96, 'Build', () => this.requestSurprise(), 'go');
     button(240, 193, 112, 'Roll again', () => this.requestSurprise());
