@@ -8,7 +8,7 @@
     "minY": 64,
     "maxBlocks": 100,
     "maxConnections": 100,
-    "maxMonsters": 20,
+    "maxMonsters": 200,
     "materials": [
       "wood",
       "stone",
@@ -273,6 +273,8 @@
     "shotBonusPoints": 300,
     "shotBonusCoins": 25,
     "aimGrabRadius": 44,
+    "tapAbilityMaxMovePx": 10,
+    "tapAbilityMaxMs": 350,
     "minPull": 8,
     "debrisMinSpeed": 1.5,
     "projMinSpeed": 1.2,

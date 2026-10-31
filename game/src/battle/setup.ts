@@ -99,7 +99,7 @@ export function startBattle(b: BattleState): void {
   s.matter.world.on('collisionstart', (ev: unknown) => onCollide(b, ev));
   s.input.on('pointerdown', (p: Phaser.Input.Pointer, over: unknown[]) => onDown(b, p, over));
   s.input.on('pointermove', (p: Phaser.Input.Pointer) => onMove(b, p));
-  s.input.on('pointerup', () => onUp(b));
+  s.input.on('pointerup', (p: Phaser.Input.Pointer, over: unknown[]) => onUp(b, p, over));
   s.input.on('pointerupoutside', () => onUp(b));
   s.input.on('wheel', (p: Phaser.Input.Pointer, _o: unknown, _dx: number, dy: number) => {
     if (b.paused || !b.settings.features.zoom) return;

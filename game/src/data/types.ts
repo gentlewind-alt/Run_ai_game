@@ -75,6 +75,8 @@ export interface Tuning {
   homeSlingFrac?: number;
   chestHp?: number;
   aimGrabRadius: number;
+  tapAbilityMaxMovePx: number; // a tap on the screen during a shot fires the ability: at most this far between press and release...
+  tapAbilityMaxMs: number; // ...and at most this long
   minPull: number;
   debrisMinSpeed: number;
   projMinSpeed: number;

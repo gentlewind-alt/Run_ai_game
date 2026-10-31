@@ -120,7 +120,8 @@
     "zoom": true,
     "relics": true,
     "slingshots": true,
-    "social": true
+    "social": true,
+    "tapAbility": true
   },
   "targets": {
     "_note": "Per build overrides. android = the Play Store app (vite build --mode android). RUN-only services are off there. AdMob: keep testing true while developing (Google test ads are shown even with these real ids); set it to false only for the release build. Ratings follow the age screen: under 13 gets childRating.",
