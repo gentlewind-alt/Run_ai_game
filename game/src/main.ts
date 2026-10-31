@@ -9,6 +9,7 @@ import ChallengeScene from './scenes/ChallengeScene';
 import ChallengesScene from './scenes/ChallengesScene';
 import ChallengeWeaponsScene from './scenes/ChallengeWeaponsScene';
 import BootScene from './scenes/BootScene';
+import CodeScene from './scenes/CodeScene';
 import CreditsScene from './scenes/CreditsScene';
 import LeaderboardScene from './scenes/LeaderboardScene';
 import LoadoutScene from './scenes/LoadoutScene';
@@ -74,7 +75,7 @@ async function bootstrap(): Promise<void> {
       backgroundColor: '#1a1c2c',
       pixelArt: S.display.pixelArt,
       roundPixels: true,
-      scene: [BootScene, AgeScene, TitleScene, MapScene, LoadoutScene, ShopScene, ForgeScene, BattleScene, BuilderScene, ArenaScene, PracticeScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene],
+      scene: [BootScene, AgeScene, TitleScene, MapScene, LoadoutScene, ShopScene, ForgeScene, BattleScene, BuilderScene, ArenaScene, PracticeScene, ChallengesScene, ChallengeScene, ChallengeWeaponsScene, ExtraShotsScene, ResultsScene, CreditsScene, LeaderboardScene, CodeScene],
       physics: {
         default: 'matter',
         matter: {

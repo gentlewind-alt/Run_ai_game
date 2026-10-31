@@ -7,6 +7,7 @@ import { H, W } from '../config/constants';
 import { admin } from '../core/admin';
 import { challengeBoard, getChallenge, removeChallenge, resetBoard, type Board, type Challenge } from '../core/challenges';
 import { goTo, irisOpen } from '../core/flow';
+import { platform } from '../platform';
 import { menuBackdrop, makeButton, panel } from '../ui/widgets';
 
 const ROWS = 7;
@@ -74,6 +75,23 @@ export default class ChallengeScene extends Phaser.Scene {
       x += spec.w + 6;
     }
     if (admin.is) text(this, W - 40, 22, 'ADMIN', C('4'), 1, C('0')).setOrigin(1, 0.5).setDepth(3);
+    if (!c.mine && platform.ugc.report) {
+      // two taps, so a stray tap cannot flag someone's level
+      let sure = false;
+      const flag = makeButton(this, W - 56, H - 22, 76, 22, 'Report', 'plain', () => {
+        if (!sure) {
+          sure = true;
+          flag.setLabel('Sure?');
+          this.time.delayedCall(2500, () => { sure = false; if (this.scene.isActive()) flag.setLabel('Report'); });
+          return;
+        }
+        void platform.ugc.report!(c.id).then((ok) => {
+          if (!this.scene.isActive()) return;
+          flag.setLabel(ok ? 'Reported' : 'Try again');
+          if (this.status) setText(this.status, this, ok ? 'Thanks. We will take a look.' : 'Could not report. Check your connection.', C('d'), C('0'));
+        });
+      }, 3);
+    }
     if (canDelete) {
       let armed = false;
       const del = makeButton(this, x + 38, H - 22, 76, 22, 'Delete', 'danger', () => {

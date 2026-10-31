@@ -32,14 +32,16 @@ export default class LoadoutScene extends Phaser.Scene {
   private page = 0;
   private forgeCap = 99;
   private forgeNote?: Phaser.GameObjects.Image;
+  private beat?: number; // a friend's score to beat (challenge code)
   private fixed: string[] | null = null; // the level's own loadout (tutorials, mini-bosses): shown locked, never saved as the player's
 
   constructor() {
     super('loadout');
   }
 
-  init(d: { level: number }): void {
+  init(d: { level: number; beat?: number }): void {
     this.level = d.level ?? 1;
+    this.beat = d.beat;
   }
 
   create(): void {
@@ -62,6 +64,7 @@ export default class LoadoutScene extends Phaser.Scene {
     // Right side: Header & level info
     text(this, W - 110, 10, fitText(`Level ${this.level}: ${lvl.name}`, 196), C('4'), 1, C('0'));
     if (lvl.loadout?.length && cleared) text(this, W - 110, 22, fitText('Cleared! Bring your own arsenal.', 196), C('5'), 1, C('0'));
+    else if (this.beat) text(this, 370, 22, fitText(`Friend scored ${this.beat}. Beat it!`, 196), C('4'), 1, C('0'));
     else if (lvl.hints?.[0]) {
       text(this, W - 110, 22, fitText(lvl.hints[0], 196), C('c'), 1, C('0'));
     }
@@ -317,6 +320,6 @@ export default class LoadoutScene extends Phaser.Scene {
     if (!this.fixed) setLoadout(loadout);
     setArtifacts(this.equipped);
     sfx.click();
-    goTo(this, 'game', { level: this.level, loadout });
+    goTo(this, 'game', { level: this.level, loadout, beat: this.beat });
   }
 }

@@ -12,7 +12,7 @@
     "social": {
       "type": "object", "additionalProperties": false, "patternProperties": { "^_": {} },
       "description": "Online play in the Android app (Firebase): timeouts, limits and the generated player names.",
-      "required": ["timeoutMs", "rankScan", "hideAfterReports", "maxDataChars", "maxNameChars", "numberMax", "names"],
+      "required": ["timeoutMs", "rankScan", "hideAfterReports", "maxDataChars", "maxNameChars", "numberMax", "codeMaxScore", "names"],
       "properties": {
         "timeoutMs": { "type": "integer", "minimum": 1000, "description": "How long a screen waits for the server before showing Offline." },
         "rankScan": { "type": "integer", "minimum": 1, "maximum": 500, "description": "How many top rows are read to find the player's own rank." },
@@ -20,6 +20,7 @@
         "maxDataChars": { "type": "integer", "minimum": 1000, "description": "Largest shared-level payload, as JSON text." },
         "maxNameChars": { "type": "integer", "minimum": 8 },
         "numberMax": { "type": "integer", "minimum": 9 },
+        "codeMaxScore": { "type": "integer", "minimum": 1000, "maximum": 1000000, "description": "Largest score a challenge code may carry (the Firestore rules cap boards at 1,000,000)." },
         "names": {
           "type": "object", "additionalProperties": false, "required": ["adjectives", "animals"],
           "properties": {

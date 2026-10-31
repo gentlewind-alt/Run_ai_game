@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C } from '../art/palette';
-import { text, textBlock, textWidth } from '../art/font5x7';
+import { fitText, setText, text, textBlock, textWidth } from '../art/font5x7';
 import { pixText } from '../art/pix';
 import { buildBackground } from '../art/backgrounds';
 import { MONSTER_ART } from '../art/textures';
@@ -9,6 +9,7 @@ import { music } from '../audio/music';
 import { sfx } from '../audio/sfx';
 import { BASE_W, H, W } from '../config/constants';
 import { feature, getSettings } from '../config/settings';
+import { TARGET } from '../config/target';
 import { platform } from '../platform';
 import { admin, adminReady, lock, unlock } from '../core/admin';
 import { askAdminCode } from '../ui/adminPrompt';
@@ -77,6 +78,7 @@ export default class TitleScene extends Phaser.Scene {
       { label: 'Challenges', note: 'Player levels', scene: 'challenges', on: feature('challenges') },
       { label: 'Build', note: 'Build and share', scene: 'builder', on: feature('builder') },
       { label: 'Arena', note: 'Duel players', scene: 'arena', on: feature('arena') },
+      { label: 'Code', note: 'Beat a friend', scene: 'code', on: TARGET === 'android' && feature('social') && feature('share') },
       { label: 'Forge', note: 'Craft weapons', scene: 'forge', data: { returnTo: 'title' }, on: feature('weaponForge') },
     ];
     const tileW = (contentW - menu.tileGap) / 2;
@@ -103,6 +105,16 @@ export default class TitleScene extends Phaser.Scene {
       sfx.unlock();
       music.updateVolume();
     });
+    if (platform.rerollName && feature('social')) {
+      // players never type a name: they see the generated one and may roll another
+      const nameTag = text(this, logoX, 176, ' ', C('d'), 1, C('0')).setDepth(6);
+      const showName = (name: string): void => setText(nameTag, this, fitText(`You are ${name}`, 200), C('d'), C('0'));
+      void platform.profile().then((p) => { if (this.scene.isActive() && !p.anonymous) showName(p.name); });
+      makeButton(this, cx, utilityY, utilityW, menu.utilityH, 'New name', 'plain', () => {
+        sfx.click();
+        void platform.rerollName!().then((name) => { if (this.scene.isActive()) showName(name); });
+      }, 6, '', utilityLayout);
+    }
     if (platform.fullscreen.available()) {
       const label = (): string => (platform.fullscreen.active() ? 'Exit full' : 'Full screen');
       let note: Phaser.GameObjects.Image[] = [];

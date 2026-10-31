@@ -38,6 +38,7 @@ export default class BattleScene extends Phaser.Scene {
   private levelId = 1;
   private loadout: string[] = [];
   private customLevel?: Level;
+  private beat?: number; // a friend's score to beat (challenge code), shown on the results
   private challenge?: Challenge;
   private arenaSetup?: ArenaSetup;
   private arenaSent = 0;
@@ -56,8 +57,9 @@ export default class BattleScene extends Phaser.Scene {
     super('game');
   }
 
-  init(data: { level: number; loadout: string[]; customLevel?: Level; challenge?: Challenge; arena?: ArenaSetup; practice?: PracticeTurn }): void {
+  init(data: { level: number; loadout: string[]; beat?: number; customLevel?: Level; challenge?: Challenge; arena?: ArenaSetup; practice?: PracticeTurn }): void {
     this.levelId = data.level ?? 1;
+    this.beat = data.beat;
     this.loadout = (data.loadout ?? DEFAULT_LOADOUT).slice();
     this.practice = data.practice;
     this.customLevel = data.customLevel ?? data.practice?.level;
@@ -109,7 +111,7 @@ export default class BattleScene extends Phaser.Scene {
       if (b.paused && !this.arenaSetup) {
         b.paused = false;
         this.hud.hidePause();
-        this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge });
+        this.scene.restart({ level: this.levelId, loadout: b.loadout, beat: this.beat, customLevel: this.customLevel, challenge: this.challenge });
       }
     });
     this.input.keyboard?.on('keydown-M', () => {
@@ -164,7 +166,7 @@ export default class BattleScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('results', {
         levelId: this.levelId, won, why, stars, score: b.score, target: b.level.scoreTarget ?? 0, loadout: b.loadout, relicUnlocked: b.relicUnlocked,
-        seconds: Math.round(b.steps / 60),
+        seconds: Math.round(b.steps / 60), beat: this.beat,
       });
     };
     events.on('level:won', (e) => results(true, 'shots', e.stars));
@@ -211,7 +213,7 @@ export default class BattleScene extends Phaser.Scene {
     if (on) {
       this.hud.showPause({
         resume: this.arenaInterrupted ? undefined : () => this.setPaused(false),
-        restart: this.arenaSetup || this.practice ? undefined : () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge }); },
+        restart: this.arenaSetup || this.practice ? undefined : () => { b.paused = false; this.hud.hidePause(); this.scene.restart({ level: this.levelId, loadout: b.loadout, beat: this.beat, customLevel: this.customLevel, challenge: this.challenge }); },
         title: this.arenaInterrupted ? 'Turn interrupted' : 'Paused',
         mapLabel: this.arenaSetup ? 'Forfeit turn' : this.practice ? 'Leave practice' : undefined,
         map: () => {
@@ -262,7 +264,7 @@ export default class BattleScene extends Phaser.Scene {
         text(this, W / 2, 111, 'Custom playtest', C('c'), 1, C('0')).setDepth(31);
         makeButton(this, W / 2 - 69, 157, 118, 30, 'Edit level', 'go', () => goTo(this, 'builder'), 32);
         makeButton(this, W / 2 + 69, 157, 118, 30, 'Retry', 'plain', () => {
-          this.scene.restart({ level: 1000, loadout: b.loadout, customLevel: this.customLevel, challenge: this.challenge });
+          this.scene.restart({ level: 1000, loadout: b.loadout, beat: this.beat, customLevel: this.customLevel, challenge: this.challenge });
         }, 32);
       });
     }

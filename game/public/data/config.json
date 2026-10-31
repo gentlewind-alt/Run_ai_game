@@ -137,6 +137,7 @@
     "maxDataChars": 60000,
     "maxNameChars": 24,
     "numberMax": 999,
+    "codeMaxScore": 999999,
     "names": {
       "adjectives": ["Brave","Quick","Mighty","Sneaky","Jolly","Clever","Fuzzy","Lucky","Sunny","Stormy","Bouncy","Cheeky","Dizzy","Fierce","Gentle","Happy","Icy","Jumpy","Kind","Lively","Merry","Noble","Plucky","Quiet","Rowdy","Silly","Speedy","Spiky","Swift","Tiny","Wild","Zesty","Bold","Cosmic","Dusty","Epic","Frosty","Glowing","Hasty","Mellow"],
       "animals": ["Otter","Falcon","Badger","Panda","Goblin","Wolf","Fox","Tiger","Owl","Lynx","Moose","Newt","Parrot","Rabbit","Seal","Turtle","Yak","Bear","Crab","Dragon","Eagle","Frog","Gecko","Heron","Ibex","Koala","Lemur","Mole","Narwhal","Orca","Puffin","Quokka","Raven","Shark","Toad","Viper","Walrus","Yeti","Zebra","Hawk"]

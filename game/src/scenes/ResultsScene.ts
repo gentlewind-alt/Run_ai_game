@@ -3,6 +3,8 @@ import { C, rarityColor, rarityStroke } from '../art/palette';
 import { fitText, text, textBlock } from '../art/font5x7';
 import { sfx } from '../audio/sfx';
 import { H, W } from '../config/constants';
+import { TARGET } from '../config/target';
+import { challengeText } from '../core/challengeCode';
 import { goTo } from '../core/flow';
 import { addCoins, lastResult, levelUnlocked, profile } from '../core/profile';
 import { beatBob, beatPhase } from '../audio/beat';
@@ -26,6 +28,8 @@ export interface ResultsData {
   target: number;
   loadout: string[];
   relicUnlocked?: string;
+  /** A friend's score to beat (challenge code). */
+  beat?: number;
   /** Play time of the attempt, sent with the score. */
   seconds?: number;
 }
@@ -75,7 +79,8 @@ export default class ResultsScene extends Phaser.Scene {
         }
       }
       text(this, W / 2, py + 74, `Score ${d.score}`, C('c'), 1, C('0')).setDepth(2);
-      if (d.target > 0) {
+      if (d.beat) text(this, W / 2, py + 88, fitText(d.score > d.beat ? `You beat your friend's ${d.beat}!` : d.score === d.beat ? `A tie with your friend's ${d.beat}` : `Your friend's ${d.beat} still stands`, 220), C('4'), 1, C('0')).setDepth(2);
+      else if (d.target > 0) {
         text(this, W / 2, py + 88, d.stars === 3 ? 'Score target beaten' : `Beat ${d.target} for third star`, C('d')).setDepth(2);
       }
     } else {
@@ -118,13 +123,13 @@ export default class ResultsScene extends Phaser.Scene {
       } else {
         makeButton(this, W / 2 - 64, y1, 116, 24, 'Map', 'go', () => go('map'), 3);
       }
-      makeButton(this, W / 2 + 64, y1, 116, 24, 'Retry', 'plain', () => go('game', { level: d.levelId, loadout: d.loadout }), 3);
+      makeButton(this, W / 2 + 64, y1, 116, 24, 'Retry', 'plain', () => go('game', { level: d.levelId, loadout: d.loadout, beat: d.beat }), 3);
 
       if (data.config.features?.share !== false) {
-        const shareBtn = makeButton(this, W / 2 - 64, y2, 116, 22, 'Share', 'ability', async () => {
+        const shareBtn = makeButton(this, W / 2 - 64, y2, 116, 22, TARGET === 'android' ? (d.beat ? 'Send it back' : 'Challenge a friend') : 'Share', 'ability', async () => {
           sfx.click();
           try {
-            await platform.share(`I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: String(d.levelId) });
+            await platform.share(TARGET === 'android' ? challengeText(d.levelId, d.score, d.beat) : `I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: String(d.levelId) });
           } catch {
             // share error boundary
           }
@@ -183,7 +188,7 @@ export default class ResultsScene extends Phaser.Scene {
     } else {
       const y1 = py + 148;
       const y2 = py + 182;
-      makeButton(this, W / 2 - 64, y1, 116, 26, 'Try again', 'go', () => go('game', { level: d.levelId, loadout: d.loadout }), 3);
+      makeButton(this, W / 2 - 64, y1, 116, 26, 'Try again', 'go', () => go('game', { level: d.levelId, loadout: d.loadout, beat: d.beat }), 3);
       makeButton(this, W / 2 + 64, y1, 116, 24, 'Change loadout', 'plain', () => go('loadout', { level: d.levelId }), 3);
       makeButton(this, W / 2, y2, 90, 22, 'Map', 'plain', () => go('map'), 3);
     }
@@ -262,7 +267,7 @@ export default class ResultsScene extends Phaser.Scene {
 
     const shareBtn = makeButton(this, 16 + leftW / 2, py + 140, 120, 26, 'Share', 'ability', async () => {
       sfx.click();
-      await platform.share(`I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: 'daily' });
+      await platform.share(TARGET === 'android' ? `I scored ${d.score} in today's Monster Smash daily. Beat me!` : `I scored ${d.score} in MONSTER MASH on RUN! Can you beat my siege?`, { score: String(d.score), level: 'daily' });
       shareBtn.setLabel('Shared!');
     }, 4);
 

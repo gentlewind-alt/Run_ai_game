@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/build-arena-headless.mjs && vite",
-    "_build": "node scripts/build-arena-headless.mjs && node scripts/check-data.mjs && node scripts/check-daily.mjs && node scripts/check-builder.mjs && node scripts/check-builder-geometry.mjs && node scripts/check-arena.mjs && tsc && vite build",
+    "_build": "node scripts/build-arena-headless.mjs && node scripts/check-data.mjs && node scripts/check-daily.mjs && node scripts/check-builder.mjs && node scripts/check-social.mjs && node scripts/check-builder-geometry.mjs && node scripts/check-social.mjs && node scripts/check-arena.mjs && tsc && vite build",
     "build": "npm run _build",
     "build:bundled": "cross-env RUNDOT_GAME_DISABLE_EMBEDDED_LIBS=true npm run _build",
     "preview": "vite preview",
@@ -20,7 +20,7 @@
     "check:data": "node scripts/check-data.mjs",
     "check:daily": "node scripts/check-daily.mjs",
     "check:builder": "node scripts/check-builder.mjs && node scripts/check-builder-geometry.mjs",
-    "check": "node scripts/build-arena-headless.mjs && node scripts/check-data.mjs && node scripts/check-daily.mjs && node scripts/check-builder.mjs && node scripts/check-builder-geometry.mjs && node scripts/check-arena.mjs && tsc --noEmit",
+    "check": "node scripts/build-arena-headless.mjs && node scripts/check-data.mjs && node scripts/check-daily.mjs && node scripts/check-builder.mjs && node scripts/check-builder-geometry.mjs && node scripts/check-social.mjs && node scripts/check-arena.mjs && tsc --noEmit",
     "regress": "node ../tools/regress.mjs",
     "regress:quick": "node ../tools/regress.mjs --quick",
     "agy:share": "node ../tools/agy_share.mjs",
@@ -53,6 +53,7 @@
     "@capacitor/app": "^7.1.2",
     "@capacitor/core": "^7.6.10",
     "@capacitor/preferences": "^7.0.4",
+    "@capacitor/share": "^7.0.4",
     "@series-inc/rundot-game-sdk": "5.28.1",
     "firebase": "^11.10.0",
     "phaser": "3.90.0"

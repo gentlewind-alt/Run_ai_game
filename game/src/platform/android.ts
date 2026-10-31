@@ -6,6 +6,7 @@
 import { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents, MaxAdContentRating, RewardAdPluginEvents } from '@capacitor-community/admob';
 import { App } from '@capacitor/app';
 import { Preferences } from '@capacitor/preferences';
+import { Share } from '@capacitor/share';
 import { data } from '../data/load';
 import { firebaseSocial } from './firebase';
 import { noopPlatform, type Platform } from './types';
@@ -107,6 +108,15 @@ export const androidPlatform: Platform = {
   storage,
   leaderboard: online.leaderboard,
   ugc: online.ugc,
+  rerollName: online.rerollName,
+  async share(text) {
+    try {
+      await Share.share({ text, dialogTitle: 'Challenge a friend' });
+      return true;
+    } catch {
+      return false; // the player closed the share sheet or sharing is unavailable
+    }
+  },
   async profile() {
     // The Firebase user id and generated name when online; otherwise a stable id for this install, so builder drafts and stats stay tied to the phone.
     const account = await online.uid();
