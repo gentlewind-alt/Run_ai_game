@@ -81,6 +81,7 @@ States: `todo` · `doing` (claimed) · `review` (waiting for a check) · `done` 
 | X8b | Collapsible boss fortresses for levels 4, 8, 12, 16, 20, 24 | X8a | review | agy | 10-22 | brief `agy_task_x8b_boss_fortresses.md`; frames not slabs, stand-still and collapse checks |
 | X9 | Omnitrix Dial: one four-armed alien drops, splash + earthquake, leaps back to the sky | X8b | review | agy | 10-22 | brief `agy_task_x9_omnitrix_alien.md`; sprite `shots/gen/omni_alien.png` |
 | X10 | Powder kegs: blocks that explode when broken | | review | agy | 11-01 | brief `agy_task_x10_powder_kegs.md`; material, blast behaviour, textures, levels 2 (1 keg)/6/10 (L17 dropped) |
+| X11 | Two new bonus levels: Keg Cellar (36) and Glass House (37) | | review | agy | 11-01 | brief `agy_task_x11_bonus_levels.md`; L36 bunker keg chain, L37 glass tower topple |
 | X8 | Relic scale + L4 runners + loadout/results UI (playtest 10-22) | | review | claude | 10-22 | done in the cloud session at the owner's request; see LOG |
 | PCG-A | Design note for physics PCG ideas | | review | codex | 10-25 | Deferred; only Task B was implemented in this run. |
 | PCG-B | Procedural fort generator and solver gate | | review | codex | 10-25 | Generator, static stability check, candidate-only mode and gate added; in-game candidate runs need Vite/headless Chrome. |

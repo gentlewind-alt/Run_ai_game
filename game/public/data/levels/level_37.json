@@ -1,0 +1,150 @@
+{
+  "id": 37,
+  "name": "Glass House",
+  "realm": "bonus_yard",
+  "kind": "siege",
+  "worldW": 540,
+  "shots": 5,
+  "hints": [
+    "Glass breaks easy. Hit the wooden legs.",
+    "A falling tower crushes what is under it"
+  ],
+  "scoreTarget": 910,
+  "terrain": [
+    [
+      0,
+      320
+    ],
+    [
+      130,
+      320
+    ],
+    [
+      160,
+      300
+    ],
+    [
+      310,
+      300
+    ],
+    [
+      340,
+      320
+    ],
+    [
+      540,
+      320
+    ]
+  ],
+  "blocks": [
+    {
+      "m": "wood",
+      "x": 208,
+      "y": 285,
+      "w": 8,
+      "h": 30
+    },
+    {
+      "m": "wood",
+      "x": 252,
+      "y": 285,
+      "w": 8,
+      "h": 30
+    },
+    {
+      "m": "wood",
+      "x": 230,
+      "y": 267,
+      "w": 56,
+      "h": 6
+    },
+    {
+      "m": "crystal",
+      "x": 208,
+      "y": 249,
+      "w": 8,
+      "h": 30
+    },
+    {
+      "m": "crystal",
+      "x": 252,
+      "y": 249,
+      "w": 8,
+      "h": 30
+    },
+    {
+      "m": "wood",
+      "x": 230,
+      "y": 231,
+      "w": 56,
+      "h": 6
+    },
+    {
+      "m": "crystal",
+      "x": 208,
+      "y": 213,
+      "w": 8,
+      "h": 30
+    },
+    {
+      "m": "crystal",
+      "x": 252,
+      "y": 213,
+      "w": 8,
+      "h": 30
+    },
+    {
+      "m": "wood",
+      "x": 230,
+      "y": 195,
+      "w": 56,
+      "h": 6
+    },
+    {
+      "m": "stone",
+      "x": 178,
+      "y": 290,
+      "w": 10,
+      "h": 20
+    }
+  ],
+  "monsters": [
+    {
+      "t": "dark_elf_hexer",
+      "x": 230,
+      "y": 293
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 230,
+      "y": 257
+    },
+    {
+      "t": "storm_mage",
+      "x": 230,
+      "y": 221
+    },
+    {
+      "t": "forge_ogre",
+      "x": 292,
+      "y": 283
+    },
+    {
+      "t": "dark_elf_archer",
+      "x": 178,
+      "y": 273
+    },
+    {
+      "t": "cloud_harpy",
+      "x": 230,
+      "y": 159
+    }
+  ],
+  "loadout": [
+    "w_iron_cleaver",
+    "w_ashwood_staff",
+    "w_hunters_pike",
+    "w_blast_tube",
+    "w_scrapheap_scattergun"
+  ]
+}

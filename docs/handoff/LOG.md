@@ -1039,3 +1039,18 @@ The owner asked for these fixes to be made in the cloud session, not through agy
 - **Kinetic Palms** `boltMult` 0.4 -> 0.3: the crash-fired repel volley one-shot L3 (3 sweep wins at 35 deg / full power). 0.35 still one-shot it; 0.3 leaves 0 wins on L1-12 with best 5/6 kills on L3.
 - **Kegs vs the relic gate:** L2 top keg dropped (L2 now has one keg at 355,314): on top of the fort it gave Kinetic Palms a one-shot, and moved to the side table it gave Silkline Shooters one. L10 left keg moved 133 -> 168 (other side of the orc brute): at 133 Comet Fists one-shot L10. In-browser sweeps: all six relics and the default loadout 0 one-shot wins on L2 and L10; Kinetic Palms 0 on L5, 7, 9, 11.
 - **Still failing, not touched:** `realNamesPassed` in the relic section (loadout card text check), hidden until now because the Bulwark throw ended that section early; and the Shop info panel check (Bulwark Disc text sits 2 px from the button, in both the weapons and relics tabs), which already failed before these changes. Regress (quick + LEVELS=2,6,10) otherwise passes: L2 2 shots, L6 3, L10 3, all six relics 0 one-shot wins.
+
+## 2026-11-01 · agy · X11 Two new bonus levels: Keg Cellar (36) and Glass House (37)
+- **What:**
+  - Added level 36 `public/data/levels/level_36.json` ("Keg Cellar", bonus_yard, siege, worldW 540, shots 5): low stone bunker from x=245 to x=413 with 3 stone walls (w 10, h 30) at ends and middle, roofed with stone planks (h 6) and middle iron plank (w 50, h 6); inside 4 kegs (10x12) spaced 30 px apart in a row with 2 orc_brute, 1 dark_elf_hexer, 1 lava_imp; roof parapet with 1 dark_elf_archer behind short wood wall (w 6, h 18).
+  - Added level 37 `public/data/levels/level_37.json` ("Glass House", bonus_yard, siege, worldW 540, shots 5): low mound terrain from x=240 to 360 at y=306; 3-storey tower at x=300 with ground wood posts (w 8, h 30) under wood plank (w 56, h 6) and upper storeys with crystal posts (w 8, h 30) under wood planks; dark_elf_hexer (bottom), cloud_harpy (middle), storm_mage (top); forge_ogre on flat ground beside tower at x=395; dark_elf_archer on stone stand (w 10, h 20) at x=450.
+  - Wired levels 36 and 37 to `content.json` `bonus_yard.levels` and `config.json.levels`.
+  - Added balance bands for 36 and 37 (`{"min": 3, "max": 5}`) to `game/scripts/balance_bands.json`.
+- **Checks:** `npm run check` and `npm run build` pass (0 errors, 1 pre-existing warning on level 99 escapeLimit). Status card X11 set to `review`. Ready for Claude solver and one-shot gate.
+
+## 2026-11-01 · claude · X11 review: fixes to the agy levels; text-layout fixes (d5ad1ab)
+- **L36 Keg Cellar:** the lava imp inside the bunker wobbled into the kegs and set off the chain before the first shot. Now a dark elf archer stands in its place and the imp hovers above the roof (360, 240).
+- **L37 Glass House:** the cloud harpy inside the tower knocked the top storeys down on load; it now hovers above the tower and a dark elf archer holds the middle storey. The tower stood beyond every weapon's reach (no shot passes x≈260), so the tower moved 70 px nearer onto a level 25-style mound, the forge ogre moved beside it (292) and the far archer's stand moved to the mound's left side (178).
+- `config.json` level list gets 36 and 37 (agy; the brief missed that the game only loads listed levels).
+- **Results:** L36 solver 3 shots (score 2695, target 1890); L37 5 shots (1300, target 910). 0 one-shot wins for the default loadout and all six relics on both. Load is stable (score 0, nothing moves before the first shot).
+- **Lesson for level briefs:** keep flyers (imp, harpy) out of enclosed forts, and keep every target within x≈260 of the sling unless a chain or collapse reaches it.
