@@ -241,6 +241,7 @@
     "hitStopFrames": 3,
     "stretchSoundMs": 80,
     "coins": {
+      "keg": 3,
       "monster": 10,
       "wood": 2,
       "stone": 4,
@@ -254,6 +255,7 @@
       "iron_warlord": 100
     },
     "points": {
+      "keg": 30,
       "goblin_grunt": 100,
       "goblin_bomber": 150,
       "goblin_chief": 800,
@@ -1087,7 +1089,7 @@
         "volleyCount": 3,
         "volleyDelaySteps": 10,
         "boltSpeed": 10,
-        "boltMult": 0.4,
+        "boltMult": 0.3,
         "knockback": 1.8,
         "recoilVx": -1.5,
         "recoilVy": -0.6
@@ -2147,6 +2149,14 @@
       "coins": 6
     },
     {
+      "id": "keg",
+      "hp": 20,
+      "weak": "hellfire",
+      "density": 0.0012,
+      "note": "powder keg: explodes when broken and sets off nearby kegs",
+      "blast": { "radius": 34, "damage": 60 }
+    },
+    {
       "id": "crystal",
       "hp": 30,
       "weak": "radiant",
@@ -2282,7 +2292,9 @@
         26,
         27,
         28,
-        29
+        29,
+        36,
+        37
       ],
       "monsters": [
         "cloud_harpy",

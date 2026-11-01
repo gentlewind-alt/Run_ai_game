@@ -110,7 +110,7 @@ export function blockTextureKey(block: Pick<LevelBlock, 'm' | 'w' | 'h' | 'shape
 
 export function ensureBlockTextures(scene: Phaser.Scene, blocks: LevelBlock[]): void {
   makeBattleTextures(scene, blocks.filter((b) => !b.variant && (!b.shape || b.shape === 'rectangle')));
-  const tones: Record<string, string[]> = { wood: ['i', 'g', 'h'], stone: ['l', 'k', 'm'], iron: ['c', 'e', 'f'], crystal: ['c', 'b', 'a'] };
+  const tones: Record<string, string[]> = { wood: ['i', 'g', 'h'], stone: ['l', 'k', 'm'], iron: ['c', 'e', 'f'], crystal: ['c', 'b', 'a'], keg: ['3', '2', '1'] };
   for (const block of blocks) {
     if (!block.variant && (!block.shape || block.shape === 'rectangle')) continue;
     for (const cracked of [false, true]) {

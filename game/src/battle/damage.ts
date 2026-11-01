@@ -206,7 +206,9 @@ export function damage(b: BattleState, t: Ent, dmgIn: number, x: number, y: numb
         ? ['c', 'd', 'e', 'f']
         : t.type === 'crystal'
           ? ['b', 'c', '4', 'a']
-          : ['k', 'l', 'm'];
+          : t.type === 'keg'
+            ? ['2', '3', '4']
+            : ['k', 'l', 'm'];
   burst(b, x, y, colors, Math.min(10, 3 + Math.round(dmg / 6)));
   if (!o.silent) sfx.hit(Math.min(1, dmg / 40));
   if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) b.scene.cameras.main.shake(90, Phaser.Math.Clamp((dmg / 40) * 0.012, 0.002, 0.014));
@@ -245,7 +247,9 @@ function kill(b: BattleState, t: Ent, silent = false, weaponId?: string): void {
           ? ['c', 'd', 'e', 'f']
           : t.type === 'crystal'
             ? ['b', 'c', '4', 'a']
-            : ['k', 'l', 'm'];
+            : t.type === 'keg'
+              ? ['2', '3', '4']
+              : ['k', 'l', 'm'];
   burst(b, px, py, colors, 14);
   if (!silent) sfx.crunch();
   b.hitStop = Math.max(b.hitStop, b.tune.hitStopFrames);
@@ -295,6 +299,8 @@ function kill(b: BattleState, t: Ent, silent = false, weaponId?: string): void {
   }
   // Sleeping bodies don't wake when a support is removed.
   for (const e of b.ents) if (!e.dead) MatterLib.Sleeping.set(e.body, false);
+  const blast = t.kind === 'block' ? materialDef(t.type)?.blast : undefined;
+  if (blast && b.settings.features.kegs) explode(b, px, py, blast.radius, blast.damage, null, null);
 }
 
 // ------------------------------------------------------------------ area and direct damage (weapons call these)

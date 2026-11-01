@@ -405,18 +405,20 @@ export default class ShopScene extends Phaser.Scene {
     this.body.add(text(this, W / 2, metaY, fitText(metaStr, W - 40), C('d'), 1, C('0')));
 
     // 3. Description stays inside the detail area above the purchase button.
-    const descStartY = metaY + 11;
+    const descStartY = metaY + 10;
     const maxWidth = 420;
-    const maxLines = list.length > maxItems ? 2 : 3;
+    const lineSpacing = 11;
+    const gap = 6;
+    const btnH = 18;
+    // The button never sits lower than H - 47, so only keep the lines that end at least 4 px above it.
+    const fitLines = Math.max(1, Math.floor((H - 47 - btnH / 2 - 4 - 6 - descStartY) / lineSpacing) + 1);
+    const maxLines = Math.min(list.length > maxItems ? 2 : 3, fitLines);
     const lines = textBlock(this, W / 2, 0, it.desc.join(' '), C('c'), maxWidth, C('0'), maxLines);
-    const lineSpacing = 12;
     lines.forEach((l, i) => { l.setY(descStartY + i * lineSpacing); });
     this.body.add(lines);
 
     // 4. Button anchored below with fixed gap
     const descBottom = lines.length > 0 ? descStartY + (lines.length - 1) * lineSpacing + 5 : metaY + 5;
-    const gap = 6;
-    const btnH = 18;
     const btnY = Math.min(H - 47, Math.round(descBottom + gap + btnH / 2));
 
     const isSlingEquip = this.tab === 'slingshots' && owns('cosmetics', it.id);

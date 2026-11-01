@@ -532,7 +532,8 @@
         "friction": { "type": "number", "minimum": 0 },
         "coins": { "type": "number", "minimum": 0 },
         "score": { "type": "number", "minimum": 0 },
-        "note": { "type": "string" }
+        "note": { "type": "string" },
+        "blast": { "type": "object", "additionalProperties": false, "required": ["radius", "damage"], "properties": { "radius": { "type": "number", "exclusiveMinimum": 0 }, "damage": { "type": "number", "exclusiveMinimum": 0 } } }
       }
     },
     "realm": {

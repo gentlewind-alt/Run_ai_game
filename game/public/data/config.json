@@ -38,6 +38,8 @@
     33,
     34,
     35,
+    36,
+    37,
     99
   ],
   "display": {
@@ -93,6 +95,7 @@
     "vote": "https://run.world/jams/octoberjam?game=83DTzRcGtCh99lCAuhBn"
   },
   "features": {
+    "kegs": true,
     "voteButton": true,
     "practice": true,
     "arena": true,
