@@ -5,6 +5,8 @@
 <script src="../docs/handoff/relic_art_reference.js"></script>
 <script>
 const SZ = 128;
+// ?mode=store (default, with wordmark), fg (art only, for the Android adaptive icon), bg (sky and hills only)
+const MODE = new URLSearchParams(location.search).get('mode') || 'store';
 const C = { k: '#12131f', K: '#1a1c2c', w: '#ffffff', y: '#ffd27a', Y: '#fff0b0', o: '#f08a52', r: '#c2415b', R: '#6b2a5e', p: '#e8a0a0', d: '#1d5a22', m: '#3a8c3d', l: '#52b04f', h: '#86d874', c: '#41a6f6', C2: '#8af0f8', s1: '#1b1736', s2: '#241d49', s3: '#2e2560', s4: '#3f3180', h1: '#2a2f4f', h2: '#1e2240', gr: '#161830' };
 let px = Array.from({ length: SZ }, () => Array(SZ).fill(null));
 const blank = () => Array.from({ length: SZ }, () => Array(SZ).fill(null));
@@ -23,6 +25,9 @@ for (let y = 0; y < SZ; y++) { let c = C.s1; if (y >= 22) c = C.s2; if (y >= 44)
 for (let i = 0; i < 26; i++) { const x = (i * 53 + 17) % 128, y = (i * 29 + 5) % 60; set(x, y, i % 3 ? C.w : C.y); }
 for (let x = 0; x < SZ; x++) { const h = 84 + Math.round(5 * Math.sin(x / 11) + 3 * Math.sin(x / 5 + 1)); for (let y = h; y < SZ; y++) set(x, y, C.h1); const h2 = 92 + Math.round(4 * Math.sin(x / 8 + 2)); for (let y = h2; y < SZ; y++) set(x, y, C.h2); }
 for (let y = 100; y < SZ; y++) for (let x = 0; x < SZ; x++) set(x, y, C.gr);
+
+const skyOnly = MODE === 'bg' ? px.map(r => r.slice()) : null;
+if (MODE === 'fg') px = blank();
 
 // burst behind the goblin
 const star = (cx, cy, ro, ri, n) => { const pts = []; for (let i = 0; i < n * 2; i++) { const a = -Math.PI / 2 + i * Math.PI / n; const r = i % 2 ? ri : ro; pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); } return pts; };
@@ -56,13 +61,16 @@ zap(91, 31, 76, 43); zap(97, 38, 84, 52); zap(108, 12, 118, 22);
 stamp(maul(), 105, 20, 1.55, 225);
 
 // wordmark
+if (MODE === 'store') {
 const GL = { M: ['X...X', 'XX.XX', 'X.X.X', 'X.X.X', 'X...X', 'X...X', 'X...X'], O: ['.XXX.', 'X...X', 'X...X', 'X...X', 'X...X', 'X...X', '.XXX.'], N: ['X...X', 'XX..X', 'X.X.X', 'X..XX', 'X...X', 'X...X', 'X...X'], S: ['.XXXX', 'X....', 'X....', '.XXX.', '....X', '....X', 'XXXX.'], T: ['XXXXX', '..X..', '..X..', '..X..', '..X..', '..X..', '..X..'], E: ['XXXXX', 'X....', 'X....', 'XXXX.', 'X....', 'X....', 'XXXXX'], R: ['XXXX.', 'X...X', 'X...X', 'XXXX.', 'X.X..', 'X..X.', 'X...X'], A: ['.XXX.', 'X...X', 'X...X', 'XXXXX', 'X...X', 'X...X', 'X...X'], H: ['X...X', 'X...X', 'X...X', 'XXXXX', 'X...X', 'X...X', 'X...X'] };
 const word = (str, sc, gap, y0, main, hi, shadow) => { const w = str.length * 5 * sc + (str.length - 1) * gap; let x = Math.round((SZ - w) / 2); const layer = []; for (const ch of str) { const g = GL[ch]; for (let j = 0; j < 7; j++) for (let i = 0; i < 5; i++) if (g[j][i] === 'X') for (let a = 0; a < sc; a++) for (let b = 0; b < sc; b++) layer.push([x + i * sc + a, y0 + j * sc + b, j === 0 && b === 0 ? hi : main]); x += 5 * sc + gap; } const tmp = px.map(r => r.slice()); layer.forEach(([X, Y]) => { for (let d = 1; d <= Math.max(1, sc - 1); d++) set(X + d, Y + d, shadow); }); layer.forEach(([X, Y, c]) => set(X, Y, c)); };
 const bgLayer2 = px; px = blank();
 word('MONSTER', 2, 2, 88, C.h, C.Y, C.d);
-word('MASH', 3, 3, 104, C.y, C.Y, C.r);
+word('SMASH', 3, 3, 104, C.y, C.Y, C.r);
 outlineAll(C.k);
 px = composite(bgLayer2, px);
+}
+if (skyOnly) px = skyOnly;
 
 const cv = document.getElementById('c').getContext('2d');
 for (let y = 0; y < SZ; y++) for (let x = 0; x < SZ; x++) { if (px[y][x]) { cv.fillStyle = px[y][x]; cv.fillRect(x, y, 1, 1); } }
