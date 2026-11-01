@@ -1068,7 +1068,7 @@ async function run() {
 
       const loadoutScene = g.scene.getScene('loadout');
       const images = loadoutScene.children.list.filter(c => c.type === 'Image' && c.texture && c.texture.key.startsWith('wpn_') && c.x < 260 && c.y >= 30 && c.y <= 240);
-      const texts = loadoutScene.children.list.filter(c => (c.type === 'Text' || c.type === 'BitmapText' || c.type === 'Image') && c.y >= 30 && c.y <= 240);
+      const texts = loadoutScene.children.list.filter(c => (c.type === 'Text' || c.type === 'BitmapText' || c.type === 'Image') && c.y >= 30 && c.y <= 240 && !(c.type === 'Image' && c.width > 200)); // skip the full-screen backdrop
 
       const loadoutOverlaps = [];
       const loadoutBoundsExceeded = [];

@@ -200,8 +200,10 @@ export default class LoadoutScene extends Phaser.Scene {
     }
     const w = data.content.weapons.find((x) => x.id === id)!;
     this.info.push(text(this, infoX, 96, fitText(w.name, 196), C('4'), 1, C('0')));
-    this.info.push(...textBlock(this, infoX, 110, [w.launch, w.tap].filter(Boolean).join(' '), C('c'), 196, C('0'), 2));
-    if (message) this.info.push(text(this, infoX, 138, fitText(message, 196), C('4'), 1, C('0')));
+    // Launch gets one line and the tap its own lines, so a long launch text never hides what the tap does.
+    if (w.launch) this.info.push(text(this, infoX, 110, fitText(w.launch, 196), C('c'), 1, C('0')));
+    if (w.tap) this.info.push(...textBlock(this, infoX, 122, w.tap, C('a'), 196, C('0'), message ? 1 : 2));
+    if (message) this.info.push(text(this, infoX, 134, fitText(message, 196), C('4'), 1, C('0')));
   }
 
   private forgedCount(): number { return this.slots.filter((s) => s && isForgeWeapon(s)).length; }
