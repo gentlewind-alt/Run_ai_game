@@ -63,7 +63,7 @@ Free to play with optional ads for bonus coins. No purchases.
 | Location → Approximate location | Yes (AdMob, from IP) | Yes | Required | Advertising or marketing, Fraud prevention |
 | Device or other IDs | Yes (AdMob advertising ID, Firebase anonymous ID) | Yes (ad ID, by AdMob) | Required | App functionality, Advertising or marketing, Analytics, Fraud prevention |
 | App activity → App interactions | Yes (AdMob ad interactions) | Yes | Required | Advertising or marketing, Analytics |
-| App activity → Other user-generated content | Yes (scores, shared levels, reports) | No | Optional | App functionality |
+| App activity → Other user-generated content | Yes (scores upload automatically; shared levels, reports) | No | Required | App functionality |
 | App info and performance → Diagnostics | Yes (AdMob SDK diagnostics) | No | Required | Analytics, Fraud prevention |
 
 Answer **No** for everything else: personal info (name, email, user IDs tied to identity), financial info,

@@ -1,10 +1,10 @@
 # Privacy Policy for Monster Smash: Siege Slingshot
 
-**Last updated: 31 October 2026**
+**Last updated: 2 November 2026**
 
 Monster Smash: Siege Slingshot ("the game", "we") is a physics puzzle game for Android, made by Samarth Rawat. This page explains what information the game uses and why. We keep it to the minimum the game needs.
 
-**Who it is for.** The game is meant for players aged 10 and over. We do not knowingly collect personal information from children under 10. If you believe a child under 10 has used the game, contact us and we will delete any data linked to that device.
+**Who it is for.** The game is meant for players aged 13 and over. When you first start it, the game asks for your birth year; only the resulting age group is kept, and it stays on your phone. If the answer means you are under 13, you can still play, including the online features described below, but the game tells Google to treat your ads as child-directed, so you do not get personalised ads and only ads suitable for children are requested. Parents or guardians can contact us at any time to have data linked to a device deleted.
 
 ## What we do NOT collect
 
@@ -19,7 +19,7 @@ Monster Smash: Siege Slingshot ("the game", "we") is a physics puzzle game for A
 Your progress, coins, settings and levels you build are saved on your phone. This stays on the device and is removed when you uninstall the game.
 
 ### Online features (Firebase, by Google)
-If you use the online features (leaderboards, challenges, sharing levels), the game signs you in **anonymously**. No account, email or password is needed. We store:
+The first time the game goes online, it signs you in **anonymously**. This happens when you win a daily challenge, open the leaderboards, play a challenge or share a level. No account, email or password is needed, and scores are sent automatically at these moments; there is no setting to turn this off. We store:
 - A random anonymous ID created for your install
 - A display name made up by the game, such as "Brave Otter 123" (you can re-roll it, and you cannot type your own)
 - Your scores and the levels you choose to share, and the "report" flags players put on shared levels
