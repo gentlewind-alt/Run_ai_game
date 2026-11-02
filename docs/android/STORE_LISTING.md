@@ -60,11 +60,11 @@ Free to play with optional ads for bonus coins. No purchases.
 
 | Data type | Collected | Shared | Optional? | Purposes |
 |---|---|---|---|---|
-| Location → Approximate location | Yes (AdMob, from IP) | Yes | Required | Advertising or marketing, Fraud prevention |
+| Location → Approximate location | Yes (AdMob, from IP) | Yes | Required | Advertising or marketing, Analytics, Fraud prevention |
 | Device or other IDs | Yes (AdMob advertising ID, Firebase anonymous ID) | Yes (ad ID, by AdMob) | Required | App functionality, Advertising or marketing, Analytics, Fraud prevention |
-| App activity → App interactions | Yes (AdMob ad interactions) | Yes | Required | Advertising or marketing, Analytics |
+| App activity → App interactions | Yes (AdMob ad interactions) | Yes | Required | Advertising or marketing, Analytics, Fraud prevention |
 | App activity → Other user-generated content | Yes (scores upload automatically; shared levels, reports) | No | Required | App functionality |
-| App info and performance → Diagnostics | Yes (AdMob SDK diagnostics) | No | Required | Analytics, Fraud prevention |
+| App info and performance → Diagnostics | Yes (AdMob SDK diagnostics) | Yes | Required | Advertising or marketing, Analytics, Fraud prevention |
 
 Answer **No** for everything else: personal info (name, email, user IDs tied to identity), financial info,
 health, messages, photos/videos, audio, files, calendar, contacts, web browsing, precise location.
@@ -88,7 +88,7 @@ Expected result: roughly PEGI 7 / ESRB Everyone 10+.
 ## Target audience and ads (Policy → App content)
 
 - **Contains ads:** Yes
-- **Target age groups:** 13–15, 16–17, 18+ for a general-audience release.
+- **Target age groups:** 13–15, 16–17, 18+ (chosen).
   Adding **9–12** puts the app under the Families policy: allowed (AdMob is a certified families SDK and
   the game already serves child-safe ads to players who say they are under 13), but expect stricter review.
   Do not pick 8 and under.
