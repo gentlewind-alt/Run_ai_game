@@ -2,7 +2,7 @@
 
 Paste-ready text for the store listing, Data safety, content rating and target audience.
 Facts checked against the 1.2 (4) build: 20 monsters, 22 weapons, 36 level files, no in-app purchases,
-no typed text from players (names are generated), Firebase anonymous sign-in, AdMob ads.
+no typed text from players from 1.2.2 on (names and shared level titles are generated), Firebase anonymous sign-in, AdMob ads.
 
 ## Store listing (Grow → Store presence → Main store listing)
 

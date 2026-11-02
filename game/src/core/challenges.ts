@@ -40,6 +40,12 @@ async function myId(): Promise<string> {
 
 const clampShots = (n: unknown): number => Math.max(SHOTS_MIN, Math.min(SHOTS_MAX, Math.round(typeof n === 'number' && Number.isFinite(n) ? n : 5)));
 
+/** Titles are always "<generated name>'s level <n>": anything else (older levels, edited files) shows as "<name>'s level", so players never see free text. */
+function shownTitle(row: UgcRow): string {
+  const start = `${row.authorName}'s level`;
+  return row.title.startsWith(`${start} `) && /^\d+$/.test(row.title.slice(start.length + 1)) ? row.title : start;
+}
+
 function parse(row: UgcRow, me: string): Challenge | null {
   try {
     const d = row.data;
@@ -49,7 +55,8 @@ function parse(row: UgcRow, me: string): Challenge | null {
     const known = new Set(data.content.weapons.map((w) => w.id));
     const allowed = Array.isArray(d.allowed) ? (d.allowed as unknown[]).filter((id): id is string => typeof id === 'string' && known.has(id)) : [];
     if (!allowed.length) return null;
-    return { id: row.id, title: row.title || doc.name, authorId: row.authorId, authorName: row.authorName, mine: row.authorId === me, allowed, shots: clampShots(d.shots), doc, challengers: row.uses, createdAt: row.createdAt };
+    const title = shownTitle(row);
+    return { id: row.id, title, authorId: row.authorId, authorName: row.authorName, mine: row.authorId === me, allowed, shots: clampShots(d.shots), doc: { ...doc, name: title }, challengers: row.uses, createdAt: row.createdAt };
   } catch {
     return null;
   }
@@ -80,7 +87,7 @@ export async function publishChallenge(doc: BuilderDocument, allowed: string[], 
     const mine = await platform.ugc.mine(CHALLENGE_TYPE, MAX_PER_AUTHOR + 1);
     if (!admin.is && mine.length >= MAX_PER_AUTHOR) return { error: `You can share up to ${MAX_PER_AUTHOR} challenges. Delete one first.` };
     const name = (await platform.profile()).name;
-    const title = safe.name === 'My level' ? `${name}'s level ${mine.length + 1}` : safe.name;
+    const title = `${name}'s level ${mine.length + 1}`;
     const row = await platform.ugc.create(CHALLENGE_TYPE, title.slice(0, 40), payload({ ...safe, name: title.slice(0, 40) }, allowed, shots));
     if (!row) return { error: 'Could not reach the challenge board. Try again in a moment.' };
     const challenge = parse(row, await myId());
